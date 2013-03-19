@@ -1,0 +1,7 @@
+*.class
+*.zip
+
+# IDE folders #
+gen/
+bin/
+out/

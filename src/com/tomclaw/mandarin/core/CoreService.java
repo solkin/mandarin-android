@@ -1,10 +1,15 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
+import com.tomclaw.mandarin.R;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,12 +28,46 @@ public class CoreService extends Service {
     private int serviceState;
     private long serviceCreateTime;
 
+    /** For showing and hiding our notification. */
+    NotificationManager notificationManager;
+
+    private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
+        public boolean initService() throws RemoteException {
+            /** Checking for service state **/
+            switch (serviceState) {
+                case STATE_LOADING: {
+                    return false;
+                }
+                case STATE_DOWN: {
+                    CoreService.this.serviceInit();
+                }
+                case STATE_UP: {
+                    sendState();
+                    return true;
+                }
+                default: {
+                    /** What the fuck? **/
+                    return false;
+                }
+            }
+        }
+
+        @Override
+        public long getUpTime() throws RemoteException {
+            return System.currentTimeMillis() - getServiceCreateTime();
+        }
+    };
+
     @Override
     public void onCreate() {
         Log.d(LOG_TAG, "CoreService onCreate");
         super.onCreate();
         serviceState = STATE_DOWN;
         serviceCreateTime = System.currentTimeMillis();
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        // Display a notification about us starting.
+        showNotification();
     }
 
     @Override
@@ -53,32 +92,7 @@ public class CoreService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(LOG_TAG, "CoreService onBind");
-        return new ServiceInteraction.Stub() {
-            public boolean initService() throws RemoteException {
-                /** Checking for service state **/
-                switch (serviceState) {
-                    case STATE_LOADING: {
-                        return false;
-                    }
-                    case STATE_DOWN: {
-                        CoreService.this.serviceInit();
-                    }
-                    case STATE_UP: {
-                        sendState();
-                        return true;
-                    }
-                    default: {
-                        /** What the fuck? **/
-                        return false;
-                    }
-                }
-            }
-
-            @Override
-            public long getUpTime() throws RemoteException {
-                return System.currentTimeMillis() - getServiceCreateTime();
-            }
-        };
+        return serviceInteraction;
     }
 
     /**
@@ -122,5 +136,29 @@ public class CoreService extends Service {
         intent.putExtra("Staff", true);
         intent.putExtra("State", serviceState);
         sendBroadcast(intent);
+    }
+
+    /**
+     * Show a notification while this service is running.
+     */
+    private void showNotification() {
+        // In this sample, we'll use the same text for the ticker and the expanded notification
+        CharSequence text = getText(R.string.app_name);
+
+        // Set the icon, scrolling text and timestamp
+        Notification notification = new Notification(R.drawable.ic_launcher, text,
+                System.currentTimeMillis());
+
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, Runtime.class), 0);
+
+        // Set the info for the views that show in the notification panel.
+        notification.setLatestEventInfo(this, getText(R.string.app_name),
+                text, contentIntent);
+
+        // Send the notification.
+        // We use a string id because it is a unique number.  We use it later to cancel.
+        notificationManager.notify(R.string.app_name, notification);
     }
 }

@@ -107,6 +107,11 @@ public class MainActivity extends ChiefActivity implements
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         Log.d(LOG_TAG, "selected: position = " + itemPosition + ", id = "
                 + itemId);
+        try {
+            Log.d(LOG_TAG, "service up time = " + getServiceInteraction().getUpTime());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

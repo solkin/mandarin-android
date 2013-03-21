@@ -21,12 +21,14 @@ public class CoreService extends Service {
 
     private static final String LOG_TAG = "MandarinLog";
     private int serviceState;
+    private long serviceCreateTime;
 
     @Override
     public void onCreate() {
         Log.d(LOG_TAG, "CoreService onCreate");
         super.onCreate();
         serviceState = STATE_DOWN;
+        serviceCreateTime = System.currentTimeMillis();
     }
 
     @Override
@@ -44,6 +46,7 @@ public class CoreService extends Service {
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, "CoreService onDestroy");
+        serviceCreateTime = 0;
         super.onDestroy();
     }
 
@@ -69,6 +72,11 @@ public class CoreService extends Service {
                         return false;
                     }
                 }
+            }
+
+            @Override
+            public long getUpTime() throws RemoteException {
+                return System.currentTimeMillis() - getServiceCreateTime();
             }
         };
     }
@@ -96,6 +104,14 @@ public class CoreService extends Service {
         } catch (InterruptedException e) {
         }
         serviceState = STATE_UP;
+    }
+
+    /**
+     * Returns service time from onCreate invocation
+     * @return serviceCreateTime
+     */
+    public long getServiceCreateTime() {
+        return serviceCreateTime;
     }
 
     /**

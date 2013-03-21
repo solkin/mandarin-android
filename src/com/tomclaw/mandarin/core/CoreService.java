@@ -9,7 +9,9 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -86,6 +88,12 @@ public class CoreService extends Service {
     public void onDestroy() {
         Log.d(LOG_TAG, "CoreService onDestroy");
         serviceCreateTime = 0;
+        // Cancel the persistent notification.
+        notificationManager.cancel(R.string.app_name);
+
+        // Tell the user we stopped.
+        Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
+
         super.onDestroy();
     }
 
@@ -145,13 +153,13 @@ public class CoreService extends Service {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = getText(R.string.app_name);
 
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class), 0);
+
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification(R.drawable.ic_launcher, text,
                 System.currentTimeMillis());
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, Runtime.class), 0);
 
         // Set the info for the views that show in the notification panel.
         notification.setLatestEventInfo(this, getText(R.string.app_name),

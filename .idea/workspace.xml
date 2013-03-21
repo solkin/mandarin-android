@@ -239,7 +239,7 @@
     <file path="/Dummy.txt" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357855733083" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357860631052" ignored="false" />
     <file path="/CoreActivity.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357149581605" ignored="false" />
-    <file path="/CoreService.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1363856302181" ignored="false" />
+    <file path="/CoreService.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1363865173924" ignored="false" />
     <file path="/buddy_list.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357821758571" ignored="false" />
     <file path="/BuddyListHandler.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357683144549" ignored="false" />
     <file path="/CoreListener.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357683672648" ignored="false" />
@@ -324,7 +324,7 @@
       <file leaf-file-name="TitlePageIndicator.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/viewpageindicator/TitlePageIndicator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="206" column="51" selection-start="9358" selection-end="9358" vertical-scroll-proportion="0.0">
+            <state line="210" column="33" selection-start="9559" selection-end="9559" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -332,19 +332,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CoreService.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="CoreService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/CoreService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="150" column="8" selection-start="4493" selection-end="4493" vertical-scroll-proportion="4.311151">
+            <state line="95" column="57" selection-start="3025" selection-end="3025" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServiceInteraction.aidl" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ServiceInteraction.aidl" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/ServiceInteraction.aidl">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="19" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0">
+            <state line="4" column="25" selection-start="89" selection-end="89" vertical-scroll-proportion="0.12230216">
               <folding />
             </state>
           </provider>
@@ -422,10 +422,10 @@
         <option value="$PROJECT_DIR$/res/values/mandarin_theme.xml" />
         <option value="$PROJECT_DIR$/res/values/vpi__defaults.xml" />
         <option value="$PROJECT_DIR$/res/values/vpi__attrs.xml" />
-        <option value="$PROJECT_DIR$/src/com/viewpageindicator/TitlePageIndicator.java" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/ServiceInteraction.aidl" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java" />
         <option value="$PROJECT_DIR$/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/src/com/viewpageindicator/TitlePageIndicator.java" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/CoreService.java" />
       </list>
     </option>
@@ -793,7 +793,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1432" y="-8" width="1456" height="916" extended-state="7" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -805,7 +805,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32674572" sideWeight="0.41463414" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26613966" sideWeight="0.7159254" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26613966" sideWeight="0.7159254" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296582" sideWeight="0.49786553" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22238164" sideWeight="0.33333334" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -916,38 +916,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/ServiceInteraction.aidl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="19" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="21" selection-start="877" selection-end="877" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/viewpageindicator/TitlePageIndicator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="206" column="51" selection-start="9358" selection-end="9358" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="14" selection-start="652" selection-end="652" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Program Files (x86)/Android/android-sdk/sources/android-17/android/support/v4/app/Fragment.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1459" column="15" selection-start="55432" selection-end="55432" vertical-scroll-proportion="0.3321976">
@@ -994,9 +962,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="14" selection-start="652" selection-end="652" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/viewpageindicator/TitlePageIndicator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="210" column="33" selection-start="9559" selection-end="9559" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/CoreService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="150" column="8" selection-start="4493" selection-end="4493" vertical-scroll-proportion="4.311151">
+        <state line="95" column="57" selection-start="3025" selection-end="3025" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="21" selection-start="877" selection-end="877" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/ServiceInteraction.aidl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="25" selection-start="89" selection-end="89" vertical-scroll-proportion="0.12230216">
           <folding />
         </state>
       </provider>
@@ -1053,7 +1053,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>Android|Mandarin</last-edited>
+          <last-edited>Mandarin</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

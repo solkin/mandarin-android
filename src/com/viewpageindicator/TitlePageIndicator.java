@@ -209,7 +209,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
 
         Drawable background = a.getDrawable(R.styleable.TitlePageIndicator_android_background);
         if (background != null) {
-            setBackground(background);
+            // setBackground(background);
         }
         setBackgroundColor(backgroundColor);
 

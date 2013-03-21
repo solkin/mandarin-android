@@ -30,7 +30,7 @@ public class MainActivity extends ChiefActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+        // super.onSaveInstanceState(outState);
     }
 
     @Override

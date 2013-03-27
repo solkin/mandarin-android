@@ -92,7 +92,7 @@ public class MainActivity extends ChiefActivity implements
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         /** Status spinner **/
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
-                android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_list_item_1); // simple_spinner_dropdown_item
         bar.setListNavigationCallbacks(mSpinnerAdapter, this);
         /** View pager **/
         mAdapter = new GroupFragmentAdapter(getSupportFragmentManager());

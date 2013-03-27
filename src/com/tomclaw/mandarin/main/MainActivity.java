@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -9,11 +9,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import com.actionbarsherlock.widget.SearchView;
+import android.widget.SpinnerAdapter;
+import com.actionbarsherlock.view.Menu;
 import com.tomclaw.mandarin.R;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
+import com.actionbarsherlock.view.MenuItem;
 
 public class MainActivity extends ChiefActivity implements
         ActionBar.OnNavigationListener {
@@ -35,7 +39,7 @@ public class MainActivity extends ChiefActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.buddy_list_menu, menu);
+        getSupportMenuInflater().inflate(R.menu.buddy_list_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Configure the search info and add any event listeners
 
@@ -82,7 +86,7 @@ public class MainActivity extends ChiefActivity implements
     public void onCoreServiceReady() {
         Log.d(LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(false);
         // getActionBar().setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);

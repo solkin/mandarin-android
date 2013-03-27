@@ -1,13 +1,12 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ServiceInteraction;
@@ -19,7 +18,7 @@ import com.tomclaw.mandarin.core.ServiceInteraction;
  * Time: 20:22
  * To change this template use File | Settings | File Templates.
  */
-public abstract class ChiefActivity extends FragmentActivity {
+public abstract class ChiefActivity extends SherlockFragmentActivity {
 
     public static final String LOG_TAG = "MandarinLog";
 
@@ -35,6 +34,7 @@ public abstract class ChiefActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_Sherlock_Light);
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;

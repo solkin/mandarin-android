@@ -112,15 +112,11 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     serviceInteraction = ServiceInteraction.Stub.asInterface(service);
                     Log.d(LOG_TAG, "onServiceConnected");
-                    new Thread() {
-                        public void run() {
-                            try {
-                                /** Initialize service **/
-                                serviceInteraction.initService();
-                            } catch (RemoteException e) {
-                            }
-                        }
-                    }.start();
+                    try {
+                        /** Initialize service **/
+                        serviceInteraction.initService();
+                    } catch (RemoteException e) {
+                    }
                 }
             };
             /** Binding service **/

@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -21,6 +22,8 @@ import com.tomclaw.mandarin.main.MainActivity;
  * To change this template use File | Settings | File Templates.
  */
 public class CoreService extends Service {
+
+    private SessionHolder sessionHolder;
 
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
@@ -64,10 +67,9 @@ public class CoreService extends Service {
     public void onCreate() {
         Log.d(LOG_TAG, "CoreService onCreate");
         super.onCreate();
-        serviceState = STATE_DOWN;
+        updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
         // Display a notification about us starting.
         showNotification();
     }
@@ -87,13 +89,13 @@ public class CoreService extends Service {
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, "CoreService onDestroy");
+        updateState(STATE_DOWN);
+        // Reset creation time
         serviceCreateTime = 0;
         // Cancel the persistent notification.
         notificationManager.cancel(R.string.app_name);
-
         // Tell the user we stopped.
         Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
-
         super.onDestroy();
     }
 
@@ -108,24 +110,25 @@ public class CoreService extends Service {
      */
     public void serviceInit() {
         Log.d(LOG_TAG, "CoreService serviceInit");
-        serviceState = STATE_LOADING;
+        updateState(STATE_LOADING);
         // ...
-        /*new Thread() {
+        new Thread() {
             public void run() {
-                while(true) {
+                /*while(true) {
                     Log.d(LOG_TAG, "CoreService [" + System.currentTimeMillis() + "]");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
+                }*/
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
                 }
+                updateState(STATE_UP);
             }
-        }.start();*/
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
-        serviceState = STATE_UP;
+        }.start();
+
     }
 
     /**
@@ -134,6 +137,11 @@ public class CoreService extends Service {
      */
     public long getServiceCreateTime() {
         return serviceCreateTime;
+    }
+
+    public void updateState(int serviceState) {
+        this.serviceState = serviceState;
+        sendState();
     }
 
     /**

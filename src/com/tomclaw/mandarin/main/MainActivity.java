@@ -88,12 +88,13 @@ public class MainActivity extends ChiefActivity implements
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(false);
-        // getActionBar().setDisplayHomeAsUpEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         /** Status spinner **/
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
-                android.R.layout.simple_list_item_1); // simple_spinner_dropdown_item
-        bar.setListNavigationCallbacks(mSpinnerAdapter, this);
+        ArrayAdapter<CharSequence> listAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
+                R.layout.sherlock_spinner_item);
+        listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+        bar.setListNavigationCallbacks(listAdapter, this);
         /** View pager **/
         mAdapter = new GroupFragmentAdapter(getSupportFragmentManager());
         mPager = (ViewPager)findViewById(R.id.pager);

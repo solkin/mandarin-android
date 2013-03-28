@@ -104,6 +104,11 @@ public class MainActivity extends ChiefActivity implements
         mIndicator.setCurrentItem(2);
     }
 
+    @Override
+    public void onCoreServiceDown() {
+        Log.d(LOG_TAG, "onCoreServiceDown");
+    }
+
     public void onCoreServiceIntent(Intent intent) {
         Log.d(LOG_TAG, "onCoreServiceIntent");
     }

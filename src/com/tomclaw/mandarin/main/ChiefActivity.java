@@ -94,6 +94,8 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                         /** Checking for service state is up **/
                         if (serviceState == CoreService.STATE_UP) {
                             onCoreServiceReady();
+                        } else if (serviceState == CoreService.STATE_DOWN) {
+                            onCoreServiceDown();
                         }
                     } else {
                         /** Redirecting intent **/
@@ -154,8 +156,20 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         return false;
     }
 
+    /**
+     * Activity notification, service if now ready
+     */
     public abstract void onCoreServiceReady();
 
+    /**
+     * Activity notification, service going down
+     */
+    public abstract void onCoreServiceDown();
+
+    /**
+     * Any message from service for this activity
+     * @param intent
+     */
     public abstract void onCoreServiceIntent(Intent intent);
 
     public final ServiceInteraction getServiceInteraction() {

@@ -88,7 +88,7 @@ public class MainActivity extends ChiefActivity implements
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(false);
-        // getActionBar().setDisplayHomeAsUpEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         /** Status spinner **/
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
@@ -101,6 +101,11 @@ public class MainActivity extends ChiefActivity implements
         mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
+    }
+
+    @Override
+    public void onCoreServiceDown() {
+        Log.d(LOG_TAG, "onCoreServiceDown");
     }
 
     public void onCoreServiceIntent(Intent intent) {

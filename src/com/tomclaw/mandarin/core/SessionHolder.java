@@ -15,4 +15,12 @@ import java.util.List;
 public class SessionHolder {
 
     private List<AccountRoot> accountRootList = new ArrayList<AccountRoot>();
+
+    public void load() {
+        // Loading accounts from local storage.
+    }
+
+    public void save() {
+        // Saving account to local storage.
+    }
 }

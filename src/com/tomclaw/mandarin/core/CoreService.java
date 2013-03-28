@@ -6,10 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -33,7 +31,9 @@ public class CoreService extends Service {
     private int serviceState;
     private long serviceCreateTime;
 
-    /** For showing and hiding our notification. */
+    /**
+     * For showing and hiding our notification.
+     */
     NotificationManager notificationManager;
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
@@ -45,6 +45,7 @@ public class CoreService extends Service {
                 }
                 case STATE_DOWN: {
                     CoreService.this.serviceInit();
+                    return false;
                 }
                 case STATE_UP: {
                     sendState();
@@ -69,7 +70,8 @@ public class CoreService extends Service {
         super.onCreate();
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        sessionHolder = new SessionHolder();
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();
     }
@@ -90,7 +92,7 @@ public class CoreService extends Service {
     public void onDestroy() {
         Log.d(LOG_TAG, "CoreService onDestroy");
         updateState(STATE_DOWN);
-        // Reset creation time
+        // Reset creation time.
         serviceCreateTime = 0;
         // Cancel the persistent notification.
         notificationManager.cancel(R.string.app_name);
@@ -114,17 +116,14 @@ public class CoreService extends Service {
         // ...
         new Thread() {
             public void run() {
-                /*while(true) {
-                    Log.d(LOG_TAG, "CoreService [" + System.currentTimeMillis() + "]");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                }*/
+                // Loading all data for this application session.
+                sessionHolder.load();
+                // For testing purposes only!
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                 }
+                // Service is now ready.
                 updateState(STATE_UP);
             }
         }.start();
@@ -133,6 +132,7 @@ public class CoreService extends Service {
 
     /**
      * Returns service time from onCreate invocation
+     *
      * @return serviceCreateTime
      */
     public long getServiceCreateTime() {
@@ -160,19 +160,15 @@ public class CoreService extends Service {
     private void showNotification() {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = getText(R.string.app_name);
-
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
-
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification(R.drawable.ic_launcher, text,
                 System.currentTimeMillis());
-
         // Set the info for the views that show in the notification panel.
         notification.setLatestEventInfo(this, getText(R.string.app_name),
                 text, contentIntent);
-
         // Send the notification.
         // We use a string id because it is a unique number.  We use it later to cancel.
         notificationManager.notify(R.string.app_name, notification);

@@ -4,7 +4,7 @@
           android:versionCode="1"
           android:versionName="1.0">
     <uses-sdk android:minSdkVersion="8"/>
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher" android:theme="@style/MandarinTheme">
+    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin">
         <service android:name=".core.CoreService" android:process=":remote"/>
         <activity android:name=".main.MainActivity"
                   android:label="@string/app_name"

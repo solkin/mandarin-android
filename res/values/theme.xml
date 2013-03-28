@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MandarinTheme" parent="@android:style/Theme.Holo.Light">
+    <style name="Theme.Mandarin" parent="Theme.Sherlock.Light">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
+        <item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
+        <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
+    </style>
+
+    <!-- style for the action bar backgrounds -->
+    <style name="Widget.Mandarin.ActionBar" parent="Widget.Sherlock.ActionBar">
+        <item name="background">@drawable/actionbar_bg_striped</item>
+        <item name="android:background">@drawable/actionbar_bg_striped</item>
+
+        <!-- <item name="backgroundSplit">@drawable/actionbar_split</item>
+        <item name="android:backgroundSplit">@drawable/actionbar_split</item> -->
     </style>
 </resources>

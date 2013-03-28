@@ -34,7 +34,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_Sherlock_Light);
+        setTheme(R.style.Theme_Mandarin);
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;

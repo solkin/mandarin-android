@@ -14,5 +14,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".main.AccountsActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true">
+        </activity>
     </application>
 </manifest>

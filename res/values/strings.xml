@@ -7,6 +7,8 @@
     <string name="item2">Item2</string>
     <string name="item3">Item3</string>
     <string name="item4">Item4</string>
+    <string name="accounts">Accounts</string>
+    <string name="add_account">Add account</string>
 
     <string name="status_unavailable">Unavailable</string>
     <string name="status_available">Available</string>
@@ -15,8 +17,7 @@
 
     <string name="group_online">Online</string>
     <string name="group_all">All friends</string>
-    <string name="group_rooms">Rooms</string>
-    <string name="group_services">Services</string>
+    <string name="group_dialogs">Dialogs</string>
 
     <string-array name="status_list">
         <item>@string/status_unavailable</item>
@@ -26,8 +27,7 @@
     </string-array>
 
     <string-array name="default_groups">
-        <item>@string/group_services</item>
-        <item>@string/group_rooms</item>
+        <item>@string/group_dialogs</item>
         <item>@string/group_online</item>
         <item>@string/group_all</item>
     </string-array>

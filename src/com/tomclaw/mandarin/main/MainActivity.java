@@ -42,7 +42,6 @@ public class MainActivity extends ChiefActivity implements
         getSupportMenuInflater().inflate(R.menu.buddy_list_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Configure the search info and add any event listeners
-
         return true;
     }
 
@@ -51,8 +50,7 @@ public class MainActivity extends ChiefActivity implements
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent = new Intent(this, AccountsActivity.class);
                 startActivity(intent);
                 return true;
             default:

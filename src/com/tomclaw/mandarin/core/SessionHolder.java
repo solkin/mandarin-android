@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +17,12 @@ import java.util.List;
  */
 public class SessionHolder {
 
-    private List<AccountRoot> accountRootList = new ArrayList<AccountRoot>();
+    private List<IcqAccountRoot> accountRootList = new ArrayList<IcqAccountRoot>();
 
     public void load() {
         // Loading accounts from local storage.
         for(int c=0;c<5;c++){
-            AccountRoot accountRoot = new AccountRoot() {
-                @Override
-                public int getServiceIcon() {
-                    return R.drawable.ic_launcher;
-                }
-            };
+            IcqAccountRoot accountRoot = new IcqAccountRoot();
             accountRoot.setUserId("7068514");
             accountRoot.setUserNick("Solkin");
             accountRoot.setUserPassword("112");
@@ -39,7 +35,7 @@ public class SessionHolder {
         // Saving account to local storage.
     }
 
-    public List<AccountRoot> getAccountsList() {
+    public List<IcqAccountRoot> getAccountsList() {
         return accountRootList;
     }
 }

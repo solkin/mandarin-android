@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.im;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,17 +16,17 @@ import java.util.List;
 public abstract class AccountRoot {
 
     /** User info **/
-    private String userId;
-    private String userNick;
-    private String userPassword;
-    private int statusIndex;
-    private String statusText;
+    protected String userId;
+    protected String userNick;
+    protected String userPassword;
+    protected int statusIndex;
+    protected String statusText;
     /** Service info **/
-    private int serviceId;
-    private String serviceHost;
-    private int servicePort;
+    protected int serviceId;
+    protected String serviceHost;
+    protected int servicePort;
     /** User data **/
-    private List<GroupItem> buddyItems = new ArrayList<GroupItem>();
+    protected List<GroupItem> buddyItems = new ArrayList<GroupItem>();
 
     public String getUserId() {
         return userId;

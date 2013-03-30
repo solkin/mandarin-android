@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -61,6 +63,12 @@ public class CoreService extends Service {
         @Override
         public long getUpTime() throws RemoteException {
             return System.currentTimeMillis() - getServiceCreateTime();
+        }
+
+        @Override
+        public List getAccountsList() throws RemoteException {
+            Log.d("MandarinLog", "returning " + sessionHolder.getAccountsList().size() + " accounts");
+            return sessionHolder.getAccountsList();
         }
     };
 

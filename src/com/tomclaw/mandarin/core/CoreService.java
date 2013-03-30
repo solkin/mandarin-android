@@ -4,9 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.*;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,16 +41,18 @@ public class CoreService extends Service {
      */
     NotificationManager notificationManager;
 
-    private Messenger serviceMessenger = new Messenger(new CoreHandler());;
+    private Messenger serviceMessenger = new Messenger(new CoreHandler());
     private Messenger activityMessenger = null;
 
     class CoreHandler extends Handler {
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case INIT_STATE:
-                    activityMessenger = msg.replyTo;
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case INIT_STATE: {
+                    activityMessenger = message.replyTo;
                     initService();
-                case GET_UPTIME:
+                    break;
+                }
+                case GET_UPTIME: {
                     try {
                         long time = getUpTime();
                         Log.d(LOG_TAG, "UpTime = " + time);
@@ -60,14 +60,17 @@ public class CoreService extends Service {
                         Bundle data = new Bundle();
                         data.putLong("time", time);
                         response.setData(data);
-                        if(activityMessenger != null) {
+                        if (activityMessenger != null) {
                             activityMessenger.send(response);
                         }
                     } catch (RemoteException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        e.printStackTrace();
                     }
-                default:
-                    super.handleMessage(msg);
+                    break;
+                }
+                default: {
+                    super.handleMessage(message);
+                }
             }
         }
     }
@@ -97,34 +100,6 @@ public class CoreService extends Service {
         return System.currentTimeMillis() - getServiceCreateTime();
     }
 
-    /*private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
-        public boolean initService() throws RemoteException {
-            *//** Checking for service state **//*
-            switch (serviceState) {
-                case STATE_LOADING: {
-                    return false;
-                }
-                case STATE_DOWN: {
-                    CoreService.this.serviceInit();
-                    return false;
-                }
-                case STATE_UP: {
-                    sendState();
-                    return true;
-                }
-                default: {
-                    *//** What the fuck? **//*
-                    return false;
-                }
-            }
-        }
-
-        @Override
-        public long getUpTime() throws RemoteException {
-            return System.currentTimeMillis() - getServiceCreateTime();
-        }
-    };*/
-
     @Override
     public void onCreate() {
         Log.d(LOG_TAG, "CoreService onCreate");
@@ -135,7 +110,6 @@ public class CoreService extends Service {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();
-        //serviceMessenger = new Messenger(new CoreHandler());
     }
 
     @Override
@@ -210,18 +184,14 @@ public class CoreService extends Service {
      * Sending state to broadcast
      */
     private void sendState() {
-        /*Intent intent = new Intent("CoreService");
-        intent.putExtra("Staff", true);
-        intent.putExtra("State", serviceState);
-        sendBroadcast(intent);*/
         Bundle bundle = new Bundle();
         bundle.putInt("State", serviceState);
-        Message msg = Message.obtain(null, CoreService.STATE);
-        msg.setData(bundle);
-        try{
-            if(activityMessenger != null) {
-                activityMessenger.send(msg);
-                Log.d(LOG_TAG, " state sended ");
+        Message message = Message.obtain(null, CoreService.STATE);
+        message.setData(bundle);
+        try {
+            if (activityMessenger != null) {
+                activityMessenger.send(message);
+                Log.d(LOG_TAG, "state sent");
             }
         } catch (RemoteException e) {
             e.printStackTrace();

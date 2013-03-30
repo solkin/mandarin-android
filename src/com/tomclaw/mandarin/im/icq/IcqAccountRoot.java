@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.im.icq;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.GroupItem;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +12,15 @@ import com.tomclaw.mandarin.im.GroupItem;
  * To change this template use File | Settings | File Templates.
  */
 public class IcqAccountRoot extends AccountRoot implements Parcelable {
+    private String someStuff;
+
+    public void setSomeStaff(String stuff){
+        someStuff = stuff;
+    }
+
+    public String getSomeStuff(){
+        return someStuff;
+    }
 
     public IcqAccountRoot(){
     }
@@ -29,15 +37,8 @@ public class IcqAccountRoot extends AccountRoot implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userId);
-        dest.writeString(userNick);
-        dest.writeString(userPassword);
-        dest.writeInt(statusIndex);
-        dest.writeString(statusText);
-        dest.writeInt(serviceId);
-        dest.writeString(serviceHost);
-        dest.writeInt(servicePort);
-        dest.writeTypedList(buddyItems);
+        dest.writeString(someStuff);
+        super.writeToParcel(dest, flags);
     }
 
     public static final Parcelable.Creator<IcqAccountRoot> CREATOR = new Parcelable.Creator<IcqAccountRoot>() {
@@ -54,14 +55,7 @@ public class IcqAccountRoot extends AccountRoot implements Parcelable {
     };
 
     private IcqAccountRoot(Parcel in){
-        userId = in.readString();
-        userNick = in.readString();
-        userPassword = in.readString();
-        statusIndex = in.readInt();
-        statusText = in.readString();
-        serviceId = in.readInt();
-        serviceHost = in.readString();
-        servicePort = in.readInt();
-        in.readList(buddyItems, GroupItem.class.getClassLoader());
+        someStuff = in.readString();
+        readFromParcel(in);
     }
 }

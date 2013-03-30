@@ -53,4 +53,28 @@ public abstract class AccountRoot {
     }
 
     public abstract int getServiceIcon();
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userId);
+        dest.writeString(userNick);
+        dest.writeString(userPassword);
+        dest.writeInt(statusIndex);
+        dest.writeString(statusText);
+        dest.writeInt(serviceId);
+        dest.writeString(serviceHost);
+        dest.writeInt(servicePort);
+        dest.writeTypedList(buddyItems);
+    }
+
+    public void readFromParcel(Parcel in){
+        userId = in.readString();
+        userNick = in.readString();
+        userPassword = in.readString();
+        statusIndex = in.readInt();
+        statusText = in.readString();
+        serviceId = in.readInt();
+        serviceHost = in.readString();
+        servicePort = in.readInt();
+        in.readList(buddyItems, GroupItem.class.getClassLoader());
+    }
 }

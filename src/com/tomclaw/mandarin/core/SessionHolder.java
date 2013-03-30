@@ -26,6 +26,7 @@ public class SessionHolder {
             accountRoot.setUserId("7068514");
             accountRoot.setUserNick("Solkin");
             accountRoot.setUserPassword("112");
+            accountRoot.setSomeStaff("staff" + c);
             accountRootList.add(accountRoot);
         }
         Log.d("MandarinLog", "loaded " + accountRootList.size() + " accounts");

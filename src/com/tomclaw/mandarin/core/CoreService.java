@@ -4,9 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.os.IBinder;
-import android.os.RemoteException;
+import android.content.ServiceConnection;
+import android.os.*;
 import android.util.Log;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
@@ -27,18 +28,78 @@ public class CoreService extends Service {
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
 
+    public static final int INIT_STATE = 0;
+    public static final int GET_UPTIME = 1;
+    public static final int STATE = 2;
+
     private static final String LOG_TAG = "MandarinLog";
     private int serviceState;
     private long serviceCreateTime;
+
+    protected boolean isActivityBound;
 
     /**
      * For showing and hiding our notification.
      */
     NotificationManager notificationManager;
 
-    private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
+    private Messenger serviceMessenger = new Messenger(new CoreHandler());;
+    private Messenger activityMessenger = null;
+
+    class CoreHandler extends Handler {
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case INIT_STATE:
+                    activityMessenger = msg.replyTo;
+                    initService();
+                case GET_UPTIME:
+                    try {
+                        long time = getUpTime();
+                        Log.d(LOG_TAG, "UpTime = " + time);
+                        Message response = Message.obtain(null, GET_UPTIME);
+                        Bundle data = new Bundle();
+                        data.putLong("time", time);
+                        response.setData(data);
+                        if(activityMessenger != null) {
+                            activityMessenger.send(response);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    public boolean initService() {
+        /** Checking for service state **/
+        switch (serviceState) {
+            case STATE_LOADING: {
+                return false;
+            }
+            case STATE_DOWN: {
+                CoreService.this.serviceInit();
+                return false;
+            }
+            case STATE_UP: {
+                sendState();
+                return true;
+            }
+            default: {
+                /** What the fuck? **/
+                return false;
+            }
+        }
+    }
+
+    public long getUpTime() throws RemoteException {
+        return System.currentTimeMillis() - getServiceCreateTime();
+    }
+
+    /*private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
         public boolean initService() throws RemoteException {
-            /** Checking for service state **/
+            *//** Checking for service state **//*
             switch (serviceState) {
                 case STATE_LOADING: {
                     return false;
@@ -52,7 +113,7 @@ public class CoreService extends Service {
                     return true;
                 }
                 default: {
-                    /** What the fuck? **/
+                    *//** What the fuck? **//*
                     return false;
                 }
             }
@@ -62,7 +123,7 @@ public class CoreService extends Service {
         public long getUpTime() throws RemoteException {
             return System.currentTimeMillis() - getServiceCreateTime();
         }
-    };
+    };*/
 
     @Override
     public void onCreate() {
@@ -74,6 +135,7 @@ public class CoreService extends Service {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();
+        //serviceMessenger = new Messenger(new CoreHandler());
     }
 
     @Override
@@ -104,7 +166,7 @@ public class CoreService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(LOG_TAG, "CoreService onBind");
-        return serviceInteraction;
+        return serviceMessenger.getBinder();
     }
 
     /**
@@ -148,10 +210,22 @@ public class CoreService extends Service {
      * Sending state to broadcast
      */
     private void sendState() {
-        Intent intent = new Intent("CoreService");
+        /*Intent intent = new Intent("CoreService");
         intent.putExtra("Staff", true);
         intent.putExtra("State", serviceState);
-        sendBroadcast(intent);
+        sendBroadcast(intent);*/
+        Bundle bundle = new Bundle();
+        bundle.putInt("State", serviceState);
+        Message msg = Message.obtain(null, CoreService.STATE);
+        msg.setData(bundle);
+        try{
+            if(activityMessenger != null) {
+                activityMessenger.send(msg);
+                Log.d(LOG_TAG, " state sended ");
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

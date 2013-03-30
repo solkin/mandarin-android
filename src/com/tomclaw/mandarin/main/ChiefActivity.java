@@ -2,14 +2,11 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActivityManager;
 import android.content.*;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
+import android.os.*;
 import android.util.Log;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.ServiceInteraction;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,10 +19,39 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
 
     public static final String LOG_TAG = "MandarinLog";
 
-    private BroadcastReceiver broadcastReceiver;
-    private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
-    private boolean isServiceBound;
+    protected boolean isServiceBound;
+
+    /*Messenger for communicating with the service*/
+    protected Messenger activityMessenger = null;
+    /* Mesenger который мы отдаем сервису для взаимодействия с активити */
+    protected Messenger serviceMessenger = new Messenger(new ChiefActivityHandler());
+
+    class ChiefActivityHandler extends Handler {
+        public void handleMessage(Message msg){
+            Bundle bundle;
+            switch (msg.what){
+                case CoreService.GET_UPTIME:
+                    bundle = msg.getData();
+                    long time = bundle.getLong("time");
+                    Log.d(LOG_TAG, "Received time = " + time);
+                    break;
+                case CoreService.STATE:
+                    Log.d(LOG_TAG, "State in main activity received ");
+                    bundle = msg.getData();
+                    int serviceState = bundle.getInt("State", CoreService.STATE_DOWN);
+                    /** Checking for service state is up **/
+                    if (serviceState == CoreService.STATE_UP) {
+                        onCoreServiceReady();
+                    } else if (serviceState == CoreService.STATE_DOWN) {
+                        onCoreServiceDown();
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
 
     /**
      * Called when the activity is first created.
@@ -81,49 +107,59 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         /** Checking for service is not already bound **/
         if (!isServiceBound) {
             /** Broadcast receiver **/
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("CoreService");
+            /*IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("CoreServiLce");
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     Log.d(LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
-                    /** Checking for special message from service **/
+                    *//** Checking for special message from service **//*
                     if (intent.getBooleanExtra("Staff", false)) {
-                        /** Obtain service state **/
+                        *//** Obtain service state **//*
                         int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
-                        /** Checking for service state is up **/
+                        *//** Checking for service state is up **//*
                         if (serviceState == CoreService.STATE_UP) {
                             onCoreServiceReady();
                         } else if (serviceState == CoreService.STATE_DOWN) {
                             onCoreServiceDown();
                         }
                     } else {
-                        /** Redirecting intent **/
+                        *//** Redirecting intent **//*
                         ChiefActivity.this.onCoreServiceIntent(intent);
                     }
                 }
             };
-            registerReceiver(broadcastReceiver, intentFilter);
+            registerReceiver(broadcastReceiver, intentFilter);*/
             /** Creating connection to service **/
             serviceConnection = new ServiceConnection() {
                 public void onServiceDisconnected(ComponentName name) {
-                    serviceInteraction = null;
+                    //serviceInteraction = null;
+                    activityMessenger = null;
+                    isServiceBound = false;
                     Log.d(LOG_TAG, "onServiceDisconnected");
                 }
 
                 public void onServiceConnected(ComponentName name, IBinder service) {
-                    serviceInteraction = ServiceInteraction.Stub.asInterface(service);
+                    //serviceInteraction = ServiceInteraction.Stub.asInterface(service);
+                    activityMessenger = new Messenger(service);
                     Log.d(LOG_TAG, "onServiceConnected");
+                    isServiceBound = true;
+
+                    Message msg = Message.obtain(null, CoreService.INIT_STATE);
+                    msg.replyTo = serviceMessenger;
                     try {
-                        /** Initialize service **/
-                        serviceInteraction.initService();
+                        if(activityMessenger != null) {
+                            Log.d(LOG_TAG, "send init to service");
+                            activityMessenger.send(msg);
+                        }
                     } catch (RemoteException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
             };
             /** Binding service **/
             bindService(new Intent(this, CoreService.class), serviceConnection, BIND_AUTO_CREATE);
-            isServiceBound = true;
+            //isServiceBound = true;
             Log.d(LOG_TAG, "bindService completed");
         }
     }
@@ -132,7 +168,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         /** Checking for service is bound **/
         if (isServiceBound) {
             /** Unregister broadcast receiver **/
-            unregisterReceiver(broadcastReceiver);
+            //unregisterReceiver(broadcastReceiver);
             /** Unbind service **/
             unbindService(serviceConnection);
             isServiceBound = false;
@@ -172,7 +208,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
      */
     public abstract void onCoreServiceIntent(Intent intent);
 
-    public final ServiceInteraction getServiceInteraction() {
+    /*public final ServiceInteraction getServiceInteraction() {
         return serviceInteraction;
-    }
+    }*/
 }

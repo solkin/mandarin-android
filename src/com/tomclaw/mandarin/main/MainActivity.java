@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.main;
 
+import android.os.Message;
+import android.os.Messenger;
 import com.actionbarsherlock.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import com.actionbarsherlock.widget.SearchView;
 import android.widget.SpinnerAdapter;
 import com.actionbarsherlock.view.Menu;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.CoreService;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
 import com.actionbarsherlock.view.MenuItem;
@@ -73,10 +76,20 @@ public class MainActivity extends ChiefActivity implements
      * @param v
      */
     public void onClickIntent(View v) {
-        try {
+        /*try {
             getServiceInteraction().initService();
         } catch (RemoteException e) {
             Log.e(LOG_TAG, e.getMessage());
+        }*/
+        if(isServiceBound){
+            Message msg = Message.obtain(null, CoreService.INIT_STATE);
+            try{
+                if(activityMessenger != null) {
+                    activityMessenger.send(msg);
+                }
+            } catch (RemoteException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
         }
     }
 
@@ -115,8 +128,9 @@ public class MainActivity extends ChiefActivity implements
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         Log.d(LOG_TAG, "selected: position = " + itemPosition + ", id = "
                 + itemId);
-        try {
-            Log.d(LOG_TAG, "service up time = " + getServiceInteraction().getUpTime());
+        Message msg = Message.obtain(null, CoreService.GET_UPTIME);
+        try{
+            activityMessenger.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -5,19 +5,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-    <ImageView
-            android:id="@+id/accountAvatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher">
-    </ImageView>
-    <TextView
-            android:id="@+id/accountNickName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:text=""
-            android:textSize="18sp">
-    </TextView>
+    <LinearLayout android:id="@+id/notstatus"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1"
+                  android:layout_width="0dp"
+                  android:orientation="horizontal">
+        <ImageView
+                android:id="@+id/accountAvatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_launcher"/>
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="fill_parent"
+                      android:paddingLeft="8dp"
+                      android:gravity="center_vertical"
+                      android:orientation="vertical">
+            <TextView android:id="@+id/accountNickName"
+                      android:text=""
+                      android:textSize="18sp"
+                      android:textStyle="bold"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"/>
+            <TextView android:id="@+id/accountLogin"
+                      android:textStyle="normal"
+                      android:text=""
+                      android:textSize="16sp"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"/>
+        </LinearLayout>
+                  </LinearLayout>
+    <ImageButton android:id="@+id/status"
+                 android:layout_width="45dp"
+                 android:layout_height="45dp"
+                 android:src="@drawable/ic_launcher"/>
 </LinearLayout>

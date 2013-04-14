@@ -16,7 +16,7 @@ public class StatusActitvity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
+        super.onCreate(savedInstanceState);
         Log.d(Settings.LOG_TAG, "StatusActivity onCreate");
     }
 

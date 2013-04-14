@@ -17,9 +17,12 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.BuddyItem;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class MainActivity extends ChiefActivity implements
@@ -106,9 +109,15 @@ public class MainActivity extends ChiefActivity implements
         pages.add(listView2);
         pages.add(listView3);
 
-        listView1.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A1", "B1", "C1", "D1"}));
-        listView2.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A2", "B2", "C2", "D2"}));
-        listView3.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A3", "B3", "C3", "D3"}));
+        /************** Example of BuddyItem list ******************/
+        List<BuddyItem> buddyItems = new ArrayList<BuddyItem>();
+        for(int c=0;c<25;c++) {
+            buddyItems.add(new BuddyItem("user" + c + "@molecus.com", "User " + c));
+        }
+
+        listView1.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
+        listView2.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
+        listView3.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
         /** View pager **/
         mAdapter = new CustomPagerAdapter(this, pages);
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -131,11 +140,6 @@ public class MainActivity extends ChiefActivity implements
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         Log.d(Settings.LOG_TAG, "selected: position = " + itemPosition + ", id = "
                 + itemId);
-        try {
-            Log.d(Settings.LOG_TAG, "service up time = " + getServiceInteraction().getUpTime());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         return false;
     }
 

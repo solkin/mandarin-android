@@ -16,6 +16,27 @@ public class BuddyItem implements Parcelable{
     private String buddyId;
     private String buddyNick;
 
+    public BuddyItem(String buddyId, String buddyNick) {
+        this.buddyId = buddyId;
+        this.buddyNick = buddyNick;
+    }
+
+    public String getBuddyId() {
+        return buddyId;
+    }
+
+    public void setBuddyId(String buddyId) {
+        this.buddyId = buddyId;
+    }
+
+    public String getBuddyNick() {
+        return buddyNick;
+    }
+
+    public void setBuddyNick(String buddyNick) {
+        this.buddyNick = buddyNick;
+    }
+
     @Override
     public int describeContents() {
         return 0;

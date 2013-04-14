@@ -9,6 +9,8 @@
     <string name="item4">Item4</string>
     <string name="accounts">Accounts</string>
     <string name="add_account">Add account</string>
+    <string name="edit_account">Edit</string>
+    <string name="remove_account">Remove</string>
 
     <string name="status_unavailable">Unavailable</string>
     <string name="status_available">Available</string>

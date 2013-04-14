@@ -6,8 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
@@ -24,6 +27,9 @@ import java.util.List;
  */
 public class AccountsActivity extends ChiefActivity implements
         ActionBar.OnNavigationListener {
+
+    protected boolean mActionMode;
+    protected int selectedItem;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,6 +75,23 @@ public class AccountsActivity extends ChiefActivity implements
                         startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
                     }
                 });
+
+                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (mActionMode == true) {
+                            return false;
+                        }
+                        selectedItem = position;
+
+                        // Start the CAB using the ActionMode.Callback defined above
+                        mActionMode = true;
+                        AccountsActivity.this.startActionMode(mActionModeCallback);
+                        view.setSelected(true);
+                        return true;
+                    }
+                });
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -86,5 +109,53 @@ public class AccountsActivity extends ChiefActivity implements
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         return false;
+    }
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.accounts_edit_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after
+        // onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.edit_account_menu:
+                    show();
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.remove_account_menu:
+                    show();
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = false;
+            selectedItem = -1;
+        }
+    };
+
+    private void show() {
+        Toast.makeText(AccountsActivity.this,
+                String.valueOf(selectedItem), Toast.LENGTH_LONG).show();
     }
 }

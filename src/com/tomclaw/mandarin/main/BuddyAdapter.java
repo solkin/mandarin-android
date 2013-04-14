@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyItem;
 
 import java.util.List;
@@ -54,4 +53,6 @@ public class BuddyAdapter extends ArrayAdapter<BuddyItem> {
                     });
             return view;
         }
+
+
 }

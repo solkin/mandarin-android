@@ -112,7 +112,8 @@ public class MainActivity extends ChiefActivity implements
         /************** Example of BuddyItem list ******************/
         List<BuddyItem> buddyItems = new ArrayList<BuddyItem>();
         for(int c=0;c<25;c++) {
-            buddyItems.add(new BuddyItem("user" + c + "@molecus.com", "User " + c));
+            BuddyItem buddyItem = new BuddyItem("user" + c + "@molecus.com", "User " + c);
+            buddyItems.add(buddyItem);
         }
 
         listView1.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));

@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class GroupFragment extends Fragment {
+public class GroupFragment extends ListFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

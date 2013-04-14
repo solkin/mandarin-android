@@ -22,7 +22,7 @@
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true">
         </activity>
-        <activity android:name=".main.AnketaActivity"
+        <activity android:name=".main.SummaryActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true">
         </activity>

@@ -1,28 +1,31 @@
 package com.tomclaw.mandarin.main;
 
-import com.actionbarsherlock.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import com.actionbarsherlock.widget.SearchView;
-import android.widget.SpinnerAdapter;
+import android.widget.ListView;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.Settings;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
-import com.actionbarsherlock.view.MenuItem;
+
+import java.util.Vector;
 
 public class MainActivity extends ChiefActivity implements
         ActionBar.OnNavigationListener {
 
-    GroupFragmentAdapter mAdapter;
+    CustomPagerAdapter mAdapter;
     ViewPager mPager;
     PageIndicator mIndicator;
 
@@ -49,7 +52,6 @@ public class MainActivity extends ChiefActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // app icon in action bar clicked; go home
                 Intent intent = new Intent(this, AccountsActivity.class);
                 startActivity(intent);
                 return true;
@@ -76,13 +78,13 @@ public class MainActivity extends ChiefActivity implements
         try {
             getServiceInteraction().initService();
         } catch (RemoteException e) {
-            Log.e(LOG_TAG, e.getMessage());
+            Log.e(Settings.LOG_TAG, e.getMessage());
         }
     }
 
     @Override
     public void onCoreServiceReady() {
-        Log.d(LOG_TAG, "onCoreServiceReady");
+        Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(false);
@@ -93,56 +95,84 @@ public class MainActivity extends ChiefActivity implements
                 R.layout.sherlock_spinner_item);
         listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         bar.setListNavigationCallbacks(listAdapter, this);
+        /** Lists **/
+        ListView listView1 = new ListView(this);
+        ListView listView2 = new ListView(this);
+        ListView listView3 = new ListView(this);
+
+        Vector<View> pages = new Vector<View>();
+
+        pages.add(listView1);
+        pages.add(listView2);
+        pages.add(listView3);
+
+        listView1.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A1", "B1", "C1", "D1"}));
+        listView2.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A2", "B2", "C2", "D2"}));
+        listView3.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{"A3", "B3", "C3", "D3"}));
         /** View pager **/
-        mAdapter = new GroupFragmentAdapter(getSupportFragmentManager());
-        mPager = (ViewPager)findViewById(R.id.pager);
+        mAdapter = new CustomPagerAdapter(this, pages);
+        mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
+        mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
     }
 
     @Override
     public void onCoreServiceDown() {
-        Log.d(LOG_TAG, "onCoreServiceDown");
+        Log.d(Settings.LOG_TAG, "onCoreServiceDown");
     }
 
     public void onCoreServiceIntent(Intent intent) {
-        Log.d(LOG_TAG, "onCoreServiceIntent");
+        Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        Log.d(LOG_TAG, "selected: position = " + itemPosition + ", id = "
+        Log.d(Settings.LOG_TAG, "selected: position = " + itemPosition + ", id = "
                 + itemId);
         try {
-            Log.d(LOG_TAG, "service up time = " + getServiceInteraction().getUpTime());
+            Log.d(Settings.LOG_TAG, "service up time = " + getServiceInteraction().getUpTime());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    class GroupFragmentAdapter extends FragmentPagerAdapter {
-        protected final String[] GROUPS = getResources().getStringArray(R.array.default_groups);
+    class CustomPagerAdapter extends PagerAdapter {
+        private Context mContext;
+        private Vector<View> pages;
 
-        public GroupFragmentAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
+        public CustomPagerAdapter(Context context, Vector<View> pages) {
+            this.mContext = context;
+            this.pages = pages;
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return new GroupFragment();
+        public Object instantiateItem(ViewGroup container, int position) {
+            View page = pages.get(position);
+            container.addView(page);
+            return page;
         }
 
         @Override
         public int getCount() {
-            return GROUPS.length;
+            return pages.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return GROUPS[position % getCount()];
+            return getResources().getStringArray(R.array.default_groups)[position % getCount()];
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view.equals(object);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
         }
     }
 }

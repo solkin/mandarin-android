@@ -2,9 +2,9 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:id="@+id/item2"
+            android:id="@+id/add_account_menu"
             android:icon="@android:drawable/ic_menu_add"
-            android:showAsAction="ifRoom"
+            android:showAsAction="ifRoom|withText"
             android:title="@string/add_account">
     </item>
 </menu>

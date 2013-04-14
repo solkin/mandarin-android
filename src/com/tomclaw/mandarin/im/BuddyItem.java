@@ -18,7 +18,7 @@ public class BuddyItem implements Parcelable{
 
     @Override
     public int describeContents() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override

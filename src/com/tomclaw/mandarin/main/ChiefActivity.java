@@ -10,6 +10,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ServiceInteraction;
+import com.tomclaw.mandarin.core.Settings;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,8 +20,6 @@ import com.tomclaw.mandarin.core.ServiceInteraction;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class ChiefActivity extends SherlockFragmentActivity {
-
-    public static final String LOG_TAG = "MandarinLog";
 
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;
@@ -32,7 +31,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "onCreate");
+        Log.d(Settings.LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setTheme(R.style.Theme_Mandarin);
         setContentView(R.layout.progress);
@@ -48,7 +47,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         unbindCoreService();
         /** Destroy **/
         super.onDestroy();
-        Log.d(LOG_TAG, "ChiefActivity: onDestroy");
+        Log.d(Settings.LOG_TAG, "ChiefActivity: onDestroy");
     }
 
     /**
@@ -77,7 +76,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     }
 
     protected void bindCoreService() {
-        Log.d(LOG_TAG, "bindCoreService: isServiceBound = " + isServiceBound);
+        Log.d(Settings.LOG_TAG, "bindCoreService: isServiceBound = " + isServiceBound);
         /** Checking for service is not already bound **/
         if (!isServiceBound) {
             /** Broadcast receiver **/
@@ -86,7 +85,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    Log.d(LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
+                    Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
                     /** Checking for special message from service **/
                     if (intent.getBooleanExtra("Staff", false)) {
                         /** Obtain service state **/
@@ -108,12 +107,12 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
             serviceConnection = new ServiceConnection() {
                 public void onServiceDisconnected(ComponentName name) {
                     serviceInteraction = null;
-                    Log.d(LOG_TAG, "onServiceDisconnected");
+                    Log.d(Settings.LOG_TAG, "onServiceDisconnected");
                 }
 
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     serviceInteraction = ServiceInteraction.Stub.asInterface(service);
-                    Log.d(LOG_TAG, "onServiceConnected");
+                    Log.d(Settings.LOG_TAG, "onServiceConnected");
                     try {
                         /** Initialize service **/
                         serviceInteraction.initService();
@@ -124,7 +123,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
             /** Binding service **/
             bindService(new Intent(this, CoreService.class), serviceConnection, BIND_AUTO_CREATE);
             isServiceBound = true;
-            Log.d(LOG_TAG, "bindService completed");
+            Log.d(Settings.LOG_TAG, "bindService completed");
         }
     }
 
@@ -148,11 +147,11 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
-                Log.d(LOG_TAG, "checkCoreService: exist");
+                Log.d(Settings.LOG_TAG, "checkCoreService: exist");
                 return true;
             }
         }
-        Log.d(LOG_TAG, "checkCoreService: none");
+        Log.d(Settings.LOG_TAG, "checkCoreService: none");
         return false;
     }
 

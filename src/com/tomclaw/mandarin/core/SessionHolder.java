@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.core;
 
 import android.util.Log;
-import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ public class SessionHolder {
 
     public void load() {
         // Loading accounts from local storage.
-        for(int c=0;c<5;c++){
+        for (int c = 0; c < 5; c++) {
             IcqAccountRoot accountRoot = new IcqAccountRoot();
             accountRoot.setUserId("7068514");
             accountRoot.setUserNick("Solkin");
@@ -29,7 +27,7 @@ public class SessionHolder {
             accountRoot.setSomeStaff("staff" + c);
             accountRootList.add(accountRoot);
         }
-        Log.d("MandarinLog", "loaded " + accountRootList.size() + " accounts");
+        Log.d(Settings.LOG_TAG, "loaded " + accountRootList.size() + " accounts");
     }
 
     public void save() {

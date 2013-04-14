@@ -46,7 +46,7 @@
             android:id="@+id/statusImage"
             android:src="@drawable/ic_icq_online"
             android:layout_gravity="center_vertical"
-            android:clickable="true"
+            android:clickable="false"
             android:focusable="false"
             android:padding="10dp"/>
 </LinearLayout>

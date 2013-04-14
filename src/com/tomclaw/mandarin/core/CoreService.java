@@ -29,7 +29,6 @@ public class CoreService extends Service {
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
 
-    private static final String LOG_TAG = "MandarinLog";
     private int serviceState;
     private long serviceCreateTime;
 
@@ -67,14 +66,14 @@ public class CoreService extends Service {
 
         @Override
         public List getAccountsList() throws RemoteException {
-            Log.d("MandarinLog", "returning " + sessionHolder.getAccountsList().size() + " accounts");
+            Log.d(Settings.LOG_TAG, "returning " + sessionHolder.getAccountsList().size() + " accounts");
             return sessionHolder.getAccountsList();
         }
     };
 
     @Override
     public void onCreate() {
-        Log.d(LOG_TAG, "CoreService onCreate");
+        Log.d(Settings.LOG_TAG, "CoreService onCreate");
         super.onCreate();
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
@@ -86,19 +85,19 @@ public class CoreService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
+        Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
         if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY) {
-            Log.d(LOG_TAG, "START_FLAG_REDELIVERY");
+            Log.d(Settings.LOG_TAG, "START_FLAG_REDELIVERY");
             CoreService.this.serviceInit();
         } else {
-            Log.d(LOG_TAG, "Flag other");
+            Log.d(Settings.LOG_TAG, "Flag other");
         }
         return START_REDELIVER_INTENT;
     }
 
     @Override
     public void onDestroy() {
-        Log.d(LOG_TAG, "CoreService onDestroy");
+        Log.d(Settings.LOG_TAG, "CoreService onDestroy");
         updateState(STATE_DOWN);
         // Reset creation time.
         serviceCreateTime = 0;
@@ -111,7 +110,7 @@ public class CoreService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(LOG_TAG, "CoreService onBind");
+        Log.d(Settings.LOG_TAG, "CoreService onBind");
         return serviceInteraction;
     }
 
@@ -119,7 +118,7 @@ public class CoreService extends Service {
      * Initialize service
      */
     public void serviceInit() {
-        Log.d(LOG_TAG, "CoreService serviceInit");
+        Log.d(Settings.LOG_TAG, "CoreService serviceInit");
         updateState(STATE_LOADING);
         // ...
         new Thread() {

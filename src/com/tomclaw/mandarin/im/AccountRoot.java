@@ -31,7 +31,11 @@ public abstract class AccountRoot {
     /**
      * User data
      */
-    protected List<GroupItem> buddyItems = new ArrayList<GroupItem>();
+    protected List<GroupItem> groupItems = new ArrayList<GroupItem>();
+
+    public List<GroupItem> getGroupItems() {
+        return groupItems;
+    }
 
     public String getUserId() {
         return userId;
@@ -68,7 +72,8 @@ public abstract class AccountRoot {
         dest.writeInt(serviceId);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
-        dest.writeTypedList(buddyItems);
+        dest.writeTypedList(groupItems);
+        // dest.writeList(groupItems);
     }
 
     public void readFromParcel(Parcel in) {
@@ -80,6 +85,8 @@ public abstract class AccountRoot {
         serviceId = in.readInt();
         serviceHost = in.readString();
         servicePort = in.readInt();
-        in.readList(buddyItems, GroupItem.class.getClassLoader());
+        groupItems = in.createTypedArrayList(GroupItem.CREATOR);
+        //groupItems = in.readArrayList(GroupItem.class.getClassLoader());
+        // in.readList(groupItems, GroupItem.class.getClassLoader());
     }
 }

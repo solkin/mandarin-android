@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
@@ -41,10 +40,10 @@ public class AccountsAdapter extends ArrayAdapter<AccountRoot> {
             view = inflater.inflate(R.layout.account_item, parent, false);
         }
         // Setup text values
-        ((TextView) view.findViewById(R.id.buddyId)).setText(accountRoot.getUserId());
-        ((TextView) view.findViewById(R.id.buddyNick)).setText(accountRoot.getUserNick());
+        ((TextView) view.findViewById(R.id.userId)).setText(accountRoot.getUserId());
+        ((TextView) view.findViewById(R.id.userNick)).setText(accountRoot.getUserNick());
          // Creating listeners for status click
-        ((ImageView) view.findViewById(R.id.buddyStatus)).setOnClickListener(
+        view.findViewById(R.id.userStatus).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

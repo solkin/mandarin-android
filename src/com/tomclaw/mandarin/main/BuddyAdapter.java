@@ -2,15 +2,15 @@ package com.tomclaw.mandarin.main;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyItem;
+import com.tomclaw.mandarin.im.GroupItem;
 
 import java.util.List;
 
@@ -21,38 +21,62 @@ import java.util.List;
  * Time: 9:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BuddyAdapter extends ArrayAdapter<BuddyItem> {
+public class BuddyAdapter extends BaseAdapter {
 
-        private LayoutInflater inflater;
-        private Context context;
+    private LayoutInflater inflater;
+    private Context context;
+    private List<AccountRoot> accountRoots;
 
-        public BuddyAdapter(Context context, int textViewResourceId, List objects) {
-            super(context, textViewResourceId, objects);
-            this.context = context;
-            inflater = ((Activity)context).getLayoutInflater();
-        }
+    public BuddyAdapter(Context context, List<AccountRoot> accountRoots) {
+        this.accountRoots = accountRoots;
+        this.context = context;
+        inflater = ((Activity) context).getLayoutInflater();
+    }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            BuddyItem buddyItem = getItem(position);
-            // Obtain view
-            View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.account_item, parent, false);
+    @Override
+    public int getCount() {
+        int count = 0;
+        for (AccountRoot accountRoot : accountRoots) {
+            List<GroupItem> groupItems = accountRoot.getGroupItems();
+            for (GroupItem groupItem : groupItems) {
+                count += groupItem.getItems().size();
             }
-            // Setup text values
-            ((TextView) view.findViewById(R.id.buddyId)).setText(buddyItem.getBuddyId());
-            ((TextView) view.findViewById(R.id.buddyNick)).setText(buddyItem.getBuddyNick());
-            // Creating listeners for status click
-            ((ImageView) view.findViewById(R.id.buddyStatus)).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            context.startActivity(new Intent(context, StatusActitvity.class));
-                        }
-                    });
-            return view;
         }
+        return count;
+    }
 
+    @Override
+    public BuddyItem getItem(int position) {
+        int count = 0;
+        for (AccountRoot accountRoot : accountRoots) {
+            List<GroupItem> groupItems = accountRoot.getGroupItems();
+            for (GroupItem groupItem : groupItems) {
+                List<BuddyItem> buddyItems = groupItem.getItems();
+                if (count + buddyItems.size() > position) {
+                    return buddyItems.get(position-count);
+                }
+                count += buddyItems.size();
+            }
+        }
+        return null;
+    }
 
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        BuddyItem buddyItem = getItem(position);
+        // Obtain view
+        View view = convertView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.buddy_item, parent, false);
+        }
+        // Setup text values
+        ((TextView) view.findViewById(R.id.buddyId)).setText(buddyItem.getBuddyId());
+        ((TextView) view.findViewById(R.id.buddyNick)).setText(buddyItem.getBuddyNick());
+        return view;
+    }
 }

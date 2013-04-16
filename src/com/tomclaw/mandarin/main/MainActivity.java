@@ -17,11 +17,10 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.BuddyItem;
+import com.tomclaw.mandarin.im.AccountRoot;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -110,15 +109,20 @@ public class MainActivity extends ChiefActivity implements
         pages.add(listView3);
 
         /************** Example of BuddyItem list ******************/
-        List<BuddyItem> buddyItems = new ArrayList<BuddyItem>();
-        for(int c=0;c<25;c++) {
+        try {
+            List<AccountRoot> accountRoots = getServiceInteraction().getAccountsList();
+        /*List<BuddyItem> buddyItems = new ArrayList<BuddyItem>();
+        for (int c = 0; c < 25; c++) {
             BuddyItem buddyItem = new BuddyItem("user" + c + "@molecus.com", "User " + c);
             buddyItems.add(buddyItem);
-        }
+        }*/
 
-        listView1.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
-        listView2.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
-        listView3.setAdapter(new BuddyAdapter(this, R.layout.buddy_item, buddyItems));
+        listView1.setAdapter(new BuddyAdapter(this, accountRoots));
+        listView2.setAdapter(new BuddyAdapter(this, accountRoots));
+        listView3.setAdapter(new BuddyAdapter(this, accountRoots));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         /** View pager **/
         mAdapter = new CustomPagerAdapter(this, pages);
         mPager = (ViewPager) findViewById(R.id.pager);

@@ -13,12 +13,28 @@ import java.util.List;
  * Time: 1:57 AM
  * To change this template use File | Settings | File Templates.
  */
-public class GroupItem implements Parcelable{
+public class GroupItem implements Parcelable {
 
     /** Group info **/
     private String groupName;
     /** Group data **/
     private List<BuddyItem> items = new ArrayList<BuddyItem>();
+
+    public GroupItem(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public List<BuddyItem> getItems() {
+        return items;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     @Override
     public int describeContents() {
@@ -31,9 +47,13 @@ public class GroupItem implements Parcelable{
         dest.writeTypedList(items);
     }
 
-    private GroupItem(Parcel in){
+    public  void readFromParcel(Parcel in) {
         groupName = in.readString();
-        in.readList(items, BuddyItem.class.getClassLoader());
+        items = in.createTypedArrayList(BuddyItem.CREATOR);
+    }
+
+    private GroupItem(Parcel in) {
+        readFromParcel(in);
     }
 
     public static final Parcelable.Creator<GroupItem> CREATOR = new Parcelable.Creator<GroupItem>() {

@@ -41,6 +41,11 @@ public class IcqAccountRoot extends AccountRoot implements Parcelable {
         super.writeToParcel(dest, flags);
     }
 
+    public void readFromParcel(Parcel in) {
+        someStuff = in.readString();
+        super.readFromParcel(in);
+    }
+
     public static final Parcelable.Creator<IcqAccountRoot> CREATOR = new Parcelable.Creator<IcqAccountRoot>() {
 
         @Override
@@ -54,8 +59,7 @@ public class IcqAccountRoot extends AccountRoot implements Parcelable {
         }
     };
 
-    private IcqAccountRoot(Parcel in){
-        someStuff = in.readString();
+    private IcqAccountRoot(Parcel in) {
         readFromParcel(in);
     }
 }

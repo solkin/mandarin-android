@@ -5,7 +5,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout android:id="@+id/buddyContainer"
+    <LinearLayout android:id="@+id/userContainer"
                   android:layout_height="fill_parent"
                   android:layout_weight="1"
                   android:layout_width="0dp"
@@ -13,7 +13,7 @@
         <QuickContactBadge
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/buddyBadge"
+                android:id="@+id/userBadge"
                 android:layout_gravity="center_horizontal|top"
                 android:src="@drawable/ic_default_avatar"/>
         <LinearLayout
@@ -26,16 +26,16 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
-                    android:id="@+id/buddyNick"
+                    android:text="User Nick"
+                    android:id="@+id/userNick"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"/>
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
-                    android:id="@+id/buddyId"
+                    android:text="user@id"
+                    android:id="@+id/userId"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"/>
         </LinearLayout>
@@ -43,7 +43,7 @@
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:id="@+id/buddyStatus"
+            android:id="@+id/userStatus"
             android:src="@drawable/ic_icq_online"
             android:layout_gravity="center_vertical"
             android:clickable="true"

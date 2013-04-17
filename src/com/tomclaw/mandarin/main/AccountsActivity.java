@@ -28,12 +28,15 @@ import java.util.List;
 public class AccountsActivity extends ChiefActivity implements
         ActionBar.OnNavigationListener {
 
+    public static final int ADDING_ACTIVITY_RESULT_CODE = 1;
+
     protected boolean mActionMode;
     protected int selectedItem;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.accounts_list_menu, menu);
+
         return true;
     }
 
@@ -49,7 +52,19 @@ public class AccountsActivity extends ChiefActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.add_account_menu:
+                Intent intent = new Intent(this, AddingAccountActivity.class);
+                startActivityForResult(intent, ADDING_ACTIVITY_RESULT_CODE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initAccountsList() {

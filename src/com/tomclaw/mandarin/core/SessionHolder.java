@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.util.Log;
+import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyItem;
 import com.tomclaw.mandarin.im.GroupItem;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -46,5 +47,9 @@ public class SessionHolder {
 
     public List<IcqAccountRoot> getAccountsList() {
         return accountRootList;
+    }
+
+    public void addAccountRoot(AccountRoot account){
+        accountRootList.add((IcqAccountRoot) account);
     }
 }

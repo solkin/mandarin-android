@@ -10,6 +10,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
@@ -68,6 +70,12 @@ public class CoreService extends Service {
         public List getAccountsList() throws RemoteException {
             Log.d(Settings.LOG_TAG, "returning " + sessionHolder.getAccountsList().size() + " accounts");
             return sessionHolder.getAccountsList();
+        }
+
+        @Override
+        public void addAccount(IcqAccountRoot account) throws RemoteException {
+            Log.d(Settings.LOG_TAG, "add " + account.getUserId() + " account");
+            sessionHolder.addAccountRoot(account);
         }
     };
 

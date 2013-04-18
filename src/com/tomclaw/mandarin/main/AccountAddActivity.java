@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
@@ -60,33 +59,21 @@ public class AccountAddActivity extends ChiefActivity {
                 } else if (TextUtils.isEmpty(userPassword)) {
                     Toast.makeText(AccountAddActivity.this, R.string.user_password_empty, Toast.LENGTH_LONG).show();
                 } else {
-                try {
-                    AccountRoot accountRoot = accountRootClass.newInstance();
-                    if(accountRoot != null) {
-                    accountRoot.setUserId(userId);
-                    accountRoot.setUserNick(userId);
-                    accountRoot.setUserPassword(userPassword);
-                    getServiceInteraction().addAccount(accountRoot);
-                    setResult(AccountsActivity.ADDING_ACTIVITY_RESULT_CODE);
-                    finish();
-                    } else {
+                    try {
+                        AccountRoot accountRoot = accountRootClass.newInstance();
+                        if (accountRoot == null) {
+                            throw new Throwable();
+                        } else {
+                            accountRoot.setUserId(userId);
+                            accountRoot.setUserNick(userId);
+                            accountRoot.setUserPassword(userPassword);
+                            getServiceInteraction().addAccount(accountRoot);
+                            setResult(AccountsActivity.ADDING_ACTIVITY_RESULT_CODE);
+                            finish();
+                        }
+                    } catch (Throwable e) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
                     }
-                } catch (InstantiationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                /*IcqAccountRoot account = new IcqAccountRoot() {
-                    @Override
-                    public int getServiceIcon() {
-                        return 0;
-                    }
-                };
-                account.setUserId(login);
-                account.setUserPassword(password);*/
                 }
                 return true;
             default:
@@ -96,11 +83,9 @@ public class AccountAddActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceDown() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

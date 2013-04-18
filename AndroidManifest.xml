@@ -26,5 +26,9 @@
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true">
         </activity>
+        <activity android:name=".main.AccountAddActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true">
+        </activity>
     </application>
 </manifest>

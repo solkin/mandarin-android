@@ -11,7 +11,6 @@ import android.util.Log;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
@@ -73,9 +72,9 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void addAccount(IcqAccountRoot account) throws RemoteException {
-            Log.d(Settings.LOG_TAG, "add " + account.getUserId() + " account");
-            sessionHolder.addAccountRoot(account);
+        public void addAccount(AccountRoot accountRoot) throws RemoteException {
+            Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
+            sessionHolder.addAccountRoot(accountRoot);
         }
     };
 

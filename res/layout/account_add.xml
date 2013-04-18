@@ -5,23 +5,15 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
     <EditText
-            android:id="@+id/enter_login"
+            android:id="@+id/user_id_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Login"
+            android:hint="@string/user_id"
             android:inputType="textEmailAddress" />
     <EditText
-            android:id="@+id/enter_password"
+            android:id="@+id/user_password_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/user_password"
             android:inputType="textPassword" />
-    <Button
-            android:id="@+id/login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Log In"
-            android:singleLine="true"/>
-
 </LinearLayout>

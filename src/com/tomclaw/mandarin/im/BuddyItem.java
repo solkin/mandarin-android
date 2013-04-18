@@ -10,9 +10,11 @@ import android.os.Parcelable;
  * Time: 1:57 AM
  * To change this template use File | Settings | File Templates.
  */
-public class BuddyItem implements Parcelable{
+public class BuddyItem implements Parcelable {
 
-    /** Buddy info **/
+    /**
+     * Buddy info *
+     */
     private String buddyId;
     private String buddyNick;
 
@@ -48,7 +50,7 @@ public class BuddyItem implements Parcelable{
         dest.writeString(buddyNick);
     }
 
-    private BuddyItem(Parcel in){
+    private BuddyItem(Parcel in) {
         buddyId = in.readString();
         buddyNick = in.readString();
     }

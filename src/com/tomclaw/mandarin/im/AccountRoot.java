@@ -1,7 +1,11 @@
 package com.tomclaw.mandarin.im;
 
+import android.os.Bundle;
 import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +16,47 @@ import java.util.List;
  * Time: 1:54 AM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AccountRoot {
+public abstract class AccountRoot implements Parcelable {
 
+    /**
+     * Creator object that the AIDL generated service class
+     * will be looking for when it's time to recreate this
+     * AIDLObject on the other side.
+     */
+    public static final Creator<AccountRoot> CREATOR
+            = new Parcelable.Creator<AccountRoot>() {
+
+        /**
+         * Instantiate the desired AIDLObject subclass by name and provide
+         * it with its data bundle.
+         * @param in The AIDLObject's data.
+         * @return An AIDLObject, or null if error.
+         */
+        public AccountRoot createFromParcel(Parcel in) {
+            String className = in.readString();
+            Bundle instanceData = in.readBundle();
+
+            try {
+                Constructor<?> implementerConstructor = AndroidMagicConstructorMaker.make(Class.forName(className));
+                implementerConstructor.setAccessible(true);
+                AccountRoot implementer = (AccountRoot) implementerConstructor.newInstance();
+
+                return implementer;
+
+            } catch (Exception e) {
+                Log.e("AIDLObject.CREATOR.createFromParcel", e.getCause().getMessage());
+            }
+
+            return null;
+        }
+
+        /**
+         * Required by Parcelable
+         */
+        public AccountRoot[] newArray(int size) {
+            return new AccountRoot[size];
+        }
+    };
     /**
      * User info
      */
@@ -73,7 +116,6 @@ public abstract class AccountRoot {
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
         dest.writeTypedList(groupItems);
-        // dest.writeList(groupItems);
     }
 
     public void readFromParcel(Parcel in) {
@@ -86,7 +128,26 @@ public abstract class AccountRoot {
         serviceHost = in.readString();
         servicePort = in.readInt();
         groupItems = in.createTypedArrayList(GroupItem.CREATOR);
-        //groupItems = in.readArrayList(GroupItem.class.getClassLoader());
-        // in.readList(groupItems, GroupItem.class.getClassLoader());
+    }
+
+    /**
+     * Create a new no-args constructor for any class by its name.
+     *
+     * @version 1.0
+     */
+    private static class AndroidMagicConstructorMaker {
+
+        @SuppressWarnings("unchecked")
+        public static <T> Constructor<T> make(Class<T> clazz) throws Exception {
+            Constructor<?> constr = Constructor.class.getDeclaredConstructor(
+                    Class.class, // Class<T> declaringClass
+                    Class[].class, // Class<?>[] parameterTypes
+                    Class[].class, // Class<?>[] checkedExceptions
+                    int.class); // int slot
+            constr.setAccessible(true);
+
+            return (Constructor<T>) constr.newInstance(clazz, new Class[0],
+                    new Class[0], 1);
+        }
     }
 }

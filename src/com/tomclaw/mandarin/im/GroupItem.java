@@ -15,9 +15,13 @@ import java.util.List;
  */
 public class GroupItem implements Parcelable {
 
-    /** Group info **/
+    /**
+     * Group info *
+     */
     private String groupName;
-    /** Group data **/
+    /**
+     * Group data *
+     */
     private List<BuddyItem> items = new ArrayList<BuddyItem>();
 
     public GroupItem(String groupName) {
@@ -47,7 +51,7 @@ public class GroupItem implements Parcelable {
         dest.writeTypedList(items);
     }
 
-    public  void readFromParcel(Parcel in) {
+    public void readFromParcel(Parcel in) {
         groupName = in.readString();
         items = in.createTypedArrayList(BuddyItem.CREATOR);
     }

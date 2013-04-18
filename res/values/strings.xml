@@ -11,6 +11,12 @@
     <string name="add_account">Add account</string>
     <string name="edit_account">Edit</string>
     <string name="remove_account">Remove</string>
+    <string name="save_account">Save</string>
+    <string name="user_id_empty">Enter login, please</string>
+    <string name="user_password_empty">Enter password, please</string>
+    <string name="user_id">User ID</string>
+    <string name="user_password">Password</string>
+    <string name="account_add_fail">Failed to add account. Sorry.</string>
 
     <string name="status_unavailable">Unavailable</string>
     <string name="status_available">Available</string>

@@ -27,7 +27,6 @@ public class SessionHolder {
             accountRoot.setUserId("7068514");
             accountRoot.setUserNick("Solkin");
             accountRoot.setUserPassword("112");
-            accountRoot.setSomeStaff("staff" + c);
             for(int i=0;i<10;i++){
                 GroupItem groupItem = new GroupItem("Group " + i);
                 List<BuddyItem> buddyItems = groupItem.getItems();

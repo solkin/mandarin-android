@@ -14,15 +14,15 @@ import com.tomclaw.mandarin.im.AccountRoot;
 public class IcqAccountRoot extends AccountRoot implements Parcelable {
     private String someStuff;
 
-    public void setSomeStaff(String stuff){
+    public void setSomeStaff(String stuff) {
         someStuff = stuff;
     }
 
-    public String getSomeStuff(){
+    public String getSomeStuff() {
         return someStuff;
     }
 
-    public IcqAccountRoot(){
+    public IcqAccountRoot() {
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.List;
 
@@ -29,14 +30,54 @@ public class AccountsActivity extends ChiefActivity implements
         ActionBar.OnNavigationListener {
 
     public static final int ADDING_ACTIVITY_RESULT_CODE = 1;
-
     protected boolean mActionMode;
     protected int selectedItem;
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.accounts_edit_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after
+        // onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.edit_account_menu:
+                    show();
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.remove_account_menu:
+                    show();
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = false;
+            selectedItem = -1;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.accounts_list_menu, menu);
-
         return true;
     }
 
@@ -54,7 +95,8 @@ public class AccountsActivity extends ChiefActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_account_menu:
-                Intent intent = new Intent(this, AddingAccountActivity.class);
+                Intent intent = new Intent(this, AccountAddActivity.class);
+                intent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
                 startActivityForResult(intent, ADDING_ACTIVITY_RESULT_CODE);
                 return true;
             default:
@@ -125,49 +167,6 @@ public class AccountsActivity extends ChiefActivity implements
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         return false;
     }
-
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
-        // Called when the action mode is created; startActionMode() was called
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            inflater.inflate(R.menu.accounts_edit_menu, menu);
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after
-        // onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.edit_account_menu:
-                    show();
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                case R.id.remove_account_menu:
-                    show();
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = false;
-            selectedItem = -1;
-        }
-    };
 
     private void show() {
         Toast.makeText(AccountsActivity.this,

@@ -3,9 +3,6 @@ package com.tomclaw.mandarin.im;
 import android.os.Parcel;
 import com.tomclaw.mandarin.core.CoreObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -32,10 +29,10 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * User data
      */
-    protected List<GroupItem> groupItems = new ArrayList<GroupItem>();
+    protected Roster roster = new Roster();
 
-    public List<GroupItem> getGroupItems() {
-        return groupItems;
+    public Roster getRoster() {
+        return roster;
     }
 
     public String getUserId() {
@@ -75,7 +72,7 @@ public abstract class AccountRoot extends CoreObject {
         dest.writeInt(serviceId);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
-        dest.writeTypedList(groupItems);
+        roster.writeInstanceData(dest);
     }
 
     public void readInstanceData(Parcel in) {
@@ -87,6 +84,6 @@ public abstract class AccountRoot extends CoreObject {
         serviceId = in.readInt();
         serviceHost = in.readString();
         servicePort = in.readInt();
-        groupItems = in.createTypedArrayList(GroupItem.CREATOR);
+        roster.readInstanceData(in);
     }
 }

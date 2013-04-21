@@ -16,11 +16,11 @@ import java.util.List;
 public class GroupItem implements Parcelable {
 
     /**
-     * Group info *
+     * Group info
      */
     private String groupName;
     /**
-     * Group data *
+     * Group data
      */
     private List<BuddyItem> items = new ArrayList<BuddyItem>();
 

@@ -11,6 +11,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyItem;
 import com.tomclaw.mandarin.im.GroupItem;
+import com.tomclaw.mandarin.im.Roster;
 
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class BuddyAdapter extends BaseAdapter {
     public int getCount() {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
-            List<GroupItem> groupItems = accountRoot.getGroupItems();
-            for (GroupItem groupItem : groupItems) {
+            Roster roster = accountRoot.getRoster();
+            for (GroupItem groupItem : roster.getGroupItems()) {
                 count += groupItem.getItems().size();
             }
         }
@@ -49,8 +50,8 @@ public class BuddyAdapter extends BaseAdapter {
     public BuddyItem getItem(int position) {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
-            List<GroupItem> groupItems = accountRoot.getGroupItems();
-            for (GroupItem groupItem : groupItems) {
+            Roster roster = accountRoot.getRoster();
+            for (GroupItem groupItem : roster.getGroupItems()) {
                 List<BuddyItem> buddyItems = groupItem.getItems();
                 if (count + buddyItems.size() > position) {
                     return buddyItems.get(position-count);

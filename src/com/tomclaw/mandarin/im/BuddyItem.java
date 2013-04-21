@@ -13,7 +13,7 @@ import android.os.Parcelable;
 public class BuddyItem implements Parcelable {
 
     /**
-     * Buddy info *
+     * Buddy info
      */
     private String buddyId;
     private String buddyNick;

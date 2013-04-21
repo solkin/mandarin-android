@@ -33,7 +33,7 @@ public class SessionHolder {
                 for(int j=0;j<20;j++){
                     buddyItems.add(new BuddyItem("User " + j, "user"+j+"@molecus.com"));
                 }
-                accountRoot.getGroupItems().add(groupItem);
+                accountRoot.getRoster().getGroupItems().add(groupItem);
             }
             accountRootList.add(accountRoot);
         }

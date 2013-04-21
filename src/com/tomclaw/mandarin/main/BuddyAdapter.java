@@ -5,7 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
@@ -22,7 +22,7 @@ import java.util.List;
  * Time: 9:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BuddyAdapter extends BaseAdapter {
+public class BuddyAdapter extends BaseExpandableListAdapter {
 
     private LayoutInflater inflater;
     private Context context;
@@ -35,41 +35,84 @@ public class BuddyAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getGroupCount() {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
             Roster roster = accountRoot.getRoster();
-            for (GroupItem groupItem : roster.getGroupItems()) {
-                count += groupItem.getItems().size();
-            }
+            count += roster.getGroupItems().size();
         }
         return count;
     }
 
     @Override
-    public BuddyItem getItem(int position) {
+    public int getChildrenCount(int groupPosition) {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
             Roster roster = accountRoot.getRoster();
-            for (GroupItem groupItem : roster.getGroupItems()) {
-                List<BuddyItem> buddyItems = groupItem.getItems();
-                if (count + buddyItems.size() > position) {
-                    return buddyItems.get(position-count);
-                }
-                count += buddyItems.size();
+            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+                return roster.getGroupItems().get(groupPosition - count).getItems().size();
             }
+            count += roster.getGroupItems().size();
+        }
+        return 0;
+    }
+
+    @Override
+    public GroupItem getGroup(int groupPosition) {
+        int count = 0;
+        for (AccountRoot accountRoot : accountRoots) {
+            Roster roster = accountRoot.getRoster();
+            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+                return roster.getGroupItems().get(groupPosition - count);
+            }
+            count += roster.getGroupItems().size();
         }
         return null;
     }
 
     @Override
-    public long getItemId(int position) {
+    public BuddyItem getChild(int groupPosition, int childPosition) {
+        int count = 0;
+        for (AccountRoot accountRoot : accountRoots) {
+            Roster roster = accountRoot.getRoster();
+            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+                return roster.getGroupItems().get(groupPosition - count).getItems().get(childPosition);
+            }
+            count += roster.getGroupItems().size();
+        }
+        return null;
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
         return 0;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        BuddyItem buddyItem = getItem(position);
+    public long getChildId(int groupPosition, int childPosition) {
+        return 0;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        GroupItem groupItem = getGroup(groupPosition);
+        View view = convertView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.group_item, parent, false);
+        }
+        // Setup text values
+        ((TextView) view.findViewById(R.id.groupName)).setText(groupItem.getGroupName());
+        return view;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        BuddyItem buddyItem = getChild(groupPosition, childPosition);
         // Obtain view
         View view = convertView;
         if (view == null) {
@@ -79,5 +122,10 @@ public class BuddyAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.buddyId)).setText(buddyItem.getBuddyId());
         ((TextView) view.findViewById(R.id.buddyNick)).setText(buddyItem.getBuddyNick());
         return view;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
     }
 }

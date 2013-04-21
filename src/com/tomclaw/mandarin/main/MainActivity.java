@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -97,9 +97,9 @@ public class MainActivity extends ChiefActivity implements
         listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         bar.setListNavigationCallbacks(listAdapter, this);
         /** Lists **/
-        ListView listView1 = new ListView(this);
-        ListView listView2 = new ListView(this);
-        ListView listView3 = new ListView(this);
+        ExpandableListView listView1 = new ExpandableListView(this);
+        ExpandableListView listView2 = new ExpandableListView(this);
+        ExpandableListView listView3 = new ExpandableListView(this);
 
         Vector<View> pages = new Vector<View>();
 

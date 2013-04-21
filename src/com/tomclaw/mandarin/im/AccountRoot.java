@@ -64,6 +64,8 @@ public abstract class AccountRoot extends CoreObject {
 
     public abstract int getServiceIcon();
 
+    public abstract int getAccountLayout();
+
     public void writeInstanceData(Parcel dest) {
         dest.writeString(userId);
         dest.writeString(userNick);

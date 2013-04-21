@@ -23,7 +23,7 @@ import com.tomclaw.mandarin.im.AccountRoot;
 public class AccountAddActivity extends ChiefActivity {
 
     public static final String CLASS_NAME_EXTRA = "ClassName";
-    private Class<? extends AccountRoot> accountRootClass;
+    private AccountRoot accountRoot;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,9 +32,10 @@ public class AccountAddActivity extends ChiefActivity {
         String className = getIntent().getStringExtra(CLASS_NAME_EXTRA);
         Log.d(Settings.LOG_TAG, "AccountAddActivity start for " + className);
         try {
-            accountRootClass = Class.forName(className).asSubclass(AccountRoot.class);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Class<? extends AccountRoot> accountRootClass = Class.forName(className).asSubclass(AccountRoot.class);
+            accountRoot = accountRootClass.newInstance();
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -52,7 +53,7 @@ public class AccountAddActivity extends ChiefActivity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setTitle(R.string.accounts);
         // Initialize accounts list
-        setContentView(R.layout.account_add);
+        setContentView(accountRoot.getAccountLayout());
     }
 
     @Override
@@ -65,24 +66,20 @@ public class AccountAddActivity extends ChiefActivity {
             case R.id.ok_account_menu:
                 String userId = ((EditText) findViewById(R.id.user_id_field)).getText().toString();
                 String userPassword = ((EditText) findViewById(R.id.user_password_field)).getText().toString();
+                // Check for credentials are filed correctly
                 if (TextUtils.isEmpty(userId)) {
                     Toast.makeText(AccountAddActivity.this, R.string.user_id_empty, Toast.LENGTH_LONG).show();
                 } else if (TextUtils.isEmpty(userPassword)) {
                     Toast.makeText(AccountAddActivity.this, R.string.user_password_empty, Toast.LENGTH_LONG).show();
                 } else {
                     try {
-                        AccountRoot accountRoot = accountRootClass.newInstance();
-                        if (accountRoot == null) {
-                            throw new Throwable();
-                        } else {
-                            accountRoot.setUserId(userId);
-                            accountRoot.setUserNick(userId);
-                            accountRoot.setUserPassword(userPassword);
-                            getServiceInteraction().addAccount(accountRoot);
-                            setResult(AccountsActivity.ADDING_ACTIVITY_RESULT_CODE);
-                            finish();
-                        }
-                    } catch (Throwable e) {
+                        accountRoot.setUserId(userId);
+                        accountRoot.setUserNick(userId);
+                        accountRoot.setUserPassword(userPassword);
+                        getServiceInteraction().addAccount(accountRoot);
+                        setResult(AccountsActivity.ADDING_ACTIVITY_RESULT_CODE);
+                        finish();
+                    } catch (Throwable ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
                     }
                 }

@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.os.Parcel;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -27,6 +28,11 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public int getServiceIcon() {
         return 0;
+    }
+
+    @Override
+    public int getAccountLayout() {
+        return R.layout.account_add;
     }
 
     public void writeInstanceData(Parcel dest) {

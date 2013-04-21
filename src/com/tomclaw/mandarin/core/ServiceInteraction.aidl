@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.core;
 
-import  com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.core.CoreObject;
 
 interface ServiceInteraction
 {
@@ -9,5 +9,5 @@ interface ServiceInteraction
 	long getUpTime();
 	// Accounts API
 	List getAccountsList();
-	void addAccount(in AccountRoot accountRoot);
+	void addAccount(in CoreObject accountRoot);
 }

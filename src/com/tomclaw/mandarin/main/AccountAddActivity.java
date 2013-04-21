@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
@@ -28,7 +29,7 @@ public class AccountAddActivity extends ChiefActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Obtain class name extra to setup AccountRoot type.
-        String className = getIntent().getStringExtra("ClassName");
+        String className = getIntent().getStringExtra(CLASS_NAME_EXTRA);
         Log.d(Settings.LOG_TAG, "AccountAddActivity start for " + className);
         try {
             accountRootClass = Class.forName(className).asSubclass(AccountRoot.class);
@@ -45,12 +46,22 @@ public class AccountAddActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceReady() {
+        ActionBar bar = getSupportActionBar();
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setTitle(R.string.accounts);
+        // Initialize accounts list
         setContentView(R.layout.account_add);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent mainActivityIntent = new Intent(this, AccountsActivity.class);
+                startActivity(mainActivityIntent);
+                return true;
             case R.id.ok_account_menu:
                 String userId = ((EditText) findViewById(R.id.user_id_field)).getText().toString();
                 String userPassword = ((EditText) findViewById(R.id.user_password_field)).getText().toString();

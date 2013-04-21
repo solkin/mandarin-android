@@ -36,7 +36,6 @@ public class MainActivity extends ChiefActivity implements
         super.onCreate(savedInstanceState);
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // super.onSaveInstanceState(outState);
@@ -111,15 +110,10 @@ public class MainActivity extends ChiefActivity implements
         /************** Example of BuddyItem list ******************/
         try {
             List<AccountRoot> accountRoots = getServiceInteraction().getAccountsList();
-        /*List<BuddyItem> buddyItems = new ArrayList<BuddyItem>();
-        for (int c = 0; c < 25; c++) {
-            BuddyItem buddyItem = new BuddyItem("user" + c + "@molecus.com", "User " + c);
-            buddyItems.add(buddyItem);
-        }*/
 
-        listView1.setAdapter(new BuddyAdapter(this, accountRoots));
-        listView2.setAdapter(new BuddyAdapter(this, accountRoots));
-        listView3.setAdapter(new BuddyAdapter(this, accountRoots));
+            listView1.setAdapter(new BuddyAdapter(this, accountRoots));
+            listView2.setAdapter(new BuddyAdapter(this, accountRoots));
+            listView3.setAdapter(new BuddyAdapter(this, accountRoots));
         } catch (RemoteException e) {
             e.printStackTrace();
         }

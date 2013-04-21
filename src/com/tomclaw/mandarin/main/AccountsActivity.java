@@ -26,8 +26,7 @@ import java.util.List;
  * Time: 11:11 AM
  * To change this template use File | Settings | File Templates.
  */
-public class AccountsActivity extends ChiefActivity implements
-        ActionBar.OnNavigationListener {
+public class AccountsActivity extends ChiefActivity {
 
     public static final int ADDING_ACTIVITY_RESULT_CODE = 1;
     protected boolean mActionMode;
@@ -85,6 +84,7 @@ public class AccountsActivity extends ChiefActivity implements
     public void onCoreServiceReady() {
         ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setTitle(R.string.accounts);
         // Initialize accounts list
@@ -94,10 +94,14 @@ public class AccountsActivity extends ChiefActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                startActivity(mainActivityIntent);
+                return true;
             case R.id.add_account_menu:
-                Intent intent = new Intent(this, AccountAddActivity.class);
-                intent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
-                startActivityForResult(intent, ADDING_ACTIVITY_RESULT_CODE);
+                Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
+                accountAddIntent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
+                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_RESULT_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -107,6 +111,12 @@ public class AccountsActivity extends ChiefActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        switch(resultCode) {
+            case ADDING_ACTIVITY_RESULT_CODE: {
+                initAccountsList();
+                break;
+            }
+        }
     }
 
     private void initAccountsList() {
@@ -161,11 +171,6 @@ public class AccountsActivity extends ChiefActivity implements
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        return false;
     }
 
     private void show() {

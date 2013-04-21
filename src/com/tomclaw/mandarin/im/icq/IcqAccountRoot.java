@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -11,8 +10,11 @@ import com.tomclaw.mandarin.im.AccountRoot;
  * Time: 12:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class IcqAccountRoot extends AccountRoot implements Parcelable {
+public class IcqAccountRoot extends AccountRoot {
     private String someStuff;
+
+    public IcqAccountRoot() {
+    }
 
     public void setSomeStaff(String stuff) {
         someStuff = stuff;
@@ -22,44 +24,18 @@ public class IcqAccountRoot extends AccountRoot implements Parcelable {
         return someStuff;
     }
 
-    public IcqAccountRoot() {
-    }
-
     @Override
     public int getServiceIcon() {
         return 0;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeInstanceData(Parcel dest) {
+        super.writeInstanceData(dest);
         dest.writeString(someStuff);
-        super.writeToParcel(dest, flags);
     }
 
-    public void readFromParcel(Parcel in) {
+    public void readInstanceData(Parcel in) {
+        super.readInstanceData(in);
         someStuff = in.readString();
-        super.readFromParcel(in);
-    }
-
-    public static final Parcelable.Creator<IcqAccountRoot> CREATOR = new Parcelable.Creator<IcqAccountRoot>() {
-
-        @Override
-        public IcqAccountRoot createFromParcel(Parcel source) {
-            return new IcqAccountRoot(source);
-        }
-
-        @Override
-        public IcqAccountRoot[] newArray(int size) {
-            return new IcqAccountRoot[size];
-        }
-    };
-
-    private IcqAccountRoot(Parcel in) {
-        readFromParcel(in);
     }
 }

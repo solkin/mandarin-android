@@ -32,7 +32,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public int getAccountLayout() {
-        return R.layout.account_add;
+        return R.layout.account_add_icq;
     }
 
     public void writeInstanceData(Parcel dest) {

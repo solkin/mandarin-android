@@ -5,3 +5,5 @@
 gen/
 bin/
 out/
+local.properties
+.idea/workspace.xml

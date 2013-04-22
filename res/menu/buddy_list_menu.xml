@@ -7,21 +7,33 @@
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="com.actionbarsherlock.widget.SearchView"/>
     <item
-            android:id="@+id/item2"
-            android:icon="@android:drawable/ic_menu_save"
+            android:id="@+id/add_buddy"
+            android:icon="@android:drawable/ic_menu_add"
             android:showAsAction="ifRoom"
-            android:title="@string/item2">
-    </item>
+            android:title="@string/add_buddy"/>
     <item
-            android:id="@+id/item3"
+            android:id="@+id/display_options"
+            android:icon="@android:drawable/ic_menu_sort_alphabetically"
+            android:showAsAction="ifRoom"
+            android:title="@string/display_options"/>
+    <item
+            android:id="@+id/show_dialogs"
+            android:icon="@android:drawable/ic_menu_share"
+            android:showAsAction="ifRoom"
+            android:title="@string/show_dialogs"/>
+    <item
+            android:id="@+id/settings"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:showAsAction="ifRoom"
+            android:title="@string/settings"/>
+    <item
+            android:id="@+id/info"
             android:icon="@android:drawable/ic_menu_info_details"
-            android:showAsAction="ifRoom|withText"
-            android:title="@string/item3">
-    </item>
+            android:showAsAction="ifRoom"
+            android:title="@string/info"/>
     <item
-            android:id="@+id/item4"
-            android:icon="@android:drawable/ic_menu_view"
-            android:showAsAction="never"
-            android:title="@string/item4">
-    </item>
+            android:id="@+id/feedback"
+            android:icon="@android:drawable/ic_menu_send"
+            android:showAsAction="ifRoom"
+            android:title="@string/feedback"/>
 </menu>

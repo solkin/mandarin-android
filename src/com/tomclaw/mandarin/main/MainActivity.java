@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.SimpleCursorTreeAdapter;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -113,7 +115,28 @@ public class MainActivity extends ChiefActivity implements
 
             listView1.setAdapter(new BuddyAdapter(this, accountRoots));
             listView2.setAdapter(new BuddyAdapter(this, accountRoots));
-            listView3.setAdapter(new BuddyAdapter(this, accountRoots));
+
+
+            Cursor cursor = getContentResolver().query(Settings.ROSTER_RESOLVER_URI, null, null,
+                    null, null);
+
+
+            String groupFrom[] = { "name", "email" };
+            int groupTo[] = { android.R.id.text1, android.R.id.text2 };
+
+            String from[] = { "name", "email" };
+            int to[] = { android.R.id.text1, android.R.id.text2 };
+            SimpleCursorTreeAdapter adapter = new SimpleCursorTreeAdapter(this,
+                    cursor, R.layout.group_item, R.layout.group_item,
+                    groupFrom, groupTo, R.layout.buddy_item, R.layout.buddy_item, from, to) {
+
+                @Override
+                protected Cursor getChildrenCursor(Cursor groupCursor) {
+                    return null;
+                }
+            };
+
+            listView3.setAdapter(adapter);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

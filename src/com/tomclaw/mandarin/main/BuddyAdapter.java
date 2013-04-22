@@ -54,7 +54,7 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
             }
             count += roster.getGroupItems().size();
         }
-        return 0;
+        return count;
     }
 
     @Override

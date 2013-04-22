@@ -17,6 +17,12 @@
     <string name="user_id">User ID</string>
     <string name="user_password">Password</string>
     <string name="account_add_fail">Failed to add account. Sorry.</string>
+    <string name="add_buddy">Add buddy</string>
+    <string name="display_options">Display options</string>
+    <string name="show_dialogs">Show dialogs</string>
+    <string name="settings">Settings</string>
+    <string name="info">Info</string>
+    <string name="feedback">Feedback</string>
 
     <string name="status_unavailable">Unavailable</string>
     <string name="status_available">Available</string>

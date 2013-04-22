@@ -24,10 +24,10 @@ public class SessionHolder {
         // Loading accounts from local storage.
         for (int c = 0; c < 5; c++) {
             IcqAccountRoot accountRoot = new IcqAccountRoot();
-            accountRoot.setUserId("7068514");
-            accountRoot.setUserNick("Solkin");
+            accountRoot.setUserId("706851" + c);
+            accountRoot.setUserNick("Solkin-" + c);
             accountRoot.setUserPassword("112");
-            for(int i=0;i<10;i++){
+            for(int i=0;i<4;i++){
                 GroupItem groupItem = new GroupItem("Group " + i);
                 List<BuddyItem> buddyItems = groupItem.getItems();
                 for(int j=0;j<20;j++){

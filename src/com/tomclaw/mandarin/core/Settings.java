@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.core;
 
+import android.net.Uri;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -10,4 +12,5 @@ package com.tomclaw.mandarin.core;
 public class Settings {
 
     public static String LOG_TAG = "Mandarin";
+    public static Uri ROSTER_RESOLVER_URI = Uri.parse("content://com.tomclaw.core.RosterResolver");
 }

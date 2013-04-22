@@ -32,5 +32,8 @@
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true">
         </activity>
+        <provider android:name=".core.RosterProvider"
+                  android:authorities="com.tomclaw.mandarin.core.RosterProvider">
+        </provider>
     </application>
 </manifest>

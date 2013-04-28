@@ -167,6 +167,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
 
     /**
      * Any message from service for this activity
+     *
      * @param intent
      */
     public abstract void onCoreServiceIntent(Intent intent);

@@ -27,11 +27,11 @@ public class SessionHolder {
             accountRoot.setUserId("706851" + c);
             accountRoot.setUserNick("Solkin-" + c);
             accountRoot.setUserPassword("112");
-            for(int i=0;i<4;i++){
+            for (int i = 0; i < 4; i++) {
                 GroupItem groupItem = new GroupItem("Group " + i);
                 List<BuddyItem> buddyItems = groupItem.getItems();
-                for(int j=0;j<20;j++){
-                    buddyItems.add(new BuddyItem("User " + j, "user"+j+"@molecus.com"));
+                for (int j = 0; j < 20; j++) {
+                    buddyItems.add(new BuddyItem("User " + j, "user" + j + "@molecus.com"));
                 }
                 accountRoot.getRoster().getGroupItems().add(groupItem);
             }
@@ -48,7 +48,7 @@ public class SessionHolder {
         return accountRootList;
     }
 
-    public void addAccountRoot(AccountRoot account){
+    public void addAccountRoot(AccountRoot account) {
         accountRootList.add((IcqAccountRoot) account);
     }
 }

@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 /**
- * Packs itself prior to its shuttling across processes, 
+ * Packs itself prior to its shuttling across processes,
  * and is responsible for orchestrating its own reconstruction
  * on the other side.
  */
@@ -13,52 +13,53 @@ public abstract class CoreObject implements Parcelable {
 
     public CoreObject() {
     }
-	
-	/**
-	 * Specify special flags for marshaling process
-	 */
+
+    /**
+     * Specify special flags for marshaling process
+     */
     @Override
-	public int describeContents() {
+    public int describeContents() {
         return 0;
     }
-	
-	/**
-	 * Write this object's data and save
-	 * that, and its name, in the parcel
-	 * that will be used in reconstruction.
-	 * @param out The parcel in which to save its data.
-	 */
+
+    /**
+     * Write this object's data and save
+     * that, and its name, in the parcel
+     * that will be used in reconstruction.
+     *
+     * @param out The parcel in which to save its data.
+     */
     @Override
-	public void writeToParcel(Parcel out, int flags) {
-    	out.writeString(getClass().getName());
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(getClass().getName());
         writeInstanceData(out);
     }
 
-	/**
-	 * Creator object that the AIDL generated service class
-	 * will be looking for when it's time to recreate this
-	 * CoreObject on the other side.
-	 */
-	public static final Creator<CoreObject> CREATOR
+    /**
+     * Creator object that the AIDL generated service class
+     * will be looking for when it's time to recreate this
+     * CoreObject on the other side.
+     */
+    public static final Creator<CoreObject> CREATOR
             = new Parcelable.Creator<CoreObject>() {
-    	
-    	/**
-    	 * Instantiate the desired CoreObject subclass by name and provide
-    	 * it with its data bundle.
-    	 * @param in The CoreObject's data.
-    	 * @return An CoreObject, or null if error.
-    	 */
+
+        /**
+         * Instantiate the desired CoreObject subclass by name and provide
+         * it with its data bundle.
+         * @param in The CoreObject's data.
+         * @return An CoreObject, or null if error.
+         */
         @Override
         public CoreObject createFromParcel(Parcel in) {
-        	String className = in.readString();
-        	try {
+            String className = in.readString();
+            try {
                 CoreObject implementer = (CoreObject) Class.forName(className).newInstance();
-        		implementer.readInstanceData(in);
-        		return implementer;
-        	} catch (Exception e) {
-        		Log.d(Settings.LOG_TAG, "CoreObject Creator error: " + e.getCause().getMessage());
-        	}
-        	return null;
+                implementer.readInstanceData(in);
+                return implementer;
+            } catch (Exception e) {
+                Log.d(Settings.LOG_TAG, "CoreObject Creator error: " + e.getCause().getMessage());
+            }
+            return null;
         }
 
         /**
@@ -72,13 +73,15 @@ public abstract class CoreObject implements Parcelable {
 
     /**
      * Set up instance using provided data.
+     *
      * @param parcel Parcel created by this object before IPC.
      */
-	protected abstract void readInstanceData(Parcel parcel);
-	
-	/**
-	 * Write instance data prior to shuttling.
-	 * @param parcel Parcel in which to write instance data.
-	 */
-	protected abstract void writeInstanceData(Parcel parcel);
+    protected abstract void readInstanceData(Parcel parcel);
+
+    /**
+     * Write instance data prior to shuttling.
+     *
+     * @param parcel Parcel in which to write instance data.
+     */
+    protected abstract void writeInstanceData(Parcel parcel);
 }

@@ -49,7 +49,7 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
             Roster roster = accountRoot.getRoster();
-            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+            if (groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
                 return roster.getGroupItems().get(groupPosition - count).getItems().size();
             }
             count += roster.getGroupItems().size();
@@ -62,7 +62,7 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
             Roster roster = accountRoot.getRoster();
-            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+            if (groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
                 return roster.getGroupItems().get(groupPosition - count);
             }
             count += roster.getGroupItems().size();
@@ -75,7 +75,7 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
         int count = 0;
         for (AccountRoot accountRoot : accountRoots) {
             Roster roster = accountRoot.getRoster();
-            if(groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
+            if (groupPosition >= count && count + roster.getGroupItems().size() > groupPosition) {
                 return roster.getGroupItems().get(groupPosition - count).getItems().get(childPosition);
             }
             count += roster.getGroupItems().size();

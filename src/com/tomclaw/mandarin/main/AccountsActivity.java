@@ -111,7 +111,7 @@ public class AccountsActivity extends ChiefActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(resultCode) {
+        switch (resultCode) {
             case ADDING_ACTIVITY_RESULT_CODE: {
                 initAccountsList();
                 break;

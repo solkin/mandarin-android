@@ -28,7 +28,7 @@ public class AccountsAdapter extends ArrayAdapter<AccountRoot> {
     public AccountsAdapter(Context context, int textViewResourceId, List objects) {
         super(context, textViewResourceId, objects);
         this.context = context;
-        inflater = ((Activity)context).getLayoutInflater();
+        inflater = ((Activity) context).getLayoutInflater();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AccountsAdapter extends ArrayAdapter<AccountRoot> {
         // Setup text values
         ((TextView) view.findViewById(R.id.userId)).setText(accountRoot.getUserId());
         ((TextView) view.findViewById(R.id.userNick)).setText(accountRoot.getUserNick());
-         // Creating listeners for status click
+        // Creating listeners for status click
         view.findViewById(R.id.userStatus).setOnClickListener(
                 new View.OnClickListener() {
                     @Override

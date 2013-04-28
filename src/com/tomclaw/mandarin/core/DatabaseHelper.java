@@ -29,23 +29,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(RosterProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
         ContentValues cv = new ContentValues();
         ContentValues cv1 = new ContentValues();
-        int[] statuses = new int[] {
-            R.drawable.status_icq_offline,
-            R.drawable.status_icq_online,
-            R.drawable.status_icq_away,
-            R.drawable.status_icq_offline,
-            R.drawable.status_icq_chat,
-            R.drawable.status_icq_dnd,
-            R.drawable.status_icq_offline,
-            R.drawable.status_icq_mobile,
-            R.drawable.status_icq_offline
+        int[] statuses = new int[]{
+                R.drawable.status_icq_offline,
+                R.drawable.status_icq_online,
+                R.drawable.status_icq_away,
+                R.drawable.status_icq_offline,
+                R.drawable.status_icq_chat,
+                R.drawable.status_icq_dnd,
+                R.drawable.status_icq_offline,
+                R.drawable.status_icq_mobile,
+                R.drawable.status_icq_offline
         };
         Random random = new Random(System.currentTimeMillis());
         for (int i = 1; i <= 30; i++) {
             String groupName = generateRandomWord(random);
             cv.put(RosterProvider.ROSTER_GROUP_NAME, groupName);
             db.insert(RosterProvider.ROSTER_GROUP_TABLE, null, cv);
-            for (int c=1;c<=40;c++){
+            for (int c = 1; c <= 40; c++) {
                 int status = statuses[random.nextInt(statuses.length)];
                 cv1.put(RosterProvider.ROSTER_BUDDY_ID, generateRandomWord(random) + "@molecus.com");
                 cv1.put(RosterProvider.ROSTER_BUDDY_NICK, generateRandomWord(random));
@@ -61,10 +61,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private String generateRandomWord(Random r) {
         int wordLength = 4 + r.nextInt(6);
-         // Intialize a Random Number Generator with SysTime as the seed
+        // Intialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
-        for(int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char)('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
+        for (int i = 0; i < wordLength; i++) { // For each letter in the word
+            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
             sb.append(tmp); // Add it to the String
         }
         String word = sb.toString();

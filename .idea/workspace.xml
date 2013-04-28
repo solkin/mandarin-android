@@ -37,6 +37,7 @@
   </component>
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_LOG_LEVEL" value="ERROR" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Mandarin" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f704ed9-ce04-4359-ae96-96390e84948f" name="Default" comment="" />
@@ -234,7 +235,7 @@
     <file path="$PROJECT_DIR$/android-agent/.idea/workspace.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357083730906" ignored="false" />
     <file path="/fragment.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367048453763" ignored="false" />
     <file path="/MainService.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357148259447" ignored="false" />
-    <file path="/MainActivity.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367146301317" ignored="false" />
+    <file path="/MainActivity.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367146751952" ignored="false" />
     <file path="/a.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366652927759" ignored="false" />
     <file path="/Dummy.txt" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366549627764" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366701104641" ignored="false" />
@@ -366,7 +367,7 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="117" column="114" selection-start="3956" selection-end="3956" vertical-scroll-proportion="-0.36439267">
+            <state line="133" column="68" selection-start="4739" selection-end="4739" vertical-scroll-proportion="0.22510822">
               <folding />
             </state>
           </provider>
@@ -968,13 +969,13 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32123798" sideWeight="0.56653386" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23265742" sideWeight="0.99840635" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23265742" sideWeight="0.99840635" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296582" sideWeight="0.49786553" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22151394" sideWeight="0.336" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16749585" sideWeight="0.6691569" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33084312" sideWeight="0.6717132" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16749585" sideWeight="0.76734257" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33084312" sideWeight="0.6717132" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3243028" sideWeight="0.6448" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1158,7 +1159,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="114" selection-start="3956" selection-end="3956" vertical-scroll-proportion="-0.36439267">
+        <state line="133" column="68" selection-start="4739" selection-end="4739" vertical-scroll-proportion="0.22510822">
           <folding />
         </state>
       </provider>

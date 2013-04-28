@@ -131,7 +131,7 @@ public class MainActivity extends ChiefActivity implements
 
             /********* Online *********/
             Cursor cursor = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
-                    null, null);
+                    null, RosterProvider.ROSTER_GROUP_NAME + " ASC");
             startManagingCursor(cursor);
 
 
@@ -158,7 +158,7 @@ public class MainActivity extends ChiefActivity implements
 
             /********* All friends *********/
             Cursor cursor1 = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
-                    null, null);
+                    null, RosterProvider.ROSTER_GROUP_NAME + " ASC");
             startManagingCursor(cursor1);
 
 

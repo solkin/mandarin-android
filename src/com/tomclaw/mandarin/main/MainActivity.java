@@ -18,6 +18,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.viewpageindicator.PageIndicator;
@@ -117,22 +118,27 @@ public class MainActivity extends ChiefActivity implements
             listView2.setAdapter(new BuddyAdapter(this, accountRoots));
 
 
-            Cursor cursor = getContentResolver().query(Settings.ROSTER_RESOLVER_URI, null, null,
+            Cursor cursor = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
                     null, null);
+            startManagingCursor(cursor);
 
 
-            String groupFrom[] = { "name", "email" };
-            int groupTo[] = { android.R.id.text1, android.R.id.text2 };
+            String groupFrom[] = {RosterProvider.ROSTER_GROUP_NAME};
+            int groupTo[] = { R.id.groupName };
 
-            String from[] = { "name", "email" };
-            int to[] = { android.R.id.text1, android.R.id.text2 };
+            String from[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK };
+            int to[] = { R.id.buddyId, R.id.buddyNick };
             SimpleCursorTreeAdapter adapter = new SimpleCursorTreeAdapter(this,
                     cursor, R.layout.group_item, R.layout.group_item,
                     groupFrom, groupTo, R.layout.buddy_item, R.layout.buddy_item, from, to) {
 
                 @Override
                 protected Cursor getChildrenCursor(Cursor groupCursor) {
-                    return null;
+                    Log.d(Settings.LOG_TAG, "getChildrenCursor");
+                    int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
+                    String groupName = groupCursor.getString(columnIndex);
+                    return getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName +"'",
+                            null, null);
                 }
             };
 

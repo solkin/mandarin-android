@@ -10,9 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
-import android.widget.SimpleCursorTreeAdapter;
+import android.widget.*;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -100,7 +98,7 @@ public class MainActivity extends ChiefActivity implements
         listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         bar.setListNavigationCallbacks(listAdapter, this);
         /** Lists **/
-        ExpandableListView listView1 = new ExpandableListView(this);
+        ListView listView1 = new ListView(this);
         ExpandableListView listView2 = new ExpandableListView(this);
         ExpandableListView listView3 = new ExpandableListView(this);
 
@@ -114,10 +112,24 @@ public class MainActivity extends ChiefActivity implements
         try {
             List<AccountRoot> accountRoots = getServiceInteraction().getAccountsList();
 
-            listView1.setAdapter(new BuddyAdapter(this, accountRoots));
-            listView2.setAdapter(new BuddyAdapter(this, accountRoots));
+            /********* Dialogs *********/
+            Cursor cursor0 = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
+                    RosterProvider.ROSTER_BUDDY_DIALOG + "='" + 1 +"'",
+                    null, RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
+            startManagingCursor(cursor0);
 
 
+            String groupFrom0[] = {RosterProvider.ROSTER_GROUP_NAME};
+            int groupTo0[] = { R.id.groupName };
+
+            String from0[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
+            int to0[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
+            SimpleCursorAdapter adapter0 = new SimpleCursorAdapter(this, R.layout.buddy_item,
+                    cursor0, from0, to0, 0) {
+            };
+            listView1.setAdapter(adapter0);
+
+            /********* Online *********/
             Cursor cursor = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
                     null, null);
             startManagingCursor(cursor);
@@ -126,8 +138,8 @@ public class MainActivity extends ChiefActivity implements
             String groupFrom[] = {RosterProvider.ROSTER_GROUP_NAME};
             int groupTo[] = { R.id.groupName };
 
-            String from[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK };
-            int to[] = { R.id.buddyId, R.id.buddyNick };
+            String from[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
+            int to[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
             SimpleCursorTreeAdapter adapter = new SimpleCursorTreeAdapter(this,
                     cursor, R.layout.group_item, R.layout.group_item,
                     groupFrom, groupTo, R.layout.buddy_item, R.layout.buddy_item, from, to) {
@@ -137,12 +149,39 @@ public class MainActivity extends ChiefActivity implements
                     Log.d(Settings.LOG_TAG, "getChildrenCursor");
                     int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
                     String groupName = groupCursor.getString(columnIndex);
+                    return getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName +"'" + " AND "
+                            + RosterProvider.ROSTER_BUDDY_STATE + "='" + 1 + "'",
+                            null, RosterProvider.ROSTER_BUDDY_NICK + " ASC");
+                }
+            };
+            listView2.setAdapter(adapter);
+
+            /********* All friends *********/
+            Cursor cursor1 = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
+                    null, null);
+            startManagingCursor(cursor1);
+
+
+            String groupFrom1[] = {RosterProvider.ROSTER_GROUP_NAME};
+            int groupTo1[] = { R.id.groupName };
+
+            String from1[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
+            int to1[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
+            SimpleCursorTreeAdapter adapter1 = new SimpleCursorTreeAdapter(this,
+                    cursor1, R.layout.group_item, R.layout.group_item,
+                    groupFrom1, groupTo1, R.layout.buddy_item, R.layout.buddy_item, from1, to1) {
+
+                @Override
+                protected Cursor getChildrenCursor(Cursor groupCursor) {
+                    Log.d(Settings.LOG_TAG, "getChildrenCursor");
+                    int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
+                    String groupName = groupCursor.getString(columnIndex);
                     return getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName +"'",
-                            null, null);
+                            null, RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
                 }
             };
 
-            listView3.setAdapter(adapter);
+            listView3.setAdapter(adapter1);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

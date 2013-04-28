@@ -33,6 +33,7 @@ public class RosterProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_STATE = "buddy_state";
     public static final String ROSTER_BUDDY_GROUP_ID = "buddy_group_id";
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
+    public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
 
     // Database create scripts
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
@@ -42,7 +43,8 @@ public class RosterProvider extends ContentProvider {
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROSTER_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, " + ROSTER_BUDDY_STATUS + " int, "
-            + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text" + ");";
+            + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text, "
+            + ROSTER_BUDDY_DIALOG + " int" + ");";
 
     // Database helper object
     private DatabaseHelper databaseHelper;

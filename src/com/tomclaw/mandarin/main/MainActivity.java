@@ -10,7 +10,11 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
+import android.widget.SimpleCursorTreeAdapter;
+import android.widget.SimpleCursorAdapter;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -118,14 +122,10 @@ public class MainActivity extends ChiefActivity implements
                     null, RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
             startManagingCursor(cursor0);
 
-
-            String groupFrom0[] = {RosterProvider.ROSTER_GROUP_NAME};
-            int groupTo0[] = { R.id.groupName };
-
             String from0[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
             int to0[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
             SimpleCursorAdapter adapter0 = new SimpleCursorAdapter(this, R.layout.buddy_item,
-                    cursor0, from0, to0, 0) {
+                    cursor0, from0, to0) {
             };
             listView1.setAdapter(adapter0);
 

@@ -234,7 +234,7 @@
     <file path="$PROJECT_DIR$/android-agent/.idea/workspace.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357083730906" ignored="false" />
     <file path="/fragment.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367048453763" ignored="false" />
     <file path="/MainService.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1357148259447" ignored="false" />
-    <file path="/MainActivity.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367163775461" ignored="false" />
+    <file path="/MainActivity.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367223715148" ignored="false" />
     <file path="/a.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366652927759" ignored="false" />
     <file path="/Dummy.txt" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366549627764" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366701104641" ignored="false" />
@@ -283,12 +283,14 @@
     <file path="/group_item.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366550929819" ignored="false" />
     <file path="/buddy_list_menu.xml" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366652648713" ignored="false" />
     <file path="/GroupAdapter.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366665196918" ignored="false" />
-    <file path="/RosterProvider.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367144908270" ignored="false" />
+    <file path="/RosterProvider.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367223546311" ignored="false" />
     <file path="$PROJECT_DIR$/gen/com/tomclaw/mandarin/R.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366664331114" ignored="false" />
     <file path="$PROJECT_DIR$/gen/com/tomclaw/mandarin/Manifest.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366664331114" ignored="false" />
     <file path="$PROJECT_DIR$/gen/com/tomclaw/mandarin/BuildConfig.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1366701115220" ignored="false" />
     <file path="/DatabaseHelper.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367145195251" ignored="false" />
     <file path="$PROJECT_DIR$/libs/ActionBarSherlock/gen/com/actionbarsherlock/Manifest.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367163876890" ignored="false" />
+    <file path="/RosterDialogsAdapter.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367221621303" ignored="false" />
+    <file path="/RosterGeneralAdapter.java" changelist="7f704ed9-ce04-4359-ae96-96390e84948f" time="1367221805992" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -308,6 +310,7 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -344,7 +347,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -363,19 +365,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DatabaseHelper.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/DatabaseHelper.java">
+      <file leaf-file-name="RosterProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="57" selection-start="1524" selection-end="1524" vertical-scroll-proportion="0.0">
+            <state line="20" column="13" selection-start="532" selection-end="532" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RosterProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java">
+      <file leaf-file-name="RosterDialogsAdapter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterDialogsAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="44" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0">
+            <state line="19" column="68" selection-start="612" selection-end="612" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RosterGeneralAdapter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterGeneralAdapter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="35" column="14" selection-start="1333" selection-end="1333" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -384,19 +395,11 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="122" column="22" selection-start="4156" selection-end="4156" vertical-scroll-proportion="1.6229508">
+            <state line="103" column="47" selection-start="3426" selection-end="3426" vertical-scroll-proportion="0.2951654">
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#3490#3496#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AccountsAdapter.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/AccountsAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="37" selection-start="319" selection-end="319" vertical-scroll-proportion="0.0">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -411,9 +414,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/im/BuddyItem.java" />
-        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/im/AccountRoot.java" />
-        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/im/GroupItem.java" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/im/Roster.java" />
         <option value="$PROJECT_DIR$/res/layout/group_item.xml" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/SessionHolder.java" />
@@ -424,8 +424,11 @@
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/GroupAdapter.java" />
         <option value="$PROJECT_DIR$/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/Settings.java" />
-        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/DatabaseHelper.java" />
+        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterDialogsAdapter.java" />
+        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterOnlineAdapter.java" />
+        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterGeneralAdapter.java" />
+        <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java" />
         <option value="$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java" />
       </list>
     </option>
@@ -433,8 +436,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="64" />
     <option name="y" value="-4" />
-    <option name="width" value="1857" />
-    <option name="height" value="1085" />
+    <option name="width" value="1303" />
+    <option name="height" value="773" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -536,8 +539,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -601,6 +602,36 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mandarin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mandarin-android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mandarin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="adapters" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -720,6 +751,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -749,7 +782,7 @@
       <recent name="$PROJECT_DIR$/src/com/tomclaw/mandarin/core" />
     </key>
   </component>
-  <component name="RunManager" selected="Android Application.Device">
+  <component name="RunManager" selected="Android Application.Emuator">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -965,7 +998,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-4" width="1857" height="1085" extended-state="6" />
+    <frame x="64" y="-4" width="1303" height="773" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -977,14 +1010,14 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3552" sideWeight="0.374502" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32123798" sideWeight="0.56653386" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32" sideWeight="0.56653386" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23265742" sideWeight="0.99840635" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296582" sideWeight="0.49786553" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22151394" sideWeight="0.336" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16749585" sideWeight="0.678762" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33084312" sideWeight="0.6717132" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24223107" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3296" sideWeight="0.6717132" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3243028" sideWeight="0.6448" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1060,30 +1093,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/GroupAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="105" column="55" selection-start="3338" selection-end="3357" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="64" selection-start="1801" selection-end="1801" vertical-scroll-proportion="0.7345133">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/content/ContextWrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="228" column="0" selection-start="5895" selection-end="5895" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/database/sqlite/SQLiteOpenHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="164" column="0" selection-start="7465" selection-end="7465" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/buddy_list.xml">
       <provider editor-type-id="android-designer">
         <state />
@@ -1125,32 +1134,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/DatabaseHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="57" selection-start="1524" selection-end="1524" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="44" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/widget/SimpleCursorAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="101" column="11" selection-start="4462" selection-end="4462" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="101" column="11" selection-start="4462" selection-end="4462" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/widget/SimpleCursorTreeAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="22" selection-start="1713" selection-end="1713" vertical-scroll-proportion="0.47619048">
-          <folding />
-        </state>
+        <state line="39" column="22" selection-start="1713" selection-end="1713" vertical-scroll-proportion="0.47619048" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/AccountsAdapter.java">
@@ -1162,16 +1153,57 @@
     </entry>
     <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/app/Activity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1787" column="20" selection-start="80159" selection-end="80159" vertical-scroll-proportion="0.38196722">
+        <state line="1787" column="19" selection-start="80158" selection-end="80158" vertical-scroll-proportion="0.4105263">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/adt-bundle/sdk/sources/android-17/android/content/ContextWrapper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="97" column="26" selection-start="2892" selection-end="2907" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterDialogsAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="68" selection-start="612" selection-end="612" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterGeneralAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="14" selection-start="1333" selection-end="1333" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/DatabaseHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="57" selection-start="1524" selection-end="1524" vertical-scroll-proportion="1.25">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/adapters/RosterOnlineAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="16" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.5821727">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/core/RosterProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="13" selection-start="532" selection-end="532" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/tomclaw/mandarin/main/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="22" selection-start="4156" selection-end="4156" vertical-scroll-proportion="1.6229508">
+        <state line="103" column="47" selection-start="3426" selection-end="3426" vertical-scroll-proportion="0.2951654">
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#3490#3496#0" expanded="true" />
           </folding>
         </state>
       </provider>

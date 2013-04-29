@@ -18,11 +18,11 @@ import android.util.Log;
  */
 public class RosterProvider extends ContentProvider {
 
-    // Table
+    // Tables.
     public static final String ROSTER_GROUP_TABLE = "roster_group";
     public static final String ROSTER_BUDDY_TABLE = "roster_buddy";
 
-    // Fields
+    // Fields.
     private static final String ROSTER_AUTO_ID = "_id";
 
     public static final String ROSTER_GROUP_NAME = "group_name";
@@ -35,7 +35,7 @@ public class RosterProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
 
-    // Database create scripts
+    // Database create scripts.
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROSTER_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_GROUP_NAME + " text" + ");";
@@ -46,30 +46,20 @@ public class RosterProvider extends ContentProvider {
             + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text, "
             + ROSTER_BUDDY_DIALOG + " int" + ");";
 
-    // Database helper object
+    // Database helper object.
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
 
-    // Data types
-    static final String GROUP_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
-            + Settings.ROSTER_AUTHORITY + "." + ROSTER_GROUP_TABLE;
-    static final String GROUP_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
-            + Settings.ROSTER_AUTHORITY + "." + ROSTER_GROUP_TABLE;
-
     private static final int URI_BUDDY = 1;
-    private static final int URI_BUDDY_ID = 2;
-    private static final int URI_GROUP = 3;
-    private static final int URI_GROUP_ID = 4;
+    private static final int URI_GROUP = 2;
 
-    // URI tool instance
+    // URI tool instance.
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_GROUP_TABLE + "/#", URI_GROUP_ID);
         uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_BUDDY_TABLE + "/#", URI_BUDDY_ID);
     }
 
     @Override
@@ -84,43 +74,21 @@ public class RosterProvider extends ContentProvider {
         Log.d(Settings.LOG_TAG, "query, " + uri.toString());
         String id;
         String table;
-        // проверяем Uri
+        // Check URI.
         switch (uriMatcher.match(uri)) {
-            case URI_GROUP: // Default Uri
+            case URI_GROUP:
                 Log.d(Settings.LOG_TAG, "URI_GROUP");
-                // Default sort if not specified
+                // Default sort if not specified.
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_GROUP_NAME + " ASC";
                 }
                 table = ROSTER_GROUP_TABLE;
                 break;
-            case URI_GROUP_ID: // Uri with ID
-                id = uri.getLastPathSegment();
-                Log.d(Settings.LOG_TAG, "URI_GROUP_ID, " + id);
-                // добавляем ID к условию выборки
-                if (TextUtils.isEmpty(selection)) {
-                    selection = ROSTER_AUTO_ID + " = " + id;
-                } else {
-                    selection = selection + " AND " + ROSTER_AUTO_ID + " = " + id;
-                }
-                table = ROSTER_GROUP_TABLE;
-                break;
-            case URI_BUDDY: // Default Uri
+            case URI_BUDDY:
                 Log.d(Settings.LOG_TAG, "URI_BUDDY");
-                // Default sort if not specified
+                // Default sort if not specified.
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_BUDDY_ID + " ASC";
-                }
-                table = ROSTER_BUDDY_TABLE;
-                break;
-            case URI_BUDDY_ID: // Uri with ID
-                id = uri.getLastPathSegment();
-                Log.d(Settings.LOG_TAG, "URI_BUDDY_ID, " + id);
-                // добавляем ID к условию выборки
-                if (TextUtils.isEmpty(selection)) {
-                    selection = ROSTER_AUTO_ID + " = " + id;
-                } else {
-                    selection = selection + " AND " + ROSTER_AUTO_ID + " = " + id;
                 }
                 table = ROSTER_BUDDY_TABLE;
                 break;
@@ -130,10 +98,6 @@ public class RosterProvider extends ContentProvider {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         Cursor cursor = sqLiteDatabase.query(table, projection, selection,
                 selectionArgs, null, null, sortOrder);
-        // Cursor cursor = sqLiteDatabase.query(true, ROSTER_GROUP_TABLE, new String[]{ROSTER_GROUP_NAME}, null, null, null, null, null, null);
-        // Log.d(Settings.LOG_TAG, "Cursor items count: " + cursor.getCount());
-        // просим ContentResolver уведомлять этот курсор
-        // об изменениях данных в GROUP_RESOLVER_URI
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -141,27 +105,21 @@ public class RosterProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         Log.d(Settings.LOG_TAG, "getType, " + uri.toString());
-        switch (uriMatcher.match(uri)) {
-            case URI_GROUP:
-                return GROUP_CONTENT_TYPE;
-            case URI_GROUP_ID:
-                return GROUP_CONTENT_ITEM_TYPE;
-        }
         return null;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 }

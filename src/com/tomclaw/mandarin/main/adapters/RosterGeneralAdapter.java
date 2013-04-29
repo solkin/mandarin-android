@@ -7,6 +7,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleCursorTreeAdapter;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
@@ -97,5 +100,53 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
         }
         // Returns null. Sorry, but we have no child cursor this time.
         return null;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
+                             ViewGroup parent) {
+        View v;
+        try {
+            Cursor cursor = getGroup(groupPosition);
+            if (cursor == null) {
+                throw new IllegalStateException("this should only be called when the cursor is valid");
+            }
+            if (convertView == null) {
+                v = newGroupView(context, cursor, isExpanded, parent);
+            } else {
+                v = convertView;
+            }
+            bindGroupView(v, context, cursor, isExpanded);
+        } catch (Throwable ex) {
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = mInflater.inflate(R.layout.group_item, parent, false);
+            Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
+        }
+        return v;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+                             View convertView, ViewGroup parent) {
+        View v;
+        try {
+            Cursor cursor = getChild(groupPosition, childPosition);
+
+            if (cursor == null) {
+                throw new IllegalStateException("this should only be called when the cursor is valid");
+            }
+
+            if (convertView == null) {
+                v = newChildView(context, cursor, isLastChild, parent);
+            } else {
+                v = convertView;
+            }
+            bindChildView(v, context, cursor, isLastChild);
+        } catch (Throwable ex) {
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = mInflater.inflate(R.layout.buddy_item, parent, false);
+            Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
+        }
+        return v;
     }
 }

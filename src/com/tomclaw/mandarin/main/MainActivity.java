@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CursorTreeAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
-import android.widget.SimpleCursorTreeAdapter;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -34,11 +34,9 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     ViewPager mPager;
     PageIndicator mIndicator;
 
-    final int DIALOGS_ADAPTER = 0x01;
-    final int ONLINE_GROUP_ADAPTER = 0x02;
-    final int ONLINE_BUDDY_ADAPTER = 0x03;
-    SimpleCursorAdapter adapter0;
-    SimpleCursorTreeAdapter adapter;
+    CursorAdapter adapter1;
+    CursorAdapter adapter2;
+    CursorTreeAdapter adapter3;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,7 +123,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 null, from0, to0, 0) {
         };
         listView1.setAdapter(adapter0);*/
-        listView1.setAdapter(new RosterDialogsAdapter(this, getSupportLoaderManager()));
+        adapter1 = new RosterDialogsAdapter(this, getSupportLoaderManager());
+        listView1.setAdapter(adapter1);
 
         /********* Online *********/
             /*getSupportLoaderManager().initLoader(ONLINE_GROUP_ADAPTER, null, this);
@@ -152,7 +151,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
             };
             listView2.setAdapter(adapter);*/
-        listView2.setAdapter(new RosterOnlineAdapter(this, getSupportLoaderManager()));
+        adapter2 =new RosterOnlineAdapter(this, getSupportLoaderManager());
+        listView2.setAdapter(adapter2);
 
         /********* All friends *********/
         /*Cursor cursor1 = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
@@ -179,7 +179,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             }
         };*/
 
-        listView3.setAdapter(new RosterGeneralAdapter(this, getSupportLoaderManager()));
+        adapter3 = new RosterGeneralAdapter(this, getSupportLoaderManager());
+        listView3.setAdapter(adapter3);
 
         /** View pager **/
         mAdapter = new CustomPagerAdapter(this, pages);

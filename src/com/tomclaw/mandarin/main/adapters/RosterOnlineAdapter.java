@@ -8,6 +8,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
@@ -63,23 +64,25 @@ public class RosterOnlineAdapter extends SimpleCursorAdapter implements
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        View v;
         try {
             if (!mDataValid) {
-                Log.d(Settings.LOG_TAG, "this should only be called when the cursor is valid");
+                throw new IllegalStateException("this should only be called when the cursor is valid");
             }
             if (!mCursor.moveToPosition(position)) {
-                Log.d(Settings.LOG_TAG, "couldn't move cursor to position " + position);
+                throw new IllegalStateException("couldn't move cursor to position " + position);
             }
+            if (convertView == null) {
+                v = newView(mContext, mCursor, parent);
+            } else {
+                v = convertView;
+            }
+            bindView(v, mContext, mCursor);
         } catch (Throwable ex) {
+            LayoutInflater mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = mInflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
-        View v;
-        if (convertView == null) {
-            v = newView(mContext, mCursor, parent);
-        } else {
-            v = convertView;
-        }
-        bindView(v, mContext, mCursor);
         return v;
     }
 }

@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActivityManager;
 import android.content.*;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -11,6 +12,9 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +29,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
+    private List<Cursor> mManagedCursors = new ArrayList<Cursor>();
 
     /**
      * Called when the activity is first created.
@@ -43,6 +48,8 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
 
     @Override
     protected void onDestroy() {
+        /** Destroy cursors **/
+        destroyCursors();
         /** Unbind **/
         unbindCoreService();
         /** Destroy **/
@@ -167,11 +174,53 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
 
     /**
      * Any message from service for this activity
+     *
      * @param intent
      */
     public abstract void onCoreServiceIntent(Intent intent);
 
     public final ServiceInteraction getServiceInteraction() {
         return serviceInteraction;
+    }
+
+    /**
+     * Start cursor managing
+     * @param c
+     */
+    public void manageCursor(Cursor c) {
+        synchronized (mManagedCursors) {
+            if (!mManagedCursors.contains(c))
+                mManagedCursors.add(c);
+        }
+    }
+
+    /**
+     * Stop cursor managing
+     * @param c
+     */
+    public void removeCursor(Cursor c) {
+        synchronized (mManagedCursors) {
+            try {
+                mManagedCursors.remove(c);
+            } catch (Exception e) {
+                // Don't really care if it's called more than once.
+            }
+        }
+    }
+
+    /**
+     * Destroy all managed cursors
+     */
+    private void destroyCursors() {
+        synchronized (mManagedCursors) {
+            for (Cursor c : mManagedCursors) {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                    // Don't really care if it's called more than once or fails.
+                }
+            }
+            mManagedCursors.clear();
+        }
     }
 }

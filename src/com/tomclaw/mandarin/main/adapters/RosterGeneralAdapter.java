@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.main.adapters;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.util.Log;
@@ -8,6 +7,7 @@ import android.widget.SimpleCursorTreeAdapter;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.ChiefActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,12 +26,12 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter {
 
     private final ContentResolver contentResolver;
 
-    public RosterGeneralAdapter(Activity context, Cursor cursor) {
+    public RosterGeneralAdapter(ChiefActivity context, Cursor cursor) {
         super(context, cursor,
                 R.layout.group_item, groupFrom, groupTo,
                 R.layout.buddy_item, childFrom, childTo);
         this.contentResolver = context.getContentResolver();
-        context.startManagingCursor(cursor);
+        context.manageCursor(cursor);
     }
 
     public static Cursor getCursor(ContentResolver contentResolver) {

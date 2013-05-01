@@ -1,12 +1,12 @@
 package com.tomclaw.mandarin.main.adapters;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.ChiefActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,10 +20,10 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter {
     private static final String from[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
     private static final int to[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
 
-    public RosterDialogsAdapter(Activity context, Cursor cursor) {
+    public RosterDialogsAdapter(ChiefActivity context, Cursor cursor) {
         super(context, R.layout.buddy_item, cursor, from, to, 0x00);
 
-        context.startManagingCursor(cursor);
+        context.manageCursor(cursor);
     }
 
     public static Cursor getCursor(ContentResolver contentResolver) {

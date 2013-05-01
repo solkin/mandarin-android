@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -110,7 +111,24 @@ public class RosterProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
+        String table;
+        switch (uriMatcher.match(uri)) {
+            case URI_GROUP:
+                table = ROSTER_GROUP_TABLE;
+                break;
+            case URI_BUDDY:
+                table = ROSTER_BUDDY_TABLE;
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong URI: " + uri);
+        }
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        long rowId = sqLiteDatabase.insert(table, null, values);
+        Uri resultUri = ContentUris.withAppendedId(uri, rowId);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(resultUri, null);
+        return resultUri;
     }
 
     @Override

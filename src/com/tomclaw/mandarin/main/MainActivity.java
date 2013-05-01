@@ -114,6 +114,27 @@ public class MainActivity extends ChiefActivity implements
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
+
+        /*Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ContentValues cv = new ContentValues();
+                cv.put(RosterProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
+                cv.put(RosterProvider.ROSTER_BUDDY_NICK, "Burova");
+                cv.put(RosterProvider.ROSTER_BUDDY_GROUP, "Wmnn");
+                cv.put(RosterProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
+                cv.put(RosterProvider.ROSTER_BUDDY_STATE, 1);
+                cv.put(RosterProvider.ROSTER_BUDDY_DIALOG, 1);
+                Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
+                Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
+            }
+        };
+        thread.start();*/
     }
 
     @Override

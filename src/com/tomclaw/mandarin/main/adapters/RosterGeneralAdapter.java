@@ -14,6 +14,7 @@ import android.widget.SimpleCursorTreeAdapter;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.ProviderAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +24,7 @@ import com.tomclaw.mandarin.core.Settings;
  * To change this template use File | Settings | File Templates.
  */
 public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, ProviderAdapter {
 
     private static final int ADAPTER_GENERAL_ID = -1;
 
@@ -64,7 +65,11 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
         if (cursorLoader.getId() == ADAPTER_GENERAL_ID) {
             setGroupCursor(cursor);
         } else {
-            setChildrenCursor(cursorLoader.getId(), cursor);
+            try {
+                setChildrenCursor(cursorLoader.getId(), cursor);
+            } catch (Throwable ex) {
+                // Nothing to do in this case.
+            }
         }
     }
 
@@ -75,7 +80,7 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
         } else {
             try {
                 setChildrenCursor(cursorLoader.getId(), null);
-            } catch (NullPointerException ex) {
+            } catch (Throwable ex) {
                 // Nothing to do in this case.
             }
         }
@@ -148,5 +153,10 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
             Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
         }
         return v;
+    }
+
+    @Override
+    public void destroyLoader() {
+        loaderManager.destroyLoader(ADAPTER_GENERAL_ID);
     }
 }

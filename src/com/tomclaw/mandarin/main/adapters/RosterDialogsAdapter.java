@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.ProviderAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +24,7 @@ import com.tomclaw.mandarin.core.Settings;
  * To change this template use File | Settings | File Templates.
  */
 public class RosterDialogsAdapter extends SimpleCursorAdapter implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, ProviderAdapter {
 
     private static final int ADAPTER_DIALOGS_ID = -2;
 
@@ -79,10 +80,15 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
             }
             bindView(v, mContext, mCursor);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = mInflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return v;
+    }
+
+    @Override
+    public void destroyLoader() {
+        loaderManager.destroyLoader(ADAPTER_DIALOGS_ID);
     }
 }

@@ -1,19 +1,16 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CursorTreeAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
@@ -29,21 +26,30 @@ import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
 import com.viewpageindicator.PageIndicator;
 import com.viewpageindicator.TitlePageIndicator;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ChiefActivity implements ActionBar.OnNavigationListener {
 
-    CustomPagerAdapter mAdapter;
-    ViewPager mPager;
-    PageIndicator mIndicator;
-
-    CursorAdapter adapter1;
-    CursorAdapter adapter2;
-    CursorTreeAdapter adapter3;
+    private CustomPagerAdapter mAdapter;
+    private ViewPager mPager;
+    private PageIndicator mIndicator;
+    private List<View> pages = new ArrayList<View>();
+    private List<ProviderAdapter> providerAdapters = new ArrayList<ProviderAdapter>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Destroy all loaders;.
+        for (ProviderAdapter providerAdapter : providerAdapters) {
+            providerAdapter.destroyLoader();
+        }
     }
 
     @Override
@@ -107,116 +113,58 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         bar.setListNavigationCallbacks(listAdapter, this);
         /** Lists **/
-        ListView listView1 = new ListView(this);
-        ListView listView2 = new ListView(this);
-        ExpandableListView listView3 = new ExpandableListView(this);
-
-        Vector<View> pages = new Vector<View>();
-
-        pages.add(listView1);
-        pages.add(listView2);
-        pages.add(listView3);
-
-        /************** Example of BuddyItem list ******************/
+        pages.clear();
+        providerAdapters.clear();
         /********* Dialogs *********/
-        /*getSupportLoaderManager().initLoader(DIALOGS_ADAPTER, null, this);
-        String from0[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS};
-        int to0[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
-        adapter0 = new SimpleCursorAdapter(this, R.layout.buddy_item,
-                null, from0, to0, 0) {
-        };
-        listView1.setAdapter(adapter0);*/
-        adapter1 = new RosterDialogsAdapter(this, getSupportLoaderManager());
-        listView1.setAdapter(adapter1);
-
+        ListView dialogsList = new ListView(this);
+        RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
+        dialogsList.setAdapter(dialogsAdapter);
+        pages.add(dialogsList);
+        providerAdapters.add(dialogsAdapter);
         /********* Online *********/
-            /*getSupportLoaderManager().initLoader(ONLINE_GROUP_ADAPTER, null, this);
-            String groupFrom[] = {RosterProvider.ROSTER_GROUP_NAME};
-            int groupTo[] = {R.id.groupName};
-            String from[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS};
-            int to[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
-            adapter = new SimpleCursorTreeAdapter(this,
-                    null, R.layout.group_item, R.layout.group_item,
-                    groupFrom, groupTo, R.layout.buddy_item, R.layout.buddy_item, from, to) {
-
-                @Override
-                protected Cursor getChildrenCursor(Cursor groupCursor) {
-                    Log.d(Settings.LOG_TAG, "getChildrenCursor");
-                    int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
-                    String groupName = groupCursor.getString(columnIndex);
-                    //return getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName + "'" + " AND "
-                    //        + RosterProvider.ROSTER_BUDDY_STATE + "='" + 1 + "'",
-                    //        null, RosterProvider.ROSTER_BUDDY_NICK + " ASC");
-                    Bundle bundle = new Bundle();
-                    bundle.putString(RosterProvider.ROSTER_BUDDY_GROUP, groupName);
-                    getSupportLoaderManager().initLoader(ONLINE_GROUP_ADAPTER, bundle, MainActivity.this);
-                    return null;
-                }
-            };
-            listView2.setAdapter(adapter);*/
-        adapter2 =new RosterOnlineAdapter(this, getSupportLoaderManager());
-        listView2.setAdapter(adapter2);
-
+        ListView onlineList = new ListView(this);
+        RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
+        onlineList.setAdapter(onlineAdapter);
+        pages.add(onlineList);
+        providerAdapters.add(onlineAdapter);
         /********* All friends *********/
-        /*Cursor cursor1 = getContentResolver().query(Settings.GROUP_RESOLVER_URI, null, null,
-                null, RosterProvider.ROSTER_GROUP_NAME + " ASC");
-        startManagingCursor(cursor1);
-
-
-        String groupFrom1[] = {RosterProvider.ROSTER_GROUP_NAME};
-        int groupTo1[] = {R.id.groupName};
-
-        String from1[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS};
-        int to1[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
-        SimpleCursorTreeAdapter adapter1 = new SimpleCursorTreeAdapter(this,
-                cursor1, R.layout.group_item, R.layout.group_item,
-                groupFrom1, groupTo1, R.layout.buddy_item, R.layout.buddy_item, from1, to1) {
-
-            @Override
-            protected Cursor getChildrenCursor(Cursor groupCursor) {
-                Log.d(Settings.LOG_TAG, "getChildrenCursor");
-                int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
-                String groupName = groupCursor.getString(columnIndex);
-                return getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName + "'",
-                        null, RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
-            }
-        };*/
-
-        adapter3 = new RosterGeneralAdapter(this, getSupportLoaderManager());
-        listView3.setAdapter(adapter3);
-
+        ExpandableListView generalList = new ExpandableListView(this);
+        RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
+        generalList.setAdapter(generalAdapter);
+        pages.add(generalList);
+        providerAdapters.add(generalAdapter);
         /** View pager **/
-        mAdapter = new CustomPagerAdapter(this, pages);
+        mAdapter = new CustomPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
 
-        /*Thread thread = new Thread() {
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
-                    sleep(30000);
+                    sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 ContentValues cv = new ContentValues();
                 cv.put(RosterProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
                 cv.put(RosterProvider.ROSTER_BUDDY_NICK, "Burova");
-                cv.put(RosterProvider.ROSTER_BUDDY_GROUP, "Wmnn");
+                cv.put(RosterProvider.ROSTER_BUDDY_GROUP, "Friends");
                 cv.put(RosterProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
                 cv.put(RosterProvider.ROSTER_BUDDY_STATE, 1);
                 cv.put(RosterProvider.ROSTER_BUDDY_DIALOG, 1);
                 Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
                 Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
                 ContentValues contentValues = new ContentValues();
-                contentValues.put(RosterProvider.ROSTER_GROUP_NAME, "Wmnn");
+                contentValues.put(RosterProvider.ROSTER_GROUP_NAME, "Friends");
                 Uri uri = getContentResolver().insert(Settings.GROUP_RESOLVER_URI, contentValues);
                 Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
             }
         };
-        thread.start();*/
+        thread.start();
     }
 
     @Override
@@ -235,12 +183,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         return false;
     }
 
-    class CustomPagerAdapter extends PagerAdapter {
-        private Context mContext;
-        private Vector<View> pages;
+    private class CustomPagerAdapter extends PagerAdapter {
+        private List<View> pages;
 
-        public CustomPagerAdapter(Context context, Vector<View> pages) {
-            this.mContext = context;
+        public CustomPagerAdapter(List<View> pages) {
             this.pages = pages;
         }
 

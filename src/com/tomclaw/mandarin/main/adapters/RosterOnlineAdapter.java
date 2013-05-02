@@ -25,7 +25,7 @@ import com.tomclaw.mandarin.core.Settings;
 public class RosterOnlineAdapter extends SimpleCursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int ADAPTER_ONLINE_ID = 0x01;
+    private static final int ADAPTER_ONLINE_ID = -3;
 
     private static final String childFrom[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK,
             RosterProvider.ROSTER_BUDDY_STATUS};

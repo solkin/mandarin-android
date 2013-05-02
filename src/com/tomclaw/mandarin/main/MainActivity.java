@@ -1,7 +1,9 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
@@ -19,6 +21,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
@@ -189,6 +192,31 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
+
+        /*Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ContentValues cv = new ContentValues();
+                cv.put(RosterProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
+                cv.put(RosterProvider.ROSTER_BUDDY_NICK, "Burova");
+                cv.put(RosterProvider.ROSTER_BUDDY_GROUP, "Wmnn");
+                cv.put(RosterProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
+                cv.put(RosterProvider.ROSTER_BUDDY_STATE, 1);
+                cv.put(RosterProvider.ROSTER_BUDDY_DIALOG, 1);
+                Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
+                Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(RosterProvider.ROSTER_GROUP_NAME, "Wmnn");
+                Uri uri = getContentResolver().insert(Settings.GROUP_RESOLVER_URI, contentValues);
+                Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
+            }
+        };
+        thread.start();*/
     }
 
     @Override

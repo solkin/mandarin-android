@@ -25,7 +25,7 @@ import com.tomclaw.mandarin.core.Settings;
 public class RosterDialogsAdapter extends SimpleCursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int ADAPTER_DIALOGS_ID = 0x00;
+    private static final int ADAPTER_DIALOGS_ID = -2;
 
     private static final String from[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS};
     private static final int to[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};

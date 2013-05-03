@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
@@ -14,12 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
@@ -103,8 +99,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public void onCoreServiceReady() {
-        if (activityStoped)
-            return;
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();

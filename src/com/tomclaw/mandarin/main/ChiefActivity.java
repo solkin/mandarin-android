@@ -25,7 +25,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
-    protected boolean activityStoped;
+    private boolean activityStopped;
 
     /**
      * Called when the activity is first created.
@@ -44,13 +44,13 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        activityStoped = true;
+        activityStopped = true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        activityStoped = false;
+        activityStopped = false;
     }
 
     @Override
@@ -108,7 +108,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                         /** Obtain service state **/
                         int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
                         /** Checking for service state is up **/
-                        if (serviceState == CoreService.STATE_UP) {
+                        if (serviceState == CoreService.STATE_UP && !activityStopped) {
                             onCoreServiceReady();
                         } else if (serviceState == CoreService.STATE_DOWN) {
                             onCoreServiceDown();

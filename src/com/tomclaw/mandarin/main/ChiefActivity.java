@@ -25,6 +25,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
+    protected boolean activityStoped;
 
     /**
      * Called when the activity is first created.
@@ -40,6 +41,22 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         startCoreService();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        activityStoped = true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        activityStoped = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onDestroy() {

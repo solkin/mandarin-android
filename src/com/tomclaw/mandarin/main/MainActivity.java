@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
@@ -37,6 +38,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     private List<View> pages = new ArrayList<View>();
     private List<ProviderAdapter> providerAdapters = new ArrayList<ProviderAdapter>();
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // super.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -101,6 +103,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public void onCoreServiceReady() {
+        if (activityStoped)
+            return;
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();
@@ -141,7 +145,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
 
-        Thread thread = new Thread() {
+        /*Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -164,7 +168,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
             }
         };
-        thread.start();
+        thread.start();*/
     }
 
     @Override

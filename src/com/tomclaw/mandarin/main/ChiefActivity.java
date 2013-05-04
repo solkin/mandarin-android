@@ -104,21 +104,22 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                 public void onReceive(Context context, Intent intent) {
                     Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
                     /** Checking for activity state isn't stop **/
-                    if (!isActivityStopped){
-                        /** Checking for special message from service **/
-                        if (intent.getBooleanExtra("Staff", false)) {
-                            /** Obtain service state **/
-                            int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
-                            /** Checking for service state is up **/
-                            if (serviceState == CoreService.STATE_UP && !isActivityStopped) {
-                                onCoreServiceReady();
-                            } else if (serviceState == CoreService.STATE_DOWN) {
-                                onCoreServiceDown();
-                            }
-                        } else {
-                            /** Redirecting intent **/
-                            ChiefActivity.this.onCoreServiceIntent(intent);
+                    if (isActivityStopped) {
+                        return;
+                    }
+                    /** Checking for special message from service **/
+                    if (intent.getBooleanExtra("Staff", false)) {
+                        /** Obtain service state **/
+                        int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
+                        /** Checking for service state is up **/
+                        if (serviceState == CoreService.STATE_UP) {
+                            onCoreServiceReady();
+                        } else if (serviceState == CoreService.STATE_DOWN) {
+                            onCoreServiceDown();
                         }
+                    } else {
+                        /** Redirecting intent **/
+                        ChiefActivity.this.onCoreServiceIntent(intent);
                     }
                 }
             };

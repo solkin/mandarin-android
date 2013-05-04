@@ -32,7 +32,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     private ViewPager mPager;
     private PageIndicator mIndicator;
     private List<View> pages = new ArrayList<View>();
-    private List<ProviderAdapter> providerAdapters = new ArrayList<ProviderAdapter>();
 
 
     @Override
@@ -43,11 +42,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // Destroy all loaders;.
-        for (ProviderAdapter providerAdapter : providerAdapters) {
-            providerAdapter.destroyLoader();
-        }
     }
 
     @Override
@@ -112,25 +106,21 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         bar.setListNavigationCallbacks(listAdapter, this);
         /** Lists **/
         pages.clear();
-        providerAdapters.clear();
         /********* Dialogs *********/
         ListView dialogsList = new ListView(this);
         RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
         dialogsList.setAdapter(dialogsAdapter);
         pages.add(dialogsList);
-        providerAdapters.add(dialogsAdapter);
         /********* Online *********/
         ListView onlineList = new ListView(this);
         RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
         onlineList.setAdapter(onlineAdapter);
         pages.add(onlineList);
-        providerAdapters.add(onlineAdapter);
         /********* All friends *********/
         ExpandableListView generalList = new ExpandableListView(this);
         RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
         generalList.setAdapter(generalAdapter);
         pages.add(generalList);
-        providerAdapters.add(generalAdapter);
         /** View pager **/
         mAdapter = new CustomPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);

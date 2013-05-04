@@ -25,7 +25,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
-    private boolean activityStopped;
+    private boolean isActivityStopped;
 
     /**
      * Called when the activity is first created.
@@ -44,13 +44,13 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        activityStopped = true;
+        isActivityStopped = true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        activityStopped = false;
+        isActivityStopped = false;
     }
 
     @Override
@@ -103,19 +103,22 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
-                    /** Checking for special message from service **/
-                    if (intent.getBooleanExtra("Staff", false)) {
-                        /** Obtain service state **/
-                        int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
-                        /** Checking for service state is up **/
-                        if (serviceState == CoreService.STATE_UP && !activityStopped) {
-                            onCoreServiceReady();
-                        } else if (serviceState == CoreService.STATE_DOWN) {
-                            onCoreServiceDown();
+                    /** Checking for activity state isn't stop **/
+                    if (!isActivityStopped){
+                        /** Checking for special message from service **/
+                        if (intent.getBooleanExtra("Staff", false)) {
+                            /** Obtain service state **/
+                            int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
+                            /** Checking for service state is up **/
+                            if (serviceState == CoreService.STATE_UP && !isActivityStopped) {
+                                onCoreServiceReady();
+                            } else if (serviceState == CoreService.STATE_DOWN) {
+                                onCoreServiceDown();
+                            }
+                        } else {
+                            /** Redirecting intent **/
+                            ChiefActivity.this.onCoreServiceIntent(intent);
                         }
-                    } else {
-                        /** Redirecting intent **/
-                        ChiefActivity.this.onCoreServiceIntent(intent);
                     }
                 }
             };

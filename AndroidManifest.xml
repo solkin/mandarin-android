@@ -38,7 +38,8 @@
                   android:configChanges="orientation">
         </activity>
         <provider android:name=".core.RosterProvider"
-                  android:authorities="com.tomclaw.mandarin.core.RosterProvider">
+                  android:authorities="com.tomclaw.mandarin.core.RosterProvider"
+                  android:exported="false">
         </provider>
     </application>
 </manifest>

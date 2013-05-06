@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MainActivity extends ChiefActivity implements ActionBar.OnNavigationListener {
 
-    private CustomPagerAdapter mAdapter;
+    private RosterPagerAdapter mAdapter;
     private ViewPager mPager;
     private PageIndicator mIndicator;
     private List<View> pages = new ArrayList<View>();
@@ -60,10 +60,16 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 Intent intent = new Intent(this, AccountsActivity.class);
                 startActivity(intent);
                 return true;
+            }
+            case R.id.show_dialogs: {
+                Intent intent = new Intent(this, ChatActivity.class);
+                startActivity(intent);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -122,7 +128,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         generalList.setAdapter(generalAdapter);
         pages.add(generalList);
         /** View pager **/
-        mAdapter = new CustomPagerAdapter(pages);
+        mAdapter = new RosterPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
@@ -171,10 +177,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         return false;
     }
 
-    private class CustomPagerAdapter extends PagerAdapter {
+    private class RosterPagerAdapter extends PagerAdapter {
         private List<View> pages;
 
-        public CustomPagerAdapter(List<View> pages) {
+        public RosterPagerAdapter(List<View> pages) {
             this.pages = pages;
         }
 

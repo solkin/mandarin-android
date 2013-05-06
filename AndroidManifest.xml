@@ -37,6 +37,11 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation">
         </activity>
+        <activity android:name=".main.ChatActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation">
+        </activity>
         <provider android:name=".core.RosterProvider"
                   android:authorities="com.tomclaw.mandarin.core.RosterProvider"
                   android:exported="false">

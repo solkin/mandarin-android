@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main;
+package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
 import android.content.Context;

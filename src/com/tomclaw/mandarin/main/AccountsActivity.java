@@ -16,6 +16,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 
 import java.util.List;
 

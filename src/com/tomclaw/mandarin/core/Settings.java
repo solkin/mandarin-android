@@ -19,4 +19,6 @@ public class Settings {
             + DATA_AUTHORITY + "/" + DataProvider.ROSTER_GROUP_TABLE);
     public static Uri BUDDY_RESOLVER_URI = Uri.parse("content://"
             + DATA_AUTHORITY + "/" + DataProvider.ROSTER_BUDDY_TABLE);
+    public static Uri HISTORY_RESOLVER_URI = Uri.parse("content://"
+            + DATA_AUTHORITY + "/" + DataProvider.CHAT_HISTORY_TABLE);
 }

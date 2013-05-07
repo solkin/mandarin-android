@@ -11,6 +11,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.DataProvider;
 import com.tomclaw.mandarin.core.Settings;
@@ -51,6 +52,10 @@ public class ChatPagerAdapter extends PagerAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
+        ListView chatList = (ListView)view.findViewById(R.id.chat_list);
+        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager,
+                String.valueOf(cursor.getLong(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID))));
+        chatList.setAdapter(chatHistoryAdapter);
         container.addView(view);
         return view;
     }

@@ -27,9 +27,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Creating roster database.
         db.execSQL(DataProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
         db.execSQL(DataProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
+        db.execSQL(DataProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
         ContentValues cv = new ContentValues();
         ContentValues cv1 = new ContentValues();
-        int[] statuses = new int[]{
+        ContentValues cv2 = new ContentValues();
+        int[] statuses = new int[] {
                 R.drawable.status_icq_offline,
                 R.drawable.status_icq_online,
                 R.drawable.status_icq_away,
@@ -47,19 +49,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insert(DataProvider.ROSTER_GROUP_TABLE, null, cv);
             for (int c = 1; c <= 40; c++) {
                 int status = statuses[random.nextInt(statuses.length)];
+                String nick = generateRandomWord(random);
                 cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random) + "@molecus.com");
-                cv1.put(DataProvider.ROSTER_BUDDY_NICK, generateRandomWord(random));
+                cv1.put(DataProvider.ROSTER_BUDDY_NICK, nick);
                 cv1.put(DataProvider.ROSTER_BUDDY_GROUP, groupName);
                 cv1.put(DataProvider.ROSTER_BUDDY_STATUS, status);
                 cv1.put(DataProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
                 cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, random.nextInt(50) == 1 /** Online criteria **/);
-                db.insert(DataProvider.ROSTER_BUDDY_TABLE, null, cv1);
+                long id = db.insert(DataProvider.ROSTER_BUDDY_TABLE, null, cv1);
+                for(int j=0;j<random.nextInt(200) + 20;j++) {
+                    cv2.put(DataProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                    cv2.put(DataProvider.HISTORY_BUDDY_NICK, nick);
+                    cv2.put(DataProvider.HISTORY_MESSAGE_TYPE, "1");
+                    cv2.put(DataProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
+                    cv2.put(DataProvider.HISTORY_MESSAGE_STATE, "1");
+                    cv2.put(DataProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis()+j);
+                    cv2.put(DataProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                    db.insert(DataProvider.CHAT_HISTORY_TABLE, null, cv2);
+                }
             }
         }
         Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
     }
 
+    public String generateRandomText(Random r) {
+        int wordCount = 7 + r.nextInt(37);
+        StringBuilder sb = new StringBuilder(wordCount);
+        for (int i = 0; i < wordCount; i++) { // For each letter in the word
+            sb.append(generateRandomWord(r, i==0) + ((i < (wordCount-1)) ? " " : ".")); // Add it to the String
+        }
+        return sb.toString();
+    }
+
     private String generateRandomWord(Random r) {
+        return generateRandomWord(r, true);
+    }
+
+    private String generateRandomWord(Random r, boolean capitalize) {
         int wordLength = 4 + r.nextInt(6);
         // Intialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
@@ -68,7 +94,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sb.append(tmp); // Add it to the String
         }
         String word = sb.toString();
-        return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
+        if(capitalize) {
+            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
+        } else {
+            return word;
+        }
     }
 
     @Override

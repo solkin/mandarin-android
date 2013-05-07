@@ -22,9 +22,10 @@ public class DataProvider extends ContentProvider {
     // Table
     public static final String ROSTER_GROUP_TABLE = "roster_group";
     public static final String ROSTER_BUDDY_TABLE = "roster_buddy";
+    public static final String CHAT_HISTORY_TABLE = "chat_history";
 
     // Fields
-    private static final String ROSTER_AUTO_ID = "_id";
+    public static final String ROW_AUTO_ID = "_id";
 
     public static final String ROSTER_GROUP_NAME = "group_name";
 
@@ -36,16 +37,30 @@ public class DataProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
 
+    public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
+    public static final String HISTORY_BUDDY_NICK = "buddy_nick";
+    public static final String HISTORY_MESSAGE_TYPE = "message_type";
+    public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
+    public static final String HISTORY_MESSAGE_STATE = "message_state";
+    public static final String HISTORY_MESSAGE_TIME = "message_time";
+    public static final String HISTORY_MESSAGE_TEXT = "message_text";
+
     // Database create scripts
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
-            + ROSTER_AUTO_ID + " integer primary key autoincrement, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_GROUP_NAME + " text" + ");";
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
-            + ROSTER_AUTO_ID + " integer primary key autoincrement, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, " + ROSTER_BUDDY_STATUS + " int, "
             + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text, "
             + ROSTER_BUDDY_DIALOG + " int" + ");";
+
+    protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
+            + ROW_AUTO_ID + " integer primary key autoincrement, " + HISTORY_BUDDY_DB_ID + " int, "
+            + HISTORY_BUDDY_NICK + " text, " + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
+            + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
+            + HISTORY_MESSAGE_TEXT + " text" + ");";
 
     // Database helper object
     private DatabaseHelper databaseHelper;
@@ -57,6 +72,7 @@ public class DataProvider extends ContentProvider {
 
     private static final int URI_BUDDY = 1;
     private static final int URI_GROUP = 3;
+    private static final int URI_HISTORY = 5;
 
     // URI tool instance
     private static final UriMatcher uriMatcher;
@@ -65,6 +81,7 @@ public class DataProvider extends ContentProvider {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
         uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
+        uriMatcher.addURI(Settings.DATA_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
     }
 
     @Override
@@ -96,6 +113,11 @@ public class DataProvider extends ContentProvider {
                     sortOrder = ROSTER_BUDDY_ID + " ASC";
                 }
                 table = ROSTER_BUDDY_TABLE;
+                break;
+            case URI_HISTORY: // Default Uri
+                Log.d(Settings.LOG_TAG, "URI_HISTORY");
+                // Default sort if not specified
+                table = CHAT_HISTORY_TABLE;
                 break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);

@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.RosterProvider;
+import com.tomclaw.mandarin.core.DataProvider;
 import com.tomclaw.mandarin.core.Settings;
 
 /**
@@ -27,8 +27,8 @@ public class RosterOnlineAdapter extends SimpleCursorAdapter implements
 
     private static final int ADAPTER_ONLINE_ID = -3;
 
-    private static final String childFrom[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK,
-            RosterProvider.ROSTER_BUDDY_STATUS};
+    private static final String childFrom[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK,
+            DataProvider.ROSTER_BUDDY_STATUS};
     private static final int childTo[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
 
     private Context context;
@@ -45,8 +45,8 @@ public class RosterOnlineAdapter extends SimpleCursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null,
-                RosterProvider.ROSTER_BUDDY_STATE + "='" + 1 + "'", null,
-                RosterProvider.ROSTER_BUDDY_NICK + " ASC");
+                DataProvider.ROSTER_BUDDY_STATE + "='" + 1 + "'", null,
+                DataProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override

@@ -25,8 +25,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Creating roster database.
-        db.execSQL(RosterProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
-        db.execSQL(RosterProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
+        db.execSQL(DataProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
+        db.execSQL(DataProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
         ContentValues cv = new ContentValues();
         ContentValues cv1 = new ContentValues();
         int[] statuses = new int[]{
@@ -43,17 +43,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Random random = new Random(System.currentTimeMillis());
         for (int i = 1; i <= 30; i++) {
             String groupName = generateRandomWord(random);
-            cv.put(RosterProvider.ROSTER_GROUP_NAME, groupName);
-            db.insert(RosterProvider.ROSTER_GROUP_TABLE, null, cv);
+            cv.put(DataProvider.ROSTER_GROUP_NAME, groupName);
+            db.insert(DataProvider.ROSTER_GROUP_TABLE, null, cv);
             for (int c = 1; c <= 40; c++) {
                 int status = statuses[random.nextInt(statuses.length)];
-                cv1.put(RosterProvider.ROSTER_BUDDY_ID, generateRandomWord(random) + "@molecus.com");
-                cv1.put(RosterProvider.ROSTER_BUDDY_NICK, generateRandomWord(random));
-                cv1.put(RosterProvider.ROSTER_BUDDY_GROUP, groupName);
-                cv1.put(RosterProvider.ROSTER_BUDDY_STATUS, status);
-                cv1.put(RosterProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
-                cv1.put(RosterProvider.ROSTER_BUDDY_DIALOG, random.nextInt(50) == 1 /** Online criteria **/);
-                db.insert(RosterProvider.ROSTER_BUDDY_TABLE, null, cv1);
+                cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random) + "@molecus.com");
+                cv1.put(DataProvider.ROSTER_BUDDY_NICK, generateRandomWord(random));
+                cv1.put(DataProvider.ROSTER_BUDDY_GROUP, groupName);
+                cv1.put(DataProvider.ROSTER_BUDDY_STATUS, status);
+                cv1.put(DataProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
+                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, random.nextInt(50) == 1 /** Online criteria **/);
+                db.insert(DataProvider.ROSTER_BUDDY_TABLE, null, cv1);
             }
         }
         Log.d(Settings.LOG_TAG, "DB created: " + db.toString());

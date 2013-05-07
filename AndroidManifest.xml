@@ -42,8 +42,8 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation">
         </activity>
-        <provider android:name=".core.RosterProvider"
-                  android:authorities="com.tomclaw.mandarin.core.RosterProvider"
+        <provider android:name=".core.DataProvider"
+                  android:authorities="com.tomclaw.mandarin.core.DataProvider"
                   android:exported="false">
         </provider>
     </application>

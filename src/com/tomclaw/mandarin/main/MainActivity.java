@@ -144,16 +144,16 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     e.printStackTrace();
                 }
                 ContentValues cv = new ContentValues();
-                cv.put(RosterProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
-                cv.put(RosterProvider.ROSTER_BUDDY_NICK, "Burova");
-                cv.put(RosterProvider.ROSTER_BUDDY_GROUP, "Friends");
-                cv.put(RosterProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
-                cv.put(RosterProvider.ROSTER_BUDDY_STATE, 1);
-                cv.put(RosterProvider.ROSTER_BUDDY_DIALOG, 1);
+                cv.put(DataProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
+                cv.put(DataProvider.ROSTER_BUDDY_NICK, "Burova");
+                cv.put(DataProvider.ROSTER_BUDDY_GROUP, "Friends");
+                cv.put(DataProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
+                cv.put(DataProvider.ROSTER_BUDDY_STATE, 1);
+                cv.put(DataProvider.ROSTER_BUDDY_DIALOG, 1);
                 Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
                 Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
                 ContentValues contentValues = new ContentValues();
-                contentValues.put(RosterProvider.ROSTER_GROUP_NAME, "Friends");
+                contentValues.put(DataProvider.ROSTER_GROUP_NAME, "Friends");
                 Uri uri = getContentResolver().insert(Settings.GROUP_RESOLVER_URI, contentValues);
                 Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
             }

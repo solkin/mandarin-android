@@ -17,7 +17,7 @@ import android.util.Log;
  * Time: 12:53 AM
  * To change this template use File | Settings | File Templates.
  */
-public class RosterProvider extends ContentProvider {
+public class DataProvider extends ContentProvider {
 
     // Table
     public static final String ROSTER_GROUP_TABLE = "roster_group";
@@ -53,29 +53,23 @@ public class RosterProvider extends ContentProvider {
 
     // Data types
     static final String GROUP_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
-            + Settings.ROSTER_AUTHORITY + "." + ROSTER_GROUP_TABLE;
-    static final String GROUP_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
-            + Settings.ROSTER_AUTHORITY + "." + ROSTER_GROUP_TABLE;
+            + Settings.DATA_AUTHORITY + "." + ROSTER_GROUP_TABLE;
 
     private static final int URI_BUDDY = 1;
-    private static final int URI_BUDDY_ID = 2;
     private static final int URI_GROUP = 3;
-    private static final int URI_GROUP_ID = 4;
 
     // URI tool instance
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_GROUP_TABLE + "/#", URI_GROUP_ID);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
-        uriMatcher.addURI(Settings.ROSTER_AUTHORITY, ROSTER_BUDDY_TABLE + "/#", URI_BUDDY_ID);
+        uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
+        uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
     }
 
     @Override
     public boolean onCreate() {
-        Log.d(Settings.LOG_TAG, "RosterProvider onCreate");
+        Log.d(Settings.LOG_TAG, "DataProvider onCreate");
         databaseHelper = new DatabaseHelper(getContext());
         return true;
     }
@@ -95,33 +89,11 @@ public class RosterProvider extends ContentProvider {
                 }
                 table = ROSTER_GROUP_TABLE;
                 break;
-            case URI_GROUP_ID: // Uri with ID
-                id = uri.getLastPathSegment();
-                Log.d(Settings.LOG_TAG, "URI_GROUP_ID, " + id);
-                // добавляем ID к условию выборки
-                if (TextUtils.isEmpty(selection)) {
-                    selection = ROSTER_AUTO_ID + " = " + id;
-                } else {
-                    selection = selection + " AND " + ROSTER_AUTO_ID + " = " + id;
-                }
-                table = ROSTER_GROUP_TABLE;
-                break;
             case URI_BUDDY: // Default Uri
                 Log.d(Settings.LOG_TAG, "URI_BUDDY");
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_BUDDY_ID + " ASC";
-                }
-                table = ROSTER_BUDDY_TABLE;
-                break;
-            case URI_BUDDY_ID: // Uri with ID
-                id = uri.getLastPathSegment();
-                Log.d(Settings.LOG_TAG, "URI_BUDDY_ID, " + id);
-                // добавляем ID к условию выборки
-                if (TextUtils.isEmpty(selection)) {
-                    selection = ROSTER_AUTO_ID + " = " + id;
-                } else {
-                    selection = selection + " AND " + ROSTER_AUTO_ID + " = " + id;
                 }
                 table = ROSTER_BUDDY_TABLE;
                 break;
@@ -146,8 +118,6 @@ public class RosterProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case URI_GROUP:
                 return GROUP_CONTENT_TYPE;
-            case URI_GROUP_ID:
-                return GROUP_CONTENT_ITEM_TYPE;
         }
         return null;
     }

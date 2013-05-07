@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorTreeAdapter;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.RosterProvider;
+import com.tomclaw.mandarin.core.DataProvider;
 import com.tomclaw.mandarin.core.Settings;
 
 /**
@@ -27,11 +27,11 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
 
     private static final int ADAPTER_GENERAL_ID = -1;
 
-    private static final String groupFrom[] = {RosterProvider.ROSTER_GROUP_NAME};
+    private static final String groupFrom[] = {DataProvider.ROSTER_GROUP_NAME};
     private static final int groupTo[] = {R.id.groupName};
 
-    private static final String childFrom[] = {RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK,
-            RosterProvider.ROSTER_BUDDY_STATUS};
+    private static final String childFrom[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK,
+            DataProvider.ROSTER_BUDDY_STATUS};
     private static final int childTo[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
 
     private Context context;
@@ -51,11 +51,11 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
         // Checking general Id. This may be group or its content.
         if (id == ADAPTER_GENERAL_ID) {
             return new CursorLoader(context, Settings.GROUP_RESOLVER_URI, null, null,
-                    null, RosterProvider.ROSTER_GROUP_NAME + " ASC");
+                    null, DataProvider.ROSTER_GROUP_NAME + " ASC");
         } else {
-            return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP
-                    + "='" + bundle.getString(RosterProvider.ROSTER_BUDDY_GROUP) + "'", null,
-                    RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
+            return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, DataProvider.ROSTER_BUDDY_GROUP
+                    + "='" + bundle.getString(DataProvider.ROSTER_BUDDY_GROUP) + "'", null,
+                    DataProvider.ROSTER_BUDDY_STATE + " DESC," + DataProvider.ROSTER_BUDDY_NICK + " ASC");
         }
     }
 
@@ -89,12 +89,12 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
     protected Cursor getChildrenCursor(Cursor groupCursor) {
         // This will calls when collapsed group expands.
         int groupPosition = groupCursor.getPosition();
-        int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
+        int columnIndex = groupCursor.getColumnIndex(DataProvider.ROSTER_GROUP_NAME);
         String groupName = groupCursor.getString(columnIndex);
         Log.d(Settings.LOG_TAG, "Child cursor for " + groupName + "(" + groupPosition + ") loading started");
         // Store group name into bundle to have opportunity build query.
         Bundle bundle = new Bundle();
-        bundle.putString(RosterProvider.ROSTER_BUDDY_GROUP, groupName);
+        bundle.putString(DataProvider.ROSTER_BUDDY_GROUP, groupName);
         // Check for loader already started.
         if (loaderManager.getLoader(groupPosition) != null
                 && !loaderManager.getLoader(groupPosition).isReset()) {

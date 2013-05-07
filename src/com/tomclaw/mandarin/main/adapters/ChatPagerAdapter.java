@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.viewpageindicator.PageIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,32 +32,33 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private LoaderManager loaderManager;
     private Cursor cursor;
     private LayoutInflater inflater;
+    private PageIndicator indicator;
 
-    public ChatPagerAdapter(Activity context, LoaderManager loaderManager) {
+    public ChatPagerAdapter(Activity context, LoaderManager loaderManager, PageIndicator indicator) {
+        super();
         this.context = context;
         this.loaderManager = loaderManager;
+        this.indicator = indicator;
         inflater = context.getLayoutInflater();
         // Initialize loader for dialogs Id.
         this.loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
+
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        View v = inflater.inflate(R.layout.chat_dialog, null);
-        container.addView(v);
-        return v;
+        View view = inflater.inflate(R.layout.chat_dialog, null);
+        container.addView(view);
+        return view;
     }
 
     @Override
     public int getCount() {
-        if (cursor == null) {
-            return 0;
-        } else {
-            return cursor.getCount();
-        }
+        // While there is no cursor, we should not show anything.
+        return (cursor == null) ? 0 : cursor.getCount();
     }
 
     @Override
@@ -99,6 +101,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
             return;
         }
         this.cursor = cursor;
+        // Notify page indicator and base adapter data was changed.
         notifyDataSetChanged();
+        indicator.notifyDataSetChanged();
     }
 }

@@ -139,7 +139,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             @Override
             public void run() {
                 try {
-                    sleep(10000);
+                    sleep(15000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -54,10 +54,18 @@ public class ChatActivity extends ChiefActivity {
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         /** View pager **/
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mIndicator.notifyDataSetChanged();
+            }
+        };
+        mIndicator = (TitlePageIndicator) findViewById(R.id.chat_indicator);
+
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
-        mIndicator = (TitlePageIndicator) findViewById(R.id.chat_indicator);
+
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(0);
     }

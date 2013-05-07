@@ -129,8 +129,9 @@ public class RosterProvider extends ContentProvider {
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
-        Cursor cursor = sqLiteDatabase.query(table, projection, selection,
-                selectionArgs, null, null, sortOrder);
+        Cursor cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
+        // Cursor cursor = sqLiteDatabase.query(distinct, table, projection, selection, selectionArgs, null, null, sortOrder, null);
+
         // Cursor cursor = sqLiteDatabase.query(true, ROSTER_GROUP_TABLE, new String[]{ROSTER_GROUP_NAME}, null, null, null, null, null, null);
         // Log.d(Settings.LOG_TAG, "Cursor items count: " + cursor.getCount());
         // просим ContentResolver уведомлять этот курсор

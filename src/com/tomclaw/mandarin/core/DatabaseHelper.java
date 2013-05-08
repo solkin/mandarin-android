@@ -31,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         ContentValues cv1 = new ContentValues();
         ContentValues cv2 = new ContentValues();
-        int[] statuses = new int[] {
+        int[] statuses = new int[]{
                 R.drawable.status_icq_offline,
                 R.drawable.status_icq_online,
                 R.drawable.status_icq_away,
@@ -43,29 +43,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 R.drawable.status_icq_offline
         };
         Random random = new Random(System.currentTimeMillis());
-        for (int i = 1; i <= 30; i++) {
+        for (int i = 1; i <= 10; i++) {
             String groupName = generateRandomWord(random);
             cv.put(DataProvider.ROSTER_GROUP_NAME, groupName);
             db.insert(DataProvider.ROSTER_GROUP_TABLE, null, cv);
-            for (int c = 1; c <= 40; c++) {
+            for (int c = 1; c <= 20; c++) {
                 int status = statuses[random.nextInt(statuses.length)];
                 String nick = generateRandomWord(random);
-                cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random) + "@molecus.com");
+                boolean isDialog = (random.nextInt(25) == 1);
+                cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random, false) + "@molecus.com");
                 cv1.put(DataProvider.ROSTER_BUDDY_NICK, nick);
                 cv1.put(DataProvider.ROSTER_BUDDY_GROUP, groupName);
                 cv1.put(DataProvider.ROSTER_BUDDY_STATUS, status);
                 cv1.put(DataProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
-                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, random.nextInt(50) == 1 /** Online criteria **/);
+                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
                 long id = db.insert(DataProvider.ROSTER_BUDDY_TABLE, null, cv1);
-                for(int j=0;j<random.nextInt(200) + 20;j++) {
-                    cv2.put(DataProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
-                    cv2.put(DataProvider.HISTORY_BUDDY_NICK, nick);
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TYPE, "1");
-                    cv2.put(DataProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                    cv2.put(DataProvider.HISTORY_MESSAGE_STATE, "1");
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis()+j);
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
-                    db.insert(DataProvider.CHAT_HISTORY_TABLE, null, cv2);
+                if (isDialog) {
+                    for (int j = 0; j < random.nextInt(1500) + 250; j++) {
+                        cv2.put(DataProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                        cv2.put(DataProvider.HISTORY_BUDDY_NICK, nick);
+                        cv2.put(DataProvider.HISTORY_MESSAGE_TYPE, "1");
+                        cv2.put(DataProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
+                        cv2.put(DataProvider.HISTORY_MESSAGE_STATE, "1");
+                        cv2.put(DataProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j);
+                        cv2.put(DataProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                        db.insert(DataProvider.CHAT_HISTORY_TABLE, null, cv2);
+                    }
                 }
             }
         }
@@ -73,10 +76,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public String generateRandomText(Random r) {
-        int wordCount = 7 + r.nextInt(37);
+        int wordCount = 10 + r.nextInt(13);
         StringBuilder sb = new StringBuilder(wordCount);
         for (int i = 0; i < wordCount; i++) { // For each letter in the word
-            sb.append(generateRandomWord(r, i==0) + ((i < (wordCount-1)) ? " " : ".")); // Add it to the String
+            sb.append(generateRandomWord(r, i == 0) + ((i < (wordCount - 1)) ? " " : ".")); // Add it to the String
         }
         return sb.toString();
     }
@@ -94,7 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sb.append(tmp); // Add it to the String
         }
         String word = sb.toString();
-        if(capitalize) {
+        if (capitalize) {
             return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
         } else {
             return word;

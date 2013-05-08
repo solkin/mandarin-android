@@ -25,20 +25,21 @@ import com.tomclaw.mandarin.core.Settings;
 public class ChatHistoryAdapter extends SimpleCursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int ADAPTER_ID = (int) System.currentTimeMillis() / 100000;
+    private final int ADAPTER_ID;
 
     private static final String childFrom[] = {DataProvider.HISTORY_BUDDY_NICK, DataProvider.HISTORY_MESSAGE_TEXT};
     private static final int childTo[] = {R.id.chatBuddyNick, R.id.chatMessage};
 
     private Context context;
     private LoaderManager loaderManager;
-    private String buddyDbId;
+    private Cursor buddyCursor;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, String buddyDbId) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, Cursor buddyCursor) {
         super(context, R.layout.chat_item, null, childFrom, childTo, 0x00);
         this.context = context;
         this.loaderManager = loaderManager;
-        this.buddyDbId = buddyDbId;
+        ADAPTER_ID = buddyCursor.getInt(buddyCursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
+        this.buddyCursor = buddyCursor;
         // Initialize loader for online Id.
         this.loaderManager.initLoader(ADAPTER_ID, null, this);
     }
@@ -46,7 +47,7 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                DataProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
+                DataProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
                 DataProvider.HISTORY_MESSAGE_TIME + " ASC");
     }
 

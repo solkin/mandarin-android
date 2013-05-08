@@ -52,9 +52,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
-        ListView chatList = (ListView)view.findViewById(R.id.chat_list);
-        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager,
-                String.valueOf(cursor.getLong(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID))));
+        ListView chatList = (ListView) view.findViewById(R.id.chat_list);
+        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager, cursor);
         chatList.setAdapter(chatHistoryAdapter);
         container.addView(view);
         return view;

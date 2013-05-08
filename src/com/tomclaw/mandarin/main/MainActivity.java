@@ -171,6 +171,27 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
 
 
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ContentValues cv = new ContentValues();
+                cv.put(DataProvider.ROSTER_BUDDY_DIALOG, 0);
+                getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv,
+                        DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
+
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ContentValues cv1 = new ContentValues();
+                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, 1);
+                getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv1,
+                        DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
+
+
                 cursor.moveToPosition(0);
                 long id = cursor.getLong(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
                 for(int c=0; c<30; c++) {

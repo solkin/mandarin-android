@@ -25,7 +25,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
-    private boolean isActivityStopped;
+    private boolean isActivityInactive;
 
     /**
      * Called when the activity is first created.
@@ -38,19 +38,26 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;
+        isActivityInactive = false;
         startCoreService();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        isActivityStopped = true;
+        isActivityInactive = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActivityInactive = true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        isActivityStopped = false;
+        isActivityInactive = false;
     }
 
     @Override
@@ -104,7 +111,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                 public void onReceive(Context context, Intent intent) {
                     Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
                     /** Checking for activity state isn't stop **/
-                    if (isActivityStopped) {
+                    if (isActivityInactive) {
                         return;
                     }
                     /** Checking for special message from service **/

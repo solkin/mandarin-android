@@ -8,6 +8,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RosterProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.ChiefActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +22,8 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter {
     private static final String groupFrom[] = {RosterProvider.ROSTER_GROUP_NAME};
     private static final int groupTo[] = { R.id.groupName };
 
-    private static final String childFrom[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK, RosterProvider.ROSTER_BUDDY_STATUS };
+    private static final String childFrom[] = { RosterProvider.ROSTER_BUDDY_ID, RosterProvider.ROSTER_BUDDY_NICK,
+            RosterProvider.ROSTER_BUDDY_STATUS };
     private static final int childTo[] = { R.id.buddyId, R.id.buddyNick, R.id.buddyStatus };
 
     private final ContentResolver contentResolver;
@@ -44,7 +46,7 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter {
         Log.d(Settings.LOG_TAG, "getChildrenCursor");
         int columnIndex = groupCursor.getColumnIndex(RosterProvider.ROSTER_GROUP_NAME);
         String groupName = groupCursor.getString(columnIndex);
-        return contentResolver.query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName +"'",
+        return MainActivity.contentResolver.query(Settings.BUDDY_RESOLVER_URI, null, RosterProvider.ROSTER_BUDDY_GROUP + "='" + groupName + "'",
                 null, RosterProvider.ROSTER_BUDDY_STATE + " DESC," + RosterProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 }

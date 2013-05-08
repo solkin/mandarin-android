@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ public class MainActivity extends ChiefActivity implements
     CustomPagerAdapter mAdapter;
     ViewPager mPager;
     PageIndicator mIndicator;
+
+    public static ContentResolver contentResolver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,8 +90,9 @@ public class MainActivity extends ChiefActivity implements
     }
 
     private void initPager() {
+        contentResolver = getContentResolver();
         // Dialogs.
-        ListView dialogsList = new ListView(this);
+                ListView dialogsList = new ListView(this);
         RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this,
                 RosterDialogsAdapter.getCursor(getContentResolver()));
         dialogsList.setAdapter(dialogsAdapter);

@@ -176,6 +176,25 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
+        String table;
+        switch (uriMatcher.match(uri)) {
+            case URI_GROUP:
+                table = ROSTER_GROUP_TABLE;
+                break;
+            case URI_BUDDY:
+                table = ROSTER_BUDDY_TABLE;
+                break;
+            case URI_HISTORY:
+                table = CHAT_HISTORY_TABLE;
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong URI: " + uri);
+        }
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int rows = sqLiteDatabase.update(table, values, selection, selectionArgs);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 }

@@ -155,6 +155,9 @@ public class DataProvider extends ContentProvider {
             case URI_BUDDY:
                 table = ROSTER_BUDDY_TABLE;
                 break;
+            case URI_HISTORY:
+                table = CHAT_HISTORY_TABLE;
+                break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }

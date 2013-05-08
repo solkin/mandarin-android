@@ -75,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
     }
 
-    public String generateRandomText(Random r) {
+    public static String generateRandomText(Random r) {
         int wordCount = 10 + r.nextInt(13);
         StringBuilder sb = new StringBuilder(wordCount);
         for (int i = 0; i < wordCount; i++) { // For each letter in the word
@@ -84,11 +84,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    private String generateRandomWord(Random r) {
+    private static String generateRandomWord(Random r) {
         return generateRandomWord(r, true);
     }
 
-    private String generateRandomWord(Random r, boolean capitalize) {
+    private static String generateRandomWord(Random r, boolean capitalize) {
         int wordLength = 4 + r.nextInt(6);
         // Intialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);

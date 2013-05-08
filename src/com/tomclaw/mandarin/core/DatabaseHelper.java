@@ -43,14 +43,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 R.drawable.status_icq_offline
         };
         Random random = new Random(System.currentTimeMillis());
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 4 + random.nextInt(20); i++) {
             String groupName = generateRandomWord(random);
             cv.put(DataProvider.ROSTER_GROUP_NAME, groupName);
             db.insert(DataProvider.ROSTER_GROUP_TABLE, null, cv);
-            for (int c = 1; c <= 20; c++) {
+            for (int c = 1; c <= 5 + random.nextInt(30); c++) {
                 int status = statuses[random.nextInt(statuses.length)];
                 String nick = generateRandomWord(random);
-                boolean isDialog = (random.nextInt(25) == 1);
+                boolean isDialog = (random.nextInt(10) == 1);
                 cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random, false) + "@molecus.com");
                 cv1.put(DataProvider.ROSTER_BUDDY_NICK, nick);
                 cv1.put(DataProvider.ROSTER_BUDDY_GROUP, groupName);

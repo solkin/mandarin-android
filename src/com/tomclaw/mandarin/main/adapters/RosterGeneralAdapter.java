@@ -28,11 +28,11 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
     private static final int ADAPTER_GENERAL_ID = -1;
 
     private static final String groupFrom[] = {DataProvider.ROSTER_GROUP_NAME};
-    private static final int groupTo[] = {R.id.groupName};
+    private static final int groupTo[] = {R.id.group_name};
 
     private static final String childFrom[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK,
             DataProvider.ROSTER_BUDDY_STATUS};
-    private static final int childTo[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
+    private static final int childTo[] = {R.id.buddy_id, R.id.buddy_nick, R.id.buddy_status};
 
     private Context context;
     private LoaderManager loaderManager;

@@ -41,10 +41,10 @@ public class AccountsAdapter extends ArrayAdapter<AccountRoot> {
             view = inflater.inflate(R.layout.account_item, parent, false);
         }
         // Setup text values
-        ((TextView) view.findViewById(R.id.userId)).setText(accountRoot.getUserId());
-        ((TextView) view.findViewById(R.id.userNick)).setText(accountRoot.getUserNick());
+        ((TextView) view.findViewById(R.id.user_id)).setText(accountRoot.getUserId());
+        ((TextView) view.findViewById(R.id.user_nick)).setText(accountRoot.getUserNick());
         // Creating listeners for status click
-        view.findViewById(R.id.userStatus).setOnClickListener(
+        view.findViewById(R.id.user_status).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

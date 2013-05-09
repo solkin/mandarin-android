@@ -20,7 +20,6 @@ import com.tomclaw.mandarin.core.Settings;
  * User: solkin
  * Date: 5/7/13
  * Time: 11:43 PM
- * To change this template use File | Settings | File Templates.
  */
 public class ChatHistoryAdapter extends SimpleCursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -28,20 +27,16 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
     private final int ADAPTER_ID;
 
     private static final String childFrom[] = {DataProvider.HISTORY_BUDDY_NICK, DataProvider.HISTORY_MESSAGE_TEXT};
-    private static final int childTo[] = {R.id.chatBuddyNick, R.id.chatMessage};
+    private static final int childTo[] = {R.id.chat_buddy_nick, R.id.chat_message};
 
     private Context context;
-    private LoaderManager loaderManager;
-    private Cursor buddyCursor;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, Cursor buddyCursor) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, R.layout.chat_item, null, childFrom, childTo, 0x00);
         this.context = context;
-        this.loaderManager = loaderManager;
-        ADAPTER_ID = buddyCursor.getInt(buddyCursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
-        this.buddyCursor = buddyCursor;
+        ADAPTER_ID = buddyBdId;
         // Initialize loader for online Id.
-        this.loaderManager.initLoader(ADAPTER_ID, null, this);
+        loaderManager.initLoader(ADAPTER_ID, null, this);
     }
 
     @Override

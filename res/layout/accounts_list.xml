@@ -2,13 +2,13 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent" android:focusable="false" android:focusableInTouchMode="false"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:focusable="false" android:focusableInTouchMode="false"
               android:clickable="false" android:longClickable="false">
     <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/accounts_list_wiew"
             android:layout_gravity="center"
             android:focusable="true"
             android:focusableInTouchMode="true"

@@ -28,7 +28,7 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
     private static final int ADAPTER_DIALOGS_ID = -2;
 
     private static final String from[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK, DataProvider.ROSTER_BUDDY_STATUS};
-    private static final int to[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
+    private static final int to[] = {R.id.buddy_id, R.id.buddy_nick, R.id.buddy_status};
 
     private Context context;
     private LoaderManager loaderManager;

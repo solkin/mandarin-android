@@ -131,7 +131,7 @@ public class AccountsActivity extends ChiefActivity {
                 // Nothing to do in this case.
                 Log.d(Settings.LOG_TAG, "No accounts");
             } else {
-                ListView listView = (ListView) findViewById(R.id.listView);
+                ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
                 // Creating adapter for accounts list
                 AccountsAdapter sAdapter = new AccountsAdapter(this, R.layout.account_item, accountsList);
                 // Bind to our new adapter.

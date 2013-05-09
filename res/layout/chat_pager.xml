@@ -9,27 +9,27 @@
             android:id="@+id/chat_indicator"
             android:padding="10dip"
             android:layout_height="wrap_content"
-            android:layout_width="fill_parent"/>
+            android:layout_width="match_parent"/>
     <android.support.v4.view.ViewPager
             android:id="@+id/chat_pager"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"/>
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_gravity="center">
         <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/editText"
+                android:id="@+id/message_text"
                 android:hint="@string/enter_your_message"
                 android:layout_gravity="center"
                 android:layout_weight="1"/>
         <ImageButton
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:id="@+id/imageButton"
+                android:layout_height="match_parent"
+                android:id="@+id/send_button"
                 android:layout_gravity="center_horizontal|bottom"
                 android:src="@android:drawable/ic_menu_send"/>
     </LinearLayout>

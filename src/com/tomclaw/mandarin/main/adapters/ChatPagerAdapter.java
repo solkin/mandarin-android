@@ -22,7 +22,6 @@ import com.viewpageindicator.PageIndicator;
  * User: solkin
  * Date: 5/6/13
  * Time: 8:51 PM
- * To change this template use File | Settings | File Templates.
  */
 public class ChatPagerAdapter extends PagerAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -53,7 +52,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
         ListView chatList = (ListView) view.findViewById(R.id.chat_list);
-        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager, cursor);
+        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager,
+                cursor.getInt(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
         container.addView(view);
         return view;
@@ -71,6 +71,13 @@ public class ChatPagerAdapter extends PagerAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         return cursor.getString(cursor.getColumnIndex(DataProvider.ROSTER_BUDDY_NICK));
+    }
+
+    public int getPageBuddyDbId(int position) {
+        if (!cursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
+        return cursor.getInt(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
     }
 
     @Override

@@ -14,7 +14,6 @@ import java.util.Random;
  * User: solkin
  * Date: 4/23/13
  * Time: 10:55 AM
- * To change this template use File | Settings | File Templates.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -79,7 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int wordCount = 10 + r.nextInt(13);
         StringBuilder sb = new StringBuilder(wordCount);
         for (int i = 0; i < wordCount; i++) { // For each letter in the word
-            sb.append(generateRandomWord(r, i == 0) + ((i < (wordCount - 1)) ? " " : ".")); // Add it to the String
+            sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
         }
         return sb.toString();
     }

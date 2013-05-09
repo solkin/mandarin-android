@@ -106,7 +106,7 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.group_item, parent, false);
         }
         // Setup text values
-        ((TextView) view.findViewById(R.id.groupName)).setText(groupItem.getGroupName());
+        ((TextView) view.findViewById(R.id.group_name)).setText(groupItem.getGroupName());
         return view;
     }
 
@@ -119,8 +119,8 @@ public class BuddyAdapter extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.buddy_item, parent, false);
         }
         // Setup text values
-        ((TextView) view.findViewById(R.id.buddyId)).setText(buddyItem.getBuddyId());
-        ((TextView) view.findViewById(R.id.buddyNick)).setText(buddyItem.getBuddyNick());
+        ((TextView) view.findViewById(R.id.buddy_id)).setText(buddyItem.getBuddyId());
+        ((TextView) view.findViewById(R.id.buddy_nick)).setText(buddyItem.getBuddyNick());
         return view;
     }
 

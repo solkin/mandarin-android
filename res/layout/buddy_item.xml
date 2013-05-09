@@ -2,23 +2,23 @@
 
 <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout android:id="@+id/buddyContainer"
-                  android:layout_height="fill_parent"
+    <LinearLayout android:id="@+id/buddy_container"
+                  android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:orientation="horizontal">
         <QuickContactBadge
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/buddyBadge"
+                android:id="@+id/buddy_badge"
                 android:layout_gravity="center_horizontal|top"
                 android:src="@drawable/ic_default_avatar"/>
         <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
@@ -27,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Buddy Nick"
-                    android:id="@+id/buddyNick"
+                    android:id="@+id/buddy_nick"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"/>
@@ -35,15 +35,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="buddy@id"
-                    android:id="@+id/buddyId"
+                    android:id="@+id/buddy_id"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"/>
         </LinearLayout>
     </LinearLayout>
     <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:id="@+id/buddyStatus"
+            android:layout_height="match_parent"
+            android:id="@+id/buddy_status"
             android:src="@drawable/status_icq_online"
             android:layout_gravity="center_vertical"
             android:clickable="false"

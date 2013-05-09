@@ -29,7 +29,7 @@ public class RosterOnlineAdapter extends SimpleCursorAdapter implements
 
     private static final String childFrom[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK,
             DataProvider.ROSTER_BUDDY_STATUS};
-    private static final int childTo[] = {R.id.buddyId, R.id.buddyNick, R.id.buddyStatus};
+    private static final int childTo[] = {R.id.buddy_id, R.id.buddy_nick, R.id.buddy_status};
 
     private Context context;
     private LoaderManager loaderManager;

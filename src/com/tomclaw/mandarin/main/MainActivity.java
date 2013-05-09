@@ -19,7 +19,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.DataProvider;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.DatabaseHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
@@ -151,23 +151,23 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
                 Random random = new Random(System.currentTimeMillis());
                 Cursor cursor = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                        DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
+                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
                 if(cursor.getCount() == 0) {
                     ContentValues cv = new ContentValues();
-                    cv.put(DataProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
-                    cv.put(DataProvider.ROSTER_BUDDY_NICK, "Burova");
-                    cv.put(DataProvider.ROSTER_BUDDY_GROUP, "Friends");
-                    cv.put(DataProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
-                    cv.put(DataProvider.ROSTER_BUDDY_STATE, 1);
-                    cv.put(DataProvider.ROSTER_BUDDY_DIALOG, 1);
+                    cv.put(GlobalProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
+                    cv.put(GlobalProvider.ROSTER_BUDDY_NICK, "Burova");
+                    cv.put(GlobalProvider.ROSTER_BUDDY_GROUP, "Friends");
+                    cv.put(GlobalProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
+                    cv.put(GlobalProvider.ROSTER_BUDDY_STATE, 1);
+                    cv.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
                     Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
                     Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(DataProvider.ROSTER_GROUP_NAME, "Friends");
+                    contentValues.put(GlobalProvider.ROSTER_GROUP_NAME, "Friends");
                     Uri uri = getContentResolver().insert(Settings.GROUP_RESOLVER_URI, contentValues);
                     Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
                     cursor = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                            DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
+                            GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
                 }
 
 
@@ -177,9 +177,9 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     e.printStackTrace();
                 }
                 ContentValues cv = new ContentValues();
-                cv.put(DataProvider.ROSTER_BUDDY_DIALOG, 0);
+                cv.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
                 getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv,
-                        DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
+                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
 
                 try {
                     sleep(5000);
@@ -187,13 +187,13 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     e.printStackTrace();
                 }
                 ContentValues cv1 = new ContentValues();
-                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, 1);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
                 getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv1,
-                        DataProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
+                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
 
 
                 cursor.moveToPosition(0);
-                long id = cursor.getLong(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
+                long id = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 for(int c=0; c<30; c++) {
                     try {
                         sleep(1000);
@@ -202,13 +202,13 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     }
 
                     ContentValues cv2 = new ContentValues();
-                    cv2.put(DataProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
-                    cv2.put(DataProvider.HISTORY_BUDDY_NICK, "Burova");
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TYPE, "1");
-                    cv2.put(DataProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(System.currentTimeMillis()));
-                    cv2.put(DataProvider.HISTORY_MESSAGE_STATE, "1");
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
-                    cv2.put(DataProvider.HISTORY_MESSAGE_TEXT, DatabaseHelper.generateRandomText(random));
+                    cv2.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                    cv2.put(GlobalProvider.HISTORY_BUDDY_NICK, "Burova");
+                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "1");
+                    cv2.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(System.currentTimeMillis()));
+                    cv2.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
+                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
+                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TEXT, DatabaseHelper.generateRandomText(random));
                     getContentResolver().insert(Settings.HISTORY_RESOLVER_URI, cv2);
                 }
             }

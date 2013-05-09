@@ -8,7 +8,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.DataProvider;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
 import com.viewpageindicator.PageIndicator;
@@ -43,9 +43,9 @@ public class ChatActivity extends ChiefActivity {
             case R.id.close_chat_menu: {
                 int position = mPager.getCurrentItem();
                 ContentValues contentValues = new ContentValues();
-                contentValues.put(DataProvider.ROSTER_BUDDY_DIALOG, 0);
+                contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
                 getContentResolver().update(Settings.BUDDY_RESOLVER_URI, contentValues,
-                        DataProvider.ROW_AUTO_ID + "='" + mAdapter.getPageBuddyDbId(position) + "'", null);
+                        GlobalProvider.ROW_AUTO_ID + "='" + mAdapter.getPageBuddyDbId(position) + "'", null);
                 return true;
             }
             default:

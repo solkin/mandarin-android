@@ -43,8 +43,8 @@
                   android:windowSoftInputMode="adjustResize"
                   android:configChanges="orientation">
         </activity>
-        <provider android:name=".core.DataProvider"
-                  android:authorities="com.tomclaw.mandarin.core.DataProvider"
+        <provider android:name=".core.GlobalProvider"
+                  android:authorities="com.tomclaw.mandarin.core.GlobalProvider"
                   android:exported="false">
         </provider>
     </application>

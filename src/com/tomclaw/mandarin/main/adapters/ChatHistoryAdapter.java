@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.DataProvider;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 
 /**
@@ -26,7 +26,7 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
 
     private final int ADAPTER_ID;
 
-    private static final String childFrom[] = {DataProvider.HISTORY_BUDDY_NICK, DataProvider.HISTORY_MESSAGE_TEXT};
+    private static final String childFrom[] = {GlobalProvider.HISTORY_BUDDY_NICK, GlobalProvider.HISTORY_MESSAGE_TEXT};
     private static final int childTo[] = {R.id.chat_buddy_nick, R.id.chat_message};
 
     private Context context;
@@ -42,8 +42,8 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                DataProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
-                DataProvider.HISTORY_MESSAGE_TIME + " ASC");
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
+                GlobalProvider.HISTORY_MESSAGE_TIME + " ASC");
     }
 
     @Override

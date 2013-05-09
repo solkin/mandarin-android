@@ -17,7 +17,7 @@ import android.util.Log;
  * Time: 12:53 AM
  * To change this template use File | Settings | File Templates.
  */
-public class DataProvider extends ContentProvider {
+public class GlobalProvider extends ContentProvider {
 
     // Table
     public static final String ROSTER_GROUP_TABLE = "roster_group";
@@ -68,7 +68,7 @@ public class DataProvider extends ContentProvider {
 
     // Data types
     static final String GROUP_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
-            + Settings.DATA_AUTHORITY + "." + ROSTER_GROUP_TABLE;
+            + Settings.GLOBAL_AUTHORITY + "." + ROSTER_GROUP_TABLE;
 
     private static final int URI_BUDDY = 1;
     private static final int URI_GROUP = 3;
@@ -79,14 +79,14 @@ public class DataProvider extends ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
-        uriMatcher.addURI(Settings.DATA_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
-        uriMatcher.addURI(Settings.DATA_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
     }
 
     @Override
     public boolean onCreate() {
-        Log.d(Settings.LOG_TAG, "DataProvider onCreate");
+        Log.d(Settings.LOG_TAG, "GlobalProvider onCreate");
         databaseHelper = new DatabaseHelper(getContext());
         return true;
     }

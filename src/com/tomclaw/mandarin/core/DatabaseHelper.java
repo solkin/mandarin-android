@@ -24,9 +24,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Creating roster database.
-        db.execSQL(DataProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
-        db.execSQL(DataProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
-        db.execSQL(DataProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
+        db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
+        db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
+        db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
         ContentValues cv = new ContentValues();
         ContentValues cv1 = new ContentValues();
         ContentValues cv2 = new ContentValues();
@@ -44,29 +44,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Random random = new Random(System.currentTimeMillis());
         for (int i = 1; i <= 4 + random.nextInt(20); i++) {
             String groupName = generateRandomWord(random);
-            cv.put(DataProvider.ROSTER_GROUP_NAME, groupName);
-            db.insert(DataProvider.ROSTER_GROUP_TABLE, null, cv);
+            cv.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+            db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv);
             for (int c = 1; c <= 5 + random.nextInt(30); c++) {
                 int status = statuses[random.nextInt(statuses.length)];
                 String nick = generateRandomWord(random);
                 boolean isDialog = (random.nextInt(10) == 1);
-                cv1.put(DataProvider.ROSTER_BUDDY_ID, generateRandomWord(random, false) + "@molecus.com");
-                cv1.put(DataProvider.ROSTER_BUDDY_NICK, nick);
-                cv1.put(DataProvider.ROSTER_BUDDY_GROUP, groupName);
-                cv1.put(DataProvider.ROSTER_BUDDY_STATUS, status);
-                cv1.put(DataProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
-                cv1.put(DataProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
-                long id = db.insert(DataProvider.ROSTER_BUDDY_TABLE, null, cv1);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_ID, generateRandomWord(random, false) + "@molecus.com");
+                cv1.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
+                cv1.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
+                long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv1);
                 if (isDialog) {
                     for (int j = 0; j < random.nextInt(1500) + 250; j++) {
-                        cv2.put(DataProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
-                        cv2.put(DataProvider.HISTORY_BUDDY_NICK, nick);
-                        cv2.put(DataProvider.HISTORY_MESSAGE_TYPE, "1");
-                        cv2.put(DataProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                        cv2.put(DataProvider.HISTORY_MESSAGE_STATE, "1");
-                        cv2.put(DataProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j);
-                        cv2.put(DataProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
-                        db.insert(DataProvider.CHAT_HISTORY_TABLE, null, cv2);
+                        cv2.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                        cv2.put(GlobalProvider.HISTORY_BUDDY_NICK, nick);
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "1");
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j);
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                        db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv2);
                     }
                 }
             }

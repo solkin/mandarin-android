@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.DataProvider;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.viewpageindicator.PageIndicator;
 
@@ -53,7 +53,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
         View view = inflater.inflate(R.layout.chat_dialog, null);
         ListView chatList = (ListView) view.findViewById(R.id.chat_list);
         ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager,
-                cursor.getInt(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID)));
+                cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
         container.addView(view);
         return view;
@@ -70,14 +70,14 @@ public class ChatPagerAdapter extends PagerAdapter implements
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getString(cursor.getColumnIndex(DataProvider.ROSTER_BUDDY_NICK));
+        return cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
     }
 
     public int getPageBuddyDbId(int position) {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(cursor.getColumnIndex(DataProvider.ROW_AUTO_ID));
+        return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 
     @Override
@@ -93,8 +93,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return new CursorLoader(context,
-                Settings.BUDDY_RESOLVER_URI, null, DataProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
-                null, DataProvider.ROSTER_BUDDY_STATE + " DESC," + DataProvider.ROSTER_BUDDY_NICK + " ASC");
+                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
+                null, GlobalProvider.ROSTER_BUDDY_STATE + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override

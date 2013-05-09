@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.DataProvider;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 
 /**
@@ -27,7 +27,7 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
 
     private static final int ADAPTER_DIALOGS_ID = -2;
 
-    private static final String from[] = {DataProvider.ROSTER_BUDDY_ID, DataProvider.ROSTER_BUDDY_NICK, DataProvider.ROSTER_BUDDY_STATUS};
+    private static final String from[] = {GlobalProvider.ROSTER_BUDDY_ID, GlobalProvider.ROSTER_BUDDY_NICK, GlobalProvider.ROSTER_BUDDY_STATUS};
     private static final int to[] = {R.id.buddy_id, R.id.buddy_nick, R.id.buddy_status};
 
     private Context context;
@@ -45,8 +45,8 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context,
-                Settings.BUDDY_RESOLVER_URI, null, DataProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
-                null, DataProvider.ROSTER_BUDDY_STATE + " DESC," + DataProvider.ROSTER_BUDDY_NICK + " ASC");
+                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
+                null, GlobalProvider.ROSTER_BUDDY_STATE + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override

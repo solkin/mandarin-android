@@ -1,9 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
@@ -19,8 +16,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.DatabaseHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
@@ -30,7 +25,6 @@ import com.viewpageindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends ChiefActivity implements ActionBar.OnNavigationListener {
 
@@ -141,7 +135,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
 
-        Thread thread = new Thread() {
+        /*Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -213,7 +207,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
             }
         };
-        thread.start();
+        thread.start();*/
     }
 
     @Override

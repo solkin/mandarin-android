@@ -1,14 +1,16 @@
 package com.tomclaw.mandarin.main;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
 import com.viewpageindicator.PageIndicator;
@@ -41,11 +43,11 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                int position = mPager.getCurrentItem();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
-                getContentResolver().update(Settings.BUDDY_RESOLVER_URI, contentValues,
-                        GlobalProvider.ROW_AUTO_ID + "='" + mAdapter.getPageBuddyDbId(position) + "'", null);
+                try {
+                    QueryHelper.closeDialog(getContentResolver(), getCurrentPageBuddyDbId());
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
                 return true;
             }
             default:
@@ -77,6 +79,20 @@ public class ChatActivity extends ChiefActivity {
 
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(0);
+        /** Send button **/
+        ImageButton sendButton = (ImageButton)findViewById(R.id.send_button);
+        final TextView messageText = (TextView) findViewById(R.id.message_text);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    QueryHelper.insertMessage(getContentResolver(), getCurrentPageBuddyDbId(), 1,
+                            String.valueOf(System.currentTimeMillis()), messageText.getText().toString());
+                } catch (Exception e) {
+                    // Couldn't pul message into database. This exception must be processed.
+                }
+            }
+        });
     }
 
     @Override
@@ -87,5 +103,18 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onCoreServiceIntent(Intent intent) {
 
+    }
+
+    /**
+     * Obtain current item position and checking for it valid.
+     * @return
+     * @throws Exception
+     */
+    private int getCurrentPageBuddyDbId() throws Exception {
+        int position = mPager.getCurrentItem();
+        if(position < 0) {
+            throw new Exception("No active page.");
+        }
+        return mAdapter.getPageBuddyDbId(position);
     }
 }

@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.ChatActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,7 +65,7 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
      * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View v;
         try {
             if (!mDataValid) {
@@ -77,6 +79,14 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
             } else {
                 v = convertView;
             }
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra(ChatActivity.DIALOG_ID, position);
+                    context.startActivity(intent);
+                }
+            });
             bindView(v, mContext, mCursor);
         } catch (Throwable ex) {
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

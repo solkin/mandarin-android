@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.viewpageindicator.TitlePageIndicator;
  */
 public class ChatActivity extends ChiefActivity {
 
+    public static final String DIALOG_ID = "dialog_id";
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PageIndicator mIndicator;
@@ -76,9 +78,13 @@ public class ChatActivity extends ChiefActivity {
         mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
-
         mIndicator.setViewPager(mPager);
-        mIndicator.setCurrentItem(0);
+        if (getIntent().getExtras() != null){
+            mIndicator.setCurrentItem(getIntent().getExtras().getInt(DIALOG_ID, 0));
+        }
+        else {
+            mIndicator.setCurrentItem(0);
+        }
         /** Send button **/
         ImageButton sendButton = (ImageButton)findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);

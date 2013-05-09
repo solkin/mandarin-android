@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
+        Log.d(Settings.LOG_TAG, "instantiateItem for position = " + position);
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
@@ -115,5 +117,10 @@ public class ChatPagerAdapter extends PagerAdapter implements
         // Notify page indicator and base adapter data was changed.
         notifyDataSetChanged();
         indicator.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemPosition(Object object){
+        return POSITION_NONE;
     }
 }

@@ -11,6 +11,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
@@ -25,7 +26,6 @@ import com.viewpageindicator.TitlePageIndicator;
  */
 public class ChatActivity extends ChiefActivity {
 
-    public static final String DIALOG_ID = "dialog_id";
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PageIndicator mIndicator;
@@ -46,7 +46,7 @@ public class ChatActivity extends ChiefActivity {
             }
             case R.id.close_chat_menu: {
                 try {
-                    QueryHelper.closeDialog(getContentResolver(), getCurrentPageBuddyDbId());
+                    QueryHelper.modifyDialog(getContentResolver(), getCurrentPageBuddyDbId(), false);
                 } catch (Exception e) {
                     // Nothing to do in this case.
                 }
@@ -67,24 +67,23 @@ public class ChatActivity extends ChiefActivity {
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         /** View pager **/
-        Runnable runnable = new Runnable() {
+        Runnable onUpdate = new Runnable() {
             @Override
             public void run() {
-                mIndicator.notifyDataSetChanged();
+                Bundle bundle = getIntent().getExtras();
+                // Checking for bundle condition.
+                if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+                    int position = mAdapter.getPagePosition(bundle.getLong(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
+                    mIndicator.setCurrentItem(position);
+                    bundle.clear();
+                }
             }
         };
         mIndicator = (TitlePageIndicator) findViewById(R.id.chat_indicator);
-
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator);
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator, onUpdate);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
-        if (getIntent().getExtras() != null){
-            mIndicator.setCurrentItem(getIntent().getExtras().getInt(DIALOG_ID, 0));
-        }
-        else {
-            mIndicator.setCurrentItem(0);
-        }
         /** Send button **/
         ImageButton sendButton = (ImageButton)findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
@@ -116,7 +115,7 @@ public class ChatActivity extends ChiefActivity {
      * @return
      * @throws Exception
      */
-    private int getCurrentPageBuddyDbId() throws Exception {
+    private long getCurrentPageBuddyDbId() throws Exception {
         int position = mPager.getCurrentItem();
         if(position < 0) {
             throw new Exception("No active page.");

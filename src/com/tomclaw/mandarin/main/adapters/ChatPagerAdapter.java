@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -29,18 +28,20 @@ public class ChatPagerAdapter extends PagerAdapter implements
 
     private static final int ADAPTER_DIALOGS_ID = -3;
 
-    private Context context;
+    private Activity activity;
     private LoaderManager loaderManager;
     private Cursor cursor;
     private LayoutInflater inflater;
     private PageIndicator indicator;
+    private Runnable onUpdate;
 
-    public ChatPagerAdapter(Activity context, LoaderManager loaderManager, PageIndicator indicator) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, PageIndicator indicator, Runnable onUpdate) {
         super();
-        this.context = context;
+        this.activity = activity;
         this.loaderManager = loaderManager;
         this.indicator = indicator;
-        inflater = context.getLayoutInflater();
+        this.onUpdate = onUpdate;
+        inflater = activity.getLayoutInflater();
         // Initialize loader for dialogs Id.
         this.loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -54,7 +55,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
         ListView chatList = (ListView) view.findViewById(R.id.chat_list);
-        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(context, loaderManager,
+        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
                 cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
         container.addView(view);
@@ -75,11 +76,28 @@ public class ChatPagerAdapter extends PagerAdapter implements
         return cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
     }
 
-    public int getPageBuddyDbId(int position) {
+    public long getPageBuddyDbId(int position) {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
+
+    public int getPagePosition(long buddyDbId) {
+        if (cursor != null) {
+            // Does this code Ok? I'm not sure.
+            for (int c = 0; c < cursor.getCount(); c++) {
+                // Trying to move row.
+                if (cursor.moveToPosition(c)) {
+                    // Checking for buddy db id equals.
+                    if (cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)) == buddyDbId) {
+                        return c;
+                    }
+                }
+            }
+        }
+        // This should never happen.
+        return 0;
     }
 
     @Override
@@ -94,7 +112,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(context,
+        return new CursorLoader(activity,
                 Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
                 null, GlobalProvider.ROSTER_BUDDY_STATE + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
@@ -114,13 +132,15 @@ public class ChatPagerAdapter extends PagerAdapter implements
             return;
         }
         this.cursor = cursor;
+        // Before notifying UI about update, run special event.
+        onUpdate.run();
         // Notify page indicator and base adapter data was changed.
         notifyDataSetChanged();
         indicator.notifyDataSetChanged();
     }
 
     @Override
-    public int getItemPosition(Object object){
+    public int getItemPosition(Object object) {
         return POSITION_NONE;
     }
 }

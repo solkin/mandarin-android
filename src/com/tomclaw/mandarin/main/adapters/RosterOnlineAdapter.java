@@ -85,4 +85,11 @@ public class RosterOnlineAdapter extends SimpleCursorAdapter implements
         }
         return v;
     }
+
+    public long getBuddyDbId(int position) {
+        if (!mCursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
+        return mCursor.getLong(mCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
 }

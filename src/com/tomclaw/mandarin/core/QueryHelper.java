@@ -12,11 +12,10 @@ import android.database.Cursor;
  */
 public class QueryHelper {
 
-    public static void closeDialog(ContentResolver contentResolver, long buddyDbId) {
+    public static void modifyDialog(ContentResolver contentResolver, long buddyDbId, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
-        contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
+        modifyBuddy(contentResolver, buddyDbId, contentValues);
     }
 
     public static void insertMessage(ContentResolver contentResolver, long buddyDbId,
@@ -57,5 +56,10 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
+    }
+
+    private static void modifyBuddy(ContentResolver contentResolver, long buddyDbId, ContentValues contentValues) {
+        contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
     }
 }

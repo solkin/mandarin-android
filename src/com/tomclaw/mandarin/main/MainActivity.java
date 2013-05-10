@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
@@ -16,6 +17,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
@@ -113,19 +116,67 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         /** Lists **/
         pages.clear();
         /********* Dialogs *********/
-        ListView dialogsList = new ListView(this);
-        RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
+        final ListView dialogsList = new ListView(this);
+        final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
         dialogsList.setAdapter(dialogsAdapter);
+        dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                long buddyDbId = dialogsAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
+                intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                startActivity(intent);
+            }
+        });
         pages.add(dialogsList);
         /********* Online *********/
         ListView onlineList = new ListView(this);
-        RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
+        final RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
         onlineList.setAdapter(onlineAdapter);
+        onlineList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long buddyDbId = onlineAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                try {
+                    // Trying to open dialog with this buddy.
+                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    // Open chat dialog for this buddy.
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
+            }
+        });
         pages.add(onlineList);
         /********* All friends *********/
         ExpandableListView generalList = new ExpandableListView(this);
-        RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
+        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
         generalList.setAdapter(generalAdapter);
+        generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
+                                        int childPosition, long id) {
+                long buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
+                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                try {
+                    // Trying to open dialog with this buddy.
+                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    // Open chat dialog for this buddy.
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
+                return true;
+            }
+        });
         pages.add(generalList);
         /** View pager **/
         mAdapter = new RosterPagerAdapter(pages);

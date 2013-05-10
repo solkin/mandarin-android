@@ -151,4 +151,9 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
         }
         return view;
     }
+
+    public long getBuddyDbId(int groupPosition, int childPosition) {
+        Cursor cursor = getChild(groupPosition, childPosition);
+        return cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
 }

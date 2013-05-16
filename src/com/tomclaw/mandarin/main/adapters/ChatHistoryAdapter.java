@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -28,6 +29,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int[] MESSAGE_TYPES = new int[]{0, R.id.incoming_message, R.id.outgoing_message};
+    private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
 
     /** Date and time format helpers **/
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
@@ -39,6 +41,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
+    private static int COLUMN_MESSAGE_STATE;
 
     private Context context;
     private LayoutInflater mInflater;
@@ -65,6 +68,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_TEXT = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
+        COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -118,6 +122,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         // Message data.
         String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
+        int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         // Select message type.
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
@@ -138,6 +143,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 // Updating data.
                 ((TextView)view.findViewById(R.id.out_text)).setText(messageText);
                 ((TextView)view.findViewById(R.id.out_time)).setText(messageTimeText);
+                ((ImageView)view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
                 break;
             }
             default: {

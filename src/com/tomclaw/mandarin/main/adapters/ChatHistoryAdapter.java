@@ -6,14 +6,17 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+
+import java.text.SimpleDateFormat;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,19 +24,29 @@ import com.tomclaw.mandarin.core.Settings;
  * Date: 5/7/13
  * Time: 11:43 PM
  */
-public class ChatHistoryAdapter extends SimpleCursorAdapter implements
+public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int[] MESSAGE_TYPES = new int[]{0, R.id.incoming_message, R.id.outgoing_message};
+
+    /** Date and time format helpers **/
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
+    private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
+
+    /** Adapter ID, equals to buddy db id of this chat **/
     private final int ADAPTER_ID;
 
-    private static final String childFrom[] = {GlobalProvider.HISTORY_BUDDY_NICK, GlobalProvider.HISTORY_MESSAGE_TEXT};
-    private static final int childTo[] = {R.id.chat_buddy_nick, R.id.chat_message};
+    private static int COLUMN_MESSAGE_TEXT;
+    private static int COLUMN_MESSAGE_TIME;
+    private static int COLUMN_MESSAGE_TYPE;
 
     private Context context;
+    private LayoutInflater mInflater;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
-        super(context, R.layout.chat_item, null, childFrom, childTo, 0x00);
+        super(context, null, 0x00);
         this.context = context;
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ADAPTER_ID = buddyBdId;
         // Initialize loader for online Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
@@ -48,6 +61,11 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        // Detecting columns.
+        COLUMN_MESSAGE_TEXT = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
+        COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
+        COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
+        // Changing current cursor.
         swapCursor(cursor);
     }
 
@@ -71,15 +89,74 @@ public class ChatHistoryAdapter extends SimpleCursorAdapter implements
             }
             if (convertView == null) {
                 view = newView(mContext, mCursor, parent);
+                Log.d(Settings.LOG_TAG, "create new view ");
             } else {
                 view = convertView;
+                Log.d(Settings.LOG_TAG, "using existing view");
             }
             bindView(view, mContext, mCursor);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = mInflater.inflate(R.layout.chat_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return view;
+    }
+
+    /**
+     * Inflates view(s) from the specified XML file.
+     *
+     * @see android.widget.CursorAdapter#newView(android.content.Context,
+     *      android.database.Cursor, ViewGroup)
+     */
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return mInflater.inflate(R.layout.chat_item, parent, false);
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        // Message data.
+        String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
+        long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
+        String messageTimeText = simpleTimeFormat.format(messageTime);
+        // Select message type.
+        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        switch(MESSAGE_TYPES[messageType]) {
+            case R.id.incoming_message: {
+                // Update visibility.
+                view.findViewById(R.id.incoming_message).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
+                // Updating data.
+                ((TextView)view.findViewById(R.id.inc_text)).setText(messageText);
+                ((TextView)view.findViewById(R.id.inc_time)).setText(messageTimeText);
+                break;
+            }
+            case R.id.outgoing_message: {
+                // Update visibility.
+                view.findViewById(R.id.outgoing_message).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
+                // Updating data.
+                ((TextView)view.findViewById(R.id.out_text)).setText(messageText);
+                ((TextView)view.findViewById(R.id.out_time)).setText(messageTimeText);
+                break;
+            }
+            default: {
+                // What's up?
+                return;
+            }
+        }
+        // Showing or hiding date.
+        // Go to previous message and comparing dates.
+        if(!(cursor.moveToPrevious() && simpleDateFormat.format(messageTime)
+                .equals(simpleDateFormat.format(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
+            // Update visibility.
+            view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
+            // Update date text view.
+            ((TextView)view.findViewById(R.id.message_date))
+                    .setText(simpleDateFormat.format(messageTime));
+        } else {
+            // Update visibility.
+            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
+        }
     }
 }

@@ -11,6 +11,7 @@ import android.net.Uri;
  */
 public class Settings {
 
+    public static int MESSAGES_COLLAPSE_DELAY = 2 * 60 * 1000;
     public static String LOG_TAG = "Mandarin";
     public static String DB_NAME = "mandarin_db";
     public static int DB_VERSION = 1;

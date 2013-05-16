@@ -5,7 +5,6 @@
         <!-- <item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
         <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item> -->
     </style>
-
     <!-- style for the action bar backgrounds -->
     <style name="Widget.Mandarin.ActionBar" parent="Widget.Sherlock.ActionBar">
         <item name="background">@drawable/actionbar_bg_striped</item>

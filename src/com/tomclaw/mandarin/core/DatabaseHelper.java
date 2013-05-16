@@ -61,10 +61,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     for (int j = 0; j < random.nextInt(1500) + 250; j++) {
                         cv2.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
                         cv2.put(GlobalProvider.HISTORY_BUDDY_NICK, nick);
-                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "1");
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TYPE, (random.nextInt(3) == 1) ? "2" : "1");
                         cv2.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
                         cv2.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
-                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j);
+                        cv2.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j - 24*60*60*1000-10);
                         cv2.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
                         db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv2);
                     }

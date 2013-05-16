@@ -3,16 +3,72 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              android:padding="5dip">
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/chat_buddy_nick" android:layout_gravity="left|center_vertical" android:textStyle="bold"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/chat_message" android:layout_gravity="left|center_vertical"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:id="@+id/date_layout"
+            android:gravity="center_horizontal">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="05.07.13"
+                android:id="@+id/message_date" android:layout_gravity="center_horizontal" android:paddingBottom="5dip"
+                android:background="@drawable/ic_date_back" android:visibility="visible" android:typeface="normal"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/incoming_message">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip" android:layout_weight="1">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:background="@drawable/ic_inc_bubble"
+                    android:id="@+id/inc_bubble_back">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chat Message Chat Message Chat Message Chat Message "
+                        android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
+                        android:singleLine="false"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:gravity="right">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:21"
+                    android:id="@+id/inc_time" android:layout_gravity="right"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent"
+                  android:layout_height="wrap_content" android:id="@+id/outgoing_message">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+                      android:layout_height="wrap_content" android:gravity="right">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="10:21" android:id="@+id/out_time" android:layout_gravity="right"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1" android:paddingLeft="5dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+                          android:layout_height="wrap_content" android:background="@drawable/ic_out_bubble"
+                          android:id="@+id/out_bubble_back">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:text="Chat Message Chat Message Chat Message Chat Message "
+                          android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
+                          android:singleLine="false"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

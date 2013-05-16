@@ -22,14 +22,17 @@ public class QueryHelper {
                                      int messageType, String cookie, String messageText) {
         // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'" + " AND "
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'"/* + " AND "
                         + GlobalProvider.HISTORY_MESSAGE_TYPE + "='" + 1 + "'" + " AND "
                         + GlobalProvider.HISTORY_MESSAGE_TIME + ">=" +
-                        (System.currentTimeMillis() - 2 * 60 * 1000) + "", null, null);
+                        (System.currentTimeMillis() - 2 * 60 * 1000) + ""*/, null, null);
         // Cursor may have no more than only one entry. But we will check one and more.
-        if(cursor.getCount() >= 1) {
+        if (cursor.getCount() >= 1) {
             // Moving cursor to the last (and first) position and checking for operation success.
-            if(cursor.moveToPosition(cursor.getCount() - 1)) {
+            if (cursor.moveToPosition(cursor.getCount() - 1)
+                    && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
+                    && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
+                    (System.currentTimeMillis() - Settings.MESSAGES_COLLAPSE_DELAY)) {
                 // We have cookies!
                 long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));

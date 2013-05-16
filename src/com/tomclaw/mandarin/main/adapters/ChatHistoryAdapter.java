@@ -28,8 +28,8 @@ import java.text.SimpleDateFormat;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] MESSAGE_TYPES = new int[]{0, R.id.incoming_message, R.id.outgoing_message};
-    private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
+    private static final int[] MESSAGE_TYPES = new int[]{R.id.error_message, R.id.incoming_message, R.id.outgoing_message};
+    private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_error, R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
 
     /** Date and time format helpers **/
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
@@ -93,14 +93,25 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             if (convertView == null) {
                 view = newView(mContext, mCursor, parent);
-                Log.d(Settings.LOG_TAG, "create new view ");
+                Log.d(Settings.LOG_TAG, "create new view");
             } else {
                 view = convertView;
                 Log.d(Settings.LOG_TAG, "using existing view");
             }
             bindView(view, mContext, mCursor);
         } catch (Throwable ex) {
-            view = mInflater.inflate(R.layout.chat_item, parent, false);
+            if(convertView == null) {
+                view = mInflater.inflate(R.layout.chat_item, parent, false);
+                Log.d(Settings.LOG_TAG, "create new error view");
+            } else {
+                view = convertView;
+                Log.d(Settings.LOG_TAG, "using existing view for error bubble");
+            }
+            // Update visibility.
+            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
+            view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
+            view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
+            view.findViewById(R.id.error_message).setVisibility(View.VISIBLE);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return view;
@@ -120,17 +131,19 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Message data.
+        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
+        String messageDateText = simpleDateFormat.format(messageTime);
         // Select message type.
-        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         switch(MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
                 // Update visibility.
                 view.findViewById(R.id.incoming_message).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
+                view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView)view.findViewById(R.id.inc_text)).setText(messageText);
                 ((TextView)view.findViewById(R.id.inc_time)).setText(messageTimeText);
@@ -140,6 +153,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 // Update visibility.
                 view.findViewById(R.id.outgoing_message).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
+                view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView)view.findViewById(R.id.out_text)).setText(messageText);
                 ((TextView)view.findViewById(R.id.out_time)).setText(messageTimeText);
@@ -153,13 +167,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         }
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        if(!(cursor.moveToPrevious() && simpleDateFormat.format(messageTime)
+        if(!(cursor.moveToPrevious() && messageDateText
                 .equals(simpleDateFormat.format(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
             // Update date text view.
             ((TextView)view.findViewById(R.id.message_date))
-                    .setText(simpleDateFormat.format(messageTime));
+                    .setText(messageDateText);
         } else {
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.GONE);

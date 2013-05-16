@@ -76,4 +76,14 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:id="@+id/error_message">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/error_bubble"
+                android:id="@+id/textView" android:padding="5dip" android:background="@drawable/ic_error_bubble"/>
+    </LinearLayout>
 </LinearLayout>

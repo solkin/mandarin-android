@@ -28,6 +28,7 @@
     <string name="buddy_info">Buddy info</string>
     <string name="clear_history">Clear history</string>
     <string name="enter_your_message">Enter your message</string>
+    <string name="error_bubble">Error loading message from database. Reinstall program to let this error left.</string>
 
     <string name="status_unavailable">Unavailable</string>
     <string name="status_available">Available</string>

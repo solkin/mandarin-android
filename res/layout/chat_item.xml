@@ -4,13 +4,13 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:padding="5dip">
+              android:paddingLeft="5dip" android:paddingTop="5dip" android:paddingRight="5dip">
 
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:id="@+id/date_layout"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal" android:paddingBottom="5dip">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:gravity="right">
+                android:layout_height="match_parent" android:gravity="right">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,9 +54,14 @@
     <LinearLayout android:orientation="horizontal" android:layout_width="match_parent"
                   android:layout_height="wrap_content" android:id="@+id/outgoing_message">
         <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
-                      android:layout_height="wrap_content" android:gravity="right">
+                      android:layout_height="match_parent" android:gravity="right">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                       android:text="10:21" android:id="@+id/out_time" android:layout_gravity="right"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/message_delivery" android:src="@drawable/ic_delivered"
+                    />
         </LinearLayout>
         <LinearLayout android:orientation="vertical" android:layout_width="0dp"
                       android:layout_height="wrap_content"

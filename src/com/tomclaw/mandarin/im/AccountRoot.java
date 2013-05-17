@@ -29,11 +29,6 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * User data
      */
-    protected Roster roster = new Roster();
-
-    public Roster getRoster() {
-        return roster;
-    }
 
     public String getUserId() {
         return userId;
@@ -72,7 +67,6 @@ public abstract class AccountRoot extends CoreObject {
         dest.writeInt(serviceId);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
-        roster.writeInstanceData(dest);
     }
 
     public void readInstanceData(Parcel in) {
@@ -84,6 +78,5 @@ public abstract class AccountRoot extends CoreObject {
         serviceId = in.readInt();
         serviceHost = in.readString();
         servicePort = in.readInt();
-        roster.readInstanceData(in);
     }
 }

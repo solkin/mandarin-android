@@ -17,7 +17,7 @@ public class IcqAccountRoot extends AccountRoot {
     public IcqAccountRoot() {
     }
 
-    public void setSomeStaff(String stuff) {
+    public void setSomeStuff(String stuff) {
         someStuff = stuff;
     }
 

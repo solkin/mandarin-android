@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.accounts.AccountAuthenticator;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -59,11 +61,11 @@ public class AccountAddActivity extends ChiefActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent mainActivityIntent = new Intent(this, AccountsActivity.class);
-                startActivity(mainActivityIntent);
+            case android.R.id.home: {
+                finish();
                 return true;
-            case R.id.ok_account_menu:
+            }
+            case R.id.ok_account_menu: {
                 String userId = ((EditText) findViewById(R.id.user_id_field)).getText().toString();
                 String userPassword = ((EditText) findViewById(R.id.user_password_field)).getText().toString();
                 // Check for credentials are filed correctly
@@ -77,15 +79,22 @@ public class AccountAddActivity extends ChiefActivity {
                         accountRoot.setUserNick(userId);
                         accountRoot.setUserPassword(userPassword);
                         getServiceInteraction().addAccount(accountRoot);
-                        setResult(AccountsActivity.ADDING_ACTIVITY_RESULT_CODE);
+                        // Creating signal intent.
+                        final Intent intent = new Intent();
+                        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userId);
+                        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
+                        intent.putExtra(AccountManager.KEY_AUTHTOKEN, AccountAuthenticator.ACCOUNT_TYPE);
+                        setResult(RESULT_OK, intent);
                         finish();
                     } catch (Throwable ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
                     }
                 }
                 return true;
-            default:
+            }
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 

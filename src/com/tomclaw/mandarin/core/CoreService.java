@@ -85,7 +85,7 @@ public class CoreService extends Service {
         super.onCreate();
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
-        sessionHolder = new SessionHolder();
+        sessionHolder = new SessionHolder(this);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();

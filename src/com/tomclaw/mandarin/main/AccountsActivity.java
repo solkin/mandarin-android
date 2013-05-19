@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class AccountsActivity extends ChiefActivity {
 
-    public static final int ADDING_ACTIVITY_RESULT_CODE = 1;
+    public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
     protected boolean mActionMode;
     protected int selectedItem;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -102,7 +102,7 @@ public class AccountsActivity extends ChiefActivity {
             case R.id.add_account_menu:
                 Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
                 accountAddIntent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
-                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_RESULT_CODE);
+                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -112,8 +112,9 @@ public class AccountsActivity extends ChiefActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(Settings.LOG_TAG, "AccountsActivity result code: " + resultCode);
         switch (resultCode) {
-            case ADDING_ACTIVITY_RESULT_CODE: {
+            case RESULT_OK: {
                 initAccountsList();
                 break;
             }

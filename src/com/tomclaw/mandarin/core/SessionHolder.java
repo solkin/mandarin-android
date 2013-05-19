@@ -2,8 +2,10 @@ package com.tomclaw.mandarin.core;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.OnAccountsUpdateListener;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import com.tomclaw.mandarin.core.accounts.AccountAuthenticator;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -25,16 +27,34 @@ public class SessionHolder {
 
     public SessionHolder(Context context) {
         accountManager = AccountManager.get(context);
+        // Listener will invoke update when data changes in account manager.
+        accountManager.addOnAccountsUpdatedListener(new OnAccountsUpdateListener() {
+            @Override
+            public void onAccountsUpdated(Account[] accounts) {
+                Log.d(Settings.LOG_TAG, "SessionHolder: onAccountsUpdated");
+                update(accounts);
+            }
+        }, null, false);
     }
 
     public void load() {
+        Log.d(Settings.LOG_TAG, "SessionHolder: load");
         // Loading accounts from local storage.
         Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        update(accounts);
+    }
+
+    public void update(Account[] accounts) {
+        // Clear and fill up with updated list.
+        accountRootList.clear();
         for(Account account : accounts) {
-            AccountRoot accountRoot = new IcqAccountRoot();
-            accountRoot.setUserId(account.name);
-            accountRoot.setUserNick(account.name);
-            accountRootList.add(accountRoot);
+            // Checking for account type.
+            if(account.type.equals(AccountAuthenticator.ACCOUNT_TYPE)) {
+                AccountRoot accountRoot = new IcqAccountRoot();
+                accountRoot.setUserId(account.name);
+                accountRoot.setUserNick(account.name);
+                accountRootList.add(accountRoot);
+            }
         }
     }
 

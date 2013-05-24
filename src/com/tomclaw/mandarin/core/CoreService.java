@@ -135,7 +135,7 @@ public class CoreService extends Service {
                 sessionHolder.load();
                 // For testing purposes only!
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                 }
                 // Service is now ready.

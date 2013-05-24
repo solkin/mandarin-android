@@ -20,12 +20,18 @@ import android.util.Log;
 public class GlobalProvider extends ContentProvider {
 
     // Table
+    public static final String ACCOUNTS_TABLE = "accounts";
     public static final String ROSTER_GROUP_TABLE = "roster_group";
     public static final String ROSTER_BUDDY_TABLE = "roster_buddy";
     public static final String CHAT_HISTORY_TABLE = "chat_history";
 
     // Fields
     public static final String ROW_AUTO_ID = "_id";
+
+    public static final String ACCOUNT_NAME = "account_name";
+    public static final String ACCOUNT_TYPE = "account_type";
+    public static final String ACCOUNT_USER_ID = "account_user_id";
+    public static final String ACCOUNT_STATUS = "account_status";
 
     public static final String ROSTER_GROUP_NAME = "group_name";
 
@@ -46,6 +52,11 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
 
     // Database create scripts
+    protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " int, "
+            + ACCOUNT_USER_ID + " text, "+ ACCOUNT_STATUS + " text" + ");";
+
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_GROUP_NAME + " text" + ");";
@@ -66,19 +77,18 @@ public class GlobalProvider extends ContentProvider {
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
 
-    // Data types
-    static final String GROUP_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
-            + Settings.GLOBAL_AUTHORITY + "." + ROSTER_GROUP_TABLE;
-
-    private static final int URI_BUDDY = 1;
+    // URI id
+    private static final int URI_ACCOUNT = 1;
+    private static final int URI_BUDDY = 2;
     private static final int URI_GROUP = 3;
-    private static final int URI_HISTORY = 5;
+    private static final int URI_HISTORY = 4;
 
     // URI tool instance
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ACCOUNTS_TABLE, URI_ACCOUNT);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
@@ -98,6 +108,14 @@ public class GlobalProvider extends ContentProvider {
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
+            case URI_ACCOUNT: // Default Uri
+                Log.d(Settings.LOG_TAG, "URI_ACCOUNT");
+                // Default sort if not specified
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = ACCOUNT_NAME + " ASC";
+                }
+                table = ACCOUNTS_TABLE;
+                break;
             case URI_GROUP: // Default Uri
                 Log.d(Settings.LOG_TAG, "URI_GROUP");
                 // Default sort if not specified
@@ -137,10 +155,6 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         Log.d(Settings.LOG_TAG, "getType, " + uri.toString());
-        switch (uriMatcher.match(uri)) {
-            case URI_GROUP:
-                return GROUP_CONTENT_TYPE;
-        }
         return null;
     }
 
@@ -149,6 +163,9 @@ public class GlobalProvider extends ContentProvider {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         String table;
         switch (uriMatcher.match(uri)) {
+            case URI_ACCOUNT:
+                table = ACCOUNTS_TABLE;
+                break;
             case URI_GROUP:
                 table = ROSTER_GROUP_TABLE;
                 break;
@@ -179,6 +196,9 @@ public class GlobalProvider extends ContentProvider {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         String table;
         switch (uriMatcher.match(uri)) {
+            case URI_ACCOUNT:
+                table = ACCOUNTS_TABLE;
+                break;
             case URI_GROUP:
                 table = ROSTER_GROUP_TABLE;
                 break;

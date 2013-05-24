@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorTreeAdapter;
+import android.widget.CursorTreeAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
@@ -22,8 +24,14 @@ import com.tomclaw.mandarin.core.Settings;
  * Time: 9:22 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
+public class RosterGeneralAdapter extends CursorTreeAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static int COLUMN_GROUP_NAME;
+    private static int COLUMN_BUDDY_NICK;
+    private static int COLUMN_BUDDY_ID;
+    private static int COLUMN_BUDDY_STATUS;
+
 
     private static final int ADAPTER_GENERAL_ID = -1;
 
@@ -36,12 +44,15 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
 
     private Context context;
     private LoaderManager loaderManager;
+    private LayoutInflater mInflater;
 
     public RosterGeneralAdapter(Context context, LoaderManager loaderManager) {
-        super(context, null, R.layout.group_item, R.layout.group_item, groupFrom, groupTo,
-                R.layout.buddy_item, R.layout.buddy_item, childFrom, childTo);
+        // super(context, null, R.layout.group_item, R.layout.group_item, groupFrom, groupTo,
+        //         R.layout.buddy_item, R.layout.buddy_item, childFrom, childTo);
+        super(null, context);
         this.context = context;
         this.loaderManager = loaderManager;
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // Initialize loader for groups.
         this.loaderManager.initLoader(ADAPTER_GENERAL_ID, null, this);
     }
@@ -61,9 +72,18 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        // Checking for Id.
         if (cursorLoader.getId() == ADAPTER_GENERAL_ID) {
+            // Detecting columns.
+            COLUMN_GROUP_NAME = cursor.getColumnIndex(GlobalProvider.ROSTER_GROUP_NAME);
+            // Trying to set cursor.
             setGroupCursor(cursor);
         } else {
+            // Detecting columns.
+            COLUMN_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            COLUMN_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
+            COLUMN_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
+            // Trying to set cursor.
             try {
                 setChildrenCursor(cursorLoader.getId(), cursor);
             } catch (Throwable ex) {
@@ -107,6 +127,41 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
     }
 
     @Override
+    public View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
+        return mInflater.inflate(R.layout.group_item,
+                parent, false);
+    }
+
+    @Override
+    public View newChildView(Context context, Cursor cursor, boolean isLastChild,
+                             ViewGroup parent) {
+        return mInflater.inflate(R.layout.buddy_item, parent, false);
+    }
+
+    @Override
+    protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
+        String groupName = cursor.getString(COLUMN_GROUP_NAME);
+        TextView groupNameView = (TextView)view.findViewById(R.id.group_name);
+        groupNameView.setText(groupName);
+    }
+
+    @Override
+    protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
+        // Obtain data from cursor.
+        String buddyNick = cursor.getString(COLUMN_BUDDY_NICK);
+        String buddyId = cursor.getString(COLUMN_BUDDY_ID);
+        int buddyStatus = cursor.getInt(COLUMN_BUDDY_STATUS);
+        // Find views
+        TextView buddyNickView = (TextView)view.findViewById(R.id.buddy_nick);
+        TextView buddyIdView = (TextView)view.findViewById(R.id.buddy_id);
+        ImageView buddyStatusView = (ImageView)view.findViewById(R.id.buddy_status);
+        // Update data.
+        buddyNickView.setText(buddyNick);
+        buddyIdView.setText(buddyId);
+        buddyStatusView.setImageResource(buddyStatus);
+    }
+
+    @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
                              ViewGroup parent) {
         View view;
@@ -122,7 +177,6 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
             }
             bindGroupView(view, context, cursor, isExpanded);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = mInflater.inflate(R.layout.group_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
         }
@@ -145,7 +199,6 @@ public class RosterGeneralAdapter extends SimpleCursorTreeAdapter implements
             }
             bindChildView(view, context, cursor, isLastChild);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = mInflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
         }

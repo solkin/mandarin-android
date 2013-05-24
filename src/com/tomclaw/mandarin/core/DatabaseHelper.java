@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Creating roster database.
+        db.execSQL(GlobalProvider.DB_CREATE_ACCOUNT_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
@@ -89,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static String generateRandomWord(Random r, boolean capitalize) {
         int wordLength = 4 + r.nextInt(6);
-        // Intialize a Random Number Generator with SysTime as the seed
+        // Initialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
         for (int i = 0; i < wordLength; i++) { // For each letter in the word
             char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
@@ -105,6 +106,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // Yo!
     }
 }

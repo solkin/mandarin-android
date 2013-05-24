@@ -3,12 +3,13 @@ package com.tomclaw.mandarin.core;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.accounts.AccountAuthenticator;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,21 @@ import java.util.List;
  * User: solkin
  * Date: 3/28/13
  * Time: 2:10 AM
- * To change this template use File | Settings | File Templates.
+ * Store opened accounts and sessions
  */
 public class SessionHolder {
 
+    private final String ACCOUNT_DATA = "account_data";
+    private final String ACCOUNT_TYPE = "account_type";
+
     private List<AccountRoot> accountRootList = new ArrayList<AccountRoot>();
+    private final ContentResolver contentResolver;
     private final AccountManager accountManager;
 
     public SessionHolder(Context context) {
         accountManager = AccountManager.get(context);
+        // Obtain content resolver to perform queries.
+        contentResolver = context.getContentResolver();
         // Listener will invoke update when data changes in account manager.
         accountManager.addOnAccountsUpdatedListener(new OnAccountsUpdateListener() {
             @Override
@@ -44,22 +51,25 @@ public class SessionHolder {
         update(accounts);
     }
 
+    /**
+     * Check out difference between current and specified accounts.
+     * @param accounts
+     */
     public void update(Account[] accounts) {
         // Clear and fill up with updated list.
         accountRootList.clear();
         for(Account account : accounts) {
             // Checking for account type.
             if(account.type.equals(AccountAuthenticator.ACCOUNT_TYPE)) {
-                AccountRoot accountRoot = new IcqAccountRoot();
-                accountRoot.setUserId(account.name);
-                accountRoot.setUserNick(account.name);
+                // Obtain account clone from account manager.
+                AccountRoot accountRoot = getAccountRoot(account);
                 accountRootList.add(accountRoot);
+                // Query fot such account in database.
+                // if(QueryHelper.updateAccount(contentResolver, accountRoot)) {
+                    // Account was changed. Account must be offline now. Switch it.
+                // }
             }
         }
-    }
-
-    public void save() {
-        // Saving account to local storage.
     }
 
     public List<AccountRoot> getAccountsList() {
@@ -67,20 +77,37 @@ public class SessionHolder {
     }
 
     public void addAccountRoot(AccountRoot accountRoot) {
-        accountRootList.add(accountRoot);
-
-        String accountType = AccountAuthenticator.ACCOUNT_TYPE;
-
         // This is the magic that adds the account to the Android Account Manager
-        final Account account = new Account(accountRoot.getUserId(), accountType);
-        accountManager.addAccountExplicitly(account, accountRoot.getUserPassword(), null);
+        final Account account = new Account(accountRoot.getUserId(), AccountAuthenticator.ACCOUNT_TYPE);
+        if(accountManager.addAccountExplicitly(account, accountRoot.getUserPassword(), getAccountData(accountRoot))) {
+            // Query to add account.
+            accountRootList.add(accountRoot);
+        }
+    }
 
-        // Now we tell our caller, could be the Android Account Manager or even our own application
-        // that the process was successful
+    private Bundle getAccountData(AccountRoot accountRoot) {
+        Bundle bundle = new Bundle();
+        // Writing json data.
+        Gson gson = new Gson();
+        String accountData = gson.toJson(accountRoot);
+        Log.d(Settings.LOG_TAG, "account data: " + accountData);
+        bundle.putString(ACCOUNT_DATA, accountData);
+        bundle.putString(ACCOUNT_TYPE, accountRoot.getClass().getName());
+        return bundle;
+    }
 
-        final Intent intent = new Intent();
-        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountRoot.getUserId());
-        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-        intent.putExtra(AccountManager.KEY_AUTHTOKEN, accountType);
+    private AccountRoot getAccountRoot(Account account) {
+        // Identifying account from bundle.
+        String accountData = accountManager.getUserData(account, ACCOUNT_DATA);
+        String accountType = accountManager.getUserData(account, ACCOUNT_TYPE);
+        Log.d(Settings.LOG_TAG, "account [" + accountType + "] data: " + accountData);
+        Gson gson = new Gson();
+        AccountRoot accountRoot = null;
+        try {
+            accountRoot = (AccountRoot) gson.fromJson(accountData, Class.forName(accountType));
+        } catch (ClassNotFoundException e) {
+            Log.d(Settings.LOG_TAG, "Unknown account class type: " + accountType);
+        }
+        return accountRoot;
     }
 }

@@ -9,9 +9,9 @@ import com.tomclaw.mandarin.im.AccountRoot;
  * User: anton
  * Date: 3/31/13
  * Time: 12:47 AM
- * To change this template use File | Settings | File Templates.
  */
 public class IcqAccountRoot extends AccountRoot {
+
     private String someStuff;
 
     public IcqAccountRoot() {
@@ -26,8 +26,8 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     @Override
-    public int getServiceIcon() {
-        return 0;
+    public int getAccountType() {
+        return ACCOUNT_TYPE_ICQ;
     }
 
     @Override

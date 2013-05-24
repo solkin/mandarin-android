@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +12,20 @@ import android.database.Cursor;
  * Time: 2:13 PM
  */
 public class QueryHelper {
+
+    public static boolean updateAccount(ContentResolver contentResolver, AccountRoot accountRoot) {
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ACCOUNT_TYPE + "='" + accountRoot.getAccountType() + "'" + " AND "
+                        + GlobalProvider.ACCOUNT_USER_ID + "='" + accountRoot.getUserId() + "'", null, null);
+        // Cursor may have no more than only one entry. But we will check one and more.
+        if(cursor.getCount() >= 1) {
+            if(cursor.moveToFirst()) {
+
+            }
+        }
+        return false;
+    }
 
     public static void modifyDialog(ContentResolver contentResolver, long buddyDbId, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
@@ -22,14 +37,11 @@ public class QueryHelper {
                                      int messageType, String cookie, String messageText) {
         // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'"/* + " AND "
-                        + GlobalProvider.HISTORY_MESSAGE_TYPE + "='" + 1 + "'" + " AND "
-                        + GlobalProvider.HISTORY_MESSAGE_TIME + ">=" +
-                        (System.currentTimeMillis() - 2 * 60 * 1000) + ""*/, null, null);
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null, null);
         // Cursor may have no more than only one entry. But we will check one and more.
         if (cursor.getCount() >= 1) {
             // Moving cursor to the last (and first) position and checking for operation success.
-            if (cursor.moveToPosition(cursor.getCount() - 1)
+            if (cursor.moveToLast()
                     && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
                     && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
                     (System.currentTimeMillis() - Settings.MESSAGES_COLLAPSE_DELAY)) {

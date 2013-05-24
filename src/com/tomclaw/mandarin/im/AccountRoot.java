@@ -12,23 +12,17 @@ import com.tomclaw.mandarin.core.CoreObject;
  */
 public abstract class AccountRoot extends CoreObject {
 
-    /**
-     * User info
-     */
+    /** Constants **/
+    public static final int ACCOUNT_TYPE_ICQ = 0x01;
+    /** User info **/
     protected String userId;
     protected String userNick;
     protected String userPassword;
     protected int statusIndex;
     protected String statusText;
-    /**
-     * Service info
-     */
-    protected int serviceId;
+    /** Service info **/
     protected String serviceHost;
     protected int servicePort;
-    /**
-     * User data
-     */
 
     public String getUserId() {
         return userId;
@@ -54,7 +48,7 @@ public abstract class AccountRoot extends CoreObject {
         this.userPassword = userPassword;
     }
 
-    public abstract int getServiceIcon();
+    public abstract int getAccountType();
 
     public abstract int getAccountLayout();
 
@@ -64,7 +58,6 @@ public abstract class AccountRoot extends CoreObject {
         dest.writeString(userPassword);
         dest.writeInt(statusIndex);
         dest.writeString(statusText);
-        dest.writeInt(serviceId);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
     }
@@ -75,7 +68,6 @@ public abstract class AccountRoot extends CoreObject {
         userPassword = in.readString();
         statusIndex = in.readInt();
         statusText = in.readString();
-        serviceId = in.readInt();
         serviceHost = in.readString();
         servicePort = in.readInt();
     }

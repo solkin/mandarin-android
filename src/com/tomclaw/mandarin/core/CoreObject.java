@@ -56,8 +56,9 @@ public abstract class CoreObject implements Parcelable {
                 CoreObject implementer = (CoreObject) Class.forName(className).newInstance();
                 implementer.readInstanceData(in);
                 return implementer;
-            } catch (Exception e) {
-                Log.d(Settings.LOG_TAG, "CoreObject Creator error: " + e.getCause().getMessage());
+            } catch (Throwable e) {
+                e.printStackTrace();
+                Log.d(Settings.LOG_TAG, "CoreObject Creator error: " + e.getMessage());
             }
             return null;
         }

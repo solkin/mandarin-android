@@ -3,7 +3,12 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +18,44 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class QueryHelper {
 
+    private static Gson gson;
+
+    static {
+        gson = new Gson();
+    }
+
+    public static List<AccountRoot> getAccounts(ContentResolver contentResolver, List<AccountRoot> accountRootList) {
+        // Clearing input list.
+        accountRootList.clear();
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
+        // Cursor may have more than only one entry.
+        if(cursor.getCount() >= 1) {
+            // Obtain necessary column index.
+            int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
+            int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+            // Iterate all accounts.
+            for(int c=0;c<cursor.getCount();c++){
+                // Trying to move to position.
+                if(cursor.moveToPosition(c)) {
+                    Class accountClass = null;
+                    // Checking for account type.
+                    switch(cursor.getInt(typeColumnIndex)) {
+                        case AccountRoot.ACCOUNT_TYPE_ICQ: {
+                            accountClass = IcqAccountRoot.class;
+                            break;
+                        }
+                    }
+                    // Creating account root from bundle.
+                    AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
+                            accountClass);
+                    accountRootList.add(accountRoot);
+                }
+            }
+        }
+        return accountRootList;
+    }
+
     public static boolean updateAccount(ContentResolver contentResolver, AccountRoot accountRoot) {
         // Obtain specified account. If exist.
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
@@ -21,10 +64,29 @@ public class QueryHelper {
         // Cursor may have no more than only one entry. But we will check one and more.
         if(cursor.getCount() >= 1) {
             if(cursor.moveToFirst()) {
-
+                long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                // We must update account. Name, password, status, bundle.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+                contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+                contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+                contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+                // Update query.
+                contentResolver.update(Settings.ACCOUNT_RESOLVER_URI, contentValues,
+                        GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null);
+                return false;
             }
         }
-        return false;
+        // No matching account. Creating new account.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
+        contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+        contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
+        contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+        contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+        contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+        contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
+        return true;
     }
 
     public static void modifyDialog(ContentResolver contentResolver, long buddyDbId, boolean isOpened) {

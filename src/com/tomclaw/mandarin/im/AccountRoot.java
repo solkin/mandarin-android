@@ -48,6 +48,10 @@ public abstract class AccountRoot extends CoreObject {
         this.userPassword = userPassword;
     }
 
+    public int getStatusIndex() {
+        return statusIndex;
+    }
+
     public abstract int getAccountType();
 
     public abstract int getAccountLayout();

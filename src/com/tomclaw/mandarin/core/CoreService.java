@@ -75,7 +75,7 @@ public class CoreService extends Service {
         public void addAccount(CoreObject coreObject) throws RemoteException {
             AccountRoot accountRoot = (AccountRoot) coreObject;
             Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
-            sessionHolder.addAccountRoot(accountRoot);
+            sessionHolder.updateAccountRoot(accountRoot);
         }
     };
 

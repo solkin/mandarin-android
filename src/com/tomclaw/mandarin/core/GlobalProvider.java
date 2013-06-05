@@ -31,7 +31,9 @@ public class GlobalProvider extends ContentProvider {
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
     public static final String ACCOUNT_USER_ID = "account_user_id";
+    public static final String ACCOUNT_USER_PASSWORD = "account_user_password";
     public static final String ACCOUNT_STATUS = "account_status";
+    public static final String ACCOUNT_BUNDLE = "account_bundle";
 
     public static final String ROSTER_GROUP_NAME = "group_name";
 
@@ -55,7 +57,8 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " int, "
-            + ACCOUNT_USER_ID + " text, "+ ACCOUNT_STATUS + " text" + ");";
+            + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
+            + ACCOUNT_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

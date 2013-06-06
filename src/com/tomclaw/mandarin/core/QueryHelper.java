@@ -89,6 +89,12 @@ public class QueryHelper {
         return true;
     }
 
+    public static boolean removeAccount(ContentResolver contentResolver, int accountType, String userId) {
+        return contentResolver.delete(Settings.ACCOUNT_RESOLVER_URI, GlobalProvider.ACCOUNT_TYPE + "='"
+                + accountType + "'" + " AND " + GlobalProvider.ACCOUNT_USER_ID + "='"
+                + userId + "'", null) != 0;
+    }
+
     public static void modifyDialog(ContentResolver contentResolver, long buddyDbId, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);

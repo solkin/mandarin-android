@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -32,6 +35,7 @@ public class AccountsActivity extends ChiefActivity {
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
     protected boolean mActionMode;
     protected int selectedItem;
+    private AccountsAdapter sAdapter;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created; startActionMode() was called
@@ -61,7 +65,16 @@ public class AccountsActivity extends ChiefActivity {
                 case R.id.remove_account_menu:
                     show();
                     // Action picked, so close the CAB
-                    mode.finish();
+                    Cursor cursor = sAdapter.getCursor();
+                    if(cursor.moveToPosition(selectedItem)) {
+                        // Detecting columns.
+                        int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                        int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+                        int accountType = cursor.getInt(COLUMN_ACCOUNT_TYPE);
+                        String userId = cursor.getString(COLUMN_USER_ID);
+                        QueryHelper.removeAccount(getContentResolver(), accountType, userId);
+                        mode.finish();
+                    }
                     return true;
                 default:
                     return false;
@@ -126,7 +139,7 @@ public class AccountsActivity extends ChiefActivity {
         setContentView(R.layout.accounts_list);
         ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
         // Creating adapter for accounts list
-        AccountsAdapter sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
+        sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
         // Bind to our new adapter.
         listView.setAdapter(sAdapter);
         listView.setItemsCanFocus(true);
@@ -145,10 +158,9 @@ public class AccountsActivity extends ChiefActivity {
                     return false;
                 }
                 selectedItem = position;
-
                 // Start the CAB using the ActionMode.Callback defined above
                 mActionMode = true;
-                AccountsActivity.this.startActionMode(mActionModeCallback);
+                startActionMode(mActionModeCallback);
                 view.setSelected(true);
                 return true;
             }

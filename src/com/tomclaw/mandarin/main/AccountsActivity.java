@@ -122,49 +122,37 @@ public class AccountsActivity extends ChiefActivity {
     }
 
     private void initAccountsList() {
-        try {
-            List<AccountRoot> accountsList = getServiceInteraction().getAccountsList();
-            Log.d(Settings.LOG_TAG, "received " + accountsList.size() + " accounts");
-            // Set up list as default container.
-            setContentView(R.layout.accounts_list);
-            // Checking for there is no accounts.
-            if (accountsList.isEmpty()) {
-                // Nothing to do in this case.
-                Log.d(Settings.LOG_TAG, "No accounts");
-            } else {
-                ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
-                // Creating adapter for accounts list
-                AccountsAdapter sAdapter = new AccountsAdapter(this, R.layout.account_item, accountsList);
-                // Bind to our new adapter.
-                listView.setAdapter(sAdapter);
-                listView.setItemsCanFocus(true);
-                listView.setOnItemClickListener(new ListView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
-                    }
-                });
-
-                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (mActionMode == true) {
-                            return false;
-                        }
-                        selectedItem = position;
-
-                        // Start the CAB using the ActionMode.Callback defined above
-                        mActionMode = true;
-                        AccountsActivity.this.startActionMode(mActionModeCallback);
-                        view.setSelected(true);
-                        return true;
-                    }
-                });
+        // Set up list as default container.
+        setContentView(R.layout.accounts_list);
+        ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
+        // Creating adapter for accounts list
+        AccountsAdapter sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
+        // Bind to our new adapter.
+        listView.setAdapter(sAdapter);
+        listView.setItemsCanFocus(true);
+        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mActionMode == true) {
+                    return false;
+                }
+                selectedItem = position;
+
+                // Start the CAB using the ActionMode.Callback defined above
+                mActionMode = true;
+                AccountsActivity.this.startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        });
     }
 
     @Override

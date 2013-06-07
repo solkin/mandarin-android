@@ -164,25 +164,8 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
-        String table;
-        switch (uriMatcher.match(uri)) {
-            case URI_ACCOUNT:
-                table = ACCOUNTS_TABLE;
-                break;
-            case URI_GROUP:
-                table = ROSTER_GROUP_TABLE;
-                break;
-            case URI_BUDDY:
-                table = ROSTER_BUDDY_TABLE;
-                break;
-            case URI_HISTORY:
-                table = CHAT_HISTORY_TABLE;
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
-        long rowId = sqLiteDatabase.insert(table, null, values);
+        long rowId = sqLiteDatabase.insert(getTableName(uri), null, values);
         Uri resultUri = ContentUris.withAppendedId(uri, rowId);
         // Notify ContentResolver about data changes.
         getContext().getContentResolver().notifyChange(resultUri, null);
@@ -191,12 +174,25 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Log.d(Settings.LOG_TAG, "delete, " + uri.toString());
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
+    }
+
+    private static String getTableName(Uri uri) {
         String table;
         switch (uriMatcher.match(uri)) {
             case URI_ACCOUNT:
@@ -214,10 +210,6 @@ public class GlobalProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-        sqLiteDatabase = databaseHelper.getWritableDatabase();
-        int rows = sqLiteDatabase.update(table, values, selection, selectionArgs);
-        // Notify ContentResolver about data changes.
-        getContext().getContentResolver().notifyChange(uri, null);
-        return rows;
+        return table;
     }
 }

@@ -154,10 +154,12 @@ public class AccountsActivity extends ChiefActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Update selected item first.
+                selectedItem = position;
+                // Checking for action mode is already activated.
                 if (mActionMode == true) {
                     return false;
                 }
-                selectedItem = position;
                 // Start the CAB using the ActionMode.Callback defined above
                 mActionMode = true;
                 startActionMode(mActionModeCallback);

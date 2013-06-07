@@ -58,13 +58,10 @@ public class AccountsActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.edit_account_menu:
-                    show();
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;
                 case R.id.remove_account_menu:
-                    show();
-                    // Action picked, so close the CAB
                     Cursor cursor = sAdapter.getCursor();
                     if(cursor.moveToPosition(selectedItem)) {
                         // Detecting columns.
@@ -72,9 +69,16 @@ public class AccountsActivity extends ChiefActivity {
                         int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
                         int accountType = cursor.getInt(COLUMN_ACCOUNT_TYPE);
                         String userId = cursor.getString(COLUMN_USER_ID);
-                        QueryHelper.removeAccount(getContentResolver(), accountType, userId);
-                        mode.finish();
+                        if(QueryHelper.removeAccount(getContentResolver(), accountType, userId)) {
+                            // Action picked, so close the CAB
+                            mode.finish();
+                            return true;
+                        }
                     }
+                    // Show error.
+                    show(R.string.error_no_such_account);
+                    // Action picked, so close the CAB
+                    mode.finish();
                     return true;
                 default:
                     return false;
@@ -177,8 +181,7 @@ public class AccountsActivity extends ChiefActivity {
     public void onCoreServiceIntent(Intent intent) {
     }
 
-    private void show() {
-        Toast.makeText(AccountsActivity.this,
-                String.valueOf(selectedItem), Toast.LENGTH_LONG).show();
+    private void show(int stringRes) {
+        Toast.makeText(AccountsActivity.this, stringRes, Toast.LENGTH_LONG).show();
     }
 }

@@ -58,7 +58,7 @@ public class AccountsActivity extends ChiefActivity {
                     return true;
                 case R.id.remove_account_menu:
                     Cursor cursor = sAdapter.getCursor();
-                    if(cursor.moveToPosition(selectedItem)) {
+                    if (cursor.moveToPosition(selectedItem)) {
                         // Detecting columns.
                         int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
                         int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
@@ -66,7 +66,7 @@ public class AccountsActivity extends ChiefActivity {
                         String userId = cursor.getString(COLUMN_USER_ID);
                         try {
                             // Trying to remove account.
-                            if(getServiceInteraction().removeAccount(accountType, userId)) {
+                            if (getServiceInteraction().removeAccount(accountType, userId)) {
                                 // Action picked, so close the CAB
                                 mode.finish();
                                 return true;

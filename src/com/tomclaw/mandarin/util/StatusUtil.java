@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.util;
 
 import android.util.Log;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 

@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv1 = new ContentValues();
         ContentValues cv2 = new ContentValues();
         ContentValues cv3 = new ContentValues();
-        int[] statuses = new int[] {
+        int[] statuses = new int[]{
                 StatusUtil.STATUS_OFFLINE,
                 StatusUtil.STATUS_ONLINE,
                 StatusUtil.STATUS_AWAY,

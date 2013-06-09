@@ -27,17 +27,23 @@ import com.tomclaw.mandarin.util.StatusUtil;
 public class RosterGeneralAdapter extends CursorTreeAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Adapter ID **/
+    /**
+     * Adapter ID *
+     */
     private static final int ADAPTER_GENERAL_ID = -1;
 
-    /** Columns **/
+    /**
+     * Columns *
+     */
     private static int COLUMN_GROUP_NAME;
     private static int COLUMN_BUDDY_NICK;
     private static int COLUMN_BUDDY_ID;
     private static int COLUMN_BUDDY_STATUS;
     private static int COLUMN_BUDDY_ACCOUNT_TYPE;
 
-    /** Variables **/
+    /**
+     * Variables *
+     */
     private Context context;
     private LoaderManager loaderManager;
     private LayoutInflater mInflater;
@@ -59,8 +65,9 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
                     null, GlobalProvider.ROSTER_GROUP_NAME + " ASC");
         } else {
             return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_GROUP
-                    + "='" + bundle.getString(GlobalProvider.ROSTER_BUDDY_GROUP) + "'", null,
-                    GlobalProvider.ROSTER_BUDDY_STATUS + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                    + "='" + bundle.getString(GlobalProvider.ROSTER_BUDDY_GROUP) + "'",
+                    null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
+                    + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
         }
     }
 
@@ -136,7 +143,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
     @Override
     protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
         String groupName = cursor.getString(COLUMN_GROUP_NAME);
-        TextView groupNameView = (TextView)view.findViewById(R.id.group_name);
+        TextView groupNameView = (TextView) view.findViewById(R.id.group_name);
         groupNameView.setText(groupName);
     }
 
@@ -148,9 +155,9 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         int buddyStatus = cursor.getInt(COLUMN_BUDDY_STATUS);
         String accountType = cursor.getString(COLUMN_BUDDY_ACCOUNT_TYPE);
         // Find views
-        TextView buddyNickView = (TextView)view.findViewById(R.id.buddy_nick);
-        TextView buddyIdView = (TextView)view.findViewById(R.id.buddy_id);
-        ImageView buddyStatusView = (ImageView)view.findViewById(R.id.buddy_status);
+        TextView buddyNickView = (TextView) view.findViewById(R.id.buddy_nick);
+        TextView buddyIdView = (TextView) view.findViewById(R.id.buddy_id);
+        ImageView buddyStatusView = (ImageView) view.findViewById(R.id.buddy_status);
         // Update data.
         buddyNickView.setText(buddyNick);
         buddyIdView.setText(buddyId);

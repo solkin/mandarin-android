@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;

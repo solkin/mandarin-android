@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.StatusUtil;
 import com.viewpageindicator.PageIndicator;
 
 /**
@@ -121,7 +122,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return new CursorLoader(activity,
                 Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
-                null, GlobalProvider.ROSTER_BUDDY_STATUS + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
+                + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override

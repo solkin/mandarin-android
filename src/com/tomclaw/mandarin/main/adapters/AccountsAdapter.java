@@ -2,27 +2,20 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.main.StatusActitvity;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,14 +26,20 @@ import java.util.List;
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Adapter ID **/
+    /**
+     * Adapter ID *
+     */
     private final int ADAPTER_ID = 0x01;
 
-    /** Columns **/
+    /**
+     * Columns *
+     */
     private static int COLUMN_USER_ID;
     private static int COLUMN_USER_NICK;
 
-    /** Variables **/
+    /**
+     * Variables *
+     */
     private Context context;
     private LayoutInflater inflater;
 

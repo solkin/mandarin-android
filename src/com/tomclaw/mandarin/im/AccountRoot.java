@@ -11,13 +11,17 @@ import com.tomclaw.mandarin.core.CoreObject;
  */
 public abstract class AccountRoot extends CoreObject {
 
-    /** User info **/
+    /**
+     * User info *
+     */
     protected String userId;
     protected String userNick;
     protected String userPassword;
     protected int statusIndex;
     protected String statusText;
-    /** Service info **/
+    /**
+     * Service info *
+     */
     protected String serviceHost;
     protected int servicePort;
 

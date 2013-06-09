@@ -85,7 +85,7 @@ public class ChatActivity extends ChiefActivity {
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
         /** Send button **/
-        ImageButton sendButton = (ImageButton)findViewById(R.id.send_button);
+        ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,12 +112,13 @@ public class ChatActivity extends ChiefActivity {
 
     /**
      * Obtain current item position and checking for it valid.
+     *
      * @return int
      * @throws Exception
      */
     private int getCurrentPageBuddyDbId() throws Exception {
         int position = mPager.getCurrentItem();
-        if(position < 0) {
+        if (position < 0) {
             throw new Exception("No active page.");
         }
         return mAdapter.getPageBuddyDbId(position);
@@ -125,7 +126,7 @@ public class ChatActivity extends ChiefActivity {
 
     public int getCurrentPageAccountDbId() throws Exception {
         int position = mPager.getCurrentItem();
-        if(position < 0) {
+        if (position < 0) {
             throw new Exception("No active page.");
         }
         return mAdapter.getPageAccountDbId(position);

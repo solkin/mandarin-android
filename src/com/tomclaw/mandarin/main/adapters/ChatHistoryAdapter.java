@@ -31,11 +31,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static final int[] MESSAGE_TYPES = new int[]{R.id.error_message, R.id.incoming_message, R.id.outgoing_message};
     private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_error, R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
 
-    /** Date and time format helpers **/
+    /**
+     * Date and time format helpers *
+     */
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
     private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
 
-    /** Adapter ID, equals to buddy db id of this chat **/
+    /**
+     * Adapter ID, equals to buddy db id of this chat *
+     */
     private final int ADAPTER_ID;
 
     private static int COLUMN_MESSAGE_TEXT;
@@ -100,7 +104,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             bindView(view, mContext, mCursor);
         } catch (Throwable ex) {
-            if(convertView == null) {
+            if (convertView == null) {
                 view = mInflater.inflate(R.layout.chat_item, parent, false);
                 Log.d(Settings.LOG_TAG, "create new error view");
             } else {
@@ -138,15 +142,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
         // Select message type.
-        switch(MESSAGE_TYPES[messageType]) {
+        switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
                 // Update visibility.
                 view.findViewById(R.id.incoming_message).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
-                ((TextView)view.findViewById(R.id.inc_text)).setText(messageText);
-                ((TextView)view.findViewById(R.id.inc_time)).setText(messageTimeText);
+                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
+                ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }
             case R.id.outgoing_message: {
@@ -155,9 +159,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
-                ((TextView)view.findViewById(R.id.out_text)).setText(messageText);
-                ((TextView)view.findViewById(R.id.out_time)).setText(messageTimeText);
-                ((ImageView)view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
+                ((TextView) view.findViewById(R.id.out_text)).setText(messageText);
+                ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
+                ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
                 break;
             }
             default: {
@@ -167,12 +171,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         }
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        if(!(cursor.moveToPrevious() && messageDateText
+        if (!(cursor.moveToPrevious() && messageDateText
                 .equals(simpleDateFormat.format(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
             // Update date text view.
-            ((TextView)view.findViewById(R.id.message_date))
+            ((TextView) view.findViewById(R.id.message_date))
                     .setText(messageDateText);
         } else {
             // Update visibility.

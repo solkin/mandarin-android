@@ -8,7 +8,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,16 +28,22 @@ import com.tomclaw.mandarin.util.StatusUtil;
 public class RosterOnlineAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Adapter ID **/
+    /**
+     * Adapter ID *
+     */
     private static final int ADAPTER_ONLINE_ID = -3;
 
-    /** Columns **/
+    /**
+     * Columns *
+     */
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
 
-    /** Variables **/
+    /**
+     * Variables *
+     */
     private Context context;
     private LayoutInflater inflater;
 

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.List;
 

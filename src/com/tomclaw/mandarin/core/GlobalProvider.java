@@ -57,7 +57,7 @@ public class GlobalProvider extends ContentProvider {
     // Database create scripts
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " int, "
+            + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
             + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
             + ACCOUNT_BUNDLE + " text" + ");";
 

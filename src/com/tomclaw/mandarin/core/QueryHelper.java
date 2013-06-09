@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -34,22 +35,17 @@ public class QueryHelper {
             int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
             int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
             // Iterate all accounts.
-            for (int c = 0; c < cursor.getCount(); c++) {
-                // Trying to move to position.
-                if (cursor.moveToPosition(c)) {
-                    Class accountClass = null;
-                    // Checking for account type.
-                    switch (cursor.getInt(typeColumnIndex)) { // TODO: type must be class name.
-                        case AccountRoot.ACCOUNT_TYPE_ICQ: {
-                            accountClass = IcqAccountRoot.class;
-                            break;
-                        }
+            if (cursor.moveToFirst()) {
+                do {
+                    try {
+                        // Creating account root from bundle.
+                        AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
+                                Class.forName(cursor.getString(typeColumnIndex)));
+                        accountRootList.add(accountRoot);
+                    } catch (ClassNotFoundException e) {
+                        Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
                     }
-                    // Creating account root from bundle.
-                    AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
-                            accountClass);
-                    accountRootList.add(accountRoot);
-                }
+                } while (cursor.moveToNext());// Trying to move to position.
             }
         }
         return accountRootList;
@@ -88,7 +84,7 @@ public class QueryHelper {
         return true;
     }
 
-    public static boolean removeAccount(ContentResolver contentResolver, int accountType, String userId) {
+    public static boolean removeAccount(ContentResolver contentResolver, String accountType, String userId) {
         // Obtain account db id.
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
                 GlobalProvider.ACCOUNT_TYPE + "='" + accountType + "'" + " AND "

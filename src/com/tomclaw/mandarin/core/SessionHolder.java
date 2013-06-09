@@ -38,10 +38,10 @@ public class SessionHolder {
         }
     }
 
-    public boolean removeAccountRoot(int accountType, String userId) {
+    public boolean removeAccountRoot(String accountType, String userId) {
         for(AccountRoot accountRoot : accountRootList) {
             // Checking for account type and user id.
-            if(accountRoot.getAccountType() == accountType
+            if(accountRoot.getAccountType().equals(accountType)
                     && accountRoot.getUserId().equals(userId)) {
                 // Disconnect first of all.
                 accountRoot.disconnect();

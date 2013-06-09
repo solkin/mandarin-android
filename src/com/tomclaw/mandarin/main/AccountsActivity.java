@@ -62,7 +62,7 @@ public class AccountsActivity extends ChiefActivity {
                         // Detecting columns.
                         int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
                         int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
-                        int accountType = cursor.getInt(COLUMN_ACCOUNT_TYPE);
+                        String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
                         String userId = cursor.getString(COLUMN_USER_ID);
                         try {
                             // Trying to remove account.

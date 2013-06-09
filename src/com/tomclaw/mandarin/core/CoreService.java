@@ -78,7 +78,7 @@ public class CoreService extends Service {
         }
 
         @Override
-        public boolean removeAccount(int accountType, String userId) throws RemoteException {
+        public boolean removeAccount(String accountType, String userId) throws RemoteException {
             return sessionHolder.removeAccountRoot(accountType, userId);
         }
     };

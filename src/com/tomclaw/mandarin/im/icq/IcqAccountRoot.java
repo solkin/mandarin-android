@@ -24,8 +24,8 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     @Override
-    public int getAccountType() {
-        return ACCOUNT_TYPE_ICQ;
+    public String getAccountType() {
+        return getClass().getName();
     }
 
     @Override

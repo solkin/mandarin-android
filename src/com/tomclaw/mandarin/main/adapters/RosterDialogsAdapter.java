@@ -20,7 +20,6 @@ import com.tomclaw.mandarin.core.Settings;
  * User: solkin
  * Date: 4/28/13
  * Time: 9:54 PM
- * To change this template use File | Settings | File Templates.
  */
 public class RosterDialogsAdapter extends SimpleCursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -31,15 +30,12 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
     private static final int to[] = {R.id.buddy_id, R.id.buddy_nick, R.id.buddy_status};
 
     private Context context;
-    private LoaderManager loaderManager;
-
 
     public RosterDialogsAdapter(Context context, LoaderManager loaderManager) {
         super(context, R.layout.buddy_item, null, from, to, 0x00);
         this.context = context;
-        this.loaderManager = loaderManager;
         // Initialize loader for dialogs Id.
-        this.loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
+        loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
 
     @Override
@@ -86,10 +82,10 @@ public class RosterDialogsAdapter extends SimpleCursorAdapter implements
         return v;
     }
 
-    public long getBuddyDbId(int position) {
+    public int getBuddyDbId(int position) {
         if (!mCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return mCursor.getLong(mCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return mCursor.getInt(mCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 }

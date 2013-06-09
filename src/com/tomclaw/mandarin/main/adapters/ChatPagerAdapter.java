@@ -76,21 +76,28 @@ public class ChatPagerAdapter extends PagerAdapter implements
         return cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
     }
 
-    public long getPageBuddyDbId(int position) {
+    public int getPageBuddyDbId(int position) {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 
-    public int getPagePosition(long buddyDbId) {
+    public int getPageAccountDbId(int position) {
+        if (!cursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
+        return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+    }
+
+    public int getPagePosition(int buddyDbId) {
         if (cursor != null) {
             // Does this code Ok? I'm not sure.
             for (int c = 0; c < cursor.getCount(); c++) {
                 // Trying to move row.
                 if (cursor.moveToPosition(c)) {
                     // Checking for buddy db id equals.
-                    if (cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)) == buddyDbId) {
+                    if (cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)) == buddyDbId) {
                         return c;
                     }
                 }

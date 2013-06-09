@@ -14,6 +14,8 @@ public abstract class AccountRoot extends CoreObject {
 
     /** Constants **/
     public static final int ACCOUNT_TYPE_ICQ = 0x01;
+    /** Account info **/
+    protected int accountDbId; // TODO: main account identification.
     /** User info **/
     protected String userId;
     protected String userNick;
@@ -51,6 +53,10 @@ public abstract class AccountRoot extends CoreObject {
     public int getStatusIndex() {
         return statusIndex;
     }
+
+    public abstract void connect();
+
+    public abstract void disconnect();
 
     public abstract int getAccountType();
 

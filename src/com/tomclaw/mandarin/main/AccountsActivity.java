@@ -15,20 +15,15 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
  * Date: 3/28/13
  * Time: 11:11 AM
- * To change this template use File | Settings | File Templates.
  */
 public class AccountsActivity extends ChiefActivity {
 
@@ -69,10 +64,15 @@ public class AccountsActivity extends ChiefActivity {
                         int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
                         int accountType = cursor.getInt(COLUMN_ACCOUNT_TYPE);
                         String userId = cursor.getString(COLUMN_USER_ID);
-                        if(QueryHelper.removeAccount(getContentResolver(), accountType, userId)) {
-                            // Action picked, so close the CAB
-                            mode.finish();
-                            return true;
+                        try {
+                            // Trying to remove account.
+                            if(getServiceInteraction().removeAccount(accountType, userId)) {
+                                // Action picked, so close the CAB
+                                mode.finish();
+                                return true;
+                            }
+                        } catch (RemoteException e) {
+                            // Heh... Nothing to do in this case.
                         }
                     }
                     // Show error.
@@ -161,7 +161,7 @@ public class AccountsActivity extends ChiefActivity {
                 // Update selected item first.
                 selectedItem = position;
                 // Checking for action mode is already activated.
-                if (mActionMode == true) {
+                if (mActionMode) {
                     return false;
                 }
                 // Start the CAB using the ActionMode.Callback defined above

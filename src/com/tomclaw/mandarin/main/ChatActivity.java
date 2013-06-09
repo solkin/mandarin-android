@@ -73,7 +73,7 @@ public class ChatActivity extends ChiefActivity {
                 Bundle bundle = getIntent().getExtras();
                 // Checking for bundle condition.
                 if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
-                    int position = mAdapter.getPagePosition(bundle.getLong(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
+                    int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
                     mIndicator.setCurrentItem(position);
                     bundle.clear();
                 }
@@ -91,10 +91,10 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    QueryHelper.insertMessage(getContentResolver(), getCurrentPageBuddyDbId(), 1,
+                    QueryHelper.insertMessage(getContentResolver(), getCurrentPageAccountDbId(), getCurrentPageBuddyDbId(), 1, // TODO: real message type
                             String.valueOf(System.currentTimeMillis()), messageText.getText().toString());
                 } catch (Exception e) {
-                    // Couldn't pul message into database. This exception must be processed.
+                    // Couldn't put message into database. This exception must be processed.
                 }
             }
         });
@@ -112,14 +112,22 @@ public class ChatActivity extends ChiefActivity {
 
     /**
      * Obtain current item position and checking for it valid.
-     * @return
+     * @return int
      * @throws Exception
      */
-    private long getCurrentPageBuddyDbId() throws Exception {
+    private int getCurrentPageBuddyDbId() throws Exception {
         int position = mPager.getCurrentItem();
         if(position < 0) {
             throw new Exception("No active page.");
         }
         return mAdapter.getPageBuddyDbId(position);
+    }
+
+    public int getCurrentPageAccountDbId() throws Exception {
+        int position = mPager.getCurrentItem();
+        if(position < 0) {
+            throw new Exception("No active page.");
+        }
+        return mAdapter.getPageAccountDbId(position);
     }
 }

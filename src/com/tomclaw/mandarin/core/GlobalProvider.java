@@ -15,7 +15,6 @@ import android.util.Log;
  * User: solkin
  * Date: 4/23/13
  * Time: 12:53 AM
- * To change this template use File | Settings | File Templates.
  */
 public class GlobalProvider extends ContentProvider {
 
@@ -35,8 +34,10 @@ public class GlobalProvider extends ContentProvider {
     public static final String ACCOUNT_STATUS = "account_status";
     public static final String ACCOUNT_BUNDLE = "account_bundle";
 
+    public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_GROUP_NAME = "group_name";
 
+    public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_BUDDY_ID = "buddy_id";
     public static final String ROSTER_BUDDY_NICK = "buddy_nick";
     public static final String ROSTER_BUDDY_STATUS = "buddy_status";
@@ -45,8 +46,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
 
+    public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
-    public static final String HISTORY_BUDDY_NICK = "buddy_nick";
     public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
     public static final String HISTORY_MESSAGE_STATE = "message_state";
@@ -62,17 +63,18 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_GROUP_NAME + " text" + ");";
+            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text" + ");";
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, " + ROSTER_BUDDY_STATUS + " int, "
-            + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text, "
-            + ROSTER_BUDDY_DIALOG + " int" + ");";
+            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
+            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
+            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
-            + ROW_AUTO_ID + " integer primary key autoincrement, " + HISTORY_BUDDY_DB_ID + " int, "
-            + HISTORY_BUDDY_NICK + " text, " + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
+            + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_TEXT + " text" + ");";
 
@@ -107,7 +109,6 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.d(Settings.LOG_TAG, "query, " + uri.toString());
-        String id;
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {

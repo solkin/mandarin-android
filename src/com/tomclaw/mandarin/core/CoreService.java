@@ -20,7 +20,6 @@ import java.util.List;
  * User: solkin
  * Date: 02.01.13
  * Time: 18:48
- * To change this template use File | Settings | File Templates.
  */
 public class CoreService extends Service {
 
@@ -76,6 +75,11 @@ public class CoreService extends Service {
             AccountRoot accountRoot = (AccountRoot) coreObject;
             Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
             sessionHolder.updateAccountRoot(accountRoot);
+        }
+
+        @Override
+        public boolean removeAccount(int accountType, String userId) throws RemoteException {
+            return sessionHolder.removeAccountRoot(accountType, userId);
         }
     };
 

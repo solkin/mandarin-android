@@ -12,17 +12,15 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class IcqAccountRoot extends AccountRoot {
 
-    private String someStuff;
-
     public IcqAccountRoot() {
     }
 
-    public void setSomeStuff(String stuff) {
-        someStuff = stuff;
+    @Override
+    public void connect() {
     }
 
-    public String getSomeStuff() {
-        return someStuff;
+    @Override
+    public void disconnect() {
     }
 
     @Override
@@ -37,11 +35,9 @@ public class IcqAccountRoot extends AccountRoot {
 
     public void writeInstanceData(Parcel dest) {
         super.writeInstanceData(dest);
-        dest.writeString(someStuff);
     }
 
     public void readInstanceData(Parcel in) {
         super.readInstanceData(in);
-        someStuff = in.readString();
     }
 }

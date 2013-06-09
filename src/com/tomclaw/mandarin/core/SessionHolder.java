@@ -31,11 +31,27 @@ public class SessionHolder {
     }
 
     public void updateAccountRoot(AccountRoot accountRoot) {
-        QueryHelper.updateAccount(contentResolver, accountRoot);
+        // Attempting to update account.
+        if (QueryHelper.updateAccount(contentResolver, accountRoot)) {
+            // Account was created.
+            accountRootList.add(accountRoot);
+        }
     }
 
-    public void removeAccountRoot(AccountRoot accountRoot) {
-
+    public boolean removeAccountRoot(int accountType, String userId) {
+        for(AccountRoot accountRoot : accountRootList) {
+            // Checking for account type and user id.
+            if(accountRoot.getAccountType() == accountType
+                    && accountRoot.getUserId().equals(userId)) {
+                // Disconnect first of all.
+                accountRoot.disconnect();
+                // Now we ready to remove this account.
+                accountRootList.remove(accountRoot);
+                break;
+            }
+        }
+        // Trying to remove all data from database, associated with this account.
+        return QueryHelper.removeAccount(contentResolver, accountType, userId);
     }
 
     public List<AccountRoot> getAccountsList() {

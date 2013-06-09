@@ -93,9 +93,9 @@ public class QueryHelper {
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
                 GlobalProvider.ACCOUNT_TYPE + "='" + accountType + "'" + " AND "
                         + GlobalProvider.ACCOUNT_USER_ID + "='" + userId + "'", null, null);
-        // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.getCount() >= 1) {
-            if (cursor.moveToFirst()) {
+        // Cursor may have no more than only one entry. But lets check.
+        if (cursor.moveToFirst()) {
+            do {
                 long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 // Removing roster groups.
                 contentResolver.delete(Settings.GROUP_RESOLVER_URI,
@@ -106,8 +106,9 @@ public class QueryHelper {
                 // Removing all the history.
                 contentResolver.delete(Settings.HISTORY_RESOLVER_URI,
                         GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID + "=" + accountDbId, null);
-            }
+            } while (cursor.moveToNext());
         }
+        // And remove account.
         return contentResolver.delete(Settings.ACCOUNT_RESOLVER_URI, GlobalProvider.ACCOUNT_TYPE + "='"
                 + accountType + "'" + " AND " + GlobalProvider.ACCOUNT_USER_ID + "='"
                 + userId + "'", null) != 0;

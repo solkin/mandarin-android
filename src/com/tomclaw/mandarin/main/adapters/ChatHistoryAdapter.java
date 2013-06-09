@@ -51,7 +51,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ADAPTER_ID = buddyBdId;
-        // Initialize loader for online Id.
+        // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
     }
 

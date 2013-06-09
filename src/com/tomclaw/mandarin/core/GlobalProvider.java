@@ -15,7 +15,6 @@ import android.util.Log;
  * User: solkin
  * Date: 4/23/13
  * Time: 12:53 AM
- * To change this template use File | Settings | File Templates.
  */
 public class GlobalProvider extends ContentProvider {
 
@@ -31,10 +30,14 @@ public class GlobalProvider extends ContentProvider {
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
     public static final String ACCOUNT_USER_ID = "account_user_id";
+    public static final String ACCOUNT_USER_PASSWORD = "account_user_password";
     public static final String ACCOUNT_STATUS = "account_status";
+    public static final String ACCOUNT_BUNDLE = "account_bundle";
 
+    public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_GROUP_NAME = "group_name";
 
+    public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_BUDDY_ID = "buddy_id";
     public static final String ROSTER_BUDDY_NICK = "buddy_nick";
     public static final String ROSTER_BUDDY_STATUS = "buddy_status";
@@ -43,8 +46,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
 
+    public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
-    public static final String HISTORY_BUDDY_NICK = "buddy_nick";
     public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
     public static final String HISTORY_MESSAGE_STATE = "message_state";
@@ -55,21 +58,23 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " int, "
-            + ACCOUNT_USER_ID + " text, "+ ACCOUNT_STATUS + " text" + ");";
+            + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
+            + ACCOUNT_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_GROUP_NAME + " text" + ");";
+            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text" + ");";
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, " + ROSTER_BUDDY_STATUS + " int, "
-            + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, " + ROSTER_BUDDY_GROUP + " text, "
-            + ROSTER_BUDDY_DIALOG + " int" + ");";
+            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
+            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
+            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
-            + ROW_AUTO_ID + " integer primary key autoincrement, " + HISTORY_BUDDY_DB_ID + " int, "
-            + HISTORY_BUDDY_NICK + " text, " + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
+            + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_TEXT + " text" + ");";
 
@@ -104,7 +109,6 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.d(Settings.LOG_TAG, "query, " + uri.toString());
-        String id;
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
@@ -161,25 +165,8 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
-        String table;
-        switch (uriMatcher.match(uri)) {
-            case URI_ACCOUNT:
-                table = ACCOUNTS_TABLE;
-                break;
-            case URI_GROUP:
-                table = ROSTER_GROUP_TABLE;
-                break;
-            case URI_BUDDY:
-                table = ROSTER_BUDDY_TABLE;
-                break;
-            case URI_HISTORY:
-                table = CHAT_HISTORY_TABLE;
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
-        long rowId = sqLiteDatabase.insert(table, null, values);
+        long rowId = sqLiteDatabase.insert(getTableName(uri), null, values);
         Uri resultUri = ContentUris.withAppendedId(uri, rowId);
         // Notify ContentResolver about data changes.
         getContext().getContentResolver().notifyChange(resultUri, null);
@@ -188,12 +175,25 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Log.d(Settings.LOG_TAG, "delete, " + uri.toString());
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
+        sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
+        // Notify ContentResolver about data changes.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
+    }
+
+    private static String getTableName(Uri uri) {
         String table;
         switch (uriMatcher.match(uri)) {
             case URI_ACCOUNT:
@@ -211,10 +211,6 @@ public class GlobalProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-        sqLiteDatabase = databaseHelper.getWritableDatabase();
-        int rows = sqLiteDatabase.update(table, values, selection, selectionArgs);
-        // Notify ContentResolver about data changes.
-        getContext().getContentResolver().notifyChange(uri, null);
-        return rows;
+        return table;
     }
 }

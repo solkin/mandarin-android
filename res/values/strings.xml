@@ -39,6 +39,8 @@
     <string name="group_all">All friends</string>
     <string name="group_dialogs">Dialogs</string>
 
+    <string name="error_no_such_account">Error! No such account.</string>
+
     <string-array name="status_list">
         <item>@string/status_unavailable</item>
         <item>@string/status_available</item>

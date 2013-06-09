@@ -22,7 +22,6 @@ import com.tomclaw.mandarin.core.Settings;
  * User: solkin
  * Date: 4/28/13
  * Time: 9:22 PM
- * To change this template use File | Settings | File Templates.
  */
 public class RosterGeneralAdapter extends CursorTreeAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -195,8 +194,8 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         return view;
     }
 
-    public long getBuddyDbId(int groupPosition, int childPosition) {
+    public int getBuddyDbId(int groupPosition, int childPosition) {
         Cursor cursor = getChild(groupPosition, childPosition);
-        return cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 }

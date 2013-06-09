@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -13,25 +14,23 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
  * Date: 3/28/13
  * Time: 11:11 AM
- * To change this template use File | Settings | File Templates.
  */
 public class AccountsActivity extends ChiefActivity {
 
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
     protected boolean mActionMode;
     protected int selectedItem;
+    private AccountsAdapter sAdapter;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created; startActionMode() was called
@@ -54,12 +53,30 @@ public class AccountsActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.edit_account_menu:
-                    show();
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;
                 case R.id.remove_account_menu:
-                    show();
+                    Cursor cursor = sAdapter.getCursor();
+                    if(cursor.moveToPosition(selectedItem)) {
+                        // Detecting columns.
+                        int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                        int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+                        int accountType = cursor.getInt(COLUMN_ACCOUNT_TYPE);
+                        String userId = cursor.getString(COLUMN_USER_ID);
+                        try {
+                            // Trying to remove account.
+                            if(getServiceInteraction().removeAccount(accountType, userId)) {
+                                // Action picked, so close the CAB
+                                mode.finish();
+                                return true;
+                            }
+                        } catch (RemoteException e) {
+                            // Heh... Nothing to do in this case.
+                        }
+                    }
+                    // Show error.
+                    show(R.string.error_no_such_account);
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;
@@ -122,49 +139,38 @@ public class AccountsActivity extends ChiefActivity {
     }
 
     private void initAccountsList() {
-        try {
-            List<AccountRoot> accountsList = getServiceInteraction().getAccountsList();
-            Log.d(Settings.LOG_TAG, "received " + accountsList.size() + " accounts");
-            // Set up list as default container.
-            setContentView(R.layout.accounts_list);
-            // Checking for there is no accounts.
-            if (accountsList.isEmpty()) {
-                // Nothing to do in this case.
-                Log.d(Settings.LOG_TAG, "No accounts");
-            } else {
-                ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
-                // Creating adapter for accounts list
-                AccountsAdapter sAdapter = new AccountsAdapter(this, R.layout.account_item, accountsList);
-                // Bind to our new adapter.
-                listView.setAdapter(sAdapter);
-                listView.setItemsCanFocus(true);
-                listView.setOnItemClickListener(new ListView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
-                    }
-                });
-
-                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (mActionMode == true) {
-                            return false;
-                        }
-                        selectedItem = position;
-
-                        // Start the CAB using the ActionMode.Callback defined above
-                        mActionMode = true;
-                        AccountsActivity.this.startActionMode(mActionModeCallback);
-                        view.setSelected(true);
-                        return true;
-                    }
-                });
+        // Set up list as default container.
+        setContentView(R.layout.accounts_list);
+        ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
+        // Creating adapter for accounts list
+        sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
+        // Bind to our new adapter.
+        listView.setAdapter(sAdapter);
+        listView.setItemsCanFocus(true);
+        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Update selected item first.
+                selectedItem = position;
+                // Checking for action mode is already activated.
+                if (mActionMode) {
+                    return false;
+                }
+                // Start the CAB using the ActionMode.Callback defined above
+                mActionMode = true;
+                startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -175,8 +181,7 @@ public class AccountsActivity extends ChiefActivity {
     public void onCoreServiceIntent(Intent intent) {
     }
 
-    private void show() {
-        Toast.makeText(AccountsActivity.this,
-                String.valueOf(selectedItem), Toast.LENGTH_LONG).show();
+    private void show(int stringRes) {
+        Toast.makeText(AccountsActivity.this, stringRes, Toast.LENGTH_LONG).show();
     }
 }

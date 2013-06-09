@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.main;
 
-import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,7 +11,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.accounts.AccountAuthenticator;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -20,7 +18,6 @@ import com.tomclaw.mandarin.im.AccountRoot;
  * User: lapshin
  * Date: 4/17/13
  * Time: 4:07 PM
- * To change this template use File | Settings | File Templates.
  */
 public class AccountAddActivity extends ChiefActivity {
 
@@ -80,11 +77,7 @@ public class AccountAddActivity extends ChiefActivity {
                         accountRoot.setUserPassword(userPassword);
                         getServiceInteraction().addAccount(accountRoot);
                         // Creating signal intent.
-                        final Intent intent = new Intent();
-                        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userId);
-                        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-                        intent.putExtra(AccountManager.KEY_AUTHTOKEN, AccountAuthenticator.ACCOUNT_TYPE);
-                        setResult(RESULT_OK, intent);
+                        setResult(RESULT_OK);
                         finish();
                     } catch (Throwable ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_add_fail, Toast.LENGTH_LONG).show();

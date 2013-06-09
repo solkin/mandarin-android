@@ -78,28 +78,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         }
     }
 
-    /**
-     * Button UI handling
-     *
-     * @param v
-     */
-    public void onClickClose(View v) {
-        stopCoreService();
-    }
-
-    /**
-     * Button UI handling
-     *
-     * @param v
-     */
-    public void onClickIntent(View v) {
-        try {
-            getServiceInteraction().initService();
-        } catch (RemoteException e) {
-            Log.e(Settings.LOG_TAG, e.getMessage());
-        }
-    }
-
     @Override
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
@@ -124,7 +102,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                long buddyDbId = dialogsAdapter.getBuddyDbId(position);
+                int buddyDbId = dialogsAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
                 intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                 startActivity(intent);
@@ -139,7 +117,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long buddyDbId = onlineAdapter.getBuddyDbId(position);
+                int buddyDbId = onlineAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
                 try {
                     // Trying to open dialog with this buddy.
@@ -162,7 +140,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                         int childPosition, long id) {
-                long buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
+                int buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
                 Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
                 try {
                     // Trying to open dialog with this buddy.

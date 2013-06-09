@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +27,17 @@ import com.tomclaw.mandarin.core.Settings;
 public class RosterGeneralAdapter extends CursorTreeAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    /** Adapter ID **/
+    private static final int ADAPTER_GENERAL_ID = -1;
+
+    /** Columns **/
     private static int COLUMN_GROUP_NAME;
     private static int COLUMN_BUDDY_NICK;
     private static int COLUMN_BUDDY_ID;
     private static int COLUMN_BUDDY_STATUS;
+    private static int COLUMN_BUDDY_ACCOUNT_TYPE;
 
-    private static final int ADAPTER_GENERAL_ID = -1;
-
+    /** Variables **/
     private Context context;
     private LoaderManager loaderManager;
     private LayoutInflater mInflater;
@@ -55,7 +60,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         } else {
             return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_GROUP
                     + "='" + bundle.getString(GlobalProvider.ROSTER_BUDDY_GROUP) + "'", null,
-                    GlobalProvider.ROSTER_BUDDY_STATE + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                    GlobalProvider.ROSTER_BUDDY_STATUS + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
         }
     }
 
@@ -72,6 +77,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
             COLUMN_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
             COLUMN_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
             COLUMN_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
+            COLUMN_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
             // Trying to set cursor.
             try {
                 setChildrenCursor(cursorLoader.getId(), cursor);
@@ -140,6 +146,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         String buddyNick = cursor.getString(COLUMN_BUDDY_NICK);
         String buddyId = cursor.getString(COLUMN_BUDDY_ID);
         int buddyStatus = cursor.getInt(COLUMN_BUDDY_STATUS);
+        String accountType = cursor.getString(COLUMN_BUDDY_ACCOUNT_TYPE);
         // Find views
         TextView buddyNickView = (TextView)view.findViewById(R.id.buddy_nick);
         TextView buddyIdView = (TextView)view.findViewById(R.id.buddy_id);
@@ -147,7 +154,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         // Update data.
         buddyNickView.setText(buddyNick);
         buddyIdView.setText(buddyId);
-        buddyStatusView.setImageResource(buddyStatus);
+        buddyStatusView.setImageResource(StatusUtil.getStatusResource(accountType, buddyStatus));
     }
 
     @Override

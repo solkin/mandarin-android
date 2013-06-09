@@ -121,7 +121,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return new CursorLoader(activity,
                 Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
-                null, GlobalProvider.ROSTER_BUDDY_STATE + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                null, GlobalProvider.ROSTER_BUDDY_STATUS + " DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override

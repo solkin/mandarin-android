@@ -38,10 +38,10 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_GROUP_NAME = "group_name";
 
     public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
+    public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_id";
     public static final String ROSTER_BUDDY_ID = "buddy_id";
     public static final String ROSTER_BUDDY_NICK = "buddy_nick";
     public static final String ROSTER_BUDDY_STATUS = "buddy_status";
-    public static final String ROSTER_BUDDY_STATE = "buddy_state";
     public static final String ROSTER_BUDDY_GROUP_ID = "buddy_group_id";
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
@@ -67,8 +67,9 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
-            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_STATE + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
+            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " int, "
+            + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
+            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("

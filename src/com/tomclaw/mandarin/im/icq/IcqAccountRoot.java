@@ -28,6 +28,20 @@ public class IcqAccountRoot extends AccountRoot {
         return getClass().getName();
     }
 
+    public static int[] getStatusResources() {
+        return new int[]{
+                R.drawable.status_icq_offline,
+                R.drawable.status_icq_mobile,
+                R.drawable.status_icq_online,
+                R.drawable.status_icq_invisible,
+                R.drawable.status_icq_chat,
+                R.drawable.status_icq_away,
+                R.drawable.status_icq_dnd,
+                R.drawable.status_icq_na,
+                R.drawable.status_icq_busy
+        };
+    }
+
     @Override
     public int getAccountLayout() {
         return R.layout.account_add_icq;

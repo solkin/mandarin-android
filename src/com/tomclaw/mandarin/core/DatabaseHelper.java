@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 import java.util.Random;
 
@@ -34,16 +34,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv1 = new ContentValues();
         ContentValues cv2 = new ContentValues();
         ContentValues cv3 = new ContentValues();
-        int[] statuses = new int[]{
-                R.drawable.status_icq_offline,
-                R.drawable.status_icq_online,
-                R.drawable.status_icq_away,
-                R.drawable.status_icq_offline,
-                R.drawable.status_icq_chat,
-                R.drawable.status_icq_dnd,
-                R.drawable.status_icq_offline,
-                R.drawable.status_icq_mobile,
-                R.drawable.status_icq_offline
+        int[] statuses = new int[] {
+                StatusUtil.STATUS_OFFLINE,
+                StatusUtil.STATUS_ONLINE,
+                StatusUtil.STATUS_AWAY,
+                StatusUtil.STATUS_OFFLINE,
+                StatusUtil.STATUS_CHAT,
+                StatusUtil.STATUS_DND,
+                StatusUtil.STATUS_OFFLINE,
+                StatusUtil.STATUS_MOBILE,
+                StatusUtil.STATUS_OFFLINE
         };
         Random random = new Random(System.currentTimeMillis());
         Gson gson = new Gson();
@@ -52,14 +52,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             accountRoot.setUserId(String.valueOf(random.nextInt(999999999)));
             accountRoot.setUserPassword(generateRandomWord(random));
             accountRoot.setUserNick(generateRandomWord(random));
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
-            contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
-            contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-            contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
-            long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, contentValues);
+            cv0.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
+            cv0.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+            cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
+            cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+            cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+            long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
             // cv1.put(GlobalProvider.AC, groupName);
             // db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
             for (int i = 1; i <= 4 + random.nextInt(3); i++) {
@@ -72,11 +71,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String nick = generateRandomWord(random);
                     boolean isDialog = (random.nextInt(10) == 1);
                     cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                    cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
                     cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
                     cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                     cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                     cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
-                    cv2.put(GlobalProvider.ROSTER_BUDDY_STATE, status != R.drawable.status_icq_offline);
                     cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
                     long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                     if (isDialog) {

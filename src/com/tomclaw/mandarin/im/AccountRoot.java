@@ -11,8 +11,6 @@ import com.tomclaw.mandarin.core.CoreObject;
  */
 public abstract class AccountRoot extends CoreObject {
 
-    /** Constants **/
-    public static final int ACCOUNT_TYPE_ICQ = 0x01;
     /** User info **/
     protected String userId;
     protected String userNick;

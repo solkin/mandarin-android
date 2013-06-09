@@ -33,14 +33,16 @@ import java.util.List;
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static int COLUMN_USER_ID;
-    private static int COLUMN_USER_NICK;
-
     /** Adapter ID **/
     private final int ADAPTER_ID = 0x01;
 
-    private LayoutInflater inflater;
+    /** Columns **/
+    private static int COLUMN_USER_ID;
+    private static int COLUMN_USER_NICK;
+
+    /** Variables **/
     private Context context;
+    private LayoutInflater inflater;
 
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
         super(context, null, 0x00);

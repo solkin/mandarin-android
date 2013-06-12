@@ -64,13 +64,13 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
-            + REQUEST_ACCOUNT + " int, " + REQUEST_BUNDLE + " text" + ");"; // TODO: text? Must be big text!
+            + REQUEST_ACCOUNT + " int, " + REQUEST_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
             + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
-            + ACCOUNT_BUNDLE + " text" + ");"; // TODO: text? Must be big text!
+            + ACCOUNT_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -127,7 +127,6 @@ public class GlobalProvider extends ContentProvider {
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
             case URI_REQUEST: // Default Uri
-                Log.d(Settings.LOG_TAG, "URI_REQUEST");
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROW_AUTO_ID + " ASC";
@@ -135,7 +134,6 @@ public class GlobalProvider extends ContentProvider {
                 table = REQUEST_TABLE;
                 break;
             case URI_ACCOUNT: // Default Uri
-                Log.d(Settings.LOG_TAG, "URI_ACCOUNT");
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ACCOUNT_NAME + " ASC";
@@ -143,7 +141,6 @@ public class GlobalProvider extends ContentProvider {
                 table = ACCOUNTS_TABLE;
                 break;
             case URI_GROUP: // Default Uri
-                Log.d(Settings.LOG_TAG, "URI_GROUP");
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_GROUP_NAME + " ASC";
@@ -151,7 +148,6 @@ public class GlobalProvider extends ContentProvider {
                 table = ROSTER_GROUP_TABLE;
                 break;
             case URI_BUDDY: // Default Uri
-                Log.d(Settings.LOG_TAG, "URI_BUDDY");
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_BUDDY_ID + " ASC";
@@ -159,7 +155,6 @@ public class GlobalProvider extends ContentProvider {
                 table = ROSTER_BUDDY_TABLE;
                 break;
             case URI_HISTORY: // Default Uri
-                Log.d(Settings.LOG_TAG, "URI_HISTORY");
                 // Default sort if not specified
                 table = CHAT_HISTORY_TABLE;
                 break;

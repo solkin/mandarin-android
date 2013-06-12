@@ -2,16 +2,8 @@ package com.tomclaw.mandarin.im;
 
 import android.content.Context;
 import android.database.ContentObserver;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,8 +18,10 @@ public class RequestDispatcher {
     private ContentObserver accountObserver;
 
     public RequestDispatcher(Context context) {
+        // Creating observers.
         requestObserver = new RequestObserver();
         accountObserver = new AccountObserver();
+        // Registering created observers.
         context.getContentResolver().registerContentObserver(
                 Settings.REQUEST_RESOLVER_URI, true, requestObserver);
         context.getContentResolver().registerContentObserver(

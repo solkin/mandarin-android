@@ -23,7 +23,7 @@ public class RequestHelper {
     public static void requestMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
                                       String cookie, String message) {
         MessageRequest messageRequest = new MessageRequest();
-        // Writting to requests database.
+        // Writing to requests database.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.REQUEST_CLASS, MessageRequest.class.getName());
         contentValues.put(GlobalProvider.REQUEST_SESSION, System.currentTimeMillis());

@@ -22,30 +22,53 @@ import com.tomclaw.mandarin.util.StatusUtil;
 public class RequestDispatcher {
 
     /** Variables **/
-    private Handler handler;
-    private ContentObserver contentObserver;
+    private ContentObserver requestObserver;
+    private ContentObserver accountObserver;
 
     public RequestDispatcher(Context context) {
-        handler = new Handler();
-        contentObserver = new RequestObserver(handler);
+        requestObserver = new RequestObserver();
+        accountObserver = new AccountObserver();
         context.getContentResolver().registerContentObserver(
-                Settings.REQUEST_RESOLVER_URI, true, contentObserver);
+                Settings.REQUEST_RESOLVER_URI, true, requestObserver);
+        context.getContentResolver().registerContentObserver(
+                Settings.ACCOUNT_RESOLVER_URI, true, accountObserver);
     }
 
+    /**
+     * Handle all requests table changes.
+     */
     private class RequestObserver extends ContentObserver {
         /**
          * Creates a content observer.
-         *
-         * @param handler The handler to run {@link #onChange} on, or null if none.
          */
-        public RequestObserver(Handler handler) {
-            super(handler);
+        public RequestObserver() {
+            super(null);
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             Log.d(Settings.LOG_TAG, "RequestObserver: onChange");
+        }
+    }
+
+    /**
+     * Needs to control account set change.
+     * If account was deleted - drop all associated requests.
+     * If status changed to any online - check queue and send associated requests.
+     */
+    private class AccountObserver extends ContentObserver {
+        /**
+         * Creates a content observer.
+         */
+        public AccountObserver() {
+            super(null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            Log.d(Settings.LOG_TAG, "AccountsObserver: onChange");
         }
     }
 }

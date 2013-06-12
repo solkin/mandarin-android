@@ -141,7 +141,8 @@ public class QueryHelper {
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
-                requestMessage(contentResolver);
+                // Sending protocol message request.
+                RequestHelper.requestMessage(contentResolver, accountDbId, buddyDbId, cookie, messageText);
                 return;
             }
         }
@@ -155,16 +156,8 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-        requestMessage(contentResolver);
-    }
-
-    public static void requestMessage(ContentResolver contentResolver) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.REQUEST_CLASS, IcqAccountRoot.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_SESSION, System.currentTimeMillis());
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT, 1);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, "Request bundle");
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        // Sending protocol message request.
+        RequestHelper.requestMessage(contentResolver, accountDbId, buddyDbId, cookie, messageText);
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {

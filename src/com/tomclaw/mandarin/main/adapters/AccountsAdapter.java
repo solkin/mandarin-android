@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,18 +29,20 @@ public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
-     * Adapter ID *
+     * Adapter ID
      */
     private final int ADAPTER_ID = 0x01;
 
     /**
-     * Columns *
+     * Columns
      */
     private static int COLUMN_USER_ID;
     private static int COLUMN_USER_NICK;
+    private static int COLUMN_USER_STATUS;
+    private static int COLUMN_ACCOUNT_TYPE;
 
     /**
-     * Variables *
+     * Variables
      */
     private Context context;
     private LayoutInflater inflater;
@@ -82,6 +86,10 @@ public class AccountsAdapter extends CursorAdapter implements
         // Setup text values
         ((TextView) view.findViewById(R.id.user_id)).setText(cursor.getString(COLUMN_USER_ID));
         ((TextView) view.findViewById(R.id.user_nick)).setText(cursor.getString(COLUMN_USER_NICK));
+        ((ImageView) view.findViewById(R.id.user_status)).setImageResource(
+                StatusUtil.getStatusResource(
+                        cursor.getString(COLUMN_ACCOUNT_TYPE),
+                        cursor.getInt(COLUMN_USER_STATUS)));
         // Creating listeners for status click
         /*view.findViewById(R.id.user_status).setOnClickListener(
                 new View.OnClickListener() {
@@ -100,8 +108,10 @@ public class AccountsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
         COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
         COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
+        COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
         swapCursor(cursor);
     }
 

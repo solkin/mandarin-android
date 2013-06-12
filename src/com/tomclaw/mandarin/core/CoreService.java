@@ -5,12 +5,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.RequestDispatcher;
 import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.List;
 public class CoreService extends Service {
 
     private SessionHolder sessionHolder;
+    private RequestDispatcher requestDispatcher;
 
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
@@ -90,6 +95,7 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
+        requestDispatcher = new RequestDispatcher(this);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();

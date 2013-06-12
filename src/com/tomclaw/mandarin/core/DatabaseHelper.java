@@ -26,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Creating roster database.
+        db.execSQL(GlobalProvider.DB_CREATE_REQUEST_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_ACCOUNT_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);

@@ -13,6 +13,19 @@ import com.tomclaw.mandarin.im.AccountRoot;
 public class IcqAccountRoot extends AccountRoot {
 
     public IcqAccountRoot() {
+        /*RequestDispatcher requestLoop = new RequestDispatcher();
+        requestLoop.startLoop();
+        requestLoop.insertRequest(new Request() {
+            @Override
+            public void onRequest() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onResponse() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });*/
     }
 
     @Override

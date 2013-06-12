@@ -19,6 +19,7 @@ import android.util.Log;
 public class GlobalProvider extends ContentProvider {
 
     // Table
+    public static final String REQUEST_TABLE = "requests";
     public static final String ACCOUNTS_TABLE = "accounts";
     public static final String ROSTER_GROUP_TABLE = "roster_group";
     public static final String ROSTER_BUDDY_TABLE = "roster_buddy";
@@ -26,6 +27,11 @@ public class GlobalProvider extends ContentProvider {
 
     // Fields
     public static final String ROW_AUTO_ID = "_id";
+
+    public static final String REQUEST_CLASS = "request_class";
+    public static final String REQUEST_SESSION = "request_session";
+    public static final String REQUEST_ACCOUNT = "account_db_id";
+    public static final String REQUEST_BUNDLE = "request_bundle";
 
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -55,11 +61,16 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
 
     // Database create scripts
+    protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
+            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
+            + REQUEST_ACCOUNT + " int, " + REQUEST_BUNDLE + " text" + ");"; // TODO: text? Must be big text!
+
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
             + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
-            + ACCOUNT_BUNDLE + " text" + ");";
+            + ACCOUNT_BUNDLE + " text" + ");"; // TODO: text? Must be big text!
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -84,16 +95,18 @@ public class GlobalProvider extends ContentProvider {
     private SQLiteDatabase sqLiteDatabase;
 
     // URI id
-    private static final int URI_ACCOUNT = 1;
-    private static final int URI_BUDDY = 2;
-    private static final int URI_GROUP = 3;
-    private static final int URI_HISTORY = 4;
+    private static final int URI_REQUEST = 1;
+    private static final int URI_ACCOUNT = 2;
+    private static final int URI_BUDDY = 3;
+    private static final int URI_GROUP = 4;
+    private static final int URI_HISTORY = 5;
 
     // URI tool instance
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, REQUEST_TABLE, URI_REQUEST);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ACCOUNTS_TABLE, URI_ACCOUNT);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
@@ -113,6 +126,14 @@ public class GlobalProvider extends ContentProvider {
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
+            case URI_REQUEST: // Default Uri
+                Log.d(Settings.LOG_TAG, "URI_REQUEST");
+                // Default sort if not specified
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = ROW_AUTO_ID + " ASC";
+                }
+                table = REQUEST_TABLE;
+                break;
             case URI_ACCOUNT: // Default Uri
                 Log.d(Settings.LOG_TAG, "URI_ACCOUNT");
                 // Default sort if not specified
@@ -197,6 +218,9 @@ public class GlobalProvider extends ContentProvider {
     private static String getTableName(Uri uri) {
         String table;
         switch (uriMatcher.match(uri)) {
+            case URI_REQUEST:
+                table = REQUEST_TABLE;
+                break;
             case URI_ACCOUNT:
                 table = ACCOUNTS_TABLE;
                 break;

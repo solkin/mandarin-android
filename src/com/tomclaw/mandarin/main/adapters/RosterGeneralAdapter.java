@@ -28,12 +28,12 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
-     * Adapter ID *
+     * Adapter ID
      */
     private static final int ADAPTER_GENERAL_ID = -1;
 
     /**
-     * Columns *
+     * Columns
      */
     private static int COLUMN_GROUP_NAME;
     private static int COLUMN_BUDDY_NICK;
@@ -42,7 +42,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
     private static int COLUMN_BUDDY_ACCOUNT_TYPE;
 
     /**
-     * Variables *
+     * Variables
      */
     private Context context;
     private LoaderManager loaderManager;

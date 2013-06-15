@@ -30,25 +30,44 @@ public class QueryHelper {
         // Obtain specified account. If exist.
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
         // Cursor may have more than only one entry.
-        if (cursor.getCount() >= 1) {
+        if (cursor.moveToFirst()) {
             // Obtain necessary column index.
             int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
             int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
             // Iterate all accounts.
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        // Creating account root from bundle.
-                        AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
-                                Class.forName(cursor.getString(typeColumnIndex)));
-                        accountRootList.add(accountRoot);
-                    } catch (ClassNotFoundException e) {
-                        Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
-                    }
-                } while (cursor.moveToNext());// Trying to move to position.
-            }
+            do {
+                try {
+                    // Creating account root from bundle.
+                    AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
+                            Class.forName(cursor.getString(typeColumnIndex)));
+                    accountRootList.add(accountRoot);
+                } catch (ClassNotFoundException e) {
+                    Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
+                }
+            } while (cursor.moveToNext());// Trying to move to position.
         }
         return accountRootList;
+    }
+
+    public static AccountRoot getAccount(ContentResolver contentResolver, int accountDbId) {
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
+        // Checking for there is at least one account and switching to it.
+        if(cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
+            int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+            try {
+                // Creating account root from bundle.
+                AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
+                        Class.forName(cursor.getString(typeColumnIndex)));
+                return accountRoot;
+            } catch (ClassNotFoundException e) {
+                Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
+            }
+        }
+        return null;
     }
 
     public static boolean updateAccount(ContentResolver contentResolver, AccountRoot accountRoot) {
@@ -116,8 +135,8 @@ public class QueryHelper {
         modifyBuddy(contentResolver, buddyDbId, contentValues);
     }
 
-    public static void insertMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
-                                     int messageType, String cookie, String messageText) {
+    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
+                                     int buddyDbId, int messageType, String cookie, String messageText) {
         // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null, null);
@@ -142,7 +161,7 @@ public class QueryHelper {
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
                 // Sending protocol message request.
-                RequestHelper.requestMessage(contentResolver, accountDbId, buddyDbId, cookie, messageText);
+                RequestHelper.requestMessage(contentResolver, appSession, accountDbId, buddyDbId, cookie, messageText);
                 return;
             }
         }
@@ -157,7 +176,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         // Sending protocol message request.
-        RequestHelper.requestMessage(contentResolver, accountDbId, buddyDbId, cookie, messageText);
+        RequestHelper.requestMessage(contentResolver, appSession, accountDbId, buddyDbId, cookie, messageText);
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {

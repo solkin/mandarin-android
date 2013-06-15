@@ -91,7 +91,8 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    QueryHelper.insertMessage(getContentResolver(), getCurrentPageAccountDbId(), getCurrentPageBuddyDbId(), 1, // TODO: real message type
+                    QueryHelper.insertMessage(getContentResolver(), getServiceInteraction().getAppSession(),
+                            getCurrentPageAccountDbId(), getCurrentPageBuddyDbId(), 1, // TODO: real message type
                             String.valueOf(System.currentTimeMillis()), messageText.getText().toString());
                 } catch (Exception e) {
                     // Couldn't put message into database. This exception must be processed.

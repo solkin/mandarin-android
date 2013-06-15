@@ -15,6 +15,7 @@ import com.tomclaw.mandarin.im.RequestDispatcher;
 import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +34,8 @@ public class CoreService extends Service {
 
     private int serviceState;
     private long serviceCreateTime;
+    private static final String appSession = String.valueOf(System.currentTimeMillis())
+            .concat(String.valueOf(new Random().nextInt()));
 
     /**
      * For showing and hiding our notification.
@@ -64,6 +67,11 @@ public class CoreService extends Service {
         @Override
         public long getUpTime() throws RemoteException {
             return System.currentTimeMillis() - getServiceCreateTime();
+        }
+
+        @Override
+        public String getAppSession() throws RemoteException {
+            return appSession;
         }
 
         @Override
@@ -159,6 +167,14 @@ public class CoreService extends Service {
      */
     public long getServiceCreateTime() {
         return serviceCreateTime;
+    }
+
+    /**
+     * Returns application session id. Every service restart will cause session change.
+     * @return appSession
+     */
+    public static String getAppSession() {
+        return appSession;
     }
 
     public void updateState(int serviceState) {

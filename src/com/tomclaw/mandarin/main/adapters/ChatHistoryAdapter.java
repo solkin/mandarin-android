@@ -32,13 +32,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_error, R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
 
     /**
-     * Date and time format helpers *
+     * Date and time format helpers
      */
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
     private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
 
     /**
-     * Adapter ID, equals to buddy db id of this chat *
+     * Adapter ID, equals to buddy db id of this chat
      */
     private final int ADAPTER_ID;
 
@@ -97,10 +97,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             if (convertView == null) {
                 view = newView(mContext, mCursor, parent);
-                Log.d(Settings.LOG_TAG, "create new view");
             } else {
                 view = convertView;
-                Log.d(Settings.LOG_TAG, "using existing view");
             }
             bindView(view, mContext, mCursor);
         } catch (Throwable ex) {

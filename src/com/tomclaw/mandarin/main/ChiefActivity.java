@@ -17,7 +17,6 @@ import com.tomclaw.mandarin.core.Settings;
  * User: solkin
  * Date: 09.01.13
  * Time: 20:22
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ChiefActivity extends SherlockFragmentActivity {
 

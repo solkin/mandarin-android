@@ -7,6 +7,7 @@ interface ServiceInteraction
     // Staff methods
 	boolean initService();
 	long getUpTime();
+    String getAppSession();
 	// Accounts API
 	List getAccountsList();
 	void addAccount(in CoreObject accountRoot);

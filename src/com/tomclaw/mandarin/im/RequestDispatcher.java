@@ -32,7 +32,7 @@ public class RequestDispatcher {
     private ContentObserver accountObserver;
     private ContentResolver contentResolver;
     private Thread dispatcherThread;
-    private Object sync;
+    private final Object sync;
 
     public RequestDispatcher(Context context) {
         // Creating observers.
@@ -108,6 +108,7 @@ public class RequestDispatcher {
                                                     "anymore in this session.");
                                             ContentValues contentValues = new ContentValues();
                                             contentValues.put(GlobalProvider.REQUEST_SESSION, CoreService.getAppSession());
+                                            contentValues.put(GlobalProvider.REQUEST_STATE, REQUEST_PENDING);
                                             contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                                             break;

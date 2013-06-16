@@ -1,7 +1,9 @@
 package com.tomclaw.mandarin.im;
 
+import android.content.ContentResolver;
 import android.os.Parcel;
 import com.tomclaw.mandarin.core.CoreObject;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +14,7 @@ import com.tomclaw.mandarin.core.CoreObject;
 public abstract class AccountRoot extends CoreObject {
 
     /**
-     * User info *
+     * User info
      */
     protected String userId;
     protected String userNick;
@@ -20,10 +22,18 @@ public abstract class AccountRoot extends CoreObject {
     protected int statusIndex;
     protected String statusText;
     /**
-     * Service info *
+     * Service info
      */
     protected String serviceHost;
     protected int servicePort;
+    /**
+     * Staff
+     */
+    protected ContentResolver contentResolver;
+
+    public void setContentResolver(ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
+    }
 
     public String getUserId() {
         return userId;
@@ -56,6 +66,20 @@ public abstract class AccountRoot extends CoreObject {
     public abstract void connect();
 
     public abstract void disconnect();
+
+    public void setStatus(int statusIndex) {
+        if (this.statusIndex != statusIndex) {
+            if (this.statusIndex == StatusUtil.STATUS_OFFLINE) {
+                connect();
+            } else if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                disconnect();
+            } else {
+                updateStatus(statusIndex);
+            }
+        }
+    }
+
+    public abstract void updateStatus(int statusIndex);
 
     public abstract String getAccountType();
 

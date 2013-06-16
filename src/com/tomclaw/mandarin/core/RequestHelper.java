@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.im.RequestDispatcher;
+import com.tomclaw.mandarin.im.Request;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
 
 /**
@@ -29,7 +29,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT, accountDbId);
-        contentValues.put(GlobalProvider.REQUEST_STATE, RequestDispatcher.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(messageRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }

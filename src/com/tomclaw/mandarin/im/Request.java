@@ -8,7 +8,18 @@ package com.tomclaw.mandarin.im;
  */
 public abstract class Request {
 
-    public abstract void onRequest();
+    /**
+     * Request state flags
+     */
+    public static final int REQUEST_PENDING = 0x00;
+    public static final int REQUEST_SENT = 0x01;
+    public static final int REQUEST_DELETE = 0xff;
+
+    /**
+     * Builds outgoing request and sends it over the network.
+     * @return int - status we must setup to this request
+     */
+    public abstract int onRequest(AccountRoot accountRoot);
 
     public abstract void onResponse();
 }

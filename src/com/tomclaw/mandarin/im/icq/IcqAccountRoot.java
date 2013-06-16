@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Parcel;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
@@ -12,16 +14,23 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class IcqAccountRoot extends AccountRoot {
 
-    public IcqAccountRoot() {
+    private IcqSession icqSession;
 
+    public IcqAccountRoot() {
+        icqSession = new IcqSession(this);
     }
 
     @Override
     public void connect() {
+        icqSession.clientLogin();
     }
 
     @Override
     public void disconnect() {
+    }
+
+    public void updateStatus(int statusIndex) {
+
     }
 
     @Override

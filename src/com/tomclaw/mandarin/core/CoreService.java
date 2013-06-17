@@ -93,8 +93,8 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void setAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
-            sessionHolder.setAccountStatus(accountType, userId, statusIndex);
+        public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
+            sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
         }
     };
 

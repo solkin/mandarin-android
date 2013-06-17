@@ -160,7 +160,7 @@ public class AccountsActivity extends ChiefActivity {
                     String userId = cursor.getString(COLUMN_USER_ID);
                     try {
                         // Trying to remove account.
-                        getServiceInteraction().setAccountStatus(accountType, userId, StatusUtil.STATUS_ONLINE);
+                        getServiceInteraction().updateAccountStatus(accountType, userId, StatusUtil.STATUS_ONLINE);
                     } catch (RemoteException e) {
                         // Heh... Nothing to do in this case.
                     }

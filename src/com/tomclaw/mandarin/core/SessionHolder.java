@@ -53,14 +53,15 @@ public class SessionHolder {
         return QueryHelper.removeAccount(contentResolver, accountType, userId);
     }
 
-    public void setAccountStatus(String accountType, String userId, int statusIndex) {
+    public void updateAccountStatus(String accountType, String userId, int statusIndex) {
         for (AccountRoot accountRoot : accountRootList) {
             // Checking for account type and user id.
             if (accountRoot.getAccountType().equals(accountType)
                     && accountRoot.getUserId().equals(userId)) {
+                QueryHelper.updateAccountStatus(contentResolver, accountRoot, statusIndex, true);
                 // Changing status.
                 accountRoot.setStatus(statusIndex);
-                break;
+                return;
             }
         }
     }

@@ -25,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        try{
         // Creating roster database.
         db.execSQL(GlobalProvider.DB_CREATE_REQUEST_TABLE_SCRIPT);
         db.execSQL(GlobalProvider.DB_CREATE_ACCOUNT_TABLE_SCRIPT);
@@ -58,10 +59,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
             cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
             cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting());
             cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
             long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
-            // cv1.put(GlobalProvider.AC, groupName);
-            // db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
             for (int i = 1; i <= 4 + random.nextInt(3); i++) {
                 String groupName = generateRandomWord(random);
                 cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
@@ -95,6 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
+        }catch(Throwable ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static String generateRandomText(Random r) {

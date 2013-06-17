@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.List;
 
@@ -36,15 +35,9 @@ public class QueryHelper {
             int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
             // Iterate all accounts.
             do {
-                try {
-                    // Creating account root from bundle.
-                    AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
-                            Class.forName(cursor.getString(typeColumnIndex)));
-                    accountRootList.add(accountRoot);
-                } catch (ClassNotFoundException e) {
-                    Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
-                }
-            } while (cursor.moveToNext());// Trying to move to position.
+                accountRootList.add(createAccountRoot(contentResolver, cursor.getString(typeColumnIndex),
+                        cursor.getString(bundleColumnIndex)));
+            } while (cursor.moveToNext()); // Trying to move to position.
         }
         return accountRootList;
     }
@@ -54,18 +47,26 @@ public class QueryHelper {
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
         // Checking for there is at least one account and switching to it.
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             // Obtain necessary column index.
             int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
             int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-            try {
-                // Creating account root from bundle.
-                AccountRoot accountRoot = (AccountRoot) gson.fromJson(cursor.getString(bundleColumnIndex),
-                        Class.forName(cursor.getString(typeColumnIndex)));
-                return accountRoot;
-            } catch (ClassNotFoundException e) {
-                Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
-            }
+            return createAccountRoot(contentResolver, cursor.getString(typeColumnIndex),
+                    cursor.getString(bundleColumnIndex));
+        }
+        return null;
+    }
+
+    private static AccountRoot createAccountRoot(ContentResolver contentResolver, String className,
+                                                 String accountRootJson) {
+        try {
+            // Creating account root from bundle.
+            AccountRoot accountRoot = (AccountRoot) gson.fromJson(accountRootJson,
+                    Class.forName(className));
+            accountRoot.setContentResolver(contentResolver);
+            return accountRoot;
+        } catch (ClassNotFoundException e) {
+            Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
         }
         return null;
     }
@@ -76,20 +77,18 @@ public class QueryHelper {
                 GlobalProvider.ACCOUNT_TYPE + "='" + accountRoot.getAccountType() + "'" + " AND "
                         + GlobalProvider.ACCOUNT_USER_ID + "='" + accountRoot.getUserId() + "'", null, null);
         // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.getCount() >= 1) {
-            if (cursor.moveToFirst()) {
-                long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                // We must update account. Name, password, status, bundle.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
-                contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
-                contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-                contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
-                // Update query.
-                contentResolver.update(Settings.ACCOUNT_RESOLVER_URI, contentValues,
-                        GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null);
-                return false;
-            }
+        if (cursor.moveToFirst()) {
+            long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            // We must update account. Name, password, status, bundle.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+            contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+            // Update query.
+            contentResolver.update(Settings.ACCOUNT_RESOLVER_URI, contentValues,
+                    GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null);
+            return false;
         }
         // No matching account. Creating new account.
         ContentValues contentValues = new ContentValues();
@@ -101,6 +100,27 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         return true;
+    }
+
+    public static boolean updateAccountStatus(ContentResolver contentResolver, AccountRoot accountRoot,
+                                              int statusIndex, boolean isConnecting) {
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ACCOUNT_TYPE + "='" + accountRoot.getAccountType() + "'" + " AND "
+                        + GlobalProvider.ACCOUNT_USER_ID + "='" + accountRoot.getUserId() + "'", null, null);
+        // Cursor may have no more than only one entry. But we will check one and more.
+        if (cursor.moveToFirst()) {
+            long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            // We must update account. Status, connecting flag.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+            // Update query.
+            contentResolver.update(Settings.ACCOUNT_RESOLVER_URI, contentValues,
+                    GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null);
+            return true;
+        }
+        return false;
     }
 
     public static boolean removeAccount(ContentResolver contentResolver, String accountType, String userId) {

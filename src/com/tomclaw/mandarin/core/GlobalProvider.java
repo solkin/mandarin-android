@@ -40,6 +40,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ACCOUNT_USER_ID = "account_user_id";
     public static final String ACCOUNT_USER_PASSWORD = "account_user_password";
     public static final String ACCOUNT_STATUS = "account_status";
+    public static final String ACCOUNT_CONNECTING = "account_connecting";
     public static final String ACCOUNT_BUNDLE = "account_bundle";
 
     public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
@@ -72,7 +73,8 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
-            + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, " + ACCOUNT_STATUS + " text, "
+            + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, "
+            + ACCOUNT_STATUS + " text, " + ACCOUNT_CONNECTING + " text, "
             + ACCOUNT_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
@@ -109,7 +111,6 @@ public class GlobalProvider extends ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, REQUEST_TABLE, URI_REQUEST);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, REQUEST_TABLE, URI_REQUEST);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ACCOUNTS_TABLE, URI_ACCOUNT);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);

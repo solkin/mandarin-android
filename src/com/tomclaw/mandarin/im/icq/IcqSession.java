@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.util.Base64;
 import android.util.Log;
+import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.Settings;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,12 +32,15 @@ import java.util.List;
 public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
+    private Gson gson;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
+        this.gson = new Gson();
     }
 
-    public void clientLogin() {
+    // TODO: more informative answer.
+    public boolean clientLogin() {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("https://api.login.icq.net/auth/clientLogin");
@@ -54,7 +58,7 @@ public class IcqSession {
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost);
             String responseString = EntityUtils.toString(response.getEntity());
-            Log.d(Settings.LOG_TAG, "response = " + responseString);
+            Log.d(Settings.LOG_TAG, "client login = " + responseString);
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject responseObject = jsonObject.getJSONObject("response");
             int statusCode = responseObject.getInt("statusCode");
@@ -70,21 +74,25 @@ public class IcqSession {
                 Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
                 String sessionKey = getHmacSha256Base64(sessionSecret, "testacc1");
                 Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
-                startSession(tokenA, sessionKey, hostTime);
+                // Update client login result in database.
+                icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
+                return true;
             }
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "client login exception: " + e.getMessage());
         }
+        return false;
     }
 
-    public void startSession(String tokenA, String sessionKey, long hostTime) {
+    // TODO: more informative answer.
+    public boolean startSession() {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("http://api.icq.net/aim/startSession");
         try {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("a", tokenA));
+            nameValuePairs.add(new BasicNameValuePair("a", icqAccountRoot.getTokenA()));
             nameValuePairs.add(new BasicNameValuePair("assertCaps", "094613504C7F11D18222444553540000"));
             nameValuePairs.add(new BasicNameValuePair("buildNumber", "1234"));
             nameValuePairs.add(new BasicNameValuePair("clientName", "Android%20Agent"));
@@ -102,19 +110,39 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair("pollTimeout", "30000"));
             nameValuePairs.add(new BasicNameValuePair("rawMsg", "0"));
             nameValuePairs.add(new BasicNameValuePair("sessionTimeout", "1209600"));
-            nameValuePairs.add(new BasicNameValuePair("ts", String.valueOf(hostTime)));
+            nameValuePairs.add(new BasicNameValuePair("ts", String.valueOf(icqAccountRoot.getHostTime())));
             nameValuePairs.add(new BasicNameValuePair("view", "mobile"));
             String hash = "POST&" + URLEncoder.encode("http://api.icq.net/aim/startSession", "UTF-8")
                     + "&" + URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8");
-            nameValuePairs.add(new BasicNameValuePair("sig_sha256", getHmacSha256Base64(hash, sessionKey)));
+            nameValuePairs.add(new BasicNameValuePair("sig_sha256",
+                    getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             Log.d(Settings.LOG_TAG, EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)));
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost);
-            Log.d(Settings.LOG_TAG, "start session = " + EntityUtils.toString(response.getEntity()));
+            String responseString = EntityUtils.toString(response.getEntity());
+            Log.d(Settings.LOG_TAG, "start session = " + responseString);
+            JSONObject jsonObject = new JSONObject(responseString);
+            JSONObject responseObject = jsonObject.getJSONObject("response");
+            int statusCode = responseObject.getInt("statusCode");
+            if (statusCode == 200) {
+                JSONObject dataObject = responseObject.getJSONObject("data");
+                String aimSid = dataObject.getString("aimsid");
+                String fetchBaseURL = dataObject.getString("aimsid");
+
+                MyInfo myInfo = gson.fromJson(dataObject.getJSONObject("myInfo").toString(),
+                        MyInfo.class);
+                WellKnownUrls wellKnownUrls = gson.fromJson(
+                        dataObject.getJSONObject("wellKnownUrls").toString(), WellKnownUrls.class);
+
+                // Update starts session result in database.
+                icqAccountRoot.setStartSessionResult(aimSid, fetchBaseURL, myInfo, wellKnownUrls);
+                return true;
+            }
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "start session exception: " + e.getMessage());
         }
+        return false;
     }
 
     public void endSession(String aimSid) {
@@ -144,5 +172,9 @@ public class IcqSession {
         messageAuthenticationCode.update(key.getBytes());
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    public void startEventsFetching() {
+        //To change body of created methods use File | Settings | File Templates.
     }
 }

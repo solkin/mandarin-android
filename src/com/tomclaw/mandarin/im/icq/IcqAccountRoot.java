@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 
@@ -12,7 +13,18 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class IcqAccountRoot extends AccountRoot {
 
+    // Network session.
     private transient IcqSession icqSession;
+    // Client login variables.
+    private String tokenA;
+    private String sessionKey;
+    private long tokenExpirationDate;
+    private long timeDelta;
+    // Start session variables.
+    private String aimSid;
+    private String fetchBaseURL;
+    private MyInfo myInfo;
+    private WellKnownUrls wellKnownUrls;
 
     public IcqAccountRoot() {
         icqSession = new IcqSession(this);
@@ -22,7 +34,18 @@ public class IcqAccountRoot extends AccountRoot {
     public void connect() {
         Thread connectThread = new Thread() {
             public void run() {
-                icqSession.clientLogin();
+                // TODO: implement errors handling.
+                while(!checkSessionReady()) {
+                    while(!checkLoginReady()) {
+                        // Login with credentials.
+                        icqSession.clientLogin();
+                    }
+                    // Attempt to start session.
+                    icqSession.startSession();
+                }
+                // Starting events fetching in verbal cycle.
+                icqSession.startEventsFetching();
+                // Update account connecting state to false.
                 updateAccountState(false);
             }
         };
@@ -67,5 +90,48 @@ public class IcqAccountRoot extends AccountRoot {
 
     public void readInstanceData(Parcel in) {
         super.readInstanceData(in);
+    }
+
+    public void setClientLoginResult(String login, String tokenA, String sessionKey,
+                                     int expiresIn, long hostTime) {
+        // Setup local variables.
+        this.tokenA = tokenA;
+        this.sessionKey = sessionKey;
+        this.timeDelta = hostTime - System.currentTimeMillis() / 1000;
+        this.tokenExpirationDate = expiresIn + System.currentTimeMillis() / 1000;
+        // Save account data in database.
+        updateAccount();
+    }
+
+    public boolean checkLoginReady() {
+        return !(TextUtils.isEmpty(tokenA) || TextUtils.isEmpty(sessionKey)
+                || tokenExpirationDate == 0);
+    }
+
+    public long getHostTime() {
+        return timeDelta + System.currentTimeMillis() / 1000;
+    }
+
+    public void setStartSessionResult(String aimSid, String fetchBaseURL,
+                                      MyInfo myInfo, WellKnownUrls wellKnownUrls) {
+        this.aimSid = aimSid;
+        this.fetchBaseURL = fetchBaseURL;
+        this.myInfo = myInfo;
+        this.wellKnownUrls = wellKnownUrls;
+        // Save account data in database.
+        updateAccount();
+    }
+
+    public String getTokenA() {
+        return tokenA;
+    }
+
+    public String getSessionKey() {
+        return sessionKey;
+    }
+
+    public boolean checkSessionReady() {
+        return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseURL)
+                || myInfo == null || wellKnownUrls == null);
     }
 }

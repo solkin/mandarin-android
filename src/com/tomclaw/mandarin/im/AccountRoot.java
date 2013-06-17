@@ -97,8 +97,16 @@ public abstract class AccountRoot extends CoreObject {
 
     protected void updateAccountState(int statusIndex, boolean isConnecting) {
         // Setup local variables.
-        connectingFlag = isConnecting;
         this.statusIndex = statusIndex;
+        connectingFlag = isConnecting;
+        // Save account data in database.
+        updateAccount();
+    }
+
+    /**
+     * This will update account info in database
+     */
+    public void updateAccount() {
         // Update database info.
         QueryHelper.updateAccount(contentResolver, this);
     }

@@ -91,6 +91,11 @@ public class CoreService extends Service {
         public boolean removeAccount(String accountType, String userId) throws RemoteException {
             return sessionHolder.removeAccountRoot(accountType, userId);
         }
+
+        @Override
+        public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
+            sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
+        }
     };
 
     @Override

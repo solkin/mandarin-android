@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
+import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.Request;
 
 /**
@@ -11,8 +12,8 @@ import com.tomclaw.mandarin.im.Request;
 public class IcqMessageRequest extends Request {
 
     @Override
-    public void onRequest() {
-
+    public int onRequest(AccountRoot accountRoot) {
+        return REQUEST_SENT;
     }
 
     @Override

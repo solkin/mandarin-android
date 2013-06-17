@@ -12,4 +12,5 @@ interface ServiceInteraction
 	List getAccountsList();
 	void addAccount(in CoreObject accountRoot);
 	boolean removeAccount(String accountType, String userId);
+	void updateAccountStatus(String accountType, String userId, int statusIndex);
 }

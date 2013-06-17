@@ -92,7 +92,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         bar.setListNavigationCallbacks(listAdapter, this);
         /** Lists **/
         pages.clear();
-        /********* Dialogs *********/
+        // Dialogs.
         final ListView dialogsList = new ListView(this);
         final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
         dialogsList.setAdapter(dialogsAdapter);
@@ -108,7 +108,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             }
         });
         pages.add(dialogsList);
-        /********* Online *********/
+        // Online.
         ListView onlineList = new ListView(this);
         final RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
         onlineList.setAdapter(onlineAdapter);
@@ -131,7 +131,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             }
         });
         pages.add(onlineList);
-        /********* All friends *********/
+        // All friends.
         ExpandableListView generalList = new ExpandableListView(this);
         final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
         generalList.setAdapter(generalAdapter);
@@ -162,80 +162,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setCurrentItem(2);
-
-        /*Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Random random = new Random(System.currentTimeMillis());
-                Cursor cursor = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
-                if(cursor.getCount() == 0) {
-                    ContentValues cv = new ContentValues();
-                    cv.put(GlobalProvider.ROSTER_BUDDY_ID, "burova@molecus.com");
-                    cv.put(GlobalProvider.ROSTER_BUDDY_NICK, "Burova");
-                    cv.put(GlobalProvider.ROSTER_BUDDY_GROUP, "Friends");
-                    cv.put(GlobalProvider.ROSTER_BUDDY_STATUS, R.drawable.status_icq_online);
-                    cv.put(GlobalProvider.ROSTER_BUDDY_STATE, 1);
-                    cv.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
-                    Uri newUri = getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv);
-                    Log.d(Settings.LOG_TAG, "insert, result Uri : " + newUri.toString());
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(GlobalProvider.ROSTER_GROUP_NAME, "Friends");
-                    Uri uri = getContentResolver().insert(Settings.GROUP_RESOLVER_URI, contentValues);
-                    Log.d(Settings.LOG_TAG, "insert, result Uri : " + uri.toString());
-                    cursor = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                            GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null, null);
-                }
-
-
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ContentValues cv = new ContentValues();
-                cv.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
-                getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv,
-                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
-
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ContentValues cv1 = new ContentValues();
-                cv1.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
-                getContentResolver().update(Settings.BUDDY_RESOLVER_URI, cv1,
-                        GlobalProvider.ROSTER_BUDDY_ID + "='" + "burova@molecus.com" + "'", null);
-
-
-                cursor.moveToPosition(0);
-                long id = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                for(int c=0; c<30; c++) {
-                    try {
-                        sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    ContentValues cv2 = new ContentValues();
-                    cv2.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
-                    cv2.put(GlobalProvider.HISTORY_BUDDY_NICK, "Burova");
-                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "1");
-                    cv2.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(System.currentTimeMillis()));
-                    cv2.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
-                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
-                    cv2.put(GlobalProvider.HISTORY_MESSAGE_TEXT, DatabaseHelper.generateRandomText(random));
-                    getContentResolver().insert(Settings.HISTORY_RESOLVER_URI, cv2);
-                }
-            }
-        };
-        thread.start();*/
     }
 
     @Override

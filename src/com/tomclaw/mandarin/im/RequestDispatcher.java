@@ -6,9 +6,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
-import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,18 +17,11 @@ import com.tomclaw.mandarin.core.Settings;
 public class RequestDispatcher {
 
     /**
-     * Request state flags
-     */
-    public static final int REQUEST_PENDING = 0x00;
-    public static final int REQUEST_PROCESSED = 0x01;
-    public static final int REQUEST_SENT = 0x02;
-
-    /**
      * Variables
      */
-    private ContentObserver requestObserver;
-    private ContentObserver accountObserver;
-    private ContentResolver contentResolver;
+    private final ContentObserver requestObserver;
+    private final ContentObserver accountObserver;
+    private final ContentResolver contentResolver;
     private Thread dispatcherThread;
     private final Object sync;
 
@@ -89,7 +80,7 @@ public class RequestDispatcher {
                             int requestState = cursor.getInt(stateColumnIndex);
                             // Checking for session is equals.
                             if (requestAppSession.equals(CoreService.getAppSession())) {
-                                if(requestState != REQUEST_PENDING) {
+                                if(requestState != Request.REQUEST_PENDING) {
                                     Log.d(Settings.LOG_TAG, "Processed request of current session.");
                                     continue;
                                 }
@@ -99,8 +90,7 @@ public class RequestDispatcher {
                                 // Checking for query is persistent.
                                 if (isPersistent) {
                                     switch (requestState) {
-                                        case REQUEST_PENDING:
-                                        case REQUEST_PROCESSED: {
+                                        case Request.REQUEST_PENDING: {
                                             // Request might be sent again, but we need to update request
                                             // application session to escape this clause anymore in this session.
                                             Log.d(Settings.LOG_TAG, "Request might be sent again, but we need to " +
@@ -108,12 +98,11 @@ public class RequestDispatcher {
                                                     "anymore in this session.");
                                             ContentValues contentValues = new ContentValues();
                                             contentValues.put(GlobalProvider.REQUEST_SESSION, CoreService.getAppSession());
-                                            contentValues.put(GlobalProvider.REQUEST_STATE, REQUEST_PENDING);
                                             contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                                             break;
                                         }
-                                        case REQUEST_SENT: {
+                                        case Request.REQUEST_SENT: {
                                             // Request sent, processed by server,
                                             // but we have no answer. Decline.
                                             Log.d(Settings.LOG_TAG, "Request sent, processed by server, " +
@@ -135,8 +124,6 @@ public class RequestDispatcher {
                                 }
                             }
 
-                            String requestClass = cursor.getString(classColumnIndex);
-
                             Log.d(Settings.LOG_TAG, "Request received: "
                                     + "class = " + cursor.getString(classColumnIndex) + "; "
                                     + "session = " + cursor.getString(sessionColumnIndex) + "; "
@@ -144,11 +131,34 @@ public class RequestDispatcher {
                                     + "account = " + cursor.getInt(accountColumnIndex) + "; "
                                     + "state = " + cursor.getInt(stateColumnIndex) + "; "
                                     + "bundle = " + cursor.getString(bundleColumnIndex) + "");
-                            // Updating this request.
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put(GlobalProvider.REQUEST_STATE, REQUEST_PROCESSED);
-                            contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
-                                    GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+
+                            // Obtain account root and request class (type).
+                            AccountRoot accountRoot = QueryHelper.getAccount(contentResolver, cursor.getInt(accountColumnIndex));
+                            String requestClass = cursor.getString(classColumnIndex);
+
+                            int requestResult;
+                            try {
+                                // Preparing request.
+                                Request request = (Request)Class.forName(requestClass).newInstance();
+                                requestResult = request.onRequest(accountRoot);
+                            } catch (Throwable e) {
+                                Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass);
+                                requestResult = Request.REQUEST_DELETE;
+                            }
+                            // Checking for request result.
+                            if(requestResult == Request.REQUEST_DELETE) {
+                                // Result is delete-type.
+                                Log.d(Settings.LOG_TAG, "Result is delete-type");
+                                contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
+                                        GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            } else {
+                                // Updating this request.
+                                Log.d(Settings.LOG_TAG, "Updating this request");
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
+                                contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
+                                        GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            }
                         } while (cursor.moveToNext());
                     }
                     try {

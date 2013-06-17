@@ -18,6 +18,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -150,7 +151,20 @@ public class AccountsActivity extends ChiefActivity {
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
+                // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
+                Cursor cursor = sAdapter.getCursor();
+                if (cursor.moveToPosition(selectedItem)) {
+                    int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                    int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+                    String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
+                    String userId = cursor.getString(COLUMN_USER_ID);
+                    try {
+                        // Trying to remove account.
+                        getServiceInteraction().updateAccountStatus(accountType, userId, StatusUtil.STATUS_ONLINE);
+                    } catch (RemoteException e) {
+                        // Heh... Nothing to do in this case.
+                    }
+                }
             }
         });
 

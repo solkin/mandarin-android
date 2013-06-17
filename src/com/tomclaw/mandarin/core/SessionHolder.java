@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.Context;
 import com.tomclaw.mandarin.im.AccountRoot;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +51,19 @@ public class SessionHolder {
         }
         // Trying to remove all data from database, associated with this account.
         return QueryHelper.removeAccount(contentResolver, accountType, userId);
+    }
+
+    public void updateAccountStatus(String accountType, String userId, int statusIndex) {
+        for (AccountRoot accountRoot : accountRootList) {
+            // Checking for account type and user id.
+            if (accountRoot.getAccountType().equals(accountType)
+                    && accountRoot.getUserId().equals(userId)) {
+                QueryHelper.updateAccountStatus(contentResolver, accountRoot, statusIndex, true);
+                // Changing status.
+                accountRoot.setStatus(statusIndex);
+                return;
+            }
+        }
     }
 
     public List<AccountRoot> getAccountsList() {

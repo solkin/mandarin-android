@@ -4,11 +4,12 @@ import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.Settings;
-import org.apache.http.HttpEntity;
+import com.tomclaw.mandarin.util.StatusUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -176,6 +177,19 @@ public class IcqSession {
     }
 
     public void startEventsFetching() {
-
+        Log.d(Settings.LOG_TAG, "start events fetching");
+        // Create a new HttpClient and Post Header
+        HttpClient httpClient = new DefaultHttpClient();
+        do {
+            HttpGet httpPost = new HttpGet(icqAccountRoot.getFetchBaseURL());
+            try {
+                // Execute HTTP Post Request
+                HttpResponse response = httpClient.execute(httpPost);
+                String responseString = EntityUtils.toString(response.getEntity());
+                Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
+            } catch (Throwable e) {
+                Log.d(Settings.LOG_TAG, "fetch events exception: " + e.getMessage());
+            }
+        } while(icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
     }
 }

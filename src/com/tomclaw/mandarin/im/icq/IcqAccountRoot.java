@@ -34,7 +34,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void connect() {
-        Log.d(Settings.LOG_TAG, "connection attempt");
+        Log.d(Settings.LOG_TAG, "icq connection attempt");
         Thread connectThread = new Thread() {
             public void run() {
                 // TODO: implement errors handling.
@@ -137,4 +137,21 @@ public class IcqAccountRoot extends AccountRoot {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseURL)
                 || myInfo == null || wellKnownUrls == null);
     }
+
+    public String getAimSid() {
+        return aimSid;
+    }
+
+    public String getFetchBaseURL() {
+        return fetchBaseURL;
+    }
+
+    public MyInfo getMyInfo() {
+        return myInfo;
+    }
+
+    public WellKnownUrls getWellKnownUrls() {
+        return wellKnownUrls;
+    }
+
 }

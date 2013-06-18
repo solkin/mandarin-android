@@ -2,10 +2,8 @@ package com.tomclaw.mandarin.im;
 
 import android.content.ContentResolver;
 import android.os.Parcel;
-import android.util.Log;
 import com.tomclaw.mandarin.core.CoreObject;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
@@ -97,6 +95,19 @@ public abstract class AccountRoot extends CoreObject {
     }
 
     /**
+     * This will connect account with actual status.
+     */
+    public void actualizeStatus() {
+        // Checking for connection purpose.
+        if(statusIndex != StatusUtil.STATUS_OFFLINE) {
+            // Update account state in database.
+            updateAccountState(statusIndex, true);
+            // Yeah, connect!
+            connect();
+        }
+    }
+
+    /**
      * Setup only connecting flag and updates account in database.
      * @param isConnecting
      */
@@ -130,19 +141,6 @@ public abstract class AccountRoot extends CoreObject {
      * @param statusIndex
      */
     public abstract void updateStatus(int statusIndex);
-
-    /**
-     * This will connect account with actual status.
-     */
-    public void actualizeStatus() {
-        // Checking for connection purpose.
-        if(statusIndex != StatusUtil.STATUS_OFFLINE) {
-            // Update account state in database.
-            updateAccountState(statusIndex, true);
-            // Yeah, connect!
-            connect();
-        }
-    }
 
     public abstract String getAccountType();
 

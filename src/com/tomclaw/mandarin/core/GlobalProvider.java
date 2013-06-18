@@ -74,7 +74,7 @@ public class GlobalProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
             + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, "
-            + ACCOUNT_STATUS + " text, " + ACCOUNT_CONNECTING + " text, "
+            + ACCOUNT_STATUS + " text, " + ACCOUNT_CONNECTING + " int, "
             + ACCOUNT_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("

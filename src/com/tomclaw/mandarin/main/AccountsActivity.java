@@ -161,7 +161,7 @@ public class AccountsActivity extends ChiefActivity {
                     String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
                     String userId = cursor.getString(COLUMN_USER_ID);
                     try {
-                        // Trying to remove account.
+                        // Trying to connect account.
                         getServiceInteraction().updateAccountStatus(accountType, userId, StatusUtil.STATUS_ONLINE);
                     } catch (RemoteException e) {
                         // Heh... Nothing to do in this case.

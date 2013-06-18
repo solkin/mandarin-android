@@ -40,6 +40,7 @@ public class AccountsAdapter extends CursorAdapter implements
     private static int COLUMN_USER_NICK;
     private static int COLUMN_USER_STATUS;
     private static int COLUMN_ACCOUNT_TYPE;
+    private static int COLUMN_ACCOUNT_CONNECTING;
 
     /**
      * Variables
@@ -86,10 +87,16 @@ public class AccountsAdapter extends CursorAdapter implements
         // Setup text values
         ((TextView) view.findViewById(R.id.user_id)).setText(cursor.getString(COLUMN_USER_ID));
         ((TextView) view.findViewById(R.id.user_nick)).setText(cursor.getString(COLUMN_USER_NICK));
-        ((ImageView) view.findViewById(R.id.user_status)).setImageResource(
+        ImageView userStatus = ((ImageView) view.findViewById(R.id.user_status));
+        userStatus.setImageResource(
                 StatusUtil.getStatusResource(
                         cursor.getString(COLUMN_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_USER_STATUS)));
+        if (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1) {
+            userStatus.setColorFilter(0xaaffffff);
+        } else {
+            userStatus.clearColorFilter();
+        }
         // Creating listeners for status click
         /*view.findViewById(R.id.user_status).setOnClickListener(
                 new View.OnClickListener() {
@@ -112,6 +119,7 @@ public class AccountsAdapter extends CursorAdapter implements
         COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
         COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
         COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
+        COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
         swapCursor(cursor);
     }
 

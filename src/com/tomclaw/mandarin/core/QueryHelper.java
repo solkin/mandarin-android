@@ -85,6 +85,7 @@ public class QueryHelper {
             contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
             contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
             contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
             contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
             // Update query.
             contentResolver.update(Settings.ACCOUNT_RESOLVER_URI, contentValues,
@@ -98,6 +99,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
         contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
         contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+        contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         return true;

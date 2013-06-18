@@ -58,7 +58,6 @@ public class SessionHolder {
             // Checking for account type and user id.
             if (accountRoot.getAccountType().equals(accountType)
                     && accountRoot.getUserId().equals(userId)) {
-                QueryHelper.updateAccountStatus(contentResolver, accountRoot, statusIndex, true);
                 // Changing status.
                 accountRoot.setStatus(statusIndex);
                 return;

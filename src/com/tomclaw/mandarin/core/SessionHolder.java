@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.Context;
 import com.tomclaw.mandarin.im.AccountRoot;
+
 import java.util.ArrayList;
 import java.util.List;
 

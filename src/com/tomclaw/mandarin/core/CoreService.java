@@ -176,6 +176,7 @@ public class CoreService extends Service {
 
     /**
      * Returns application session id. Every service restart will cause session change.
+     *
      * @return appSession
      */
     public static String getAppSession() {

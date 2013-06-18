@@ -9,11 +9,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/user_id"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"/>
     <EditText
             android:id="@+id/user_password_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/user_password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"/>
 </LinearLayout>

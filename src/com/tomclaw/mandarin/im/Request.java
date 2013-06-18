@@ -17,6 +17,7 @@ public abstract class Request {
 
     /**
      * Builds outgoing request and sends it over the network.
+     *
      * @return int - status we must setup to this request
      */
     public abstract int onRequest(AccountRoot accountRoot);

@@ -24,7 +24,7 @@ public class IcqAccountRoot extends AccountRoot {
     private long timeDelta;
     // Start session variables.
     private String aimSid;
-    private String fetchBaseURL;
+    private String fetchBaseUrl;
     private MyInfo myInfo;
     private WellKnownUrls wellKnownUrls;
 
@@ -38,18 +38,18 @@ public class IcqAccountRoot extends AccountRoot {
         Thread connectThread = new Thread() {
             public void run() {
                 // TODO: implement errors handling.
-                while(!checkSessionReady()) {
-                    while(!checkLoginReady()) {
+                while (!checkSessionReady()) {
+                    while (!checkLoginReady()) {
                         // Login with credentials.
                         icqSession.clientLogin();
                     }
                     // Attempt to start session.
                     icqSession.startSession();
                 }
-                // Starting events fetching in verbal cycle.
-                icqSession.startEventsFetching();
                 // Update account connecting state to false.
                 updateAccountState(false);
+                // Starting events fetching in verbal cycle.
+                icqSession.startEventsFetching();
             }
         };
         connectThread.start();
@@ -106,23 +106,32 @@ public class IcqAccountRoot extends AccountRoot {
         updateAccount();
     }
 
+    public void setStartSessionResult(String aimSid, String fetchBaseUrl,
+                                      MyInfo myInfo, WellKnownUrls wellKnownUrls) {
+        this.aimSid = aimSid;
+        this.fetchBaseUrl = fetchBaseUrl;
+        this.myInfo = myInfo;
+        this.wellKnownUrls = wellKnownUrls;
+        // Save account data in database.
+        updateAccount();
+    }
+
     public boolean checkLoginReady() {
         return !(TextUtils.isEmpty(tokenA) || TextUtils.isEmpty(sessionKey)
                 || tokenExpirationDate == 0);
+    }
+
+    public boolean checkSessionReady() {
+        return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
+                || myInfo == null || wellKnownUrls == null);
     }
 
     public long getHostTime() {
         return timeDelta + System.currentTimeMillis() / 1000;
     }
 
-    public void setStartSessionResult(String aimSid, String fetchBaseURL,
-                                      MyInfo myInfo, WellKnownUrls wellKnownUrls) {
-        this.aimSid = aimSid;
-        this.fetchBaseURL = fetchBaseURL;
-        this.myInfo = myInfo;
-        this.wellKnownUrls = wellKnownUrls;
-        // Save account data in database.
-        updateAccount();
+    public void setHostTime(long hostTime) {
+        this.timeDelta = hostTime - System.currentTimeMillis() / 1000;
     }
 
     public String getTokenA() {
@@ -133,17 +142,16 @@ public class IcqAccountRoot extends AccountRoot {
         return sessionKey;
     }
 
-    public boolean checkSessionReady() {
-        return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseURL)
-                || myInfo == null || wellKnownUrls == null);
-    }
-
     public String getAimSid() {
         return aimSid;
     }
 
-    public String getFetchBaseURL() {
-        return fetchBaseURL;
+    public String getFetchBaseUrl() {
+        return fetchBaseUrl;
+    }
+
+    public void setFetchBaseUrl(String fetchBaseUrl) {
+        this.fetchBaseUrl = fetchBaseUrl;
     }
 
     public MyInfo getMyInfo() {

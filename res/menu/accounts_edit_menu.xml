@@ -2,15 +2,15 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/edit_account_menu"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/edit_account">
+            android:id="@+id/edit_account_menu"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/edit_account">
     </item>
     <item
-        android:id="@+id/remove_account_menu"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/remove_account">
+            android:id="@+id/remove_account_menu"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/remove_account">
     </item>
 </menu>

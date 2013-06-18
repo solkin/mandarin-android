@@ -76,6 +76,7 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * Set up logic and network status for account. Some online status will connect account
      * in case of account was offline. Offline status will disconnect account.
+     *
      * @param statusIndex
      */
     public void setStatus(int statusIndex) {
@@ -99,7 +100,7 @@ public abstract class AccountRoot extends CoreObject {
      */
     public void actualizeStatus() {
         // Checking for connection purpose.
-        if(statusIndex != StatusUtil.STATUS_OFFLINE) {
+        if (statusIndex != StatusUtil.STATUS_OFFLINE) {
             // Update account state in database.
             updateAccountState(statusIndex, true);
             // Yeah, connect!
@@ -109,6 +110,7 @@ public abstract class AccountRoot extends CoreObject {
 
     /**
      * Setup only connecting flag and updates account in database.
+     *
      * @param isConnecting
      */
     protected void updateAccountState(boolean isConnecting) {
@@ -117,6 +119,7 @@ public abstract class AccountRoot extends CoreObject {
 
     /**
      * Setup status index and connecting flag and updates account in database.
+     *
      * @param statusIndex
      * @param isConnecting
      */
@@ -138,6 +141,7 @@ public abstract class AccountRoot extends CoreObject {
 
     /**
      * Update online status.
+     *
      * @param statusIndex
      */
     public abstract void updateStatus(int statusIndex);

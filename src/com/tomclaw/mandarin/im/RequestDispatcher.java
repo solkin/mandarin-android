@@ -6,7 +6,10 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.Settings;
 
 /**
  * Created with IntelliJ IDEA.
@@ -80,7 +83,7 @@ public class RequestDispatcher {
                             int requestState = cursor.getInt(stateColumnIndex);
                             // Checking for session is equals.
                             if (requestAppSession.equals(CoreService.getAppSession())) {
-                                if(requestState != Request.REQUEST_PENDING) {
+                                if (requestState != Request.REQUEST_PENDING) {
                                     Log.d(Settings.LOG_TAG, "Processed request of current session.");
                                     continue;
                                 }
@@ -139,14 +142,14 @@ public class RequestDispatcher {
                             int requestResult;
                             try {
                                 // Preparing request.
-                                Request request = (Request)Class.forName(requestClass).newInstance();
+                                Request request = (Request) Class.forName(requestClass).newInstance();
                                 requestResult = request.onRequest(accountRoot);
                             } catch (Throwable e) {
                                 Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass);
                                 requestResult = Request.REQUEST_DELETE;
                             }
                             // Checking for request result.
-                            if(requestResult == Request.REQUEST_DELETE) {
+                            if (requestResult == Request.REQUEST_DELETE) {
                                 // Result is delete-type.
                                 Log.d(Settings.LOG_TAG, "Result is delete-type");
                                 contentResolver.delete(Settings.REQUEST_RESOLVER_URI,

@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.crypto.Mac;
@@ -130,7 +131,7 @@ public class IcqSession {
             if (statusCode == 200) {
                 JSONObject dataObject = responseObject.getJSONObject("data");
                 String aimSid = dataObject.getString("aimsid");
-                String fetchBaseURL = dataObject.getString("aimsid");
+                String fetchBaseUrl = dataObject.getString("fetchBaseURL");
 
                 MyInfo myInfo = gson.fromJson(dataObject.getJSONObject("myInfo").toString(),
                         MyInfo.class);
@@ -138,7 +139,7 @@ public class IcqSession {
                         dataObject.getJSONObject("wellKnownUrls").toString(), WellKnownUrls.class);
 
                 // Update starts session result in database.
-                icqAccountRoot.setStartSessionResult(aimSid, fetchBaseURL, myInfo, wellKnownUrls);
+                icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
                 return true;
             }
         } catch (Throwable e) {
@@ -181,15 +182,46 @@ public class IcqSession {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
         do {
-            HttpGet httpPost = new HttpGet(icqAccountRoot.getFetchBaseURL());
+            HttpGet httpPost = new HttpGet(getFetchUrl());
             try {
                 // Execute HTTP Post Request
                 HttpResponse response = httpClient.execute(httpPost);
                 String responseString = EntityUtils.toString(response.getEntity());
                 Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
+                JSONObject jsonObject = new JSONObject(responseString);
+                JSONObject responseObject = jsonObject.getJSONObject("response");
+                int statusCode = responseObject.getInt("statusCode");
+                if (statusCode == 200) {
+                    JSONObject dataObject = responseObject.getJSONObject("data");
+                    long hostTime = dataObject.getLong("ts");
+                    String fetchBaseUrl = dataObject.getString("fetchBaseURL");
+                    // Update time and fetch base url.
+                    icqAccountRoot.setHostTime(hostTime);
+                    icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                    // Store account state.
+                    icqAccountRoot.updateAccount();
+                    // Process events.
+                    JSONArray eventsArray = dataObject.getJSONArray("events");
+                    // Cycling all events.
+                    for (int c = 0; c < eventsArray.length(); c++) {
+                        JSONObject eventObject = eventsArray.getJSONObject(c);
+                        String eventType = eventObject.getString("type");
+                        JSONObject eventData = eventObject.getJSONObject("eventData");
+                        // Process event.
+                        processEvent(eventType, eventData);
+                    }
+                }
             } catch (Throwable e) {
                 Log.d(Settings.LOG_TAG, "fetch events exception: " + e.getMessage());
             }
-        } while(icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
+        } while (icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
+    }
+
+    public String getFetchUrl() {
+        return icqAccountRoot.getFetchBaseUrl() + "&f=json&timeout=60000&r=" + System.currentTimeMillis() + "&peek=0";
+    }
+
+    private void processEvent(String eventType, JSONObject eventData) {
+        Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
     }
 }

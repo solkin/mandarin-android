@@ -151,6 +151,8 @@ public class AccountsActivity extends ChiefActivity {
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Update selected item first.
+                selectedItem = position;
                 // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
                 Cursor cursor = sAdapter.getCursor();
                 if (cursor.moveToPosition(selectedItem)) {

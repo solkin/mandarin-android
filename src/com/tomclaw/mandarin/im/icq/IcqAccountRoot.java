@@ -2,7 +2,9 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.os.Parcel;
 import android.text.TextUtils;
+import android.util.Log;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -32,6 +34,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void connect() {
+        Log.d(Settings.LOG_TAG, "connection attempt");
         Thread connectThread = new Thread() {
             public void run() {
                 // TODO: implement errors handling.

@@ -64,6 +64,7 @@ public class QueryHelper {
             AccountRoot accountRoot = (AccountRoot) gson.fromJson(accountRootJson,
                     Class.forName(className));
             accountRoot.setContentResolver(contentResolver);
+            accountRoot.actualizeStatus();
             return accountRoot;
         } catch (ClassNotFoundException e) {
             Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());

@@ -75,6 +75,11 @@ public abstract class AccountRoot extends CoreObject {
 
     public abstract void disconnect();
 
+    /**
+     * Set up logic and network status for account. Some online status will connect account
+     * in case of account was offline. Offline status will disconnect account.
+     * @param statusIndex
+     */
     public void setStatus(int statusIndex) {
         if (this.statusIndex != statusIndex) {
             if (this.statusIndex == StatusUtil.STATUS_OFFLINE) {
@@ -91,10 +96,19 @@ public abstract class AccountRoot extends CoreObject {
         }
     }
 
+    /**
+     * Setup only connecting flag and updates account in database.
+     * @param isConnecting
+     */
     protected void updateAccountState(boolean isConnecting) {
         updateAccountState(statusIndex, isConnecting);
     }
 
+    /**
+     * Setup status index and connecting flag and updates account in database.
+     * @param statusIndex
+     * @param isConnecting
+     */
     protected void updateAccountState(int statusIndex, boolean isConnecting) {
         // Setup local variables.
         this.statusIndex = statusIndex;
@@ -111,7 +125,24 @@ public abstract class AccountRoot extends CoreObject {
         QueryHelper.updateAccount(contentResolver, this);
     }
 
+    /**
+     * Update online status.
+     * @param statusIndex
+     */
     public abstract void updateStatus(int statusIndex);
+
+    /**
+     * This will connect account with actual status.
+     */
+    public void actualizeStatus() {
+        // Checking for connection purpose.
+        if(statusIndex != StatusUtil.STATUS_OFFLINE) {
+            // Update account state in database.
+            updateAccountState(statusIndex, true);
+            // Yeah, connect!
+            connect();
+        }
+    }
 
     public abstract String getAccountType();
 

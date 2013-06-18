@@ -4,6 +4,7 @@ import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.Settings;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -175,6 +176,6 @@ public class IcqSession {
     }
 
     public void startEventsFetching() {
-        //To change body of created methods use File | Settings | File Templates.
+
     }
 }

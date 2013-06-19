@@ -25,6 +25,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,34 +47,34 @@ public class IcqSession {
     public boolean clientLogin() {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("https://api.login.icq.net/auth/clientLogin");
+        HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
         try {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("clientName", "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair("clientVersion", "3.2"));
-            nameValuePairs.add(new BasicNameValuePair("devId", "ao1mAegmj4_7xQOy"));
-            nameValuePairs.add(new BasicNameValuePair("f", "json"));
-            nameValuePairs.add(new BasicNameValuePair("idType", "ICQ"));
-            nameValuePairs.add(new BasicNameValuePair("pwd", "testacc1"));
-            nameValuePairs.add(new BasicNameValuePair("s", "617401476"));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "3.2"));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID, "ao1mAegmj4_7xQOy"));
+            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
+            nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
+            nameValuePairs.add(new BasicNameValuePair(PASSWORD, "testacc1"));
+            nameValuePairs.add(new BasicNameValuePair(LOGIN, "617401476"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost);
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "client login = " + responseString);
             JSONObject jsonObject = new JSONObject(responseString);
-            JSONObject responseObject = jsonObject.getJSONObject("response");
-            int statusCode = responseObject.getInt("statusCode");
+            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+            int statusCode = responseObject.getInt(STATUS_CODE);
             if (statusCode == 200) {
-                JSONObject dataObject = responseObject.getJSONObject("data");
-                String login = dataObject.getString("loginId");
-                long hostTime = dataObject.getLong("hostTime");
-                String sessionSecret = dataObject.getString("sessionSecret");
-                JSONObject tokenObject = dataObject.getJSONObject("token");
-                int expiresIn = tokenObject.getInt("expiresIn");
-                String tokenA = tokenObject.getString("a");
-                Log.d(Settings.LOG_TAG, "tokenA = " + tokenA);
+                JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                String login = dataObject.getString(LOGIN_ID);
+                long hostTime = dataObject.getLong(HOST_TIME);
+                String sessionSecret = dataObject.getString(SESSION_SECRET);
+                JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
+                int expiresIn = tokenObject.getInt(EXPIRES_IN);
+                String tokenA = tokenObject.getString(TOKEN_A);
+                Log.d(Settings.LOG_TAG, "token a = " + tokenA);
                 Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
                 String sessionKey = getHmacSha256Base64(sessionSecret, "testacc1");
                 Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
@@ -91,32 +92,32 @@ public class IcqSession {
     public boolean startSession() {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://api.icq.net/aim/startSession");
+        HttpPost httpPost = new HttpPost(START_SESSION_URL);
         try {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("a", icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new BasicNameValuePair("assertCaps", "094613504C7F11D18222444553540000"));
-            nameValuePairs.add(new BasicNameValuePair("buildNumber", "1234"));
-            nameValuePairs.add(new BasicNameValuePair("clientName", "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair("clientVersion", "v0.01"));
-            nameValuePairs.add(new BasicNameValuePair("deviceId", "deviceid"));
-            nameValuePairs.add(new BasicNameValuePair("events", "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered"));
-            nameValuePairs.add(new BasicNameValuePair("f", "json"));
-            nameValuePairs.add(new BasicNameValuePair("imf", "plain"));
-            nameValuePairs.add(new BasicNameValuePair("includePresenceFields", "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType"));
-            nameValuePairs.add(new BasicNameValuePair("invisible", "false"));
-            nameValuePairs.add(new BasicNameValuePair("k", "ao1mAegmj4_7xQOy"));
-            nameValuePairs.add(new BasicNameValuePair("language", "ru-ru"));
-            nameValuePairs.add(new BasicNameValuePair("minimizeResponse", "0"));
-            nameValuePairs.add(new BasicNameValuePair("mobile", "1"));
-            nameValuePairs.add(new BasicNameValuePair("pollTimeout", "30000"));
-            nameValuePairs.add(new BasicNameValuePair("rawMsg", "0"));
-            nameValuePairs.add(new BasicNameValuePair("sessionTimeout", "1209600"));
-            nameValuePairs.add(new BasicNameValuePair("ts", String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair("view", "mobile"));
-            String hash = "POST&" + URLEncoder.encode("http://api.icq.net/aim/startSession", "UTF-8")
-                    + "&" + URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8");
+            nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
+            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, "094613504C7F11D18222444553540000"));
+            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, "1234"));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "v0.01"));
+            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, "deviceid"));
+            nameValuePairs.add(new BasicNameValuePair(EVENTS, "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered"));
+            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
+            nameValuePairs.add(new BasicNameValuePair(IMF, "plain"));
+            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType"));
+            nameValuePairs.add(new BasicNameValuePair(INVISIBLE, "false"));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, "ao1mAegmj4_7xQOy"));
+            nameValuePairs.add(new BasicNameValuePair(LANGUAGE, "ru-ru"));
+            nameValuePairs.add(new BasicNameValuePair(MINIMIZE_RESPONSE, "0"));
+            nameValuePairs.add(new BasicNameValuePair(MOBILE, "1"));
+            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, "30000"));
+            nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
+            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, "1209600"));
+            nameValuePairs.add(new BasicNameValuePair(TIMESTAMP, String.valueOf(icqAccountRoot.getHostTime())));
+            nameValuePairs.add(new BasicNameValuePair(VIEW, "mobile"));
+            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
+                    .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
                     getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -126,17 +127,17 @@ public class IcqSession {
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "start session = " + responseString);
             JSONObject jsonObject = new JSONObject(responseString);
-            JSONObject responseObject = jsonObject.getJSONObject("response");
-            int statusCode = responseObject.getInt("statusCode");
+            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+            int statusCode = responseObject.getInt(STATUS_CODE);
             if (statusCode == 200) {
-                JSONObject dataObject = responseObject.getJSONObject("data");
-                String aimSid = dataObject.getString("aimsid");
-                String fetchBaseUrl = dataObject.getString("fetchBaseURL");
+                JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                String aimSid = dataObject.getString(AIM_SID);
+                String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
 
-                MyInfo myInfo = gson.fromJson(dataObject.getJSONObject("myInfo").toString(),
+                MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
                         MyInfo.class);
                 WellKnownUrls wellKnownUrls = gson.fromJson(
-                        dataObject.getJSONObject("wellKnownUrls").toString(), WellKnownUrls.class);
+                        dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
 
                 // Update starts session result in database.
                 icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
@@ -151,12 +152,12 @@ public class IcqSession {
     public void endSession(String aimSid) {
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://api.icq.net/aim/endSession");
+        HttpPost httpPost = new HttpPost(END_SESSION_URL);
         try {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("aimsid", aimSid));
-            nameValuePairs.add(new BasicNameValuePair("f", "json"));
+            nameValuePairs.add(new BasicNameValuePair(AIM_SID, aimSid));
+            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost);
@@ -189,24 +190,24 @@ public class IcqSession {
                 String responseString = EntityUtils.toString(response.getEntity());
                 Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
                 JSONObject jsonObject = new JSONObject(responseString);
-                JSONObject responseObject = jsonObject.getJSONObject("response");
-                int statusCode = responseObject.getInt("statusCode");
+                JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+                int statusCode = responseObject.getInt(STATUS_CODE);
                 if (statusCode == 200) {
-                    JSONObject dataObject = responseObject.getJSONObject("data");
-                    long hostTime = dataObject.getLong("ts");
-                    String fetchBaseUrl = dataObject.getString("fetchBaseURL");
+                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                    long hostTime = dataObject.getLong(TIMESTAMP);
+                    String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                     // Update time and fetch base url.
                     icqAccountRoot.setHostTime(hostTime);
                     icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
                     // Store account state.
                     icqAccountRoot.updateAccount();
                     // Process events.
-                    JSONArray eventsArray = dataObject.getJSONArray("events");
+                    JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
                     // Cycling all events.
                     for (int c = 0; c < eventsArray.length(); c++) {
                         JSONObject eventObject = eventsArray.getJSONObject(c);
-                        String eventType = eventObject.getString("type");
-                        JSONObject eventData = eventObject.getJSONObject("eventData");
+                        String eventType = eventObject.getString(TYPE);
+                        JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
                         // Process event.
                         processEvent(eventType, eventData);
                     }
@@ -218,7 +219,13 @@ public class IcqSession {
     }
 
     public String getFetchUrl() {
-        return icqAccountRoot.getFetchBaseUrl() + "&f=json&timeout=60000&r=" + System.currentTimeMillis() + "&peek=0";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(icqAccountRoot.getFetchBaseUrl());
+        stringBuilder.append(AMP).append(FORMAT).append(EQUAL).append("json");
+        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(60000);
+        stringBuilder.append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis());
+        stringBuilder.append(AMP).append(PEEK).append(EQUAL).append(0);
+        return stringBuilder.toString();
     }
 
     private void processEvent(String eventType, JSONObject eventData) {

@@ -1,9 +1,15 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.ContentValues;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.StatusUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.crypto.Mac;
@@ -56,8 +63,8 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(DEV_ID, "ao1mAegmj4_7xQOy"));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
-            nameValuePairs.add(new BasicNameValuePair(PASSWORD, "testacc1"));
-            nameValuePairs.add(new BasicNameValuePair(LOGIN, "617401476"));
+            nameValuePairs.add(new BasicNameValuePair(PASSWORD, icqAccountRoot.getUserPassword()));
+            nameValuePairs.add(new BasicNameValuePair(LOGIN, icqAccountRoot.getUserId()));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost);
@@ -76,7 +83,7 @@ public class IcqSession {
                 String tokenA = tokenObject.getString(TOKEN_A);
                 Log.d(Settings.LOG_TAG, "token a = " + tokenA);
                 Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
-                String sessionKey = getHmacSha256Base64(sessionSecret, "testacc1");
+                String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
                 Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
                 // Update client login result in database.
                 icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
@@ -230,5 +237,105 @@ public class IcqSession {
 
     private void processEvent(String eventType, JSONObject eventData) {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
+        if(eventType.equals("buddylist")) {
+            try {
+                ContentValues cv1 = new ContentValues();
+                ContentValues cv2 = new ContentValues();
+                int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
+                        icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
+                JSONArray groupsArray = eventData.getJSONArray("groups");
+                for(int c=0;c<groupsArray.length();c++){
+                    JSONObject groupObject = groupsArray.getJSONObject(c);
+                    String groupName = groupObject.getString("name");
+                    int groupId = groupObject.getInt("id");
+                    JSONArray buddiesArray = groupObject.getJSONArray("buddies");
+
+                    cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
+                    cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+                    icqAccountRoot.getContentResolver().insert(Settings.GROUP_RESOLVER_URI, cv1);
+
+                    for(int i=0;i<buddiesArray.length();i++){
+                        JSONObject buddyObject = buddiesArray.getJSONObject(i);
+                        String buddyId = buddyObject.getString("aimId");
+                        String buddyNick = buddyObject.optString("friendly");
+                        if(TextUtils.isEmpty(buddyNick)) {
+                            buddyNick = buddyObject.getString("displayId");
+                        }
+                        String buddyStatus = buddyObject.getString("state");
+                        String buddyType = buddyObject.getString("userType");
+                        String buddyIcon = buddyObject.optString("buddyIcon");
+
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, icqAccountRoot.getAccountType());
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
+                        icqAccountRoot.getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv2);
+                        // QueryHelper.createBuddy(accountDbId, icqAccountRoot.getAccountType(), buddyId, buddyNick,
+                        //         groupName, IcqStatusUtil.getStatusIndex(buddyStatus), false);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (AccountNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else if(eventType.equals("im")) {
+            /*
+            {
+               "message":"Сообщение.",
+               "msgId":"9dbaf0b8-d91d-11e2-91bc-fb8103ed41ed",
+               "timestamp":1371673199,
+               "imf":"plain",
+               "source":{
+                  "state":"online",
+                  "friendly":"Solkin",
+                  "displayId":"7068514",
+                  "aimId":"7068514",
+                  "userType":"icq"
+               },
+               "autoresponse":0
+            }
+            */
+            try {
+                int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
+                        icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
+
+                String message = eventData.getString("message");
+                String msgId = eventData.getString("msgId");
+                long timeStamp = eventData.getLong("timestamp");
+                String imf = eventData.getString("imf");
+                JSONObject sourceObject = eventData.getJSONObject("source");
+                String aimId = sourceObject.getString("aimId");
+                String buddyNick = sourceObject.optString("friendly");
+                if(TextUtils.isEmpty(buddyNick)) {
+                    buddyNick = sourceObject.getString("displayId");
+                }
+                String state = sourceObject.getString("state");
+                String userType = sourceObject.getString("userType");
+
+                // TODO: if there are some identical contacts in sone groups?
+                int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
+                        accountDbId, aimId);
+
+                ContentValues cv3 = new ContentValues();
+                cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(buddyDbId));
+                cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "2");
+                cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, msgId);
+                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
+                cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, timeStamp*1000);
+                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
+                icqAccountRoot.getContentResolver().insert(Settings.HISTORY_RESOLVER_URI, cv3);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (AccountNotFoundException e) {
+                e.printStackTrace();
+            } catch (BuddyNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

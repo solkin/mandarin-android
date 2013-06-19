@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 import java.util.List;
@@ -55,6 +57,19 @@ public class QueryHelper {
                     cursor.getString(bundleColumnIndex));
         }
         return null;
+    }
+
+    public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
+            throws AccountNotFoundException {
+        // Obtain account db id.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ACCOUNT_TYPE + "='" + accountType + "'" + " AND "
+                        + GlobalProvider.ACCOUNT_USER_ID + "='" + userId + "'", null, null);
+        // Cursor may have no more than only one entry. But lets check.
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        }
+        throw new AccountNotFoundException();
     }
 
     private static AccountRoot createAccountRoot(ContentResolver contentResolver, String className,
@@ -205,5 +220,18 @@ public class QueryHelper {
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
         contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
+    }
+
+    public static int getBuddyDbId(ContentResolver contentResolver, int accountDbId, String userId)
+            throws BuddyNotFoundException {
+        // Obtain account db id.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID + "='" + accountDbId + "'" + " AND "
+                        + GlobalProvider.ROSTER_BUDDY_ID + "='" + userId + "'", null, null);
+        // Cursor may have no more than only one entry. But lets check.
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        }
+        throw new BuddyNotFoundException();
     }
 }

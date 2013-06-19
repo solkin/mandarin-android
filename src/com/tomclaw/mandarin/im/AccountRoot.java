@@ -37,6 +37,10 @@ public abstract class AccountRoot extends CoreObject {
         this.contentResolver = contentResolver;
     }
 
+    public ContentResolver getContentResolver() {
+        return contentResolver;
+    }
+
     public String getUserId() {
         return userId;
     }

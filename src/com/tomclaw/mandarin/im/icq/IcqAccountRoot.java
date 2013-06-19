@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.ContentResolver;
 import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
@@ -161,5 +162,4 @@ public class IcqAccountRoot extends AccountRoot {
     public WellKnownUrls getWellKnownUrls() {
         return wellKnownUrls;
     }
-
 }

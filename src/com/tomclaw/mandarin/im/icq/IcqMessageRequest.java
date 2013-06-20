@@ -47,7 +47,6 @@ public class IcqMessageRequest extends Request {
     @Override
     public int onRequest(AccountRoot accountRoot) {
         // Create a new HttpClient and Post Header
-        HttpClient httpClient = new DefaultHttpClient();
         try {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -66,11 +65,12 @@ public class IcqMessageRequest extends Request {
             Log.d(Settings.LOG_TAG, url);
             // Execute HTTP Post Request
             HttpGet httpPost = new HttpGet(url);
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = ((IcqAccountRoot)accountRoot).getSession().getHttpClient().execute(httpPost);
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "send im = " + responseString);
         } catch (Throwable e) {
             e.printStackTrace();
+            return REQUEST_PENDING;
         }
         return REQUEST_DELETE;
     }

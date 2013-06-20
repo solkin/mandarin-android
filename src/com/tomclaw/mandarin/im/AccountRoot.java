@@ -32,6 +32,7 @@ public abstract class AccountRoot extends CoreObject {
      * Staff
      */
     protected transient ContentResolver contentResolver;
+    protected transient int accountDbId;
 
     public void setContentResolver(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
@@ -39,6 +40,14 @@ public abstract class AccountRoot extends CoreObject {
 
     public ContentResolver getContentResolver() {
         return contentResolver;
+    }
+
+    public void setAccountDbId(int accountDbId) {
+        this.accountDbId = accountDbId;
+    }
+
+    public int getAccountDbId() {
+        return accountDbId;
     }
 
     public String getUserId() {

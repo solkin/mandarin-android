@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 import java.util.ArrayList;
@@ -68,5 +69,15 @@ public class SessionHolder {
 
     public List<AccountRoot> getAccountsList() {
         return accountRootList;
+    }
+
+    public AccountRoot getAccount(int accountDbId) throws AccountNotFoundException {
+        for (AccountRoot accountRoot : accountRootList) {
+            // Checking for account db id equals.
+            if (accountRoot.getAccountDbId() == accountDbId) {
+                return accountRoot;
+            }
+        }
+        throw new AccountNotFoundException();
     }
 }

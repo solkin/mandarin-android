@@ -105,7 +105,7 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
-        requestDispatcher = new RequestDispatcher(this);
+        requestDispatcher = new RequestDispatcher(this, sessionHolder);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
         showNotification();

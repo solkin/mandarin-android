@@ -35,16 +35,17 @@ public class QueryHelper {
             // Obtain necessary column index.
             int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
             int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+            int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Iterate all accounts.
             do {
                 accountRootList.add(createAccountRoot(contentResolver, cursor.getString(typeColumnIndex),
-                        cursor.getString(bundleColumnIndex)));
+                        cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex)));
             } while (cursor.moveToNext()); // Trying to move to position.
         }
         return accountRootList;
     }
 
-    public static AccountRoot getAccount(ContentResolver contentResolver, int accountDbId) {
+    /*public static AccountRoot getAccount(ContentResolver contentResolver, int accountDbId) {
         // Obtain specified account. If exist.
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
@@ -57,7 +58,7 @@ public class QueryHelper {
                     cursor.getString(bundleColumnIndex));
         }
         return null;
-    }
+    }*/
 
     public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
             throws AccountNotFoundException {
@@ -73,12 +74,13 @@ public class QueryHelper {
     }
 
     private static AccountRoot createAccountRoot(ContentResolver contentResolver, String className,
-                                                 String accountRootJson) {
+                                                 String accountRootJson, int accountDbId) {
         try {
             // Creating account root from bundle.
             AccountRoot accountRoot = (AccountRoot) gson.fromJson(accountRootJson,
                     Class.forName(className));
             accountRoot.setContentResolver(contentResolver);
+            accountRoot.setAccountDbId(accountDbId);
             accountRoot.actualizeStatus();
             return accountRoot;
         } catch (ClassNotFoundException e) {
@@ -117,6 +119,15 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
+        // Setting up account db id.
+        try {
+            accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
+                    accountRoot.getUserId()));
+            accountRoot.setContentResolver(contentResolver);
+        } catch (AccountNotFoundException e) {
+            // Hey, I'm inserted it 3 lines ago!
+            Log.d(Settings.LOG_TAG, "updateAccount method: no accounts after inserting.");
+        }
         return true;
     }
 

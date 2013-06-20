@@ -7,10 +7,9 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +22,7 @@ public class RequestDispatcher {
     /**
      * Variables
      */
+    private final SessionHolder sessionHolder;
     private final ContentObserver requestObserver;
     private final ContentObserver accountObserver;
     private final ContentResolver contentResolver;
@@ -30,7 +30,9 @@ public class RequestDispatcher {
     private final Object sync;
     private Gson gson;
 
-    public RequestDispatcher(Context context) {
+    public RequestDispatcher(Context context, SessionHolder sessionHolder) {
+        // Session holder.
+        this.sessionHolder = sessionHolder;
         // Creating observers.
         requestObserver = new RequestObserver();
         accountObserver = new AccountObserver();
@@ -60,6 +62,7 @@ public class RequestDispatcher {
                     // Checking for at least one request in database.
                     if (cursor.moveToFirst()) {
                         do {
+                            Log.d(Settings.LOG_TAG, "Request...");
                             // Obtain necessary column index.
                             int rowColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
                             int classColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
@@ -93,6 +96,7 @@ public class RequestDispatcher {
                                 Log.d(Settings.LOG_TAG, "Normal request and will be processed now.");
                             } else {
                                 boolean isDecline = false;
+                                boolean isBreak = false;
                                 // Checking for query is persistent.
                                 if (isPersistent) {
                                     switch (requestState) {
@@ -106,6 +110,7 @@ public class RequestDispatcher {
                                             contentValues.put(GlobalProvider.REQUEST_SESSION, CoreService.getAppSession());
                                             contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                                            isBreak = true;
                                             break;
                                         }
                                         case Request.REQUEST_SENT: {
@@ -122,35 +127,50 @@ public class RequestDispatcher {
                                     isDecline = true;
                                     Log.d(Settings.LOG_TAG, "Another session and not persistent request.");
                                 }
+                                // Checking for content was changed.
+                                if(isBreak) {
+                                    // We'll receive change event from observer soon.
+                                    break;
+                                }
                                 // Checking for request is obsolete and must be declined.
                                 if (isDecline) {
                                     contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                             GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                                    continue;
+                                    break;
                                 }
                             }
 
-                            Log.d(Settings.LOG_TAG, "Request received: "
-                                    + "class = " + cursor.getString(classColumnIndex) + "; "
-                                    + "session = " + cursor.getString(sessionColumnIndex) + "; "
-                                    + "persistent = " + cursor.getInt(persistentColumnIndex) + "; "
-                                    + "account = " + cursor.getInt(accountColumnIndex) + "; "
-                                    + "state = " + cursor.getInt(stateColumnIndex) + "; "
-                                    + "bundle = " + cursor.getString(bundleColumnIndex) + "");
-
-                            // Obtain account root and request class (type).
-                            AccountRoot accountRoot = QueryHelper.getAccount(contentResolver, cursor.getInt(accountColumnIndex));
                             String requestClass = cursor.getString(classColumnIndex);
+                            int requestAccountDbId =  cursor.getInt(accountColumnIndex);
+                            String requestBundle =  cursor.getString(bundleColumnIndex);
 
-                            int requestResult;
+                            Log.d(Settings.LOG_TAG, "Request received: "
+                                    + "class = " + requestClass + "; "
+                                    + "session = " + requestAppSession + "; "
+                                    + "persistent = " + isPersistent + "; "
+                                    + "account = " + requestAccountDbId + "; "
+                                    + "state = " + requestState + "; "
+                                    + "bundle = " + requestBundle + "");
+
+                            cursor.close();
+
+                            int requestResult = Request.REQUEST_DELETE;
                             try {
+                                // Obtain account root and request class (type).
+                                AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
+                                // Checking for account online.
+                                if(accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                                    // Account is offline now. Let's send this request later.
+                                    continue;
+                                }
                                 // Preparing request.
-                                Request request = (Request)gson.fromJson(cursor.getString(bundleColumnIndex),
-                                        Class.forName(requestClass));
+                                Request request = (Request) gson.fromJson(requestBundle, Class.forName(requestClass));
                                 requestResult = request.onRequest(accountRoot);
+                            } catch (AccountNotFoundException e) {
+                                Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
+                                    "Cancelling.");
                             } catch (Throwable e) {
                                 Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass);
-                                requestResult = Request.REQUEST_DELETE;
                                 e.printStackTrace();
                             }
                             // Checking for request result.
@@ -159,6 +179,9 @@ public class RequestDispatcher {
                                 Log.d(Settings.LOG_TAG, "Result is delete-type");
                                 contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                         GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            } else if(requestResult == Request.REQUEST_PENDING) {
+                                // Request wasn't completed. We'll retry request a little bit later.
+                                continue;
                             } else {
                                 // Updating this request.
                                 Log.d(Settings.LOG_TAG, "Updating this request");
@@ -167,6 +190,8 @@ public class RequestDispatcher {
                                 contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                         GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                             }
+                            // Breaking. We'll receive change event from observer.
+                            break;
                         } while (cursor.moveToNext());
                     }
                     try {

@@ -188,11 +188,12 @@ public class IcqSession {
     public void startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
         // Create a new HttpClient and Post Header
+        HttpClient fetchClient = new DefaultHttpClient();
         do {
             HttpGet httpPost = new HttpGet(getFetchUrl());
             try {
                 // Execute HTTP Post Request
-                HttpResponse response = httpClient.execute(httpPost);
+                HttpResponse response = fetchClient.execute(httpPost);
                 String responseString = EntityUtils.toString(response.getEntity());
                 Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
                 JSONObject jsonObject = new JSONObject(responseString);
@@ -210,7 +211,9 @@ public class IcqSession {
                     // Process events.
                     JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
                     // Cycling all events.
+                    Log.d(Settings.LOG_TAG, "Cycling all events.");
                     for (int c = 0; c < eventsArray.length(); c++) {
+                        Log.d(Settings.LOG_TAG, "event #" + c);
                         JSONObject eventObject = eventsArray.getJSONObject(c);
                         String eventType = eventObject.getString(TYPE);
                         JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);

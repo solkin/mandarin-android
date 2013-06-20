@@ -13,6 +13,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
 import com.viewpageindicator.PageIndicator;
@@ -91,9 +92,17 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    QueryHelper.insertMessage(getContentResolver(), getServiceInteraction().getAppSession(),
-                            getCurrentPageAccountDbId(), getCurrentPageBuddyDbId(), 1, // TODO: real message type
-                            String.valueOf(System.currentTimeMillis()), messageText.getText().toString());
+                    String cookie = String.valueOf(System.currentTimeMillis());
+                    String appSession = getServiceInteraction().getAppSession();
+                    int accountDbId = getCurrentPageAccountDbId();
+                    int buddyDbId = getCurrentPageBuddyDbId();
+                    String message = messageText.getText().toString();
+                    QueryHelper.insertMessage(getContentResolver(), appSession,
+                            accountDbId, buddyDbId, 2, // TODO: real message type
+                            cookie, message, false);
+                    // Sending protocol message request.
+                    RequestHelper.requestMessage(getContentResolver(), appSession,
+                            accountDbId, buddyDbId, cookie, message);
                 } catch (Exception e) {
                     // Couldn't put message into database. This exception must be processed.
                 }

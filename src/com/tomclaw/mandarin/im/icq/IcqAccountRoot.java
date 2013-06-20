@@ -33,6 +33,10 @@ public class IcqAccountRoot extends AccountRoot {
         icqSession = new IcqSession(this);
     }
 
+    public IcqSession getSession() {
+        return icqSession;
+    }
+
     @Override
     public void connect() {
         Log.d(Settings.LOG_TAG, "icq connection attempt");

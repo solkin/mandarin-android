@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
+import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -27,6 +28,7 @@ public class RequestDispatcher {
     private final ContentResolver contentResolver;
     private Thread dispatcherThread;
     private final Object sync;
+    private Gson gson;
 
     public RequestDispatcher(Context context) {
         // Creating observers.
@@ -36,6 +38,7 @@ public class RequestDispatcher {
         contentResolver = context.getContentResolver();
         // Initializing thread.
         sync = new Object();
+        gson = new Gson();
         dispatcherThread = new DispatcherThread();
         // Registering created observers.
         contentResolver.registerContentObserver(
@@ -142,11 +145,13 @@ public class RequestDispatcher {
                             int requestResult;
                             try {
                                 // Preparing request.
-                                Request request = (Request) Class.forName(requestClass).newInstance();
+                                Request request = (Request)gson.fromJson(cursor.getString(bundleColumnIndex),
+                                        Class.forName(requestClass));
                                 requestResult = request.onRequest(accountRoot);
                             } catch (Throwable e) {
                                 Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass);
                                 requestResult = Request.REQUEST_DELETE;
+                                e.printStackTrace();
                             }
                             // Checking for request result.
                             if (requestResult == Request.REQUEST_DELETE) {

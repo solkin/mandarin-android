@@ -45,16 +45,17 @@ public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
+    private HttpClient httpClient;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
         this.gson = new Gson();
+        this.httpClient = new DefaultHttpClient();
     }
 
     // TODO: more informative answer.
     public boolean clientLogin() {
         // Create a new HttpClient and Post Header
-        HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
         try {
             // Add your data
@@ -99,7 +100,6 @@ public class IcqSession {
     // TODO: more informative answer.
     public boolean startSession() {
         // Create a new HttpClient and Post Header
-        HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(START_SESSION_URL);
         try {
             // Add your data
@@ -159,7 +159,6 @@ public class IcqSession {
 
     public void endSession(String aimSid) {
         // Create a new HttpClient and Post Header
-        HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(END_SESSION_URL);
         try {
             // Add your data
@@ -189,7 +188,6 @@ public class IcqSession {
     public void startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
         // Create a new HttpClient and Post Header
-        HttpClient httpClient = new DefaultHttpClient();
         do {
             HttpGet httpPost = new HttpGet(getFetchUrl());
             try {
@@ -284,22 +282,6 @@ public class IcqSession {
                 e.printStackTrace();
             }
         } else if(eventType.equals("im")) {
-            /*
-            {
-               "message":"Сообщение.",
-               "msgId":"9dbaf0b8-d91d-11e2-91bc-fb8103ed41ed",
-               "timestamp":1371673199,
-               "imf":"plain",
-               "source":{
-                  "state":"online",
-                  "friendly":"Solkin",
-                  "displayId":"7068514",
-                  "aimId":"7068514",
-                  "userType":"icq"
-               },
-               "autoresponse":0
-            }
-            */
             try {
                 int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
                         icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
@@ -319,7 +301,7 @@ public class IcqSession {
                 String buddyType = sourceObject.getString("userType");
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
-                        accountDbId, buddyId, 1, cookie, messageTime * 1000, messageText);
+                        accountDbId, buddyId, 1, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (AccountNotFoundException e) {
@@ -328,5 +310,9 @@ public class IcqSession {
                 e.printStackTrace();
             }
         }
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 }

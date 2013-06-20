@@ -9,7 +9,6 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.StatusUtil;
 import org.apache.http.HttpResponse;
@@ -33,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 
 /**
@@ -239,35 +239,33 @@ public class IcqSession {
 
     private void processEvent(String eventType, JSONObject eventData) {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
-        if(eventType.equals("buddylist")) {
+        if (eventType.equals("buddylist")) {
             try {
                 ContentValues cv1 = new ContentValues();
                 ContentValues cv2 = new ContentValues();
-                int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
-                        icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
                 JSONArray groupsArray = eventData.getJSONArray("groups");
-                for(int c=0;c<groupsArray.length();c++){
+                for (int c = 0; c < groupsArray.length(); c++) {
                     JSONObject groupObject = groupsArray.getJSONObject(c);
                     String groupName = groupObject.getString("name");
                     int groupId = groupObject.getInt("id");
                     JSONArray buddiesArray = groupObject.getJSONArray("buddies");
 
-                    cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
+                    cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
                     icqAccountRoot.getContentResolver().insert(Settings.GROUP_RESOLVER_URI, cv1);
 
-                    for(int i=0;i<buddiesArray.length();i++){
+                    for (int i = 0; i < buddiesArray.length(); i++) {
                         JSONObject buddyObject = buddiesArray.getJSONObject(i);
                         String buddyId = buddyObject.getString("aimId");
                         String buddyNick = buddyObject.optString("friendly");
-                        if(TextUtils.isEmpty(buddyNick)) {
+                        if (TextUtils.isEmpty(buddyNick)) {
                             buddyNick = buddyObject.getString("displayId");
                         }
                         String buddyStatus = buddyObject.getString("state");
                         String buddyType = buddyObject.getString("userType");
                         String buddyIcon = buddyObject.optString("buddyIcon");
 
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, icqAccountRoot.getAccountType());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
@@ -281,33 +279,47 @@ public class IcqSession {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (AccountNotFoundException e) {
-                e.printStackTrace();
             }
-        } else if(eventType.equals("im")) {
+        } else if (eventType.equals("im")) {
             try {
-                int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
-                        icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
-
                 String messageText = eventData.getString("message");
-                String cookie = eventData.getString("msgId");
+                String cookie = eventData.optString("msgId");
+                if (TextUtils.isEmpty(cookie)) {
+                    cookie = String.valueOf(System.currentTimeMillis());
+                }
                 long messageTime = eventData.getLong("timestamp");
                 String imf = eventData.getString("imf");
                 String autoResponse = eventData.getString("autoresponse");
                 JSONObject sourceObject = eventData.getJSONObject("source");
                 String buddyId = sourceObject.getString("aimId");
                 String buddyNick = sourceObject.optString("friendly");
-                if(TextUtils.isEmpty(buddyNick)) {
+                if (TextUtils.isEmpty(buddyNick)) {
                     buddyNick = sourceObject.getString("displayId");
                 }
                 String buddyStatus = sourceObject.getString("state");
                 String buddyType = sourceObject.getString("userType");
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
-                        accountDbId, buddyId, 1, cookie, messageTime * 1000, messageText, true);
+                        icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (AccountNotFoundException e) {
+            } catch (BuddyNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else if (eventType.equals("presence")) {
+            try {
+                String buddyId = eventData.getString("aimId");
+                String buddyNick = eventData.optString("friendly");
+                if (TextUtils.isEmpty(buddyNick)) {
+                    buddyNick = eventData.getString("displayId");
+                }
+                String buddyStatus = eventData.getString("state");
+                String buddyStatusMessage = eventData.optString("statusMsg");
+                String buddyType = eventData.getString("userType");
+
+                QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                        buddyId, IcqStatusUtil.getStatusIndex(buddyStatus));
+            } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {
                 e.printStackTrace();

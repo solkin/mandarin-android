@@ -103,6 +103,8 @@ public class ChatActivity extends ChiefActivity {
                     // Sending protocol message request.
                     RequestHelper.requestMessage(getContentResolver(), appSession,
                             accountDbId, buddyDbId, cookie, message);
+                    // Clearing text view.
+                    messageText.setText("");
                 } catch (Exception e) {
                     // Couldn't put message into database. This exception must be processed.
                 }

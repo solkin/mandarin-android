@@ -276,4 +276,26 @@ public class QueryHelper {
         contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
     }
+
+    public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                         int buddyStatusIndex) throws BuddyNotFoundException {
+        // Obtain account db id.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID + "='" + accountDbId + "'" + " AND "
+                        + GlobalProvider.ROSTER_BUDDY_ID + "='" + buddyId + "'", null, null);
+        // Cursor may have more than only one entry.
+        if (cursor.moveToFirst()) {
+            final int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            // Cycling all the identical buddies in different groups.
+            do {
+                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                // Plain buddy modify.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
+                modifyBuddy(contentResolver, buddyDbId, contentValues);
+            } while(cursor.moveToNext());
+        } else {
+            throw new BuddyNotFoundException();
+        }
+    }
 }

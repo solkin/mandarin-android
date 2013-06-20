@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -303,32 +304,22 @@ public class IcqSession {
                 int accountDbId = QueryHelper.getAccountDbId(icqAccountRoot.getContentResolver(),
                         icqAccountRoot.getAccountType(), icqAccountRoot.getUserId());
 
-                String message = eventData.getString("message");
-                String msgId = eventData.getString("msgId");
-                long timeStamp = eventData.getLong("timestamp");
+                String messageText = eventData.getString("message");
+                String cookie = eventData.getString("msgId");
+                long messageTime = eventData.getLong("timestamp");
                 String imf = eventData.getString("imf");
+                String autoResponse = eventData.getString("autoresponse");
                 JSONObject sourceObject = eventData.getJSONObject("source");
-                String aimId = sourceObject.getString("aimId");
+                String buddyId = sourceObject.getString("aimId");
                 String buddyNick = sourceObject.optString("friendly");
                 if(TextUtils.isEmpty(buddyNick)) {
                     buddyNick = sourceObject.getString("displayId");
                 }
-                String state = sourceObject.getString("state");
-                String userType = sourceObject.getString("userType");
+                String buddyStatus = sourceObject.getString("state");
+                String buddyType = sourceObject.getString("userType");
 
-                // TODO: if there are some identical contacts in sone groups?
-                int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
-                        accountDbId, aimId);
-
-                ContentValues cv3 = new ContentValues();
-                cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(buddyDbId));
-                cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, "2");
-                cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, msgId);
-                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
-                cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, timeStamp*1000);
-                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
-                icqAccountRoot.getContentResolver().insert(Settings.HISTORY_RESOLVER_URI, cv3);
+                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
+                        accountDbId, buddyId, 1, cookie, messageTime * 1000, messageText);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (AccountNotFoundException e) {

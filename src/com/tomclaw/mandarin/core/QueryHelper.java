@@ -175,6 +175,16 @@ public class QueryHelper {
 
     public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
                                      int buddyDbId, int messageType, String cookie, String messageText) {
+        insertMessage(contentResolver, appSession, accountDbId, buddyDbId, messageType, cookie, 0, messageText);
+    }
+
+    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
+                                     int buddyDbId, int messageType, String cookie, long messageTime,
+                                     String messageText) {
+        // Checking for time specified.
+        if(messageTime == 0) {
+            messageTime = System.currentTimeMillis();
+        }
         // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null, null);
@@ -184,7 +194,7 @@ public class QueryHelper {
             if (cursor.moveToLast()
                     && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
                     && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
-                    (System.currentTimeMillis() - Settings.MESSAGES_COLLAPSE_DELAY)) {
+                    (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)) {
                 // We have cookies!
                 long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
@@ -210,28 +220,39 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 1);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         // Sending protocol message request.
         RequestHelper.requestMessage(contentResolver, appSession, accountDbId, buddyDbId, cookie, messageText);
     }
 
-    private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
-        contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
-    }
-
-    public static int getBuddyDbId(ContentResolver contentResolver, int accountDbId, String userId)
+    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
+                                    String userId, int messageType, String cookie, long messageTime, String messageText)
             throws BuddyNotFoundException {
+        Log.d(Settings.LOG_TAG, "insertMessage");
         // Obtain account db id.
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID + "='" + accountDbId + "'" + " AND "
                         + GlobalProvider.ROSTER_BUDDY_ID + "='" + userId + "'", null, null);
-        // Cursor may have no more than only one entry. But lets check.
+        // Cursor may have more than only one entry.
+        // TODO: check for at least one buddy present.
         if (cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            // Cycling all the identical buddies in different groups.
+            do {
+                // Plain message query.
+                Log.d(Settings.LOG_TAG, "Plain message query.");
+                insertMessage(contentResolver, appSession, accountDbId,
+                        cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)),
+                        messageType, cookie, messageTime, messageText);
+            } while(cursor.moveToNext());
+        } else {
+            throw new BuddyNotFoundException();
         }
-        throw new BuddyNotFoundException();
+    }
+
+    private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
+        contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);
     }
 }

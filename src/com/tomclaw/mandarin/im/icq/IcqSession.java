@@ -53,12 +53,12 @@ public class IcqSession {
         this.httpClient = new DefaultHttpClient();
     }
 
-    // TODO: more informative answer.
+    // TODO: more informative return.
     public boolean clientLogin() {
         try {
-            // Create a new post header
+            // Create a new post header.
             HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
-            // Add your data
+            // Specifying login data.
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
             nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "3.2"));
@@ -68,7 +68,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(PASSWORD, icqAccountRoot.getUserPassword()));
             nameValuePairs.add(new BasicNameValuePair(LOGIN, icqAccountRoot.getUserId()));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            // Execute HTTP Post Request
+            // Execute request.
             HttpResponse response = httpClient.execute(httpPost);
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "client login = " + responseString);
@@ -97,7 +97,7 @@ public class IcqSession {
         return false;
     }
 
-    // TODO: more informative answer.
+    // TODO: more informative return.
     public boolean startSession() {
         // Create a new HttpClient and Post Header
         HttpPost httpPost = new HttpPost(START_SESSION_URL);
@@ -122,7 +122,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, "30000"));
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, "1209600"));
-            nameValuePairs.add(new BasicNameValuePair(TIMESTAMP, String.valueOf(icqAccountRoot.getHostTime())));
+            nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
             nameValuePairs.add(new BasicNameValuePair(VIEW, "mobile"));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
                     .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
@@ -187,7 +187,7 @@ public class IcqSession {
 
     public void startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
-        // Create a new HttpClient and Post Header
+        // Create a new http client for events fetching.
         HttpClient fetchClient = new DefaultHttpClient();
         do {
             try {
@@ -201,7 +201,7 @@ public class IcqSession {
                 int statusCode = responseObject.getInt(STATUS_CODE);
                 if (statusCode == 200) {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                    long hostTime = dataObject.getLong(TIMESTAMP);
+                    long hostTime = dataObject.getLong(TS);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                     // Update time and fetch base url.
                     icqAccountRoot.setHostTime(hostTime);

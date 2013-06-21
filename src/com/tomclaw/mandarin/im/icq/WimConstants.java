@@ -5,7 +5,6 @@ package com.tomclaw.mandarin.im.icq;
  * User: solkin
  * Date: 6/19/13
  * Time: 10:43 AM
- * To change this template use File | Settings | File Templates.
  */
 public class WimConstants {
 
@@ -40,9 +39,9 @@ public class WimConstants {
     public static final String POLL_TIMEOUT = "pollTimeout";
     public static final String RAW_MSG = "rawMsg";
     public static final String SESSION_TIMEOUT = "sessionTimeout";
-    public static final String TIMESTAMP = "ts";
+    public static final String TS = "ts";
     public static final String VIEW = "view";
-    public static final String START_SESSION_URL = "http://api.icq.net//startSession";
+    public static final String START_SESSION_URL = "http://api.icq.net/aim/startSession";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";
     public static final String EQUAL = "=";
@@ -75,4 +74,5 @@ public class WimConstants {
     public static final String SOURCE_OBJECT = "source";
     public static final String PRESENCE = "presence";
     public static final String STATUS_MSG = "statusMsg";
+    public static final String TIMESTAMP = "timestamp";
 }

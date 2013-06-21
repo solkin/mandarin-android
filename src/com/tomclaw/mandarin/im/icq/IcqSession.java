@@ -55,9 +55,9 @@ public class IcqSession {
 
     // TODO: more informative answer.
     public boolean clientLogin() {
-        // Create a new HttpClient and Post Header
-        HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
         try {
+            // Create a new post header
+            HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
@@ -190,8 +190,8 @@ public class IcqSession {
         // Create a new HttpClient and Post Header
         HttpClient fetchClient = new DefaultHttpClient();
         do {
-            HttpGet httpPost = new HttpGet(getFetchUrl());
             try {
+                HttpGet httpPost = new HttpGet(getFetchUrl());
                 // Execute HTTP Post Request
                 HttpResponse response = fetchClient.execute(httpPost);
                 String responseString = EntityUtils.toString(response.getEntity());
@@ -213,7 +213,6 @@ public class IcqSession {
                     // Cycling all events.
                     Log.d(Settings.LOG_TAG, "Cycling all events.");
                     for (int c = 0; c < eventsArray.length(); c++) {
-                        Log.d(Settings.LOG_TAG, "event #" + c);
                         JSONObject eventObject = eventsArray.getJSONObject(c);
                         String eventType = eventObject.getString(TYPE);
                         JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
@@ -239,65 +238,63 @@ public class IcqSession {
 
     private void processEvent(String eventType, JSONObject eventData) {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
-        if (eventType.equals("buddylist")) {
+        if (eventType.equals(BUDDYLIST)) {
             try {
-                ContentValues cv1 = new ContentValues();
-                ContentValues cv2 = new ContentValues();
-                JSONArray groupsArray = eventData.getJSONArray("groups");
+                ContentValues groupValues = new ContentValues();
+                ContentValues buddyValues = new ContentValues();
+                JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
                 for (int c = 0; c < groupsArray.length(); c++) {
                     JSONObject groupObject = groupsArray.getJSONObject(c);
-                    String groupName = groupObject.getString("name");
-                    int groupId = groupObject.getInt("id");
-                    JSONArray buddiesArray = groupObject.getJSONArray("buddies");
+                    String groupName = groupObject.getString(NAME);
+                    int groupId = groupObject.getInt(ID_FIELD);
+                    JSONArray buddiesArray = groupObject.getJSONArray(BUDDIES_ARRAY);
 
-                    cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
-                    cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
-                    icqAccountRoot.getContentResolver().insert(Settings.GROUP_RESOLVER_URI, cv1);
+                    groupValues.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
+                    groupValues.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+                    icqAccountRoot.getContentResolver().insert(Settings.GROUP_RESOLVER_URI, groupValues);
 
                     for (int i = 0; i < buddiesArray.length(); i++) {
                         JSONObject buddyObject = buddiesArray.getJSONObject(i);
-                        String buddyId = buddyObject.getString("aimId");
-                        String buddyNick = buddyObject.optString("friendly");
+                        String buddyId = buddyObject.getString(AIM_ID);
+                        String buddyNick = buddyObject.optString(FRIENDLY);
                         if (TextUtils.isEmpty(buddyNick)) {
-                            buddyNick = buddyObject.getString("displayId");
+                            buddyNick = buddyObject.getString(DISPLAY_ID);
                         }
-                        String buddyStatus = buddyObject.getString("state");
-                        String buddyType = buddyObject.getString("userType");
-                        String buddyIcon = buddyObject.optString("buddyIcon");
+                        String buddyStatus = buddyObject.getString(STATE);
+                        String buddyType = buddyObject.getString(USER_TYPE);
+                        String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, icqAccountRoot.getAccountType());
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
-                        icqAccountRoot.getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, cv2);
-                        // QueryHelper.createBuddy(accountDbId, icqAccountRoot.getAccountType(), buddyId, buddyNick,
-                        //         groupName, IcqStatusUtil.getStatusIndex(buddyStatus), false);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, icqAccountRoot.getAccountType());
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
+                        icqAccountRoot.getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
                     }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (eventType.equals("im")) {
+        } else if (eventType.equals(IM)) {
             try {
-                String messageText = eventData.getString("message");
-                String cookie = eventData.optString("msgId");
+                String messageText = eventData.getString(MESSAGE);
+                String cookie = eventData.optString(MSG_ID);
                 if (TextUtils.isEmpty(cookie)) {
                     cookie = String.valueOf(System.currentTimeMillis());
                 }
-                long messageTime = eventData.getLong("timestamp");
-                String imf = eventData.getString("imf");
-                String autoResponse = eventData.getString("autoresponse");
-                JSONObject sourceObject = eventData.getJSONObject("source");
-                String buddyId = sourceObject.getString("aimId");
-                String buddyNick = sourceObject.optString("friendly");
+                long messageTime = eventData.getLong(TIMESTAMP);
+                String imf = eventData.getString(IMF);
+                String autoResponse = eventData.getString(AUTORESPONSE);
+                JSONObject sourceObject = eventData.getJSONObject(SOURCE_OBJECT);
+                String buddyId = sourceObject.getString(AIM_ID);
+                String buddyNick = sourceObject.optString(FRIENDLY);
                 if (TextUtils.isEmpty(buddyNick)) {
-                    buddyNick = sourceObject.getString("displayId");
+                    buddyNick = sourceObject.getString(DISPLAY_ID);
                 }
-                String buddyStatus = sourceObject.getString("state");
-                String buddyType = sourceObject.getString("userType");
+                String buddyStatus = sourceObject.getString(STATE);
+                String buddyType = sourceObject.getString(USER_TYPE);
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
                         icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
@@ -306,16 +303,16 @@ public class IcqSession {
             } catch (BuddyNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (eventType.equals("presence")) {
+        } else if (eventType.equals(PRESENCE)) {
             try {
-                String buddyId = eventData.getString("aimId");
-                String buddyNick = eventData.optString("friendly");
+                String buddyId = eventData.getString(AIM_ID);
+                String buddyNick = eventData.optString(FRIENDLY);
                 if (TextUtils.isEmpty(buddyNick)) {
-                    buddyNick = eventData.getString("displayId");
+                    buddyNick = eventData.getString(DISPLAY_ID);
                 }
-                String buddyStatus = eventData.getString("state");
-                String buddyStatusMessage = eventData.optString("statusMsg");
-                String buddyType = eventData.getString("userType");
+                String buddyStatus = eventData.getString(STATE);
+                String buddyStatusMessage = eventData.optString(STATUS_MSG);
+                String buddyType = eventData.getString(USER_TYPE);
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                         buddyId, IcqStatusUtil.getStatusIndex(buddyStatus));

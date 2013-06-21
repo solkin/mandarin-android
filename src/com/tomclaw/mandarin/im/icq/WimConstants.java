@@ -42,7 +42,7 @@ public class WimConstants {
     public static final String SESSION_TIMEOUT = "sessionTimeout";
     public static final String TIMESTAMP = "ts";
     public static final String VIEW = "view";
-    public static final String START_SESSION_URL = "http://api.icq.net/aim/startSession";
+    public static final String START_SESSION_URL = "http://api.icq.net//startSession";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";
     public static final String EQUAL = "=";
@@ -57,4 +57,22 @@ public class WimConstants {
     public static final String TIMEOUT = "timeout";
     public static final String R_PARAM = "r";
     public static final String PEEK = "peek";
+    public static final String BUDDYLIST = "buddylist";
+    public static final String GROUPS_ARRAY = "groups";
+    public static final String NAME = "name";
+    public static final String ID_FIELD = "id";
+    public static final String BUDDIES_ARRAY = "buddies";
+    public static final String AIM_ID = "aimId";
+    public static final String FRIENDLY = "friendly";
+    public static final String DISPLAY_ID = "displayId";
+    public static final String STATE = "state";
+    public static final String USER_TYPE = "userType";
+    public static final String BUDDY_ICON = "buddyIcon";
+    public static final String IM = "im";
+    public static final String MESSAGE = "message";
+    public static final String MSG_ID = "msgId";
+    public static final String AUTORESPONSE = "autoresponse";
+    public static final String SOURCE_OBJECT = "source";
+    public static final String PRESENCE = "presence";
+    public static final String STATUS_MSG = "statusMsg";
 }

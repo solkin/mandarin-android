@@ -152,8 +152,6 @@ public class RequestDispatcher {
                                     + "state = " + requestState + "; "
                                     + "bundle = " + requestBundle + "");
 
-                            cursor.close();
-
                             int requestResult = Request.REQUEST_DELETE;
                             try {
                                 // Obtain account root and request class (type).

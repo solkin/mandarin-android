@@ -43,6 +43,12 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class IcqSession {
 
+    public static final int INTERNAL_ERROR = 1000;
+    public static final int EXTERNAL_LOGIN_OK = 200;
+    public static final int EXTERNAL_LOGIN_ERROR = 330;
+    public static final int EXTERNAL_UNKNOWN = 0;
+    private static final int EXTERNAL_SESSION_OK = 200;
+
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
     private HttpClient httpClient;
@@ -53,8 +59,7 @@ public class IcqSession {
         this.httpClient = new DefaultHttpClient();
     }
 
-    // TODO: more informative return.
-    public boolean clientLogin() {
+    public int clientLogin() {
         try {
             // Create a new post header.
             HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
@@ -75,33 +80,40 @@ public class IcqSession {
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
-            if (statusCode == 200) {
-                JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                String login = dataObject.getString(LOGIN_ID);
-                long hostTime = dataObject.getLong(HOST_TIME);
-                String sessionSecret = dataObject.getString(SESSION_SECRET);
-                JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
-                int expiresIn = tokenObject.getInt(EXPIRES_IN);
-                String tokenA = tokenObject.getString(TOKEN_A);
-                Log.d(Settings.LOG_TAG, "token a = " + tokenA);
-                Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
-                String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
-                Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
-                // Update client login result in database.
-                icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
-                return true;
+            switch(statusCode) {
+                case EXTERNAL_LOGIN_OK: {
+                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                    String login = dataObject.getString(LOGIN_ID);
+                    long hostTime = dataObject.getLong(HOST_TIME);
+                    String sessionSecret = dataObject.getString(SESSION_SECRET);
+                    JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
+                    int expiresIn = tokenObject.getInt(EXPIRES_IN);
+                    String tokenA = tokenObject.getString(TOKEN_A);
+                    Log.d(Settings.LOG_TAG, "token a = " + tokenA);
+                    Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
+                    String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
+                    Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
+                    // Update client login result in database.
+                    icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
+                    return EXTERNAL_LOGIN_OK;
+                }
+                case EXTERNAL_LOGIN_ERROR: {
+                    return EXTERNAL_LOGIN_ERROR;
+                }
+                default: {
+                    return EXTERNAL_UNKNOWN;
+                }
             }
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "client login exception: " + e.getMessage());
+            return INTERNAL_ERROR;
         }
-        return false;
     }
 
-    // TODO: more informative return.
-    public boolean startSession() {
-        // Create a new HttpClient and Post Header
-        HttpPost httpPost = new HttpPost(START_SESSION_URL);
+    public int startSession() {
         try {
+            // Create a new HttpClient and Post Header
+            HttpPost httpPost = new HttpPost(START_SESSION_URL);
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
@@ -137,24 +149,29 @@ public class IcqSession {
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
-            if (statusCode == 200) {
-                JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                String aimSid = dataObject.getString(AIM_SID);
-                String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
+            switch(statusCode) {
+                case EXTERNAL_LOGIN_OK: {
+                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                    String aimSid = dataObject.getString(AIM_SID);
+                    String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
 
-                MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
-                        MyInfo.class);
-                WellKnownUrls wellKnownUrls = gson.fromJson(
-                        dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
+                    MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
+                            MyInfo.class);
+                    WellKnownUrls wellKnownUrls = gson.fromJson(
+                            dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
 
-                // Update starts session result in database.
-                icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
-                return true;
+                    // Update starts session result in database.
+                    icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
+                    return EXTERNAL_SESSION_OK;
+                }
+                default: {
+                    return EXTERNAL_UNKNOWN;
+                }
             }
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "start session exception: " + e.getMessage());
+            return INTERNAL_ERROR;
         }
-        return false;
     }
 
     public void endSession(String aimSid) {

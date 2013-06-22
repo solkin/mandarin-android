@@ -48,15 +48,19 @@ public class IcqSession {
     public static final int EXTERNAL_LOGIN_ERROR = 330;
     public static final int EXTERNAL_UNKNOWN = 0;
     private static final int EXTERNAL_SESSION_OK = 200;
+    private static final int EXTERNAL_FETCH_OK = 200;
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
     private HttpClient httpClient;
+    // Create a new http client for events fetching.
+    private HttpClient fetchClient;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
         this.gson = new Gson();
         this.httpClient = new DefaultHttpClient();
+        this.fetchClient = new DefaultHttpClient();
     }
 
     public int clientLogin() {
@@ -164,6 +168,7 @@ public class IcqSession {
                     icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
                     return EXTERNAL_SESSION_OK;
                 }
+                // TODO: may be cases if ts incorrect. Mey be proceed too.
                 default: {
                     return EXTERNAL_UNKNOWN;
                 }
@@ -175,9 +180,9 @@ public class IcqSession {
     }
 
     public void endSession(String aimSid) {
-        // Create a new HttpClient and Post Header
-        HttpPost httpPost = new HttpPost(END_SESSION_URL);
         try {
+            // Create a new HttpClient and Post Header
+            HttpPost httpPost = new HttpPost(END_SESSION_URL);
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(AIM_SID, aimSid));
@@ -202,10 +207,13 @@ public class IcqSession {
         return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 
-    public void startEventsFetching() {
+    /**
+     * Start event fetching in verbal cycle.
+     * @return true if we are now in offline mode because of user decision.
+     * false if our session is not accepted by the server.
+     */
+    public boolean startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
-        // Create a new http client for events fetching.
-        HttpClient fetchClient = new DefaultHttpClient();
         do {
             try {
                 HttpGet httpPost = new HttpGet(getFetchUrl());
@@ -216,31 +224,44 @@ public class IcqSession {
                 JSONObject jsonObject = new JSONObject(responseString);
                 JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
                 int statusCode = responseObject.getInt(STATUS_CODE);
-                if (statusCode == 200) {
-                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                    long hostTime = dataObject.getLong(TS);
-                    String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
-                    // Update time and fetch base url.
-                    icqAccountRoot.setHostTime(hostTime);
-                    icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
-                    // Store account state.
-                    icqAccountRoot.updateAccount();
-                    // Process events.
-                    JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
-                    // Cycling all events.
-                    Log.d(Settings.LOG_TAG, "Cycling all events.");
-                    for (int c = 0; c < eventsArray.length(); c++) {
-                        JSONObject eventObject = eventsArray.getJSONObject(c);
-                        String eventType = eventObject.getString(TYPE);
-                        JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
-                        // Process event.
-                        processEvent(eventType, eventData);
+                switch(statusCode) {
+                    case EXTERNAL_FETCH_OK: {
+                        JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                        long hostTime = dataObject.getLong(TS);
+                        String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
+                        // Update time and fetch base url.
+                        icqAccountRoot.setHostTime(hostTime);
+                        icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        // Store account state.
+                        icqAccountRoot.updateAccount();
+                        // Process events.
+                        JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
+                        // Cycling all events.
+                        Log.d(Settings.LOG_TAG, "Cycling all events.");
+                        for (int c = 0; c < eventsArray.length(); c++) {
+                            JSONObject eventObject = eventsArray.getJSONObject(c);
+                            String eventType = eventObject.getString(TYPE);
+                            JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
+                            // Process event.
+                            processEvent(eventType, eventData);
+                        }
+                        break;
+                    }
+                    default: {
+                        // Something wend wrong. Let's reconnect.
+                        return false;
                     }
                 }
             } catch (Throwable e) {
                 Log.d(Settings.LOG_TAG, "fetch events exception: " + e.getMessage());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ignored) {
+                    // We'll sleep while there is no network connection.
+                }
             }
         } while (icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
+        return true;
     }
 
     public String getFetchUrl() {

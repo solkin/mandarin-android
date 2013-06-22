@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.content.ContentResolver;
 import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,20 +40,54 @@ public class IcqAccountRoot extends AccountRoot {
     public void connect() {
         Log.d(Settings.LOG_TAG, "icq connection attempt");
         Thread connectThread = new Thread() {
-            public void run() {
-                // TODO: implement errors handling.
-                while (!checkSessionReady()) {
-                    while (!checkLoginReady()) {
-                        // Login with credentials.
-                        icqSession.clientLogin();
-                    }
-                    // Attempt to start session.
-                    icqSession.startSession();
+
+            private void sleep() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ignored) {
+                    // No need to check.
                 }
-                // Update account connecting state to false.
-                updateAccountState(false);
-                // Starting events fetching in verbal cycle.
-                icqSession.startEventsFetching();
+            }
+
+            public void run() {
+                do {
+                    while (!checkSessionReady()) {
+                        while (!checkLoginReady()) {
+                            // Login with credentials.
+                            switch (icqSession.clientLogin()) {
+                                case IcqSession.EXTERNAL_LOGIN_ERROR: {
+                                    // Show notification.
+                                    return;
+                                }
+                                case IcqSession.EXTERNAL_UNKNOWN: {
+                                    // Show notification.
+                                    return;
+                                }
+                                case IcqSession.INTERNAL_ERROR: {
+                                    // Sleep some time.
+                                    sleep();
+                                    break;
+                                }
+                            }
+                        }
+                        // Attempt to start session.
+                        switch (icqSession.startSession()) {
+                            case IcqSession.EXTERNAL_UNKNOWN: {
+                                // Retry client login.
+                                resetLoginData();
+                                break;
+                            }
+                            case IcqSession.INTERNAL_ERROR: {
+                                // Sleep some time.
+                                sleep();
+                                break;
+                            }
+                        }
+                    }
+                    // Update account connecting state to false.
+                    updateAccountState(false);
+                    // Starting events fetching in verbal cycle.
+                } while (!icqSession.startEventsFetching());
             }
         };
         connectThread.start();
@@ -129,6 +162,19 @@ public class IcqAccountRoot extends AccountRoot {
     public boolean checkSessionReady() {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
                 || myInfo == null || wellKnownUrls == null);
+    }
+
+    public void resetLoginData() {
+        tokenA = null;
+        sessionKey = null;
+        tokenExpirationDate = 0;
+    }
+
+    public void resetSessionData() {
+        aimSid = null;
+        fetchBaseUrl = null;
+        myInfo = null;
+        wellKnownUrls = null;
     }
 
     public long getHostTime() {

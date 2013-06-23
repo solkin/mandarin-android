@@ -5,11 +5,10 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <com.viewpageindicator.TitlePageIndicator
+    <com.astuetz.viewpager.extensions.PagerSlidingTabStrip
             android:id="@+id/chat_indicator"
-            android:padding="10dip"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="48dip"/>
     <android.support.v4.view.ViewPager
             android:id="@+id/chat_pager"
             android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/send_button"
                 android:layout_gravity="center_horizontal|bottom"
-                android:src="@android:drawable/ic_menu_send"/>
+                android:src="@drawable/social_send_now"/>
     </LinearLayout>
 
 </LinearLayout>

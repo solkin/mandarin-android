@@ -5,20 +5,11 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.Request;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -49,7 +40,7 @@ public class IcqMessageRequest extends Request {
         // Create a new HttpClient and Post Header
         try {
             // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            /*List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("aimsid", ((IcqAccountRoot)accountRoot).getAimSid()));
             nameValuePairs.add(new BasicNameValuePair("autoResponse", "false"));
             nameValuePairs.add(new BasicNameValuePair("f", "json"));
@@ -57,7 +48,7 @@ public class IcqMessageRequest extends Request {
             nameValuePairs.add(new BasicNameValuePair("notifyDelivery", "true"));
             nameValuePairs.add(new BasicNameValuePair("offlineIM", "true"));
             nameValuePairs.add(new BasicNameValuePair("r", cookie));
-            nameValuePairs.add(new BasicNameValuePair("t", to));
+            nameValuePairs.add(new BasicNameValuePair("t", to));*/
 
             String url = "http://api.icq.net/im/sendIM?aimsid="+encode(((IcqAccountRoot)accountRoot).getAimSid())
                     +"&autoResponse=false&f=json&message="+encode(message)+"&notifyDelivery=true&offlineIM=true&r="
@@ -67,6 +58,14 @@ public class IcqMessageRequest extends Request {
             HttpGet httpPost = new HttpGet(url);
             HttpResponse response = ((IcqAccountRoot)accountRoot).getSession().getHttpClient().execute(httpPost);
             String responseString = EntityUtils.toString(response.getEntity());
+
+            JSONObject jsonObject = new JSONObject(responseString);
+            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+            int statusCode = responseObject.getInt(STATUS_CODE);
+            // Check for server reply.
+            if(statusCode != 200) {
+                return REQUEST_DELETE;
+            }
             Log.d(Settings.LOG_TAG, "send im = " + responseString);
         } catch (Throwable e) {
             e.printStackTrace();

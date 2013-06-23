@@ -249,6 +249,10 @@ public class IcqSession {
                     }
                     default: {
                         // Something wend wrong. Let's reconnect.
+                        // Reset login and session data.
+                        icqAccountRoot.resetLoginData();
+                        icqAccountRoot.resetSessionData();
+                        icqAccountRoot.updateAccount();
                         return false;
                     }
                 }
@@ -315,7 +319,7 @@ public class IcqSession {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (eventType.equals(IM)) {
+        } else if (eventType.equals(IM) || eventType.equals("offlineIM")) { // TODO: offlineIM is differ!
             try {
                 String messageText = eventData.getString(MESSAGE);
                 String cookie = eventData.optString(MSG_ID);

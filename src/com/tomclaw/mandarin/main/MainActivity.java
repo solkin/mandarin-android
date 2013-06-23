@@ -8,13 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -22,8 +22,6 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
-import com.viewpageindicator.PageIndicator;
-import com.viewpageindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     private RosterPagerAdapter mAdapter;
     private ViewPager mPager;
-    private PageIndicator mIndicator;
+    private PagerSlidingTabStrip mIndicator;
     private List<View> pages = new ArrayList<View>();
 
 
@@ -82,14 +80,15 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
         ActionBar bar = getSupportActionBar();
-        bar.setDisplayShowTitleEnabled(false);
+        // bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        // bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         /** Status spinner **/
-        ArrayAdapter<CharSequence> listAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
+        /*ArrayAdapter<CharSequence> listAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
                 R.layout.sherlock_spinner_item);
         listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-        bar.setListNavigationCallbacks(listAdapter, this);
+        bar.setListNavigationCallbacks(listAdapter, this);/
         /** Lists **/
         pages.clear();
         // Dialogs.
@@ -159,9 +158,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mAdapter = new RosterPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-        mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+        mIndicator = (PagerSlidingTabStrip) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
-        mIndicator.setCurrentItem(2);
+        mIndicator.setIndicatorColorResource(R.color.background_action_bar);
+        mPager.setCurrentItem(2);
     }
 
     @Override

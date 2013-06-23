@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.StatusUtil;
-import com.viewpageindicator.PageIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,10 +33,10 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private LoaderManager loaderManager;
     private Cursor cursor;
     private LayoutInflater inflater;
-    private PageIndicator indicator;
+    private PagerSlidingTabStrip indicator;
     private Runnable onUpdate;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, PageIndicator indicator, Runnable onUpdate) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, PagerSlidingTabStrip indicator, Runnable onUpdate) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;

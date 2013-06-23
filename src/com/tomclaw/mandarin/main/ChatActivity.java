@@ -10,14 +10,13 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
-import com.viewpageindicator.PageIndicator;
-import com.viewpageindicator.TitlePageIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +28,7 @@ public class ChatActivity extends ChiefActivity {
 
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
-    private PageIndicator mIndicator;
+    private PagerSlidingTabStrip mIndicator;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,16 +74,17 @@ public class ChatActivity extends ChiefActivity {
                 // Checking for bundle condition.
                 if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
                     int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
-                    mIndicator.setCurrentItem(position);
+                    mPager.setCurrentItem(position);
                     bundle.clear();
                 }
             }
         };
-        mIndicator = (TitlePageIndicator) findViewById(R.id.chat_indicator);
+        mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
         mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator, onUpdate);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
+        mIndicator.setIndicatorColorResource(R.color.background_action_bar);
         /** Send button **/
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);

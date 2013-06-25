@@ -162,7 +162,8 @@ public class RequestDispatcher {
                                     continue;
                                 }
                                 // Preparing request.
-                                Request request = (Request) gson.fromJson(requestBundle, Class.forName(requestClass));
+                                Request<AccountRoot> request = (Request<AccountRoot>) gson.fromJson(
+                                        requestBundle, Class.forName(requestClass));
                                 requestResult = request.onRequest(accountRoot);
                             } catch (AccountNotFoundException e) {
                                 Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +

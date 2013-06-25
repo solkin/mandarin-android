@@ -51,6 +51,7 @@ public abstract class WimRequest extends Request<IcqAccountRoot> {
             int statusCode = responseObject.getInt(STATUS_CODE);
             // Check for server reply.
             if (statusCode != 200) {
+                // Maybe incorrect aim sid or McDonald's.
                 return REQUEST_PENDING;
             }
             Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));

@@ -24,7 +24,7 @@
                 android:id="@+id/message_text"
                 android:hint="@string/enter_your_message"
                 android:layout_gravity="center"
-                android:layout_weight="1"/>
+                android:layout_weight="1" android:inputType="textCapSentences"/>
         <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

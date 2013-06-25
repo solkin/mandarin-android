@@ -33,14 +33,12 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private LoaderManager loaderManager;
     private Cursor cursor;
     private LayoutInflater inflater;
-    private PagerSlidingTabStrip indicator;
     private Runnable onUpdate;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, PagerSlidingTabStrip indicator, Runnable onUpdate) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;
-        this.indicator = indicator;
         this.onUpdate = onUpdate;
         inflater = activity.getLayoutInflater();
         // Initialize loader for dialogs Id.
@@ -143,9 +141,6 @@ public class ChatPagerAdapter extends PagerAdapter implements
         this.cursor = cursor;
         // Before notifying UI about update, run special event.
         onUpdate.run();
-        // Notify page indicator and base adapter data was changed.
-        notifyDataSetChanged();
-        indicator.notifyDataSetChanged();
     }
 
     @Override

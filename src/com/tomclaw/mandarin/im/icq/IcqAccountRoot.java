@@ -6,6 +6,7 @@ import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -95,6 +96,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void disconnect() {
+        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
     }
 
     public void updateStatus(int statusIndex) {

@@ -1,21 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Log;
 import android.util.Pair;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.Request;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.

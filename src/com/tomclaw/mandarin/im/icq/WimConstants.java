@@ -75,4 +75,5 @@ public class WimConstants {
     public static final String PRESENCE = "presence";
     public static final String STATUS_MSG = "statusMsg";
     public static final String TIMESTAMP = "timestamp";
+    public static final String QUE = "?";
 }

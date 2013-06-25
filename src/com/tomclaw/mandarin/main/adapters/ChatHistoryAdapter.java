@@ -63,7 +63,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
-                GlobalProvider.HISTORY_MESSAGE_TIME + " ASC");
+                GlobalProvider.ROW_AUTO_ID + " ASC");
     }
 
     @Override

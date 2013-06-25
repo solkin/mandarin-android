@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -52,15 +53,13 @@ public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
+    // Connection and fetch events client.
     private HttpClient httpClient;
-    // Create a new http client for events fetching.
-    private HttpClient fetchClient;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
         this.gson = new Gson();
         this.httpClient = new DefaultHttpClient();
-        this.fetchClient = new DefaultHttpClient();
     }
 
     public int clientLogin() {
@@ -218,7 +217,7 @@ public class IcqSession {
             try {
                 HttpGet httpPost = new HttpGet(getFetchUrl());
                 // Execute HTTP Post Request
-                HttpResponse response = fetchClient.execute(httpPost);
+                HttpResponse response = httpClient.execute(httpPost);
                 String responseString = EntityUtils.toString(response.getEntity());
                 Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
                 JSONObject jsonObject = new JSONObject(responseString);
@@ -364,9 +363,5 @@ public class IcqSession {
                 e.printStackTrace();
             }
         }
-    }
-
-    public HttpClient getHttpClient() {
-        return httpClient;
     }
 }

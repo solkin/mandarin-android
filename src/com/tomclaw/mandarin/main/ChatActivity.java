@@ -73,6 +73,7 @@ public class ChatActivity extends ChiefActivity {
                 Bundle bundle = getIntent().getExtras();
                 // Checking for bundle condition.
                 if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+                    // Setup active page.
                     int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
                     mPager.setCurrentItem(position);
                     bundle.clear();

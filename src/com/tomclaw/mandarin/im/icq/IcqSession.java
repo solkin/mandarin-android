@@ -318,7 +318,7 @@ public class IcqSession {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (eventType.equals(IM) || eventType.equals("offlineIM")) { // TODO: offlineIM is differ!
+        } else if (eventType.equals(IM) || eventType.equals(OFFLINE_IM)) { // TODO: offlineIM is differ!
             try {
                 String messageText = eventData.getString(MESSAGE);
                 String cookie = eventData.optString(MSG_ID);
@@ -343,6 +343,14 @@ public class IcqSession {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {
                 e.printStackTrace();
+            }
+        } else if (eventType.equals(IM_STATES)) {
+            try {
+                String state = eventData.getString(STATE);
+                String cookie = eventData.getString(MSG_ID);
+                String sendReqId = eventData.optString(SEND_REQ_ID);
+            } catch (JSONException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         } else if (eventType.equals(PRESENCE)) {
             try {

@@ -76,4 +76,7 @@ public class WimConstants {
     public static final String STATUS_MSG = "statusMsg";
     public static final String TIMESTAMP = "timestamp";
     public static final String QUE = "?";
+    public static final String OFFLINE_IM = "offlineIM";
+    public static final String IM_STATES = "imStates";
+    public static final String SEND_REQ_ID = "sendReqId";
 }

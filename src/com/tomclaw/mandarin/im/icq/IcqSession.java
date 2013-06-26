@@ -20,6 +20,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +54,9 @@ public class IcqSession {
     private static final int EXTERNAL_SESSION_OK = 200;
     private static final int EXTERNAL_FETCH_OK = 200;
 
+    private static final int timeoutConnection = 60000;
+    private static final int timeoutSocket = 80000;
+
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
     // Connection and fetch events client.
@@ -59,7 +65,15 @@ public class IcqSession {
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
         this.gson = new Gson();
-        this.httpClient = new DefaultHttpClient();
+        // Creating Http params.
+        HttpParams httpParameters = new BasicHttpParams();
+        // Set the timeout in milliseconds until a connection is established.
+        // The default value is zero, that means the timeout is not used.
+        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+        // Set the default socket timeout (SO_TIMEOUT).
+        // in milliseconds which is the timeout for waiting for data.
+        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+        this.httpClient = new DefaultHttpClient(httpParameters);
     }
 
     public int clientLogin() {
@@ -195,17 +209,6 @@ public class IcqSession {
         }
     }
 
-    private String getHmacSha256Base64(String key, String data)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        final String encryptionAlgorithm = "HmacSHA256";
-        SecretKey secretKey = new SecretKeySpec(data.getBytes(), encryptionAlgorithm);
-        Mac messageAuthenticationCode = Mac.getInstance(encryptionAlgorithm);
-        messageAuthenticationCode.init(secretKey);
-        messageAuthenticationCode.update(key.getBytes());
-        byte[] digest = messageAuthenticationCode.doFinal();
-        return Base64.encodeToString(digest, Base64.NO_WRAP);
-    }
-
     /**
      * Start event fetching in verbal cycle.
      * @return true if we are now in offline mode because of user decision.
@@ -215,9 +218,9 @@ public class IcqSession {
         Log.d(Settings.LOG_TAG, "start events fetching");
         do {
             try {
-                HttpGet httpPost = new HttpGet(getFetchUrl());
+                HttpGet httpGet = new HttpGet(getFetchUrl());
                 // Execute HTTP Post Request
-                HttpResponse response = httpClient.execute(httpPost);
+                HttpResponse response = httpClient.execute(httpGet);
                 String responseString = EntityUtils.toString(response.getEntity());
                 Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
                 JSONObject jsonObject = new JSONObject(responseString);
@@ -350,7 +353,7 @@ public class IcqSession {
                 String cookie = eventData.getString(MSG_ID);
                 String sendReqId = eventData.optString(SEND_REQ_ID);
             } catch (JSONException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         } else if (eventType.equals(PRESENCE)) {
             try {
@@ -371,5 +374,16 @@ public class IcqSession {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static String getHmacSha256Base64(String key, String data)
+            throws NoSuchAlgorithmException, InvalidKeyException {
+        final String encryptionAlgorithm = "HmacSHA256";
+        SecretKey secretKey = new SecretKeySpec(data.getBytes(), encryptionAlgorithm);
+        Mac messageAuthenticationCode = Mac.getInstance(encryptionAlgorithm);
+        messageAuthenticationCode.init(secretKey);
+        messageAuthenticationCode.update(key.getBytes());
+        byte[] digest = messageAuthenticationCode.doFinal();
+        return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 }

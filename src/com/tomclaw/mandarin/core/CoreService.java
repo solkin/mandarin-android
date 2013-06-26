@@ -153,6 +153,7 @@ public class CoreService extends Service {
             public void run() {
                 // Loading all data for this application session.
                 sessionHolder.load();
+                requestDispatcher.startObservation();
                 // For testing purposes only!
                 try {
                     Thread.sleep(1000);

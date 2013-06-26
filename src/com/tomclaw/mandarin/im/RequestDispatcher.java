@@ -42,6 +42,9 @@ public class RequestDispatcher {
         sync = new Object();
         gson = new Gson();
         dispatcherThread = new DispatcherThread();
+    }
+
+    public void startObservation() {
         // Registering created observers.
         contentResolver.registerContentObserver(
                 Settings.REQUEST_RESOLVER_URI, true, requestObserver);
@@ -180,6 +183,7 @@ public class RequestDispatcher {
                                         GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                             } else if(requestResult == Request.REQUEST_PENDING) {
                                 // Request wasn't completed. We'll retry request a little bit later.
+                                Log.d(Settings.LOG_TAG, "Request wasn't completed. We'll retry request a little bit later.");
                                 continue;
                             } else {
                                 // Updating this request.

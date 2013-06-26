@@ -58,10 +58,12 @@ public class IcqAccountRoot extends AccountRoot {
                             switch (icqSession.clientLogin()) {
                                 case IcqSession.EXTERNAL_LOGIN_ERROR: {
                                     // Show notification.
+                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                     return;
                                 }
                                 case IcqSession.EXTERNAL_UNKNOWN: {
                                     // Show notification.
+                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                     return;
                                 }
                                 case IcqSession.INTERNAL_ERROR: {
@@ -89,6 +91,8 @@ public class IcqAccountRoot extends AccountRoot {
                     updateAccountState(false);
                     // Starting events fetching in verbal cycle.
                 } while (!icqSession.startEventsFetching());
+                // Update offline status.
+                updateAccountState(StatusUtil.STATUS_OFFLINE, false);
             }
         };
         connectThread.start();

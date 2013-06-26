@@ -143,6 +143,12 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                     try {
                         /** Initialize service **/
                         serviceInteraction.initService();
+
+                        int id = getIntent().getIntExtra("id",-1);
+                        if (id != -1){
+                            getServiceInteraction().clearNotifications(id);
+                            getIntent().removeExtra("id");
+                        }
                     } catch (RemoteException e) {
                     }
                 }

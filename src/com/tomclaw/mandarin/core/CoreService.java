@@ -4,7 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -27,6 +30,8 @@ public class CoreService extends Service {
 
     private SessionHolder sessionHolder;
     private RequestDispatcher requestDispatcher;
+    private NotificationHelper notificationHelper;
+    private BroadcastReceiver notificationsReceiver;
 
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
@@ -96,6 +101,11 @@ public class CoreService extends Service {
         public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
         }
+
+        @Override
+        public void clearNotifications(int id) throws RemoteException {
+            notificationHelper.clearNotifications(id);
+        }
     };
 
     @Override
@@ -106,9 +116,21 @@ public class CoreService extends Service {
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this);
+
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Display a notification about us starting.
-        showNotification();
+        notificationHelper = new NotificationHelper(getApplicationContext());
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("Notifications");
+        notificationsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int id = intent.getIntExtra("id", -1);
+                if (id != -1) {
+                    notificationHelper.clearNotifications(id);
+                }
+            }
+        };
+        registerReceiver(notificationsReceiver, intentFilter);
     }
 
     @Override
@@ -156,10 +178,25 @@ public class CoreService extends Service {
                 // For testing purposes only!
                 try {
                     Thread.sleep(1000);
+                    notificationHelper.createMessageNotification(2, "Mandarin", "Hello!");
+                    notificationHelper.createMessageNotification(2, "Mandarin", "What's up?");
+                    notificationHelper.createMessageNotification(1, "Mandarin", "1");
+                    notificationHelper.createMessageNotification(1, "Mandarin", "2");
+                    notificationHelper.createMessageNotification(1, "Mandarin", "3");
+                    //showNotification();
+                    Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
                 }
                 // Service is now ready.
                 updateState(STATE_UP);
+
+                try {
+                    Thread.sleep(20000);
+                    notificationHelper.createMessageNotification(2, "Mandarin", "Bye!");
+                    //showNotification();
+                    Log.d(Settings.LOG_TAG, "notification");
+                } catch (InterruptedException ignored) {
+                }
             }
         }.start();
 

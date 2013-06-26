@@ -77,6 +77,14 @@ public class WimConstants {
     public static final String TIMESTAMP = "timestamp";
     public static final String QUE = "?";
     public static final String OFFLINE_IM = "offlineIM";
-    public static final String IM_STATES = "imStates";
+    public static final String IM_STATE = "imState";
     public static final String SEND_REQ_ID = "sendReqId";
+    public static final String IM_STATES_ARRAY = "imStates";
+    public static final String[] IM_STATES = new String[] {
+            "unknown",
+            "failed",
+            "sending",
+            "sent",
+            "delivered"
+    };
 }

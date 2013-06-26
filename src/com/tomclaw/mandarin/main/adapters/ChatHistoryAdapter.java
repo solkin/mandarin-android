@@ -29,7 +29,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int[] MESSAGE_TYPES = new int[]{R.id.error_message, R.id.incoming_message, R.id.outgoing_message};
-    private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_error, R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
+    private static final int[] MESSAGE_STATES = new int[]{
+            R.drawable.ic_dot,
+            R.drawable.ic_error,
+            R.drawable.ic_dot,
+            R.drawable.ic_sent,
+            R.drawable.ic_delivered
+    };
 
     /**
      * Date and time format helpers

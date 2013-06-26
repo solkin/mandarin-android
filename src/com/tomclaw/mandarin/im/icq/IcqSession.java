@@ -97,7 +97,7 @@ public class IcqSession {
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
-            switch(statusCode) {
+            switch (statusCode) {
                 case EXTERNAL_LOGIN_OK: {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String login = dataObject.getString(LOGIN_ID);
@@ -166,7 +166,7 @@ public class IcqSession {
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
-            switch(statusCode) {
+            switch (statusCode) {
                 case EXTERNAL_LOGIN_OK: {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
@@ -211,8 +211,9 @@ public class IcqSession {
 
     /**
      * Start event fetching in verbal cycle.
+     *
      * @return true if we are now in offline mode because of user decision.
-     * false if our session is not accepted by the server.
+     *         false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
@@ -226,7 +227,7 @@ public class IcqSession {
                 JSONObject jsonObject = new JSONObject(responseString);
                 JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
                 int statusCode = responseObject.getInt(STATUS_CODE);
-                switch(statusCode) {
+                switch (statusCode) {
                     case EXTERNAL_FETCH_OK: {
                         JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                         long hostTime = dataObject.getLong(TS);
@@ -347,11 +348,21 @@ public class IcqSession {
             } catch (BuddyNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (eventType.equals(IM_STATES)) {
+        } else if (eventType.equals(IM_STATE)) {
             try {
-                String state = eventData.getString(STATE);
-                String cookie = eventData.getString(MSG_ID);
-                String sendReqId = eventData.optString(SEND_REQ_ID);
+                JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
+                for (int c = 0; c < imStatesArray.length(); c++) {
+                    JSONObject imState = imStatesArray.getJSONObject(c);
+                    String state = imState.getString(STATE);
+                    String msgId = imState.getString(MSG_ID);
+                    String sendReqId = imState.optString(SEND_REQ_ID);
+                    for (int i = 0; i < IM_STATES.length; i++) {
+                        if (state.equals(IM_STATES[i])) {
+                            QueryHelper.updateMessage(icqAccountRoot.getContentResolver(), sendReqId, i);
+                            break;
+                        }
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

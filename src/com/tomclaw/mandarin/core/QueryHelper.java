@@ -272,6 +272,14 @@ public class QueryHelper {
         }
     }
 
+    public static void updateMessage(ContentResolver contentResolver, String cookie, int messageState) {
+        // Plain message modify by cookies.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
+        contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
+                GlobalProvider.HISTORY_MESSAGE_COOKIE + " LIKE '" + cookie + "'", null);
+    }
+
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
         contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);

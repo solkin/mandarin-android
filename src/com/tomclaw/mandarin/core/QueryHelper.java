@@ -237,7 +237,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 1);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);

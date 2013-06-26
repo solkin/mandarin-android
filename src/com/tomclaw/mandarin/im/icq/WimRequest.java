@@ -9,6 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -25,6 +26,8 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
  * Time: 9:24 PM
  */
 public abstract class WimRequest extends Request<IcqAccountRoot> {
+
+    protected static final transient int WIM_OK = 200;
 
     // One ttp client for all Wim requests, cause they invokes coherently.
     private static final transient HttpClient httpClient;
@@ -45,22 +48,16 @@ public abstract class WimRequest extends Request<IcqAccountRoot> {
             HttpGet httpGet = new HttpGet(url.concat(parameters));
             HttpResponse response = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(response.getEntity());
-
-            JSONObject jsonObject = new JSONObject(responseString);
-            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
-            int statusCode = responseObject.getInt(STATUS_CODE);
-            // Check for server reply.
-            if (statusCode != 200) {
-                // Maybe incorrect aim sid or McDonald's.
-                return REQUEST_PENDING;
-            }
             Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
+
+            return parseResponse(new JSONObject(responseString));
         } catch (Throwable e) {
             e.printStackTrace();
             return REQUEST_PENDING;
         }
-        return REQUEST_DELETE;
     }
+
+    public abstract int parseResponse(JSONObject response) throws JSONException;
 
     /**
      * Returns request-specific base Url (most of all from WellKnownUrls).

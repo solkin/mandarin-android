@@ -1,9 +1,14 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
+import com.tomclaw.mandarin.core.QueryHelper;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,6 +32,28 @@ public class IcqMessageRequest extends WimRequest {
     }
 
     @Override
+    public int parseResponse(JSONObject response) throws JSONException {
+        JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
+        int statusCode = responseObject.getInt(STATUS_CODE);
+        // Check for server reply.
+        if (statusCode == WIM_OK) {
+            JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+            String requestId = dataObject.getString(REQUEST_ID);
+            String state = dataObject.getString(STATE);
+            // Checking for message state.
+            for (int i = 0; i < IM_STATES.length; i++) {
+                if (state.equals(IM_STATES[i])) {
+                    QueryHelper.updateMessage(getAccountRoot().getContentResolver(), requestId, i);
+                    break;
+                }
+            }
+            return REQUEST_DELETE;
+        }
+        // Maybe incorrect aim sid or McDonald's.
+        return REQUEST_PENDING;
+    }
+
+    @Override
     public String getUrl() {
         return getAccountRoot().getWellKnownUrls().getWebApiBase()
                 .concat("im/sendIM");
@@ -44,9 +71,5 @@ public class IcqMessageRequest extends WimRequest {
         params.add(new Pair<String, String>("r", cookie));
         params.add(new Pair<String, String>("t", to));
         return params;
-    }
-
-    @Override
-    public void onResponse() {
     }
 }

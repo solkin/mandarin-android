@@ -32,6 +32,4 @@ public abstract class Request<A extends AccountRoot> {
     }
 
     public abstract int buildRequest();
-
-    public abstract void onResponse();
 }

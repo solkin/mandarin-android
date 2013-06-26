@@ -76,10 +76,11 @@ public class ChatActivity extends ChiefActivity {
                     // Setup active page.
                     int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
                     mPager.setCurrentItem(position);
-                    // Notify page indicator and base adapter data was changed.
-                    mIndicator.notifyDataSetChanged();
                     getIntent().removeExtra(GlobalProvider.HISTORY_BUDDY_DB_ID);
                 }
+                // Notify page indicator and base adapter data was changed.
+                mIndicator.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
             }
         };
         mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);

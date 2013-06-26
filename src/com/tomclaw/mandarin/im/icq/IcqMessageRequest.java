@@ -37,8 +37,8 @@ public class IcqMessageRequest extends WimRequest {
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {
+            String requestId = responseObject.getString(REQUEST_ID);
             JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-            String requestId = dataObject.getString(REQUEST_ID);
             String state = dataObject.getString(STATE);
             // Checking for message state.
             for (int i = 0; i < IM_STATES.length; i++) {

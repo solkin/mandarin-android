@@ -35,9 +35,10 @@
     <string name="status_busy">Busy</string>
     <string name="status_invisible">Invisible</string>
 
+    <string name="group_favorite">Favorite</string>
+    <string name="group_dialogs">Dialogs</string>
     <string name="group_online">Online</string>
     <string name="group_all">All friends</string>
-    <string name="group_dialogs">Dialogs</string>
 
     <string name="error_no_such_account">Error! No such account.</string>
 
@@ -49,6 +50,7 @@
     </string-array>
 
     <string-array name="default_groups">
+        <item>@string/group_favorite</item>
         <item>@string/group_dialogs</item>
         <item>@string/group_online</item>
         <item>@string/group_all</item>

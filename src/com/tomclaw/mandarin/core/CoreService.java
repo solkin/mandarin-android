@@ -209,7 +209,7 @@ public class CoreService extends Service {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.ic_launcher, text,
+        Notification notification = new Notification(R.drawable.ic_notification, text,
                 System.currentTimeMillis());
         // Set the info for the views that show in the notification panel.
         notification.setLatestEventInfo(this, getText(R.string.app_name),

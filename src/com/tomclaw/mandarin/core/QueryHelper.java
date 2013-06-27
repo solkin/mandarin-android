@@ -184,6 +184,12 @@ public class QueryHelper {
         modifyBuddy(contentResolver, buddyDbId, contentValues);
     }
 
+    public static void modifyFavorite(ContentResolver contentResolver, int buddyDbId, boolean isFavorite) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite ? 1 : 0);
+        modifyBuddy(contentResolver, buddyDbId, contentValues);
+    }
+
     public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
                                      int buddyDbId, int messageType, String cookie, String messageText,
                                      boolean activateDialog) {

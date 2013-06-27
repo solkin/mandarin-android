@@ -54,6 +54,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP_ID = "buddy_group_id";
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
+    public static final String ROSTER_BUDDY_FAVORITE = "buddy_favorite";
+    public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -86,7 +88,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " int, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
             + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
-            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int" + ");";
+            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
+            + ROSTER_BUDDY_FAVORITE + " int, " + ROSTER_BUDDY_UPDATE_TIME + " int" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

@@ -13,5 +13,5 @@
         <!--<item name="backgroundSplit">@drawable/actionbar_bottom</item>
         <item name="android:backgroundSplit">@drawable/actionbar_bottom</item>-->
     </style>
-    <color name="background_action_bar">#FFF4842D</color>
+    <color name="background_action_bar">#FFFF9E16</color>
 </resources>

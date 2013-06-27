@@ -22,16 +22,16 @@ import com.tomclaw.mandarin.util.StatusUtil;
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
- * Date: 4/28/13
- * Time: 9:22 PM
+ * Date: 6/27/13
+ * Time: 10:05 PM
  */
-public class RosterOnlineAdapter extends CursorAdapter implements
+public class RosterFavoriteAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Adapter ID
      */
-    private static final int ADAPTER_ONLINE_ID = -3;
+    private static final int ADAPTER_FAVORITE_ID = -4;
 
     /**
      * Columns
@@ -47,19 +47,20 @@ public class RosterOnlineAdapter extends CursorAdapter implements
     private Context context;
     private LayoutInflater inflater;
 
-    public RosterOnlineAdapter(Activity context, LoaderManager loaderManager) {
+    public RosterFavoriteAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
-        // Initialize loader for online Id.
-        loaderManager.initLoader(ADAPTER_ONLINE_ID, null, this);
+        // Initialize loader for dialogs Id.
+        loaderManager.initLoader(ADAPTER_FAVORITE_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROSTER_BUDDY_STATUS + "!='" + StatusUtil.STATUS_OFFLINE + "'", null,
-                GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+        return new CursorLoader(context,
+                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_FAVORITE + "='" + 1 + "'",
+                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
+                + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override
@@ -78,10 +79,10 @@ public class RosterOnlineAdapter extends CursorAdapter implements
     }
 
     /**
-     * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
+     * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View v;
         try {
             if (!mDataValid) {
@@ -100,7 +101,6 @@ public class RosterOnlineAdapter extends CursorAdapter implements
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = mInflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
-            ex.printStackTrace();
         }
         return v;
     }

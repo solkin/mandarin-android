@@ -285,6 +285,7 @@ public class IcqSession {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
         if (eventType.equals(BUDDYLIST)) {
             try {
+                long updateTime = System.currentTimeMillis();
                 ContentValues groupValues = new ContentValues();
                 ContentValues buddyValues = new ContentValues();
                 JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
@@ -316,6 +317,8 @@ public class IcqSession {
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, 0);
+                        buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
                         icqAccountRoot.getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
                     }
                 }

@@ -32,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
-            if(true)return;
+            // if(true)return;
             ContentValues cv0 = new ContentValues();
             ContentValues cv1 = new ContentValues();
             ContentValues cv2 = new ContentValues();
@@ -72,13 +72,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
                         boolean isDialog = (random.nextInt(10) == 1);
+                        boolean isFavorite = (random.nextInt(20) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {

@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
 
@@ -91,6 +92,35 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         bar.setListNavigationCallbacks(listAdapter, this);/
         /** Lists **/
         pages.clear();
+        // Favorite.
+        final ListView favoriteList = new ListView(this);
+        final RosterFavoriteAdapter favoriteAdapter = new RosterFavoriteAdapter(this, getSupportLoaderManager());
+        favoriteList.setAdapter(favoriteAdapter);
+        favoriteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                /*Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                int buddyDbId = favoriteAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
+                intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                startActivity(intent);*/
+
+                int buddyDbId = favoriteAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                try {
+                    // Trying to open dialog with this buddy.
+                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    // Open chat dialog for this buddy.
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
+            }
+        });
+        pages.add(favoriteList);
         // Dialogs.
         final ListView dialogsList = new ListView(this);
         final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());

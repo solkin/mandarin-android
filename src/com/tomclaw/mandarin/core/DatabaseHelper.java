@@ -32,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
-            // if(true)return;
+            if(true)return;
             ContentValues cv0 = new ContentValues();
             ContentValues cv1 = new ContentValues();
             ContentValues cv2 = new ContentValues();
@@ -67,6 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String groupName = generateRandomWord(random);
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+                    cv1.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 5 + random.nextInt(5); c++) {
                         int status = statuses[random.nextInt(statuses.length)];

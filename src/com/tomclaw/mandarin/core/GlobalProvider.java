@@ -45,6 +45,13 @@ public class GlobalProvider extends ContentProvider {
 
     public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_GROUP_NAME = "group_name";
+    public static final String ROSTER_GROUP_ID = "group_id";
+    public static final String ROSTER_GROUP_TYPE = "group_type";
+    public static final String ROSTER_GROUP_UPDATE_TIME = "group_update_time";
+
+    public static final String GROUP_TYPE_SYSTEM = "group_system";
+    public static final String GROUP_TYPE_DEFAULT = "group_default";
+    public static final String GROUP_ID_RECYCLE = "0";
 
     public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_id";
@@ -81,7 +88,9 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text" + ");";
+            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text, "
+            + ROSTER_GROUP_ID + " text, " + ROSTER_GROUP_TYPE + " int, "
+            + ROSTER_GROUP_UPDATE_TIME + " int" + ");";
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

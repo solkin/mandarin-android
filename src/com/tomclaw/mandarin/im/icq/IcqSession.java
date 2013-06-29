@@ -1,10 +1,11 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.util.Pair;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -281,11 +282,12 @@ public class IcqSession {
         return stringBuilder.toString();
     }
 
-    private void processEvent(String eventType, JSONObject eventData) {
+    public void processEvent(String eventType, JSONObject eventData) {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
         if (eventType.equals(BUDDYLIST)) {
             try {
                 long updateTime = System.currentTimeMillis();
+                ContentResolver contentResolver = icqAccountRoot.getContentResolver();
                 ContentValues groupValues = new ContentValues();
                 ContentValues buddyValues = new ContentValues();
                 JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
@@ -297,7 +299,18 @@ public class IcqSession {
 
                     groupValues.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, icqAccountRoot.getAccountDbId());
                     groupValues.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
-                    icqAccountRoot.getContentResolver().insert(Settings.GROUP_RESOLVER_URI, groupValues);
+                    groupValues.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
+                    groupValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
+                    groupValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, updateTime);
+                    // Trying to update group
+                    int groupsModified = contentResolver.update(Settings.GROUP_RESOLVER_URI, groupValues,
+                            GlobalProvider.ROSTER_GROUP_ID + "=='" + groupId + "'" +
+                                    " AND " + GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID + "=="
+                                    + icqAccountRoot.getAccountDbId(), null);
+                    // Checking for there is no such group.
+                    if (groupsModified == 0) {
+                        contentResolver.insert(Settings.GROUP_RESOLVER_URI, groupValues);
+                    }
 
                     for (int i = 0; i < buddiesArray.length(); i++) {
                         JSONObject buddyObject = buddiesArray.getJSONObject(i);
@@ -315,13 +328,58 @@ public class IcqSession {
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+                        // buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupDbId);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, 0);
                         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
-                        icqAccountRoot.getContentResolver().insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+
+                        Cursor buddyCursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                                GlobalProvider.ROSTER_BUDDY_ID + "=='" + buddyId + "'" +
+                                        " AND " + GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID + "=="
+                                        + icqAccountRoot.getAccountDbId(), null,
+                                GlobalProvider.ROW_AUTO_ID + " ASC LIMIT 1");
+                        if (buddyCursor.moveToFirst()) {
+                            int buddyDbIdColumnIndex = buddyCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                            long buddyDbId = buddyCursor.getLong(buddyDbIdColumnIndex);
+                            // Update this row.
+                            contentResolver.update(Settings.BUDDY_RESOLVER_URI, buddyValues,
+                                    GlobalProvider.ROW_AUTO_ID + "=='" + buddyDbId + "'", null);
+                        } else {
+                            contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+                        }
+                        buddyCursor.close();
                     }
                 }
+                // Move all deleted buddies to recycle.
+                Cursor removedCursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                        GlobalProvider.ROSTER_BUDDY_UPDATE_TIME + "!=" + updateTime,
+                        null, null);
+                if(removedCursor.moveToFirst()) {
+                    // Checking and creating recycle.
+                    Cursor recycleCursor = contentResolver.query(Settings.GROUP_RESOLVER_URI, null,
+                            GlobalProvider.ROSTER_GROUP_TYPE + "=='" + GlobalProvider.GROUP_TYPE_SYSTEM + "'" +
+                                    " AND " + GlobalProvider.ROSTER_GROUP_ID + "==" + GlobalProvider.GROUP_ID_RECYCLE,
+                            null, null);
+                    if(!recycleCursor.moveToFirst()) {
+                        ContentValues recycleValues = new ContentValues();
+                        recycleValues.put(GlobalProvider.ROSTER_GROUP_NAME, "Recycle"); // TODO: name from resources
+                        recycleValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM);
+                        recycleValues.put(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+                        recycleValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, updateTime);
+                        contentResolver.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
+                    }
+                    recycleCursor.close();
+                    // Move, move, move!
+                    ContentValues moveValues = new ContentValues();
+                    moveValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, "Recycle"); // TODO: name from resources
+                    moveValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+                    moveValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+                    int movedBuddies = contentResolver.update(Settings.BUDDY_RESOLVER_URI, moveValues,
+                            GlobalProvider.ROSTER_BUDDY_UPDATE_TIME + "!=" + updateTime, null);
+                    Log.d(Settings.LOG_TAG, "moved to recycle: " + movedBuddies);
+                }
+                removedCursor.close();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

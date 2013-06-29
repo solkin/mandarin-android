@@ -18,25 +18,34 @@ public class NotificationHelper {
 
     private Context mContext;
     private ContentResolver mResolver;
+    private NotificationManager mNotificationManager;
     private Map<Integer, Integer> mNotificationsCounter;
 
+    // Notification id for common app events (not for messages from contacts)
     private static final int defaultNotificationId = -1;
+
+    // take from preferences
+    private boolean isNotificationForEveryContact = true;
+
+    public static final int NOT_EXISTS_NOTIFICATION_ID = -2;
+    public static final String NOTIFICATION_ID = "notification_id";
+    public static final String NOTIFICATIONS_FILTER = "notifications";
 
     public NotificationHelper(Context context){
         mContext = context;
         mResolver = mContext.getContentResolver();
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationsCounter = new HashMap<Integer, Integer>();
     }
 
-    public void createMessageNotification(int id,  String title, String message){
-        int counter;
-        if(mNotificationsCounter.containsKey(id)){
-            counter = mNotificationsCounter.get(id);
-        } else {
-            counter = 0;
+    public void createSimpleNotification(int notificationId, String title, String message){
+        if (!isNotificationForEveryContact) {
+             notificationId = defaultNotificationId;
         }
+        int counter;
+        counter = getNotificationsCount(notificationId);
         counter += 1;
-        mNotificationsCounter.put(id, counter);
+        mNotificationsCounter.put(notificationId, counter);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(mContext)
@@ -48,8 +57,9 @@ public class NotificationHelper {
         if(counter > 1){
             builder.setNumber(counter);
         }
+
         Intent resultIntent = new Intent(mContext, ChatActivity.class);
-        resultIntent.putExtra("id", id);
+        resultIntent.putExtra(NOTIFICATION_ID, notificationId);
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
@@ -58,14 +68,14 @@ public class NotificationHelper {
         stackBuilder.addParentStack(ChatActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent;
-        //pass id for creating multiple instances of Pending Intent
-        resultPendingIntent = stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
+        //pass notificationId for creating multiple instances of Pending Intent
+        resultPendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
-        Intent dismissIntent = new Intent("Notifications");
-        dismissIntent.putExtra("id", id);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(mContext, id, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
+        dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(mContext, notificationId, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setDeleteIntent(dismissPendingIntent);
-        ((NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE)).notify(id, builder.build());
+        mNotificationManager.notify(notificationId, builder.build());
     }
 
     public void clearNotifications(int id){
@@ -74,4 +84,11 @@ public class NotificationHelper {
         }
     }
 
+    private int getNotificationsCount(int notificationId){
+        return mNotificationsCounter.containsKey(notificationId) ? mNotificationsCounter.get(notificationId) : 0;
+    }
+
+    public void cancelAll() {
+        mNotificationManager.cancelAll();
+    }
 }

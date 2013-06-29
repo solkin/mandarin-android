@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +12,6 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.RequestDispatcher;
-import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
 import java.util.Random;
@@ -42,10 +38,6 @@ public class CoreService extends Service {
     private static final String appSession = String.valueOf(System.currentTimeMillis())
             .concat(String.valueOf(new Random().nextInt()));
 
-    /**
-     * For showing and hiding our notification.
-     */
-    NotificationManager notificationManager;
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
         public boolean initService() throws RemoteException {
@@ -117,16 +109,15 @@ public class CoreService extends Service {
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this);
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationHelper = new NotificationHelper(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("Notifications");
+        intentFilter.addAction(NotificationHelper.NOTIFICATIONS_FILTER);
         notificationsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int id = intent.getIntExtra("id", -1);
-                if (id != -1) {
-                    notificationHelper.clearNotifications(id);
+                int notificationId = intent.getIntExtra(NotificationHelper.NOTIFICATION_ID, NotificationHelper.NOT_EXISTS_NOTIFICATION_ID);
+                if (notificationId != NotificationHelper.NOT_EXISTS_NOTIFICATION_ID) {
+                    notificationHelper.clearNotifications(notificationId);
                 }
             }
         };
@@ -152,7 +143,7 @@ public class CoreService extends Service {
         // Reset creation time.
         serviceCreateTime = 0;
         // Cancel the persistent notification.
-        notificationManager.cancel(R.string.app_name);
+        notificationHelper.cancelAll();
         // Tell the user we stopped.
         Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
         super.onDestroy();
@@ -178,11 +169,11 @@ public class CoreService extends Service {
                 // For testing purposes only!
                 try {
                     Thread.sleep(1000);
-                    notificationHelper.createMessageNotification(2, "Mandarin", "Hello!");
-                    notificationHelper.createMessageNotification(2, "Mandarin", "What's up?");
-                    notificationHelper.createMessageNotification(1, "Mandarin", "1");
-                    notificationHelper.createMessageNotification(1, "Mandarin", "2");
-                    notificationHelper.createMessageNotification(1, "Mandarin", "3");
+                    notificationHelper.createSimpleNotification(2, "Mandarin", "Hello!");
+                    notificationHelper.createSimpleNotification(2, "Mandarin", "What's up?");
+                    notificationHelper.createSimpleNotification(1, "Mandarin", "1");
+                    notificationHelper.createSimpleNotification(1, "Mandarin", "2");
+                    notificationHelper.createSimpleNotification(1, "Mandarin", "3");
                     //showNotification();
                     Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
@@ -192,7 +183,7 @@ public class CoreService extends Service {
 
                 try {
                     Thread.sleep(20000);
-                    notificationHelper.createMessageNotification(2, "Mandarin", "Bye!");
+                    notificationHelper.createSimpleNotification(2, "Mandarin", "Bye!");
                     //showNotification();
                     Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
@@ -233,25 +224,5 @@ public class CoreService extends Service {
         intent.putExtra("Staff", true);
         intent.putExtra("State", serviceState);
         sendBroadcast(intent);
-    }
-
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-        CharSequence text = getText(R.string.app_name);
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
-        // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.ic_launcher, text,
-                System.currentTimeMillis());
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, getText(R.string.app_name),
-                text, contentIntent);
-        // Send the notification.
-        // We use a string id because it is a unique number.  We use it later to cancel.
-        notificationManager.notify(R.string.app_name, notification);
     }
 }

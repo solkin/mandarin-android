@@ -9,6 +9,7 @@ import android.util.Log;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.NotificationHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
@@ -144,10 +145,10 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                         /** Initialize service **/
                         serviceInteraction.initService();
 
-                        int id = getIntent().getIntExtra("id",-1);
-                        if (id != -1){
-                            getServiceInteraction().clearNotifications(id);
-                            getIntent().removeExtra("id");
+                        int notificationId = getIntent().getIntExtra(NotificationHelper.NOTIFICATION_ID,NotificationHelper.NOT_EXISTS_NOTIFICATION_ID);
+                        if (notificationId != NotificationHelper.NOT_EXISTS_NOTIFICATION_ID){
+                            serviceInteraction.clearNotifications(notificationId);
+                            getIntent().removeExtra(NotificationHelper.NOTIFICATION_ID);
                         }
                     } catch (RemoteException e) {
                     }

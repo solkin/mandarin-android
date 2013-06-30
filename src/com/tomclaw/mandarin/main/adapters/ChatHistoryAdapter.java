@@ -29,7 +29,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int[] MESSAGE_TYPES = new int[]{R.id.error_message, R.id.incoming_message, R.id.outgoing_message};
-    private static final int[] MESSAGE_STATES = new int[]{R.drawable.ic_error, R.drawable.ic_dot, R.drawable.ic_sent, R.drawable.ic_delivered};
+    private static final int[] MESSAGE_STATES = new int[]{
+            R.drawable.ic_dot,
+            R.drawable.ic_error,
+            R.drawable.ic_dot,
+            R.drawable.ic_sent,
+            R.drawable.ic_delivered
+    };
 
     /**
      * Date and time format helpers
@@ -63,7 +69,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
-                GlobalProvider.HISTORY_MESSAGE_TIME + " ASC");
+                GlobalProvider.ROW_AUTO_ID + " ASC");
     }
 
     @Override

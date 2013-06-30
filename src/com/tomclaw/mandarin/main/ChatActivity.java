@@ -10,13 +10,13 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
-import com.viewpageindicator.PageIndicator;
-import com.viewpageindicator.TitlePageIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +28,7 @@ public class ChatActivity extends ChiefActivity {
 
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
-    private PageIndicator mIndicator;
+    private PagerSlidingTabStrip mIndicator;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -73,17 +73,22 @@ public class ChatActivity extends ChiefActivity {
                 Bundle bundle = getIntent().getExtras();
                 // Checking for bundle condition.
                 if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+                    // Setup active page.
                     int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
-                    mIndicator.setCurrentItem(position);
-                    bundle.clear();
+                    mPager.setCurrentItem(position);
+                    getIntent().removeExtra(GlobalProvider.HISTORY_BUDDY_DB_ID);
                 }
+                // Notify page indicator and base adapter data was changed.
+                mIndicator.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
             }
         };
-        mIndicator = (TitlePageIndicator) findViewById(R.id.chat_indicator);
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), mIndicator, onUpdate);
+        mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
+        mIndicator.setIndicatorColorResource(R.color.background_action_bar);
         /** Send button **/
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
@@ -91,9 +96,19 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    QueryHelper.insertMessage(getContentResolver(), getServiceInteraction().getAppSession(),
-                            getCurrentPageAccountDbId(), getCurrentPageBuddyDbId(), 1, // TODO: real message type
-                            String.valueOf(System.currentTimeMillis()), messageText.getText().toString());
+                    String cookie = String.valueOf(System.currentTimeMillis());
+                    String appSession = getServiceInteraction().getAppSession();
+                    int accountDbId = getCurrentPageAccountDbId();
+                    int buddyDbId = getCurrentPageBuddyDbId();
+                    String message = messageText.getText().toString();
+                    QueryHelper.insertMessage(getContentResolver(), appSession,
+                            accountDbId, buddyDbId, 2, // TODO: real message type
+                            cookie, message, false);
+                    // Sending protocol message request.
+                    RequestHelper.requestMessage(getContentResolver(), appSession,
+                            accountDbId, buddyDbId, cookie, message);
+                    // Clearing text view.
+                    messageText.setText("");
                 } catch (Exception e) {
                     // Couldn't put message into database. This exception must be processed.
                 }

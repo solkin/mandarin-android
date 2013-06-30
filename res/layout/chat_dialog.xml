@@ -10,5 +10,6 @@
             android:layout_height="match_parent"
             android:id="@+id/chat_list"
             android:layout_gravity="left|center_vertical"
-            android:dividerHeight="0dip" android:fastScrollEnabled="false" android:divider="#ffffffff"/>
+            android:dividerHeight="0dip" android:fastScrollEnabled="false" android:divider="#ffffffff"
+            android:transcriptMode="normal" android:stackFromBottom="true"/>
 </LinearLayout>

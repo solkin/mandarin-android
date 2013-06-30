@@ -107,7 +107,7 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
-        requestDispatcher = new RequestDispatcher(this);
+        requestDispatcher = new RequestDispatcher(this, sessionHolder);
 
         notificationHelper = new NotificationHelper(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter();
@@ -166,6 +166,7 @@ public class CoreService extends Service {
             public void run() {
                 // Loading all data for this application session.
                 sessionHolder.load();
+                requestDispatcher.startObservation();
                 // For testing purposes only!
                 try {
                     Thread.sleep(1000);

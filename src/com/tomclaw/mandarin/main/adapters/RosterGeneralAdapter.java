@@ -54,7 +54,7 @@ public class RosterGeneralAdapter extends CursorTreeAdapter implements
         this.loaderManager = loaderManager;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // Initialize loader for groups.
-        this.loaderManager.initLoader(ADAPTER_GENERAL_ID, null, this);
+        loaderManager.initLoader(ADAPTER_GENERAL_ID, null, this);
     }
 
     @Override

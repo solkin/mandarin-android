@@ -29,12 +29,12 @@ public class RosterOnlineAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
-     * Adapter ID *
+     * Adapter ID
      */
     private static final int ADAPTER_ONLINE_ID = -3;
 
     /**
-     * Columns *
+     * Columns
      */
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
@@ -42,7 +42,7 @@ public class RosterOnlineAdapter extends CursorAdapter implements
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
 
     /**
-     * Variables *
+     * Variables
      */
     private Context context;
     private LayoutInflater inflater;

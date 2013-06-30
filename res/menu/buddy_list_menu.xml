@@ -3,37 +3,32 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search"
-          android:icon="@android:drawable/ic_menu_search"
+          android:icon="@drawable/action_search"
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="com.actionbarsherlock.widget.SearchView"/>
     <item
             android:id="@+id/add_buddy"
-            android:icon="@android:drawable/ic_menu_add"
+            android:icon="@drawable/social_add_person"
             android:showAsAction="ifRoom"
             android:title="@string/add_buddy"/>
     <item
-            android:id="@+id/display_options"
-            android:icon="@android:drawable/ic_menu_sort_alphabetically"
-            android:showAsAction="ifRoom"
-            android:title="@string/display_options"/>
-    <item
             android:id="@+id/show_dialogs"
-            android:icon="@android:drawable/ic_menu_share"
+            android:icon="@drawable/social_cc_bcc"
             android:showAsAction="ifRoom"
             android:title="@string/show_dialogs"/>
     <item
             android:id="@+id/settings"
-            android:icon="@android:drawable/ic_menu_preferences"
+            android:icon="@drawable/action_settings"
             android:showAsAction="ifRoom"
             android:title="@string/settings"/>
     <item
             android:id="@+id/info"
-            android:icon="@android:drawable/ic_menu_info_details"
+            android:icon="@drawable/action_about"
             android:showAsAction="ifRoom"
             android:title="@string/info"/>
     <item
             android:id="@+id/feedback"
-            android:icon="@android:drawable/ic_menu_send"
+            android:icon="@drawable/content_email"
             android:showAsAction="ifRoom"
             android:title="@string/feedback"/>
 </menu>

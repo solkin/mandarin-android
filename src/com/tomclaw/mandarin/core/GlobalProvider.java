@@ -45,6 +45,13 @@ public class GlobalProvider extends ContentProvider {
 
     public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_GROUP_NAME = "group_name";
+    public static final String ROSTER_GROUP_ID = "group_id";
+    public static final String ROSTER_GROUP_TYPE = "group_type";
+    public static final String ROSTER_GROUP_UPDATE_TIME = "group_update_time";
+
+    public static final String GROUP_TYPE_SYSTEM = "group_system";
+    public static final String GROUP_TYPE_DEFAULT = "group_default";
+    public static final String GROUP_ID_RECYCLE = "0";
 
     public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_id";
@@ -54,6 +61,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_GROUP_ID = "buddy_group_id";
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
+    public static final String ROSTER_BUDDY_FAVORITE = "buddy_favorite";
+    public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -79,14 +88,17 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text" + ");";
+            + ROSTER_GROUP_ACCOUNT_DB_ID + " int, " + ROSTER_GROUP_NAME + " text, "
+            + ROSTER_GROUP_ID + " text, " + ROSTER_GROUP_TYPE + " int, "
+            + ROSTER_GROUP_UPDATE_TIME + " int" + ");";
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " int, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
             + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
-            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int" + ");";
+            + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
+            + ROSTER_BUDDY_FAVORITE + " int, " + ROSTER_BUDDY_UPDATE_TIME + " int" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -127,7 +139,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(Settings.LOG_TAG, "query, " + uri.toString());
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
@@ -186,7 +197,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         long rowId = sqLiteDatabase.insert(getTableName(uri), null, values);
         Uri resultUri = ContentUris.withAppendedId(uri, rowId);
@@ -197,7 +207,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.d(Settings.LOG_TAG, "delete, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
         // Notify ContentResolver about data changes.
@@ -207,7 +216,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
         // Notify ContentResolver about data changes.

@@ -145,7 +145,8 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                         /** Initialize service **/
                         serviceInteraction.initService();
 
-                        int notificationId = getIntent().getIntExtra(NotificationHelper.NOTIFICATION_ID,NotificationHelper.NOT_EXISTS_NOTIFICATION_ID);
+                        int notificationId = getIntent().getIntExtra(NotificationHelper.NOTIFICATION_ID,
+                                NotificationHelper.NOT_EXISTS_NOTIFICATION_ID);
                         if (notificationId != NotificationHelper.NOT_EXISTS_NOTIFICATION_ID){
                             serviceInteraction.clearNotifications(notificationId);
                             getIntent().removeExtra(NotificationHelper.NOTIFICATION_ID);

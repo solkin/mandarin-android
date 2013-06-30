@@ -169,25 +169,24 @@ public class CoreService extends Service {
                 // For testing purposes only!
                 try {
                     Thread.sleep(1000);
-                    notificationHelper.createSimpleNotification(2, "Mandarin", "Hello!");
-                    notificationHelper.createSimpleNotification(2, "Mandarin", "What's up?");
-                    notificationHelper.createSimpleNotification(1, "Mandarin", "1");
-                    notificationHelper.createSimpleNotification(1, "Mandarin", "2");
-                    notificationHelper.createSimpleNotification(1, "Mandarin", "3");
-                    //showNotification();
+                    /*notificationHelper.notifyAboutMessage(2, "Hello!");
+                    notificationHelper.notifyAboutMessage(2, "What's up?");
+                    notificationHelper.notifyAboutMessage(1, "1");
+                    notificationHelper.notifyAboutMessage(1, "2");
+                    notificationHelper.notifyAboutMessage(1, "3");*/
                     Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
                 }
                 // Service is now ready.
                 updateState(STATE_UP);
 
-                try {
+                /*try {
                     Thread.sleep(20000);
-                    notificationHelper.createSimpleNotification(2, "Mandarin", "Bye!");
+                    notificationHelper.notifyAboutMessage(2, "Bye!");
                     //showNotification();
                     Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
-                }
+                }*/
             }
         }.start();
 

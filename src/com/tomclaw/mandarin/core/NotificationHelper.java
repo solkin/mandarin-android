@@ -5,11 +5,14 @@ import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,14 +41,25 @@ public class NotificationHelper {
         mNotificationsCounter = new HashMap<Integer, Integer>();
     }
 
-    public void createSimpleNotification(int notificationId, String title, String message){
-        if (!isNotificationForEveryContact) {
-             notificationId = defaultNotificationId;
+    public void clearNotifications(int id){
+        if(mNotificationsCounter.containsKey(id)){
+            mNotificationsCounter.remove(id);
         }
-        int counter;
-        counter = getNotificationsCount(notificationId);
-        counter += 1;
-        mNotificationsCounter.put(notificationId, counter);
+    }
+
+    public void cancelAll() {
+        mNotificationManager.cancelAll();
+    }
+
+    public void cancel(int notificationId){
+        mNotificationManager.cancel(notificationId);
+    }
+
+    public void notifyAboutSimpleEvent(int notificationId, String title, String message){
+        if (!isNotificationForEveryContact) {
+            notificationId = defaultNotificationId;
+        }
+        int counter = prepareNotificationsCounter(notificationId);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(mContext)
@@ -58,19 +72,10 @@ public class NotificationHelper {
             builder.setNumber(counter);
         }
 
-        Intent resultIntent = new Intent(mContext, ChatActivity.class);
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
         resultIntent.putExtra(NOTIFICATION_ID, notificationId);
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-        stackBuilder.addParentStack(ChatActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent;
-        //pass notificationId for creating multiple instances of Pending Intent
-        resultPendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
+        builder.setContentIntent(getResultPendingIntent(notificationId, resultIntent));
+
         Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
         dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
         PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(mContext, notificationId, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -78,17 +83,111 @@ public class NotificationHelper {
         mNotificationManager.notify(notificationId, builder.build());
     }
 
-    public void clearNotifications(int id){
-        if(mNotificationsCounter.containsKey(id)){
-            mNotificationsCounter.remove(id);
+    public void notifyAboutMessage(int buddyDbId, String message){
+        int notificationId = buddyDbId;
+        if (!isNotificationForEveryContact) {
+            notificationId = defaultNotificationId;
         }
+        int counter = prepareNotificationsCounter(notificationId);
+
+        Cursor cursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+
+        String nick;
+        Bitmap icon;
+        if (cursor.moveToFirst()) {
+            int buddyNickIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            nick = cursor.getString(buddyNickIndex);
+        } else {
+            return;
+        }
+        icon = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.ic_launcher);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(mContext)
+                        .setContentTitle(nick)
+                        .setContentText(message)
+                        .setLargeIcon(icon)
+                        .setSmallIcon(R.drawable.ic_inc_bubble)
+                        .setAutoCancel(true);
+        if(counter > 1){
+            builder.setNumber(counter);
+        }
+
+        Intent resultIntent = new Intent(mContext, ChatActivity.class);
+        resultIntent.putExtra(NOTIFICATION_ID, notificationId);
+        resultIntent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        builder.setContentIntent(getResultPendingIntent(notificationId, resultIntent));
+
+        Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
+        dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
+        PendingIntent dismissPendingIntent =
+                PendingIntent.getBroadcast(mContext, notificationId, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setDeleteIntent(dismissPendingIntent);
+
+        mNotificationManager.notify(notificationId, builder.build());
+    }
+
+    public void notifyAboutAuthorizationMessage(int buddyDbId, String message){
+        int notificationId = defaultNotificationId;
+        if (!isNotificationForEveryContact) {
+            notificationId = defaultNotificationId;
+        }
+        int counter = prepareNotificationsCounter(notificationId);
+
+        Cursor cursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+
+        String nick;
+        Bitmap icon;
+        if (cursor.moveToFirst()) {
+            int buddyNickIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            nick = cursor.getString(buddyNickIndex);
+        } else {
+            return;
+        }
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(mContext)
+                        .setContentTitle(nick)
+                        .setContentText(message)
+                        .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(),R.drawable.ic_launcher))
+                        .setSmallIcon(R.drawable.ic_inc_bubble)
+                        .setAutoCancel(true);
+        if(counter > 1){
+            builder.setNumber(counter);
+        }
+
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
+        resultIntent.putExtra(NOTIFICATION_ID, notificationId);
+        resultIntent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        builder.setContentIntent(getResultPendingIntent(notificationId, resultIntent));
+
+        Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
+        dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
+        PendingIntent dismissPendingIntent =
+                PendingIntent.getBroadcast(mContext, notificationId, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setDeleteIntent(dismissPendingIntent);
+
+        mNotificationManager.notify(notificationId, builder.build());
+    }
+
+    private int prepareNotificationsCounter(int notificationId){
+        int counter;
+        counter = getNotificationsCount(notificationId);
+        counter += 1;
+        mNotificationsCounter.put(notificationId, counter);
+        return counter;
     }
 
     private int getNotificationsCount(int notificationId){
         return mNotificationsCounter.containsKey(notificationId) ? mNotificationsCounter.get(notificationId) : 0;
     }
 
-    public void cancelAll() {
-        mNotificationManager.cancelAll();
+    private PendingIntent getResultPendingIntent(int pendingIntentId, Intent resultIntent){
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        stackBuilder.addParentStack(ChatActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        return stackBuilder.getPendingIntent(pendingIntentId, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

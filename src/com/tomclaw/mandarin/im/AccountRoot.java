@@ -40,6 +40,10 @@ public abstract class AccountRoot extends CoreObject {
         this.context = context;
     }
 
+    public Context getContext(){
+        return context;
+    }
+
     public ContentResolver getContentResolver() {
         return context.getContentResolver();
     }

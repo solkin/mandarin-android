@@ -128,6 +128,62 @@ public class NotificationHelper {
         mNotificationManager.notify(notificationId, builder.build());
     }
 
+    public void notifyAboutMessage(int accountDbId, String buddyId, String message){
+        Cursor helpCursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID + "='" + accountDbId + "'" + " AND "
+                        + GlobalProvider.ROSTER_BUDDY_ID + "='" + buddyId + "'", null, null);
+        int buddyDbId;
+        if (helpCursor.moveToFirst()) {
+            final int BUDDY_DB_ID_COLUMN = helpCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            buddyDbId = helpCursor.getInt(BUDDY_DB_ID_COLUMN);
+        } else {
+            return;
+        }
+
+        int notificationId = buddyDbId;
+        if (!isNotificationForEveryContact) {
+            notificationId = defaultNotificationId;
+        }
+        int counter = prepareNotificationsCounter(notificationId);
+
+        Cursor cursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+
+        String nick;
+        Bitmap icon;
+        if (cursor.moveToFirst()) {
+            int buddyNickIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            nick = cursor.getString(buddyNickIndex);
+        } else {
+            return;
+        }
+        icon = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.ic_launcher);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(mContext)
+                        .setContentTitle(nick)
+                        .setContentText(message)
+                        .setLargeIcon(icon)
+                        .setSmallIcon(R.drawable.ic_inc_bubble)
+                        .setAutoCancel(true);
+        if(counter > 1){
+            builder.setNumber(counter);
+        }
+
+        Intent resultIntent = new Intent(mContext, ChatActivity.class);
+        resultIntent.putExtra(NOTIFICATION_ID, notificationId);
+        resultIntent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        builder.setContentIntent(getResultPendingIntent(notificationId, resultIntent));
+
+        Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
+        dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
+        PendingIntent dismissPendingIntent =
+                PendingIntent.getBroadcast(mContext, notificationId, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setDeleteIntent(dismissPendingIntent);
+
+        mNotificationManager.notify(notificationId, builder.build());
+    }
+
     public void notifyAboutAuthorizationMessage(int buddyDbId, String message){
         int notificationId = defaultNotificationId;
         if (!isNotificationForEveryContact) {

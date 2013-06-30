@@ -1,14 +1,12 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.NotificationHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -62,6 +60,7 @@ public class IcqSession {
     private Gson gson;
     // Connection and fetch events client.
     private HttpClient httpClient;
+    private NotificationHelper notificationHelper;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
@@ -180,6 +179,8 @@ public class IcqSession {
 
                     // Update starts session result in database.
                     icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
+                    // TODO: move to right place
+                    this.notificationHelper = new NotificationHelper(icqAccountRoot.getContext());
                     return EXTERNAL_SESSION_OK;
                 }
                 // TODO: may be cases if ts incorrect. Mey be proceed too.
@@ -342,6 +343,7 @@ public class IcqSession {
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
                         icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
+                notificationHelper.notifyAboutMessage(icqAccountRoot.getAccountDbId(), buddyId, messageText);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {

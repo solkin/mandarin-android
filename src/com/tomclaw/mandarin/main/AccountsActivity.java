@@ -158,11 +158,15 @@ public class AccountsActivity extends ChiefActivity {
                 if (cursor.moveToPosition(selectedItem)) {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
                     int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+                    int COLUMN_ACCOUNT_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
                     String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
                     String userId = cursor.getString(COLUMN_USER_ID);
+                    int statusIndex = cursor.getInt(COLUMN_ACCOUNT_STATUS);
                     try {
                         // Trying to connect account.
-                        getServiceInteraction().updateAccountStatus(accountType, userId, StatusUtil.STATUS_ONLINE);
+                        getServiceInteraction().updateAccountStatus(accountType, userId,
+                                statusIndex == StatusUtil.STATUS_OFFLINE ?
+                                        StatusUtil.STATUS_ONLINE : StatusUtil.STATUS_OFFLINE);
                     } catch (RemoteException e) {
                         // Heh... Nothing to do in this case.
                     }

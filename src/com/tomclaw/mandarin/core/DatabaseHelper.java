@@ -67,18 +67,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String groupName = generateRandomWord(random);
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+                    cv1.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 5 + random.nextInt(5); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
                         boolean isDialog = (random.nextInt(10) == 1);
+                        boolean isFavorite = (random.nextInt(20) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog /** Dialog criteria **/);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {

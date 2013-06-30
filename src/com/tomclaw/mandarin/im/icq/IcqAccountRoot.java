@@ -1,12 +1,17 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.content.ContentResolver;
 import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.StatusUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EVENT_DATA_OBJECT;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,24 +38,66 @@ public class IcqAccountRoot extends AccountRoot {
         icqSession = new IcqSession(this);
     }
 
+    public IcqSession getSession() {
+        return icqSession;
+    }
+
     @Override
     public void connect() {
         Log.d(Settings.LOG_TAG, "icq connection attempt");
         Thread connectThread = new Thread() {
-            public void run() {
-                // TODO: implement errors handling.
-                while (!checkSessionReady()) {
-                    while (!checkLoginReady()) {
-                        // Login with credentials.
-                        icqSession.clientLogin();
-                    }
-                    // Attempt to start session.
-                    icqSession.startSession();
+
+            private void sleep() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ignored) {
+                    // No need to check.
                 }
-                // Update account connecting state to false.
-                updateAccountState(false);
-                // Starting events fetching in verbal cycle.
-                icqSession.startEventsFetching();
+            }
+
+            public void run() {
+                do {
+                    while (!checkSessionReady()) {
+                        while (!checkLoginReady()) {
+                            // Login with credentials.
+                            switch (icqSession.clientLogin()) {
+                                case IcqSession.EXTERNAL_LOGIN_ERROR: {
+                                    // Show notification.
+                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                    return;
+                                }
+                                case IcqSession.EXTERNAL_UNKNOWN: {
+                                    // Show notification.
+                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                    return;
+                                }
+                                case IcqSession.INTERNAL_ERROR: {
+                                    // Sleep some time.
+                                    sleep();
+                                    break;
+                                }
+                            }
+                        }
+                        // Attempt to start session.
+                        switch (icqSession.startSession()) {
+                            case IcqSession.EXTERNAL_UNKNOWN: {
+                                // Retry client login.
+                                resetLoginData();
+                                break;
+                            }
+                            case IcqSession.INTERNAL_ERROR: {
+                                // Sleep some time.
+                                sleep();
+                                break;
+                            }
+                        }
+                    }
+                    // Update account connecting state to false.
+                    updateAccountState(false);
+                    // Starting events fetching in verbal cycle.
+                } while (!icqSession.startEventsFetching());
+                // Update offline status.
+                updateAccountState(StatusUtil.STATUS_OFFLINE, false);
             }
         };
         connectThread.start();
@@ -58,6 +105,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void disconnect() {
+        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
     }
 
     public void updateStatus(int statusIndex) {
@@ -125,6 +173,19 @@ public class IcqAccountRoot extends AccountRoot {
     public boolean checkSessionReady() {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
                 || myInfo == null || wellKnownUrls == null);
+    }
+
+    public void resetLoginData() {
+        tokenA = null;
+        sessionKey = null;
+        tokenExpirationDate = 0;
+    }
+
+    public void resetSessionData() {
+        aimSid = null;
+        fetchBaseUrl = null;
+        myInfo = null;
+        wellKnownUrls = null;
     }
 
     public long getHostTime() {

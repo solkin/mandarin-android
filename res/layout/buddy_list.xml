@@ -6,11 +6,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.viewpageindicator.TitlePageIndicator
+    <com.astuetz.viewpager.extensions.PagerSlidingTabStrip
             android:id="@+id/indicator"
-            android:padding="10dip"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="48dip"/>
     <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"

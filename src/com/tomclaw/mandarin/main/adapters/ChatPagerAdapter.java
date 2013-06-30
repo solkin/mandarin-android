@@ -16,7 +16,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.StatusUtil;
-import com.viewpageindicator.PageIndicator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,14 +32,12 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private LoaderManager loaderManager;
     private Cursor cursor;
     private LayoutInflater inflater;
-    private PageIndicator indicator;
     private Runnable onUpdate;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, PageIndicator indicator, Runnable onUpdate) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;
-        this.indicator = indicator;
         this.onUpdate = onUpdate;
         inflater = activity.getLayoutInflater();
         // Initialize loader for dialogs Id.
@@ -143,9 +140,6 @@ public class ChatPagerAdapter extends PagerAdapter implements
         this.cursor = cursor;
         // Before notifying UI about update, run special event.
         onUpdate.run();
-        // Notify page indicator and base adapter data was changed.
-        notifyDataSetChanged();
-        indicator.notifyDataSetChanged();
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActivityManager;
 import android.content.*;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -34,6 +37,14 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         Log.d(Settings.LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setTheme(R.style.Theme_Mandarin);
+
+        Drawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.background_action_bar));
+        Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {
+                colorDrawable, bottomDrawable });
+
+        getSupportActionBar().setBackgroundDrawable(layerDrawable);
+
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;

@@ -1,7 +1,5 @@
 package com.tomclaw.mandarin.util;
 
-import android.util.Log;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.HashMap;
@@ -33,7 +31,6 @@ public class StatusUtil {
     }
 
     public static int getStatusResource(String accountType, int statusIndex) {
-        Log.d(Settings.LOG_TAG, "accountType = " + accountType + "; statusIndex = " + statusIndex);
         return statuses.get(accountType)[statusIndex];
     }
 }

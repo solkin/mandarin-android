@@ -18,9 +18,11 @@ import java.util.List;
 public class SessionHolder {
 
     private final List<AccountRoot> accountRootList;
+    private final Context context;
     private final ContentResolver contentResolver;
 
     public SessionHolder(Context context) {
+        this.context = context;
         // Obtain content resolver to perform queries.
         contentResolver = context.getContentResolver();
         accountRootList = new ArrayList<AccountRoot>();
@@ -28,12 +30,12 @@ public class SessionHolder {
 
     public void load() {
         // Loading accounts from database.
-        QueryHelper.getAccounts(contentResolver, accountRootList);
+        QueryHelper.getAccounts(context, accountRootList);
     }
 
     public void updateAccountRoot(AccountRoot accountRoot) {
         // Attempting to update account.
-        if (QueryHelper.updateAccount(contentResolver, accountRoot)) {
+        if (QueryHelper.updateAccount(context, accountRoot)) {
             // Account was created.
             accountRootList.add(accountRoot);
         }

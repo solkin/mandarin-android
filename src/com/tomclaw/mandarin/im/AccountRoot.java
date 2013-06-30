@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Parcel;
 import com.tomclaw.mandarin.core.CoreObject;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -31,15 +33,19 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * Staff
      */
-    protected transient ContentResolver contentResolver;
+    protected transient Context context;
     protected transient int accountDbId;
 
-    public void setContentResolver(ContentResolver contentResolver) {
-        this.contentResolver = contentResolver;
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public ContentResolver getContentResolver() {
-        return contentResolver;
+        return context.getContentResolver();
+    }
+
+    public Resources getResources() {
+        return context.getResources();
     }
 
     public void setAccountDbId(int accountDbId) {
@@ -149,7 +155,7 @@ public abstract class AccountRoot extends CoreObject {
      */
     public void updateAccount() {
         // Update database info.
-        QueryHelper.updateAccount(contentResolver, this);
+        QueryHelper.updateAccount(context, this);
     }
 
     /**

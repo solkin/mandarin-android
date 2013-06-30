@@ -41,6 +41,7 @@
     <string name="group_all">All friends</string>
 
     <string name="error_no_such_account">Error! No such account.</string>
+    <string name="recycle">Recycle</string>
 
     <string-array name="status_list">
         <item>@string/status_unavailable</item>

@@ -139,7 +139,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(Settings.LOG_TAG, "query, " + uri.toString());
         String table;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
@@ -198,7 +197,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         long rowId = sqLiteDatabase.insert(getTableName(uri), null, values);
         Uri resultUri = ContentUris.withAppendedId(uri, rowId);
@@ -209,7 +207,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.d(Settings.LOG_TAG, "delete, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
         // Notify ContentResolver about data changes.
@@ -219,7 +216,6 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.d(Settings.LOG_TAG, "insert, " + uri.toString());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
         // Notify ContentResolver about data changes.

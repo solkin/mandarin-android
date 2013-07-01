@@ -232,6 +232,7 @@ public class QueryHelper {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);

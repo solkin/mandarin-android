@@ -1,14 +1,19 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
@@ -29,6 +34,46 @@ public class ChatActivity extends ChiefActivity {
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PagerSlidingTabStrip mIndicator;
+    protected boolean mActionMode;
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.chat_history_edit_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after
+        // onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.edit_account_menu:
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.remove_account_menu:
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = false;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,8 +128,23 @@ public class ChatActivity extends ChiefActivity {
                 mAdapter.notifyDataSetChanged();
             }
         };
+        AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Checking for action mode is already activated.
+                if (mActionMode) {
+                    return false;
+                }
+                // Start the CAB using the ActionMode.Callback defined above
+                mActionMode = true;
+                startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        };
         mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate);
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate, itemLongClickListener);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);

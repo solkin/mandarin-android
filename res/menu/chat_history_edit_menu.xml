@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/message_copy"
+            android:icon="@drawable/content_copy"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/message_copy">
+    </item>
+    <item
+            android:id="@+id/message_create_note"
+            android:icon="@drawable/content_save"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/message_save">
+    </item>
+    <item
+            android:id="@+id/message_share"
+            android:icon="@drawable/social_share"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/message_share">
+    </item>
+</menu>

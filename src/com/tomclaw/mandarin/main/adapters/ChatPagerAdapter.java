@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -33,12 +34,15 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private Cursor cursor;
     private LayoutInflater inflater;
     private Runnable onUpdate;
+    private AdapterView.OnItemLongClickListener itemLongClickListener;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate,
+                            AdapterView.OnItemLongClickListener itemLongClickListener) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;
         this.onUpdate = onUpdate;
+        this.itemLongClickListener = itemLongClickListener;
         inflater = activity.getLayoutInflater();
         // Initialize loader for dialogs Id.
         this.loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
@@ -56,6 +60,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
         ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
                 cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
+        chatList.setOnItemLongClickListener(itemLongClickListener);
         container.addView(view);
         return view;
     }

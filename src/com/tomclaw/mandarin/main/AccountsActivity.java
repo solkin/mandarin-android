@@ -29,9 +29,9 @@ import com.tomclaw.mandarin.util.StatusUtil;
 public class AccountsActivity extends ChiefActivity {
 
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
-    protected boolean mActionMode;
     protected int selectedItem;
     private AccountsAdapter sAdapter;
+    protected boolean mActionMode;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created; startActionMode() was called

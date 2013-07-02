@@ -42,6 +42,9 @@
 
     <string name="error_no_such_account">Error! No such account.</string>
     <string name="recycle">Recycle</string>
+    <string name="message_copy">Copy</string>
+    <string name="message_save">Save message</string>
+    <string name="message_share">Share</string>
 
     <string-array name="status_list">
         <item>@string/status_unavailable</item>

@@ -343,6 +343,11 @@ public class QueryHelper {
                 GlobalProvider.ROW_AUTO_ID.concat(" ASC LIMIT 1"));
         if (buddyCursor.moveToFirst()) {
             long buddyDbId = buddyCursor.getLong(buddyCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            int buddyDialogFlag = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG));
+            int buddyFavorite = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_FAVORITE));
+            // Update dialog and favorite flags.
+            buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag);
+            buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, buddyFavorite);
             // Update this row.
             queryBuilder.setLength(0);
             queryBuilder.append(GlobalProvider.ROW_AUTO_ID).append("=='").append(buddyDbId).append("'");

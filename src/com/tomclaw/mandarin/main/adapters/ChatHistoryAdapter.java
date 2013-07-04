@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -18,6 +19,8 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +31,10 @@ import java.text.SimpleDateFormat;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] MESSAGE_TYPES = new int[]{R.id.error_message, R.id.incoming_message, R.id.outgoing_message};
+    private static final int[] MESSAGE_TYPES = new int[]{
+            R.id.error_message,
+            R.id.incoming_message,
+            R.id.outgoing_message};
     private static final int[] MESSAGE_STATES = new int[]{
             R.drawable.ic_dot,
             R.drawable.ic_error,
@@ -55,11 +61,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private Context context;
     private LayoutInflater mInflater;
+    private Map<Integer, Boolean> selectionMap;
+    private boolean selectionMode;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        selectionMap = new HashMap<Integer, Boolean>();
+        selectionMode = false;
         ADAPTER_ID = buddyBdId;
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
@@ -145,6 +155,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
+        // Selected flag check box.
+        view.findViewById(R.id.selected_check).setVisibility(selectionMode ? View.VISIBLE : View.GONE);
+        ((CheckBox)view.findViewById(R.id.selected_check)).setChecked(getSelection(cursor.getPosition()));
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -186,5 +199,20 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.GONE);
         }
+    }
+
+    public void setSelection(int position, boolean value) {
+        selectionMap.put(position, value);
+    }
+
+    public boolean getSelection(int position) {
+        if(selectionMap.containsKey(position)) {
+            return selectionMap.get(position);
+        }
+        return false;
+    }
+
+    public void setSelectionMode(boolean selectionMode) {
+        this.selectionMode = selectionMode;
     }
 }

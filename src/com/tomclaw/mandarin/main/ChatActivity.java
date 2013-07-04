@@ -132,19 +132,25 @@ public class ChatActivity extends ChiefActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                return true;
+            }
+        };
+
+        Runnable onLongClick = new Runnable() {
+            @Override
+            public void run() {
                 // Checking for action mode is already activated.
                 if (mActionMode) {
-                    return false;
+                    return;
                 }
                 // Start the CAB using the ActionMode.Callback defined above
                 mActionMode = true;
                 startActionMode(mActionModeCallback);
-                view.setSelected(true);
-                return true;
             }
         };
         mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate, itemLongClickListener);
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate, onLongClick);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);

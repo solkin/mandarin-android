@@ -34,15 +34,14 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private Cursor cursor;
     private LayoutInflater inflater;
     private Runnable onUpdate;
-    private AdapterView.OnItemLongClickListener itemLongClickListener;
+    private Runnable onLongClick;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate,
-                            AdapterView.OnItemLongClickListener itemLongClickListener) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate, Runnable onLongClick) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;
         this.onUpdate = onUpdate;
-        this.itemLongClickListener = itemLongClickListener;
+        this.onLongClick = onLongClick;
         inflater = activity.getLayoutInflater();
         // Initialize loader for dialogs Id.
         this.loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
@@ -57,10 +56,21 @@ public class ChatPagerAdapter extends PagerAdapter implements
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
         ListView chatList = (ListView) view.findViewById(R.id.chat_list);
-        ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
+        final ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
                 cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setOnItemLongClickListener(itemLongClickListener);
+        AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(Settings.LOG_TAG, "clicked: " + position + " id: " + id);
+                boolean selection = chatHistoryAdapter.getSelection(position);
+                Log.d(Settings.LOG_TAG, "selected: " + selection);
+                chatHistoryAdapter.setSelection(position, !selection);
+                chatHistoryAdapter.notifyDataSetChanged();
+            }
+        };
+        chatList.setOnItemClickListener(itemClickListener);
         container.addView(view);
         return view;
     }

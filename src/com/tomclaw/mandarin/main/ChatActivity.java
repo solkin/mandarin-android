@@ -128,14 +128,6 @@ public class ChatActivity extends ChiefActivity {
                 mAdapter.notifyDataSetChanged();
             }
         };
-        AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                return true;
-            }
-        };
 
         Runnable onLongClick = new Runnable() {
             @Override

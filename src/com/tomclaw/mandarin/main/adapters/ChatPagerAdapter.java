@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
         final ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
                 cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
         chatList.setAdapter(chatHistoryAdapter);
+        // Long-click listener to activate action mode and show check-boxes.
         AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
 
             @Override
@@ -71,13 +73,19 @@ public class ChatPagerAdapter extends PagerAdapter implements
             }
         };
         chatList.setOnItemLongClickListener(itemLongClickListener);
+        // Click listener for item clicked events (in selection mode).
         AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(Settings.LOG_TAG, "clicked: " + position + " id: " + id);
-                boolean selection = HistorySelection.getInstance().getSelection(position);
-                Log.d(Settings.LOG_TAG, "selected: " + selection);
-                HistorySelection.getInstance().setSelection(position, !selection);
+                String itemText;
+                boolean selectionExist = HistorySelection.getInstance().isSelectionExist(position);
+                if(selectionExist) {
+                    itemText = null;
+                } else {
+                    itemText = chatHistoryAdapter.getItemText(position);
+                }
+                HistorySelection.getInstance().setSelection(position, itemText);
                 chatHistoryAdapter.notifyDataSetChanged();
             }
         };

@@ -1,5 +1,9 @@
 package com.tomclaw.mandarin.main;
 
+import android.text.TextUtils;
+import com.actionbarsherlock.view.CollapsibleActionView;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,20 +25,25 @@ public class HistorySelection {
         return Holder.instance;
     }
 
-    private Map<Integer, Boolean> selectionMap;
+    private Map<Integer, String> selectionMap;
     private boolean selectionMode;
 
     public HistorySelection() {
-        selectionMap = new HashMap<Integer, Boolean>();
+        selectionMap = new HashMap<Integer, String>();
         selectionMode = false;
     }
 
-    public Set<Integer> complete() {
-        Set<Integer> positions = selectionMap.keySet();
+    public String complete() {
+        // Building selected messages.
+        StringBuilder selectionBuilder = new StringBuilder();
+        Collection<String> selection = selectionMap.values();
+        for(String message : selection) {
+            selectionBuilder.append(message).append('\n').append('\n');
+        }
         // Clearing all.
         selectionMap.clear();
         selectionMode = false;
-        return positions;
+        return selectionBuilder.toString();
     }
 
     public boolean getSelectionMode() {
@@ -45,18 +54,22 @@ public class HistorySelection {
         this.selectionMode = selectionMode;
     }
 
-    public void setSelection(int position, boolean value) {
-        if(value) {
-            selectionMap.put(position, value);
-        } else if(selectionMap.containsKey(position)) {
+    public void setSelection(int position, String value) {
+        if(TextUtils.isEmpty(value)) {
             selectionMap.remove(position);
+        } else {
+            selectionMap.put(position, value);
         }
     }
 
-    public boolean getSelection(int position) {
+    public String getSelection(int position) {
         if(selectionMap.containsKey(position)) {
             return selectionMap.get(position);
         }
-        return false;
+        return null;
+    }
+
+    public boolean isSelectionExist(int position) {
+        return !TextUtils.isEmpty(getSelection(position));
     }
 }

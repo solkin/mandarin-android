@@ -423,4 +423,32 @@ public class QueryHelper {
         }
         removedCursor.close();
     }
+
+    public static String getBuddyNick(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        // Obtain specified buddy. If exist.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Checking for there is at least one buddy and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int nickColumnIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            return cursor.getString(nickColumnIndex);
+        }
+        throw new BuddyNotFoundException();
+    }
+
+    public static String getAccountName(ContentResolver contentResolver, int accountDbId)
+            throws AccountNotFoundException {
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
+        // Checking for there is at least one account and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int nameColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
+            return cursor.getString(nameColumnIndex);
+        }
+        throw new AccountNotFoundException();
+    }
 }

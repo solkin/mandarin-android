@@ -16,7 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.main.HistorySelection;
 
 import java.text.SimpleDateFormat;
@@ -57,6 +60,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
     private static int COLUMN_MESSAGE_STATE;
+    private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
+    private static int COLUMN_MESSAGE_BUDDY_DB_ID;
 
     private Context context;
     private LayoutInflater mInflater;
@@ -84,6 +89,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
         COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
+        COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
+        COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -153,8 +160,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         // Selected flag check box.
         view.findViewById(R.id.selected_check).setVisibility(
                 HistorySelection.getInstance().getSelectionMode() ? View.VISIBLE : View.GONE);
-        ((CheckBox)view.findViewById(R.id.selected_check)).setChecked(
-                HistorySelection.getInstance().getSelection(cursor.getPosition()));
+        ((CheckBox) view.findViewById(R.id.selected_check)).setChecked(
+                HistorySelection.getInstance().isSelectionExist(cursor.getPosition()));
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -196,5 +203,41 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.GONE);
         }
+    }
+
+    public String getItemText(int position) {
+        if (mCursor.moveToPosition(position)) {
+            // Message data.
+            int messageType = mCursor.getInt(COLUMN_MESSAGE_TYPE);
+            String messageText = mCursor.getString(COLUMN_MESSAGE_TEXT);
+            long messageTime = mCursor.getLong(COLUMN_MESSAGE_TIME);
+            String messageTimeText = simpleTimeFormat.format(messageTime);
+            String messageDateText = simpleDateFormat.format(messageTime);
+            int accountDbId = mCursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
+            int buddyDbId = mCursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
+            String buddyNick = "unknown";
+            try {
+                // Select message type.
+                switch (MESSAGE_TYPES[messageType]) {
+                    case R.id.incoming_message: {
+                        buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
+                        break;
+                    }
+                    case R.id.outgoing_message: {
+                        buddyNick = QueryHelper.getAccountName(context.getContentResolver(), accountDbId);
+                        break;
+                    }
+                }
+            } catch (BuddyNotFoundException ignored) {
+            } catch (AccountNotFoundException ignored) {
+            }
+            // Building message copy.
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder.append('[').append(buddyNick).append(']').append('\n');
+            messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
+            messageBuilder.append(messageText);
+            return messageBuilder.toString();
+        }
+        return null;
     }
 }

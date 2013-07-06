@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -57,9 +60,11 @@ public class ChatActivity extends ChiefActivity {
 
         // Called when the user selects a contextual menu item
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Set<Integer> positions = HistorySelection.getInstance().complete();
+            String selection = HistorySelection.getInstance().complete();
             switch (item.getItemId()) {
                 case R.id.message_copy:
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;

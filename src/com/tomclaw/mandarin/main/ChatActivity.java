@@ -23,6 +23,9 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -34,7 +37,6 @@ public class ChatActivity extends ChiefActivity {
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PagerSlidingTabStrip mIndicator;
-    protected boolean mActionMode;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created; startActionMode() was called
@@ -55,12 +57,17 @@ public class ChatActivity extends ChiefActivity {
 
         // Called when the user selects a contextual menu item
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Set<Integer> positions = HistorySelection.getInstance().complete();
             switch (item.getItemId()) {
-                case R.id.edit_account_menu:
+                case R.id.message_copy:
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;
-                case R.id.remove_account_menu:
+                case R.id.message_create_note:
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.message_share:
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;
@@ -71,7 +78,8 @@ public class ChatActivity extends ChiefActivity {
 
         // Called when the user exits the action mode
         public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = false;
+            HistorySelection.getInstance().setSelectionMode(false);
+            mAdapter.notifyDataSetChanged();
         }
     };
 
@@ -128,16 +136,15 @@ public class ChatActivity extends ChiefActivity {
                 mAdapter.notifyDataSetChanged();
             }
         };
-
         Runnable onLongClick = new Runnable() {
             @Override
             public void run() {
                 // Checking for action mode is already activated.
-                if (mActionMode) {
+                if (HistorySelection.getInstance().getSelectionMode()) {
                     return;
                 }
                 // Start the CAB using the ActionMode.Callback defined above
-                mActionMode = true;
+                HistorySelection.getInstance().setSelectionMode(true);
                 startActionMode(mActionModeCallback);
             }
         };

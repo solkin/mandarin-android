@@ -17,10 +17,9 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.HistorySelection;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -61,15 +60,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private Context context;
     private LayoutInflater mInflater;
-    private Map<Integer, Boolean> selectionMap;
-    private boolean selectionMode;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        selectionMap = new HashMap<Integer, Boolean>();
-        selectionMode = false;
         ADAPTER_ID = buddyBdId;
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
@@ -156,8 +151,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
         // Selected flag check box.
-        view.findViewById(R.id.selected_check).setVisibility(selectionMode ? View.VISIBLE : View.GONE);
-        ((CheckBox)view.findViewById(R.id.selected_check)).setChecked(getSelection(cursor.getPosition()));
+        view.findViewById(R.id.selected_check).setVisibility(
+                HistorySelection.getInstance().getSelectionMode() ? View.VISIBLE : View.GONE);
+        ((CheckBox)view.findViewById(R.id.selected_check)).setChecked(
+                HistorySelection.getInstance().getSelection(cursor.getPosition()));
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -199,20 +196,5 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.GONE);
         }
-    }
-
-    public void setSelection(int position, boolean value) {
-        selectionMap.put(position, value);
-    }
-
-    public boolean getSelection(int position) {
-        if(selectionMap.containsKey(position)) {
-            return selectionMap.get(position);
-        }
-        return false;
-    }
-
-    public void setSelectionMode(boolean selectionMode) {
-        this.selectionMode = selectionMode;
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.HistorySelection;
 import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
@@ -36,7 +37,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private Runnable onUpdate;
     private Runnable onLongClick;
 
-    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager, Runnable onUpdate, Runnable onLongClick) {
+    public ChatPagerAdapter(Activity activity, LoaderManager loaderManager,
+                            Runnable onUpdate, Runnable onLongClick) {
         super();
         this.activity = activity;
         this.loaderManager = loaderManager;
@@ -64,6 +66,7 @@ public class ChatPagerAdapter extends PagerAdapter implements
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 onLongClick.run();
+                chatHistoryAdapter.notifyDataSetChanged();
                 return true;
             }
         };
@@ -72,9 +75,9 @@ public class ChatPagerAdapter extends PagerAdapter implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(Settings.LOG_TAG, "clicked: " + position + " id: " + id);
-                boolean selection = chatHistoryAdapter.getSelection(position);
+                boolean selection = HistorySelection.getInstance().getSelection(position);
                 Log.d(Settings.LOG_TAG, "selected: " + selection);
-                chatHistoryAdapter.setSelection(position, !selection);
+                HistorySelection.getInstance().setSelection(position, !selection);
                 chatHistoryAdapter.notifyDataSetChanged();
             }
         };

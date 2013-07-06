@@ -3,14 +3,11 @@ package com.tomclaw.mandarin.main;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
@@ -37,6 +34,7 @@ public class ChatActivity extends ChiefActivity {
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PagerSlidingTabStrip mIndicator;
+    private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created; startActionMode() was called
@@ -52,12 +50,13 @@ public class ChatActivity extends ChiefActivity {
         // onCreateActionMode, but
         // may be called multiple times if the mode is invalidated.
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            mActionMode = mode;
             return false; // Return false if nothing is done
         }
 
         // Called when the user selects a contextual menu item
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            String selection = HistorySelection.getInstance().complete();
+            String selection = HistorySelection.getInstance().buildSelection();
             switch (item.getItemId()) {
                 case R.id.message_copy:
                     if(Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -87,7 +86,7 @@ public class ChatActivity extends ChiefActivity {
 
         // Called when the user exits the action mode
         public void onDestroyActionMode(ActionMode mode) {
-            HistorySelection.getInstance().setSelectionMode(false);
+            HistorySelection.getInstance().finish();
             mAdapter.notifyDataSetChanged();
         }
     };
@@ -163,6 +162,24 @@ public class ChatActivity extends ChiefActivity {
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
         mIndicator.setIndicatorColorResource(R.color.background_action_bar);
+
+        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                // Checking for history selection now and action mode is not null, finish it!
+                if(HistorySelection.getInstance().getSelectionMode() && mActionMode != null) {
+                    mActionMode.finish();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+            }
+        });
         /** Send button **/
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);

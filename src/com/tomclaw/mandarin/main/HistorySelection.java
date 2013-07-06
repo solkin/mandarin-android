@@ -33,16 +33,19 @@ public class HistorySelection {
         selectionMode = false;
     }
 
-    public String complete() {
+    public void finish() {
+        // Clearing all.
+        selectionMap.clear();
+        selectionMode = false;
+    }
+
+    public String buildSelection() {
         // Building selected messages.
         StringBuilder selectionBuilder = new StringBuilder();
         Collection<String> selection = selectionMap.values();
         for(String message : selection) {
             selectionBuilder.append(message).append('\n').append('\n');
         }
-        // Clearing all.
-        selectionMap.clear();
-        selectionMode = false;
         return selectionBuilder.toString();
     }
 

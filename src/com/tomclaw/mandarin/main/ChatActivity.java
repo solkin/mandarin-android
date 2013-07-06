@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
@@ -24,10 +25,6 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,8 +60,15 @@ public class ChatActivity extends ChiefActivity {
             String selection = HistorySelection.getInstance().complete();
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
+                    if(Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                                getSystemService(CLIPBOARD_SERVICE);
+                        clipboard.setText(selection);
+                    } else {
+                        ClipboardManager clipboardManager = (ClipboardManager)
+                                getSystemService(CLIPBOARD_SERVICE);
+                        clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
+                    }
                     // Action picked, so close the CAB
                     mode.finish();
                     return true;

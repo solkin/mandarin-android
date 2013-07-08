@@ -2,14 +2,17 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -31,7 +34,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     private RosterPagerAdapter mAdapter;
     private ViewPager mPager;
-    private PagerSlidingTabStrip mIndicator;
+    // private PagerSlidingTabStrip mIndicator;
     private List<View> pages = new ArrayList<View>();
 
 
@@ -61,7 +64,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
+            case android.R.id.home:
+            case R.id.accounts: {
                 Intent intent = new Intent(this, AccountsActivity.class);
                 startActivity(intent);
                 return true;
@@ -80,10 +84,23 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
-        ActionBar bar = getSupportActionBar();
-        // bar.setDisplayShowTitleEnabled(false);
+        final ActionBar bar = getSupportActionBar();
+        /*bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setDisplayShowHomeEnabled(true);*/
+
+        bar.setDisplayShowHomeEnabled(false);
+        bar.setDisplayShowTitleEnabled(false);
+
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        /*bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
+                ActionBar.DISPLAY_SHOW_CUSTOM);
+        bar.setCustomView(bar,
+                new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER_VERTICAL | Gravity.RIGHT));*/
+
         // bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         /** Status spinner **/
         /*ArrayAdapter<CharSequence> listAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
@@ -188,10 +205,49 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mAdapter = new RosterPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-        mIndicator = (PagerSlidingTabStrip) findViewById(R.id.indicator);
+        /*mIndicator = (PagerSlidingTabStrip) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
-        mIndicator.setIndicatorColorResource(R.color.background_action_bar);
+        mIndicator.setIndicatorColorResource(R.color.background_action_bar);*/
         mPager.setCurrentItem(2);
+        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                bar.selectTab(bar.getTabAt(i));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+            }
+        });
+
+
+        int[] icons = new int[]{R.drawable.rating_important, R.drawable.social_chat, R.drawable.social_person, R.drawable.social_group};
+        for (int i = 0; i < pages.size(); i++) {
+            ActionBar.Tab tab = getSupportActionBar().newTab();
+            // tab.setText(getResources().getStringArray(R.array.default_groups)[i]);
+            Log.d(Settings.LOG_TAG, "icons["+i+"] = " + icons[i]);
+            tab.setIcon(icons[i]);
+            tab.setTabListener(new ActionBar.TabListener() {
+
+                @Override
+                public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+                    mPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+                }
+
+                @Override
+                public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+                }
+            });
+            bar.addTab(tab);
+        }
     }
 
     @Override

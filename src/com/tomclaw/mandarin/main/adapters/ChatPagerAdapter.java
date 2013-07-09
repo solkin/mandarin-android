@@ -67,8 +67,18 @@ public class ChatPagerAdapter extends PagerAdapter implements
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Checking for action mode is already activated.
+                if (HistorySelection.getInstance().getSelectionMode()) {
+                    // Hm. Action mode is already active.
+                    return false;
+                }
+                // Update selection data.
+                HistorySelection.getInstance().setSelectionMode(true);
+                HistorySelection.getInstance().setHistoryAdapter(chatHistoryAdapter);
+                // Update history adapter to show checkboxes.
+                HistorySelection.getInstance().notifyHistoryAdapter();
+                // Callback activity for action mode is actual.
                 onLongClick.run();
-                chatHistoryAdapter.notifyDataSetChanged();
                 return true;
             }
         };

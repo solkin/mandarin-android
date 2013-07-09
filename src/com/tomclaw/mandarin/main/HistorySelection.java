@@ -1,12 +1,9 @@
 package com.tomclaw.mandarin.main;
 
 import android.text.TextUtils;
-import com.actionbarsherlock.view.CollapsibleActionView;
+import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,16 +24,20 @@ public class HistorySelection {
 
     private Map<Integer, String> selectionMap;
     private boolean selectionMode;
+    // Current selection history adapter.
+    private ChatHistoryAdapter historyAdapter;
 
     public HistorySelection() {
-        selectionMap = new HashMap<Integer, String>();
+        selectionMap = new TreeMap<Integer, String>();
         selectionMode = false;
+        historyAdapter = null;
     }
 
     public void finish() {
         // Clearing all.
         selectionMap.clear();
         selectionMode = false;
+        historyAdapter = null;
     }
 
     public String buildSelection() {
@@ -46,11 +47,21 @@ public class HistorySelection {
         for(String message : selection) {
             selectionBuilder.append(message).append('\n').append('\n');
         }
-        return selectionBuilder.toString();
+        return selectionBuilder.toString().trim();
     }
 
     public boolean getSelectionMode() {
         return selectionMode;
+    }
+
+    public void notifyHistoryAdapter() {
+        if(historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setHistoryAdapter(ChatHistoryAdapter historyAdapter) {
+        this.historyAdapter = historyAdapter;
     }
 
     public void setSelectionMode(boolean selectionMode) {

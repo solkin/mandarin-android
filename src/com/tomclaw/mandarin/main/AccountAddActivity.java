@@ -57,6 +57,7 @@ public class AccountAddActivity extends ChiefActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(Settings.LOG_TAG, "onOptionsItemSelected: " + item.getTitle());
         switch (item.getItemId()) {
             case android.R.id.home: {
                 finish();

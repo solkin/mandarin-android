@@ -102,7 +102,7 @@ public class AccountsAdapter extends CursorAdapter implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        context.startActivity(new Intent(context, StatusActitvity.class));
+                        context.startActivity(new Intent(context, StatusActivity.class));
                     }
                 });*/
     }

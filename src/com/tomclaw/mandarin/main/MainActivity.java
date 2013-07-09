@@ -117,12 +117,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                /*Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                int buddyDbId = favoriteAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
-                intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                startActivity(intent);*/
-
                 int buddyDbId = favoriteAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
                 try {

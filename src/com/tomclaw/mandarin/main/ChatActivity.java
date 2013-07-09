@@ -86,10 +86,16 @@ public class ChatActivity extends ChiefActivity {
 
         // Called when the user exits the action mode
         public void onDestroyActionMode(ActionMode mode) {
+            HistorySelection.getInstance().notifyHistoryAdapter();
             HistorySelection.getInstance().finish();
-            mAdapter.notifyDataSetChanged();
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        HistorySelection.getInstance().finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -147,12 +153,6 @@ public class ChatActivity extends ChiefActivity {
         Runnable onLongClick = new Runnable() {
             @Override
             public void run() {
-                // Checking for action mode is already activated.
-                if (HistorySelection.getInstance().getSelectionMode()) {
-                    return;
-                }
-                // Start the CAB using the ActionMode.Callback defined above
-                HistorySelection.getInstance().setSelectionMode(true);
                 startActionMode(mActionModeCallback);
             }
         };

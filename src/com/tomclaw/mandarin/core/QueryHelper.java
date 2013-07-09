@@ -253,7 +253,8 @@ public class QueryHelper {
             if (cursor.moveToLast()
                     && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
                     && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
-                    (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)) {
+                    (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)
+                    && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE)) != 1) {
                 Log.d(Settings.LOG_TAG, "We have cookies!");
                 // We have cookies!
                 long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));

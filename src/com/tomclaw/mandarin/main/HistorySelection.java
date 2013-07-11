@@ -23,20 +23,20 @@ public class HistorySelection {
     }
 
     private Map<Integer, String> selectionMap;
-    private boolean selectionMode;
+    private int selectionBuddyId;
     // Current selection history adapter.
     private ChatHistoryAdapter historyAdapter;
 
     public HistorySelection() {
         selectionMap = new TreeMap<Integer, String>();
-        selectionMode = false;
+        selectionBuddyId = -1;
         historyAdapter = null;
     }
 
     public void finish() {
         // Clearing all.
         selectionMap.clear();
-        selectionMode = false;
+        selectionBuddyId = -1;
         historyAdapter = null;
     }
 
@@ -51,7 +51,11 @@ public class HistorySelection {
     }
 
     public boolean getSelectionMode() {
-        return selectionMode;
+        return selectionBuddyId != -1;
+    }
+
+    public boolean getSelectionMode(int buddyDbId) {
+        return selectionBuddyId == buddyDbId;
     }
 
     public void notifyHistoryAdapter() {
@@ -64,8 +68,8 @@ public class HistorySelection {
         this.historyAdapter = historyAdapter;
     }
 
-    public void setSelectionMode(boolean selectionMode) {
-        this.selectionMode = selectionMode;
+    public void setSelectionBuddyId(int selectionBuddyId) {
+        this.selectionBuddyId = selectionBuddyId;
     }
 
     public void setSelection(int position, String value) {

@@ -159,7 +159,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageDateText = simpleDateFormat.format(messageTime);
         // Selected flag check box.
         view.findViewById(R.id.selected_check).setVisibility(
-                HistorySelection.getInstance().getSelectionMode() ? View.VISIBLE : View.GONE);
+                HistorySelection.getInstance().getSelectionMode(ADAPTER_ID) ? View.VISIBLE : View.GONE);
         ((CheckBox) view.findViewById(R.id.selected_check)).setChecked(
                 HistorySelection.getInstance().isSelectionExist(cursor.getPosition()));
         // Select message type.

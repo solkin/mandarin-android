@@ -1,37 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Mandarin" parent="Theme.Sherlock.Light.DarkActionBar">
-        <!-- Any customizations for your app running on devices with Theme.Holo here -->
-        <item name="actionBarStyle">@style/Mandarin.ActionBar</item>
-        <item name="android:actionBarStyle">@style/Mandarin.ActionBar</item>
-
-        <item name="actionBarTabBarStyle">@style/Mandarin.ActionBar.TabBar</item>
-        <item name="android:actionBarTabBarStyle">@style/Mandarin.ActionBar.TabBar</item>
-
-        <item name="actionBarItemBackground">@drawable/mandarin_item_background</item>
-        <item name="android:actionBarItemBackground">@drawable/mandarin_item_background</item>
-        <!-- <item name="actionBarTabStyle">@style/Mandarin.ActionBar.TabBar</item>
-        <item name="android:actionBarTabStyle">@style/Mandarin.ActionBar.TabBar</item>-->
-    </style>
-    <!-- style for the action bar backgrounds -->
-    <style name="Mandarin.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/actionbar_bottom</item>
-        <item name="android:background">@drawable/actionbar_bottom</item>
-
-        <item name="backgroundStacked">@drawable/actionbar_bottom</item>
-        <item name="android:backgroundStacked">@drawable/actionbar_bottom</item>
-    </style>
-    <style name="Mandarin.ActionBar.TabBar" parent="Widget.Sherlock.Light.ActionBar.TabBar.Inverse">
-        <!--<item name="backgroundSplit">@color/background_split_action_bar</item>
-        <item name="android:backgroundSplit">@color/background_split_action_bar</item>-->
-    </style>
-
-    <style name="Mandarin.ActionBar.TabView" parent="@style/Widget.Sherlock.Light.ActionBar.TabView.Inverse">
-        <item name="itemBackground">@color/item_background_action_bar</item>
-        <item name="android:itemBackground">@color/item_background_action_bar</item>
-        <!--<item name="backgroundSplit">@color/background_split_action_bar</item>
-        <item name="android:backgroundSplit">@color/background_split_action_bar</item>-->
-    </style>
     <color name="background_action_bar">#FFFF9E16</color>
     <color name="background_split_action_bar">#FF555555</color>
     <color name="item_background_action_bar">#FFFFFFFF</color>

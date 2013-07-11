@@ -59,8 +59,9 @@ public class ChatPagerAdapter extends PagerAdapter implements
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
         ListView chatList = (ListView) view.findViewById(R.id.chat_list);
+        final int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
         final ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
-                cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
+                buddyDbId);
         chatList.setAdapter(chatHistoryAdapter);
         // Long-click listener to activate action mode and show check-boxes.
         AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
@@ -68,12 +69,12 @@ public class ChatPagerAdapter extends PagerAdapter implements
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // Checking for action mode is already activated.
-                if (HistorySelection.getInstance().getSelectionMode()) {
+                if (HistorySelection.getInstance().getSelectionMode(buddyDbId)) {
                     // Hm. Action mode is already active.
                     return false;
                 }
                 // Update selection data.
-                HistorySelection.getInstance().setSelectionMode(true);
+                HistorySelection.getInstance().setSelectionBuddyId(buddyDbId);
                 HistorySelection.getInstance().setHistoryAdapter(chatHistoryAdapter);
                 // Update history adapter to show checkboxes.
                 HistorySelection.getInstance().notifyHistoryAdapter();

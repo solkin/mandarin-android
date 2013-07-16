@@ -7,7 +7,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,6 +100,11 @@ public class ChatPagerAdapter extends PagerAdapter implements
             }
         };
         chatList.setOnItemClickListener(itemClickListener);
+        // Checking for action mode is already activated for this buddy.
+        if (HistorySelection.getInstance().getSelectionMode(buddyDbId)) {
+            // Hm. Action mode is already active.
+            HistorySelection.getInstance().setHistoryAdapter(chatHistoryAdapter);
+        }
         container.addView(view);
         return view;
     }

@@ -6,18 +6,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
-import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -202,7 +199,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         /*mIndicator = (PagerSlidingTabStrip) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
         mIndicator.setIndicatorColorResource(R.color.background_action_bar);*/
-        mPager.setCurrentItem(2);
         mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
@@ -217,7 +213,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             public void onPageScrollStateChanged(int i) {
             }
         });
-
 
         int[] icons = new int[]{R.drawable.rating_important, R.drawable.social_chat, R.drawable.social_person, R.drawable.social_group};
         for (int i = 0; i < pages.size(); i++) {
@@ -242,6 +237,22 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
             });
             bar.addTab(tab);
         }
+
+        mPager.setCurrentItem(1);
+        new Thread() {
+            public void run() {
+                boolean isFavorite = false;
+                while(true) {
+                QueryHelper.modifyFavorite(MainActivity.this.getContentResolver(), 10, isFavorite);
+                    isFavorite = !isFavorite;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override

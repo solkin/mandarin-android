@@ -1,9 +1,10 @@
 package com.tomclaw.mandarin.main;
 
 import android.text.TextUtils;
-import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,31 +14,18 @@ import java.util.*;
  */
 public class HistorySelection {
 
-    private static class Holder {
-
-        static HistorySelection instance = new HistorySelection();
-    }
-
-    public static HistorySelection getInstance() {
-        return Holder.instance;
-    }
-
     private Map<Integer, String> selectionMap;
-    private int selectionBuddyId;
-    // Current selection history adapter.
-    private ChatHistoryAdapter historyAdapter;
+    private boolean selectionMode;
 
     public HistorySelection() {
         selectionMap = new TreeMap<Integer, String>();
-        selectionBuddyId = -1;
-        historyAdapter = null;
+        selectionMode = false;
     }
 
     public void finish() {
         // Clearing all.
         selectionMap.clear();
-        selectionBuddyId = -1;
-        historyAdapter = null;
+        selectionMode = false;
     }
 
     public String buildSelection() {
@@ -51,25 +39,11 @@ public class HistorySelection {
     }
 
     public boolean getSelectionMode() {
-        return selectionBuddyId != -1;
+        return selectionMode;
     }
 
-    public boolean getSelectionMode(int buddyDbId) {
-        return selectionBuddyId == buddyDbId;
-    }
-
-    public void notifyHistoryAdapter() {
-        if(historyAdapter != null) {
-            historyAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public void setHistoryAdapter(ChatHistoryAdapter historyAdapter) {
-        this.historyAdapter = historyAdapter;
-    }
-
-    public void setSelectionBuddyId(int selectionBuddyId) {
-        this.selectionBuddyId = selectionBuddyId;
+    public void setSelectionMode(boolean selectionMode) {
+        this.selectionMode = selectionMode;
     }
 
     public void setSelection(int position, String value) {

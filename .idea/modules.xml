@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/libs/ActionBarSherlock/ActionBarSherlock.iml" filepath="$PROJECT_DIR$/libs/ActionBarSherlock/ActionBarSherlock.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/PagerSlidingTabStrip/PagerSlidingTabStrip.iml" filepath="$PROJECT_DIR$/libs/PagerSlidingTabStrip/PagerSlidingTabStrip.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/SherlockNavigationDrawer/SherlockNavigationDrawer.iml" filepath="$PROJECT_DIR$/libs/SherlockNavigationDrawer/SherlockNavigationDrawer.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/ThemeMandarin/ThemeMandarin.iml" filepath="$PROJECT_DIR$/libs/ThemeMandarin/ThemeMandarin.iml" />
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
     </modules>

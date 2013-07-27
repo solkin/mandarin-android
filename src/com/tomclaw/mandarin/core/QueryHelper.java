@@ -229,9 +229,13 @@ public class QueryHelper {
         return dialogFlag;
     }
 
-    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
-                                     int buddyDbId, int messageType, String cookie, String messageText,
-                                     boolean activateDialog) {
+    public static void insertMessage(ContentResolver contentResolver, String appSession,
+                                     int buddyDbId, int messageType, String cookie,
+                                     String messageText, boolean activateDialog) {
+        // TODO: Method
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
         insertMessage(contentResolver, appSession, accountDbId, buddyDbId, messageType, cookie, 0, messageText,
                 activateDialog);
     }
@@ -500,5 +504,10 @@ public class QueryHelper {
             return accountName;
         }
         throw new AccountNotFoundException();
+    }
+
+    public static void clearHistory(ContentResolver contentResolver, int buddyDbId) {
+        contentResolver.delete(Settings.HISTORY_RESOLVER_URI,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null);
     }
 }

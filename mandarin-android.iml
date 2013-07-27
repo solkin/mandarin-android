@@ -34,6 +34,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="ThemeMandarin" />
+    <orderEntry type="module" module-name="SherlockNavigationDrawer" />
   </component>
 </module>
 

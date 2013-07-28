@@ -229,18 +229,13 @@ public class QueryHelper {
         return dialogFlag;
     }
 
-    public static void insertMessage(ContentResolver contentResolver, String appSession,
-                                     int buddyDbId, int messageType, String cookie,
-                                     String messageText, boolean activateDialog) {
-        // TODO: Method
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-        insertMessage(contentResolver, appSession, accountDbId, buddyDbId, messageType, cookie, 0, messageText,
-                activateDialog);
+    public static void insertMessage(ContentResolver contentResolver, int buddyDbId, int messageType, String cookie,
+                                     String messageText, boolean activateDialog) throws BuddyNotFoundException {
+        insertMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+                messageType, cookie, 0, messageText, activateDialog);
     }
 
-    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
+    public static void insertMessage(ContentResolver contentResolver, int accountDbId,
                                      int buddyDbId, int messageType, String cookie, long messageTime,
                                      String messageText, boolean activateDialog) {
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
@@ -301,8 +296,8 @@ public class QueryHelper {
         }
     }
 
-    public static void insertMessage(ContentResolver contentResolver, String appSession, int accountDbId,
-                                    String userId, int messageType, String cookie, long messageTime,
+    public static void insertMessage(ContentResolver contentResolver, int accountDbId, String userId,
+                                     int messageType, String cookie, long messageTime,
                                     String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         // Obtain account db id.
@@ -317,7 +312,7 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 // Plain message query.
-                insertMessage(contentResolver, appSession, accountDbId,
+                insertMessage(contentResolver, accountDbId,
                         buddyDbId, messageType, cookie, messageTime, messageText, activateDialog);
             } while(cursor.moveToNext());
             // Closing cursor.
@@ -470,6 +465,23 @@ public class QueryHelper {
             Log.d(Settings.LOG_TAG, "moved to recycle: " + movedBuddies);
         }
         removedCursor.close();
+    }
+
+    public static int getBuddyAccountDbId(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        // Obtain specified buddy. If exist.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Checking for there is at least one buddy and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int nickColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            int accountDbId = cursor.getInt(nickColumnIndex);
+            // Closing cursor.
+            cursor.close();
+            return accountDbId;
+        }
+        throw new BuddyNotFoundException();
     }
 
     public static String getBuddyNick(ContentResolver contentResolver, int buddyDbId)

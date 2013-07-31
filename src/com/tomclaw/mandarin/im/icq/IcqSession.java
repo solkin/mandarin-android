@@ -283,7 +283,7 @@ public class IcqSession {
         return stringBuilder.toString();
     }
 
-    public void processEvent(String eventType, JSONObject eventData) {
+    private void processEvent(String eventType, JSONObject eventData) {
         Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
         long processStartTime = System.currentTimeMillis();
         if (eventType.equals(BUDDYLIST)) {

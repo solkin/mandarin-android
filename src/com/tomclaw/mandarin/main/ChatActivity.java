@@ -1,6 +1,9 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -8,7 +11,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.tomclaw.mandarin.R;
@@ -29,6 +34,62 @@ public class ChatActivity extends ChiefActivity {
     private ChatPagerAdapter mAdapter;
     private ViewPager mPager;
     private PagerSlidingTabStrip mIndicator;
+    private ActionMode mActionMode;
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.chat_history_edit_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after
+        // onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            mActionMode = mode;
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            String selection = HistorySelection.getInstance().buildSelection();
+            switch (item.getItemId()) {
+                case R.id.message_copy:
+                    if(Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                                getSystemService(CLIPBOARD_SERVICE);
+                        clipboard.setText(selection);
+                    } else {
+                        ClipboardManager clipboardManager = (ClipboardManager)
+                                getSystemService(CLIPBOARD_SERVICE);
+                        clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
+                    }
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.message_create_note:
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                case R.id.message_share:
+                    // Action picked, so close the CAB
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        public void onDestroyActionMode(ActionMode mode) {
+            HistorySelection.getInstance().finish();
+            mAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,12 +144,42 @@ public class ChatActivity extends ChiefActivity {
                 mAdapter.notifyDataSetChanged();
             }
         };
+        Runnable onLongClick = new Runnable() {
+            @Override
+            public void run() {
+                // Checking for action mode is already activated.
+                if (HistorySelection.getInstance().getSelectionMode()) {
+                    return;
+                }
+                // Start the CAB using the ActionMode.Callback defined above
+                HistorySelection.getInstance().setSelectionMode(true);
+                startActionMode(mActionModeCallback);
+            }
+        };
         mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate);
+        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate, onLongClick);
         mPager = (ViewPager) findViewById(R.id.chat_pager);
         mPager.setAdapter(mAdapter);
         mIndicator.setViewPager(mPager);
         mIndicator.setIndicatorColorResource(R.color.background_action_bar);
+
+        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                // Checking for history selection now and action mode is not null, finish it!
+                if(HistorySelection.getInstance().getSelectionMode() && mActionMode != null) {
+                    mActionMode.finish();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+            }
+        });
         /** Send button **/
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);

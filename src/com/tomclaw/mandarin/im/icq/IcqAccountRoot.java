@@ -7,11 +7,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.StatusUtil;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
-import static com.tomclaw.mandarin.im.icq.WimConstants.EVENT_DATA_OBJECT;
 
 /**
  * Created with IntelliJ IDEA.

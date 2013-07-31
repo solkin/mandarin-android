@@ -232,6 +232,7 @@ public class QueryHelper {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -342,6 +343,11 @@ public class QueryHelper {
                 GlobalProvider.ROW_AUTO_ID.concat(" ASC LIMIT 1"));
         if (buddyCursor.moveToFirst()) {
             long buddyDbId = buddyCursor.getLong(buddyCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            int buddyDialogFlag = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG));
+            int buddyFavorite = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_FAVORITE));
+            // Update dialog and favorite flags.
+            buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag);
+            buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, buddyFavorite);
             // Update this row.
             queryBuilder.setLength(0);
             queryBuilder.append(GlobalProvider.ROW_AUTO_ID).append("=='").append(buddyDbId).append("'");
@@ -416,5 +422,33 @@ public class QueryHelper {
             Log.d(Settings.LOG_TAG, "moved to recycle: " + movedBuddies);
         }
         removedCursor.close();
+    }
+
+    public static String getBuddyNick(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        // Obtain specified buddy. If exist.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Checking for there is at least one buddy and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int nickColumnIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+            return cursor.getString(nickColumnIndex);
+        }
+        throw new BuddyNotFoundException();
+    }
+
+    public static String getAccountName(ContentResolver contentResolver, int accountDbId)
+            throws AccountNotFoundException {
+        // Obtain specified account. If exist.
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
+        // Checking for there is at least one account and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int nameColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
+            return cursor.getString(nameColumnIndex);
+        }
+        throw new AccountNotFoundException();
     }
 }

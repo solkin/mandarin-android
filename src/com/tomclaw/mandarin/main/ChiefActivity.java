@@ -23,6 +23,8 @@ import com.tomclaw.mandarin.core.Settings;
  */
 public abstract class ChiefActivity extends SherlockFragmentActivity {
 
+    public static final String CLASS_NAME_EXTRA = "ClassName";
+
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;

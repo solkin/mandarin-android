@@ -16,7 +16,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.util.StatusUtil;
 
@@ -28,7 +27,9 @@ import com.tomclaw.mandarin.util.StatusUtil;
  */
 public class AccountsActivity extends ChiefActivity {
 
-    public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
+    public static final int ADD_ACTIVITY_REQUEST_CODE = 1;
+    public static final int VK_ADD_ACTIVITY_REQUEST_CODE = 2;
+
     protected int selectedItem;
     private AccountsAdapter sAdapter;
     protected boolean mActionMode;
@@ -118,9 +119,11 @@ public class AccountsActivity extends ChiefActivity {
                 startActivity(mainActivityIntent);
                 return true;
             case R.id.add_account_menu:
-                Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
+                /*Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
                 accountAddIntent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
-                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
+                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);*/
+                AccountTypeSelectionDialog accountTypeSelectionDialog = new AccountTypeSelectionDialog();
+                accountTypeSelectionDialog.show(getSupportFragmentManager(), "selectionDialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,10 +134,20 @@ public class AccountsActivity extends ChiefActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(Settings.LOG_TAG, "AccountsActivity result code: " + resultCode);
-        switch (resultCode) {
-            case RESULT_OK: {
-                initAccountsList();
-                break;
+        if (requestCode == ADD_ACTIVITY_REQUEST_CODE) {
+            switch (resultCode) {
+                case RESULT_OK: {
+                    initAccountsList();
+                    break;
+                }
+            }
+        }
+        else if (requestCode == VK_ADD_ACTIVITY_REQUEST_CODE) {
+            switch (resultCode) {
+                case RESULT_OK: {
+                    initAccountsList();
+                    break;
+                }
             }
         }
     }

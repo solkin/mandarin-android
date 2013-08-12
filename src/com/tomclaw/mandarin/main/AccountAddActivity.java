@@ -21,7 +21,6 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class AccountAddActivity extends ChiefActivity {
 
-    public static final String CLASS_NAME_EXTRA = "ClassName";
     private AccountRoot accountRoot;
 
     @Override

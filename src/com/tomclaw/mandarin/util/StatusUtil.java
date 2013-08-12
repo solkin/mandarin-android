@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.util;
 
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.im.vk.VkAccountRoot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class StatusUtil {
     static {
         statuses = new HashMap<String, int[]>();
         statuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getStatusResources());
+        statuses.put(VkAccountRoot.class.getName(), IcqAccountRoot.getStatusResources());
     }
 
     public static int getStatusResource(String accountType, int statusIndex) {

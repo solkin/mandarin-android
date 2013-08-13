@@ -12,7 +12,7 @@ import com.tomclaw.mandarin.core.Settings;
  * Time: 7:57 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StatusActitvity extends ChiefActivity {
+public class StatusActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

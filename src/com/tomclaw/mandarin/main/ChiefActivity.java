@@ -40,12 +40,14 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setTheme(R.style.Theme_Mandarin);
 
-        Drawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.background_action_bar));
+        /*Drawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.background_action_bar));
         Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {
                 colorDrawable, bottomDrawable });
 
         getSupportActionBar().setBackgroundDrawable(layerDrawable);
+        // getSupportActionBar().setSplitBackgroundDrawable(layerDrawable);
+        getSupportActionBar().setStackedBackgroundDrawable(layerDrawable);*/
 
         setContentView(R.layout.progress);
         /** Starting service **/

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="default_icons">
+        <item>@drawable/rating_important</item>
+        <item>@drawable/social_chat</item>
+        <item>@drawable/social_person</item>
+        <item>@drawable/social_group</item>
+    </array>
+</resources>

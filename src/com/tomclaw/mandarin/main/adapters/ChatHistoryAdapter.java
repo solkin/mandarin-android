@@ -52,9 +52,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
 
     /**
-     * Adapter ID, equals to buddy db id of this chat
+     * Adapter ID
      */
-    private final int ADAPTER_ID;
+    private int buddyDbId = -1;
 
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
@@ -65,20 +65,41 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private Context context;
     private LayoutInflater mInflater;
+    private LoaderManager loaderManager;
+    private HistorySelection historySelection;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
+                              HistorySelection historySelection, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ADAPTER_ID = buddyBdId;
+        this.loaderManager = loaderManager;
+        this.historySelection = historySelection;
+        setBuddyDbId(buddyBdId);
+    }
+
+    public void setBuddyDbId(int buddyDbId) {
+        if(buddyDbId >= 0) {
+            // Checking for there was opened cursor.
+            if(getCursor() != null) {
+                getCursor().close();
+            }
+            // Destroy current loader.
+            loaderManager.destroyLoader(buddyDbId);
+        }
+        this.buddyDbId = buddyDbId;
         // Initialize loader for adapter Id.
-        loaderManager.initLoader(ADAPTER_ID, null, this);
+        loaderManager.initLoader(buddyDbId, null, this);
+    }
+
+    public int getBuddyDbId() {
+        return buddyDbId;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
                 GlobalProvider.ROW_AUTO_ID + " ASC");
     }
 
@@ -159,9 +180,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageDateText = simpleDateFormat.format(messageTime);
         // Selected flag check box.
         view.findViewById(R.id.selected_check).setVisibility(
-                HistorySelection.getInstance().getSelectionMode() ? View.VISIBLE : View.GONE);
+                historySelection.getSelectionMode() ? View.VISIBLE : View.GONE);
         ((CheckBox) view.findViewById(R.id.selected_check)).setChecked(
-                HistorySelection.getInstance().isSelectionExist(cursor.getPosition()));
+                historySelection.isSelectionExist(cursor.getPosition()));
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {

@@ -1,15 +1,18 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.*;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ServiceInteraction;
@@ -21,7 +24,7 @@ import com.tomclaw.mandarin.core.Settings;
  * Date: 09.01.13
  * Time: 20:22
  */
-public abstract class ChiefActivity extends SherlockFragmentActivity {
+public abstract class ChiefActivity extends Activity {
 
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;
@@ -36,7 +39,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_Mandarin);
+        // setTheme(R.style.Theme_Mandarin);
 
         /*Drawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.background_action_bar));
         Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);

@@ -1,20 +1,19 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
+import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -52,7 +51,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.buddy_list_menu, menu);
+        getMenuInflater().inflate(R.menu.buddy_list_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Configure the search info and add any event listeners
         return true;
@@ -81,7 +80,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
-        final ActionBar bar = getSupportActionBar();
+        final ActionBar bar = getActionBar();
         /*bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setDisplayShowHomeEnabled(true);*/
@@ -108,7 +107,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         pages.clear();
         // Favorite.
         final ListView favoriteList = new ListView(this);
-        final RosterFavoriteAdapter favoriteAdapter = new RosterFavoriteAdapter(this, getSupportLoaderManager());
+        final RosterFavoriteAdapter favoriteAdapter = new RosterFavoriteAdapter(this, getLoaderManager());
         favoriteList.setAdapter(favoriteAdapter);
         favoriteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -131,7 +130,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         pages.add(favoriteList);
         // Dialogs.
         final ListView dialogsList = new ListView(this);
-        final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getSupportLoaderManager());
+        final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
         dialogsList.setAdapter(dialogsAdapter);
         dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -147,7 +146,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         pages.add(dialogsList);
         // Online.
         ListView onlineList = new ListView(this);
-        final RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getSupportLoaderManager());
+        final RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getLoaderManager());
         onlineList.setAdapter(onlineAdapter);
         onlineList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -170,7 +169,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         pages.add(onlineList);
         // All friends.
         ExpandableListView generalList = new ExpandableListView(this);
-        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getSupportLoaderManager());
+        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getLoaderManager());
         generalList.setAdapter(generalAdapter);
         generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
@@ -216,23 +215,23 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
         int[] icons = new int[]{R.drawable.rating_important, R.drawable.social_chat, R.drawable.social_person, R.drawable.social_group};
         for (int i = 0; i < pages.size(); i++) {
-            ActionBar.Tab tab = getSupportActionBar().newTab();
+            ActionBar.Tab tab = getActionBar().newTab();
             // tab.setText(getResources().getStringArray(R.array.default_groups)[i]);
             Log.d(Settings.LOG_TAG, "icons["+i+"] = " + icons[i]);
             tab.setIcon(icons[i]);
             tab.setTabListener(new ActionBar.TabListener() {
 
                 @Override
-                public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+                public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
                     mPager.setCurrentItem(tab.getPosition());
                 }
 
                 @Override
-                public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+                public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
                 }
 
                 @Override
-                public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+                public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
                 }
             });
             bar.addTab(tab);

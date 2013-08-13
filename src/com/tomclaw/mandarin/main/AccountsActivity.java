@@ -1,18 +1,18 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
@@ -95,13 +95,13 @@ public class AccountsActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.accounts_list_menu, menu);
+        getMenuInflater().inflate(R.menu.accounts_list_menu, menu);
         return true;
     }
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -144,7 +144,7 @@ public class AccountsActivity extends ChiefActivity {
         setContentView(R.layout.accounts_list);
         ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
         // Creating adapter for accounts list
-        sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
+        sAdapter = new AccountsAdapter(this, getLoaderManager());
         // Bind to our new adapter.
         listView.setAdapter(sAdapter);
         listView.setItemsCanFocus(true);

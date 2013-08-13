@@ -1,14 +1,14 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
@@ -40,13 +40,13 @@ public class AccountAddActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.account_add_menu, menu);
+        getMenuInflater().inflate(R.menu.account_add_menu, menu);
         return true;
     }
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

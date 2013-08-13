@@ -1,17 +1,17 @@
 package com.tomclaw.mandarin.main.adapters;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -128,18 +128,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         try {
-            if (!mDataValid) {
-                throw new IllegalStateException("this should only be called when the cursor is valid");
-            }
-            if (!mCursor.moveToPosition(position)) {
+            if (!getCursor().moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                view = newView(mContext, mCursor, parent);
+                view = newView(context, getCursor(), parent);
             } else {
                 view = convertView;
             }
-            bindView(view, mContext, mCursor);
+            bindView(view, context, getCursor());
         } catch (Throwable ex) {
             if (convertView == null) {
                 view = mInflater.inflate(R.layout.chat_item, parent, false);
@@ -227,15 +224,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     public String getItemText(int position) {
-        if (mCursor.moveToPosition(position)) {
+        if (getCursor().moveToPosition(position)) {
             // Message data.
-            int messageType = mCursor.getInt(COLUMN_MESSAGE_TYPE);
-            String messageText = mCursor.getString(COLUMN_MESSAGE_TEXT);
-            long messageTime = mCursor.getLong(COLUMN_MESSAGE_TIME);
+            int messageType = getCursor().getInt(COLUMN_MESSAGE_TYPE);
+            String messageText = getCursor().getString(COLUMN_MESSAGE_TEXT);
+            long messageTime = getCursor().getLong(COLUMN_MESSAGE_TIME);
             String messageTimeText = simpleTimeFormat.format(messageTime);
             String messageDateText = simpleDateFormat.format(messageTime);
-            int accountDbId = mCursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
-            int buddyDbId = mCursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
+            int accountDbId = getCursor().getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
+            int buddyDbId = getCursor().getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
             String buddyNick = "unknown";
             try {
                 // Select message type.

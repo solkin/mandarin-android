@@ -212,6 +212,7 @@ public class ChatActivity extends ChiefActivity {
         chatList.setOnItemClickListener(itemClickListener);
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getSupportLoaderManager());
+        chatDialogsAdapter.setSelection(buddyDbId);
 
         listView = (ListView) findViewById(R.id.left_drawer);
         listView.setAdapter(chatDialogsAdapter);
@@ -292,6 +293,7 @@ public class ChatActivity extends ChiefActivity {
             }
             // Changing chat history adapter loader.
             int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
+            chatDialogsAdapter.setSelection(buddyDbId);
             chatHistoryAdapter.setBuddyDbId(buddyDbId);
             actionBarHelper.setTitle(chatDialogsAdapter.getBuddyNick(position));
             drawerLayout.closeDrawer(listView);

@@ -36,6 +36,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     /**
      * Columns
      */
+    private static int COLUMN_ROSTER_ROW_AUTO_ID;
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
@@ -46,6 +47,8 @@ public class ChatDialogsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private int selectedBuddyDbId;
+    private int selectedPosition;
 
     public ChatDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -65,6 +68,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROSTER_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
@@ -112,6 +116,9 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Setup values
+        if(cursor.getInt(COLUMN_ROSTER_ROW_AUTO_ID) == selectedBuddyDbId) {
+            selectedPosition = cursor.getPosition();
+        }
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
@@ -134,8 +141,19 @@ public class ChatDialogsAdapter extends CursorAdapter implements
         return mCursor.getString(mCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
     }
 
+    /**
+     * Setup selected buddyDbId.
+     * @param buddyDbId
+     */
+    public void setSelection(int buddyDbId) {
+        this.selectedBuddyDbId = buddyDbId;
+    }
+
     @Override
     protected void onContentChanged() {
         super.onContentChanged();
+        if(mCursor.moveToPosition(selectedPosition)) {
+
+        }
     }
 }

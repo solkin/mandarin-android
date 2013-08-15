@@ -38,9 +38,10 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 public class ChatActivity extends ChiefActivity {
 
     private DrawerLayout drawerLayout;
-    private ListView listView;
-    private ActionBarHelper actionBarHelper;
+    private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
+
+    private ActionBarHelper actionBarHelper;
     private ChatDialogsAdapter chatDialogsAdapter;
     private ListView chatList;
     private HistorySelection historySelection;
@@ -212,14 +213,14 @@ public class ChatActivity extends ChiefActivity {
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
 
-        listView = (ListView) findViewById(R.id.left_drawer);
-        listView.setAdapter(chatDialogsAdapter);
-        listView.setOnItemClickListener(new DrawerItemClickListener());
-        listView.setCacheColorHint(0);
-        listView.setScrollingCacheEnabled(false);
-        listView.setScrollContainer(false);
-        listView.setFastScrollEnabled(true);
-        listView.setSmoothScrollbarEnabled(true);
+        drawerList = (ListView) findViewById(R.id.left_drawer);
+        drawerList.setAdapter(chatDialogsAdapter);
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        drawerList.setCacheColorHint(0);
+        drawerList.setScrollingCacheEnabled(false);
+        drawerList.setScrollContainer(false);
+        drawerList.setFastScrollEnabled(true);
+        drawerList.setSmoothScrollbarEnabled(true);
 
         actionBarHelper = new ActionBarHelper();
         actionBarHelper.init();
@@ -229,8 +230,8 @@ public class ChatActivity extends ChiefActivity {
 
         // ActionBarDrawerToggle provides convenient helpers for tying together the
         // prescribed interactions between a top-level sliding drawer and the action bar.
-        /******drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
-                R.string.drawer_open, R.string.drawer_close);*****/
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
+                R.string.drawer_open, R.string.drawer_close);
         drawerToggle.syncState();
 
         // Send button and message field initialization.
@@ -293,7 +294,7 @@ public class ChatActivity extends ChiefActivity {
             int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
             chatHistoryAdapter.setBuddyDbId(buddyDbId);
             actionBarHelper.setTitle(chatDialogsAdapter.getBuddyNick(position));
-            drawerLayout.closeDrawer(listView);
+            drawerLayout.closeDrawer(drawerList);
         }
     }
 

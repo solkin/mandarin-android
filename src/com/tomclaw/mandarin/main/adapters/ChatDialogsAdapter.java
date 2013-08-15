@@ -149,7 +149,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     @Override
     protected void onContentChanged() {
         super.onContentChanged();
-        if(mCursor.moveToPosition(selectedPosition)) {
+        if(getCursor().moveToPosition(selectedPosition)) {
 
         }
     }

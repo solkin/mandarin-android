@@ -212,6 +212,7 @@ public class ChatActivity extends ChiefActivity {
         chatList.setOnItemClickListener(itemClickListener);
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
+        chatDialogsAdapter.setSelection(buddyDbId);
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
@@ -246,8 +247,7 @@ public class ChatActivity extends ChiefActivity {
                     String cookie = String.valueOf(System.currentTimeMillis());
                     String appSession = getServiceInteraction().getAppSession();
                     String message = messageText.getText().toString();
-                    QueryHelper.insertMessage(getContentResolver(), appSession,
-                            buddyDbId, 2, // TODO: real message type
+                    QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
                             cookie, message, false);
                     // Sending protocol message request.
                     RequestHelper.requestMessage(getContentResolver(), appSession,
@@ -255,6 +255,7 @@ public class ChatActivity extends ChiefActivity {
                     // Clearing text view.
                     messageText.setText("");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     // TODO: Couldn't put message into database. This exception must be processed.
                 }
             }
@@ -293,6 +294,7 @@ public class ChatActivity extends ChiefActivity {
             }
             // Changing chat history adapter loader.
             int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
+            chatDialogsAdapter.setSelection(buddyDbId);
             chatHistoryAdapter.setBuddyDbId(buddyDbId);
             getActionBar().setTitle(chatDialogsAdapter.getBuddyNick(position));
             drawerLayout.closeDrawer(drawerList);

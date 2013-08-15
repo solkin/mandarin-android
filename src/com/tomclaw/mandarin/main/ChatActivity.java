@@ -10,13 +10,10 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -40,8 +37,10 @@ public class ChatActivity extends ChiefActivity {
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
+    private CharSequence drawerTitle;
+    private CharSequence title;
 
-    private ActionBarHelper actionBarHelper;
+    // private ActionBarHelper actionBarHelper;
     private ChatDialogsAdapter chatDialogsAdapter;
     private ListView chatList;
     private HistorySelection historySelection;
@@ -168,6 +167,7 @@ public class ChatActivity extends ChiefActivity {
         bar.setTitle(R.string.dialogs);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         historySelection = new HistorySelection();
@@ -222,11 +222,12 @@ public class ChatActivity extends ChiefActivity {
         drawerList.setFastScrollEnabled(true);
         drawerList.setSmoothScrollbarEnabled(true);
 
-        actionBarHelper = new ActionBarHelper();
-        actionBarHelper.init();
+        title = drawerTitle = getTitle();
+        // actionBarHelper = new ActionBarHelper();
+        // actionBarHelper.init();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        // drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         // ActionBarDrawerToggle provides convenient helpers for tying together the
         // prescribed interactions between a top-level sliding drawer and the action bar.
@@ -293,7 +294,7 @@ public class ChatActivity extends ChiefActivity {
             // Changing chat history adapter loader.
             int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
             chatHistoryAdapter.setBuddyDbId(buddyDbId);
-            actionBarHelper.setTitle(chatDialogsAdapter.getBuddyNick(position));
+            getActionBar().setTitle(chatDialogsAdapter.getBuddyNick(position));
             drawerLayout.closeDrawer(drawerList);
         }
     }

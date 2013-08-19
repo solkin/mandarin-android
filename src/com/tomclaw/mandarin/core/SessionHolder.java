@@ -20,17 +20,22 @@ public class SessionHolder {
     private final List<AccountRoot> accountRootList;
     private final Context context;
     private final ContentResolver contentResolver;
+    public NotificationHelper notificationHelper;
 
-    public SessionHolder(Context context) {
+    public SessionHolder(Context context, NotificationHelper notificationHelper) {
         this.context = context;
         // Obtain content resolver to perform queries.
         contentResolver = context.getContentResolver();
         accountRootList = new ArrayList<AccountRoot>();
+        this.notificationHelper = notificationHelper;
     }
 
     public void load() {
         // Loading accounts from database.
         QueryHelper.getAccounts(context, accountRootList);
+        for(AccountRoot accountRoot : accountRootList){
+            accountRoot.setNotificationHelper(notificationHelper);
+        }
     }
 
     public void updateAccountRoot(AccountRoot accountRoot) {

@@ -106,10 +106,11 @@ public class CoreService extends Service {
         super.onCreate();
         updateState(STATE_DOWN);
         serviceCreateTime = System.currentTimeMillis();
-        sessionHolder = new SessionHolder(this);
+        notificationHelper = new NotificationHelper(this);
+        sessionHolder = new SessionHolder(this, notificationHelper);
         requestDispatcher = new RequestDispatcher(this, sessionHolder);
 
-        notificationHelper = new NotificationHelper(getApplicationContext());
+        /* BroadcastReceiver for dismiss event */
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(NotificationHelper.NOTIFICATIONS_FILTER);
         notificationsReceiver = new BroadcastReceiver() {
@@ -168,16 +169,16 @@ public class CoreService extends Service {
                 sessionHolder.load();
                 requestDispatcher.startObservation();
                 // For testing purposes only!
-                try {
+                /*try {
                     Thread.sleep(1000);
-                    /*notificationHelper.notifyAboutMessage(2, "Hello!");
+                    notificationHelper.notifyAboutMessage(2, "Hello!");
                     notificationHelper.notifyAboutMessage(2, "What's up?");
                     notificationHelper.notifyAboutMessage(1, "1");
                     notificationHelper.notifyAboutMessage(1, "2");
-                    notificationHelper.notifyAboutMessage(1, "3");*/
+                    notificationHelper.notifyAboutMessage(1, "3");
                     Log.d(Settings.LOG_TAG, "notification");
                 } catch (InterruptedException ignored) {
-                }
+                }*/
                 // Service is now ready.
                 updateState(STATE_UP);
 

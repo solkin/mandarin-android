@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -43,6 +44,7 @@ public class NotificationHelper {
 
     public void clearNotifications(int id){
         if(mNotificationsCounter.containsKey(id)){
+            Log.d(Settings.LOG_TAG, "clear notification with id = " + String.valueOf(id));
             mNotificationsCounter.remove(id);
         }
     }
@@ -84,11 +86,14 @@ public class NotificationHelper {
     }
 
     public void notifyAboutMessage(int buddyDbId, String message){
+    
         int notificationId = buddyDbId;
         if (!isNotificationForEveryContact) {
             notificationId = defaultNotificationId;
         }
         int counter = prepareNotificationsCounter(notificationId);
+
+        Log.d(Settings.LOG_TAG, "id = " + String.valueOf(notificationId) + " Counter = " + String.valueOf(counter));
 
         Cursor cursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
@@ -98,6 +103,7 @@ public class NotificationHelper {
         if (cursor.moveToFirst()) {
             int buddyNickIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
             nick = cursor.getString(buddyNickIndex);
+            Log.d(Settings.LOG_TAG, "Nick = " + nick);
         } else {
             return;
         }
@@ -119,6 +125,7 @@ public class NotificationHelper {
         resultIntent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         builder.setContentIntent(getResultPendingIntent(notificationId, resultIntent));
 
+        /* Prepare broadcast for dismiss event */
         Intent dismissIntent = new Intent(NOTIFICATIONS_FILTER);
         dismissIntent.putExtra(NOTIFICATION_ID, notificationId);
         PendingIntent dismissPendingIntent =
@@ -133,35 +140,27 @@ public class NotificationHelper {
                 GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID + "='" + accountDbId + "'" + " AND "
                         + GlobalProvider.ROSTER_BUDDY_ID + "='" + buddyId + "'", null, null);
         int buddyDbId;
+        String buddyNick;
+        Bitmap icon;
         if (helpCursor.moveToFirst()) {
             final int BUDDY_DB_ID_COLUMN = helpCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            final int BUDDY_NICK_ID_COLUMN = helpCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
             buddyDbId = helpCursor.getInt(BUDDY_DB_ID_COLUMN);
+            buddyNick = helpCursor.getString(BUDDY_NICK_ID_COLUMN);
+            icon = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.ic_launcher);
         } else {
             return;
         }
-
         int notificationId = buddyDbId;
         if (!isNotificationForEveryContact) {
             notificationId = defaultNotificationId;
         }
         int counter = prepareNotificationsCounter(notificationId);
-
-        Cursor cursor = mResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-
-        String nick;
-        Bitmap icon;
-        if (cursor.moveToFirst()) {
-            int buddyNickIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
-            nick = cursor.getString(buddyNickIndex);
-        } else {
-            return;
-        }
-        icon = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.ic_launcher);
+        Log.d(Settings.LOG_TAG, "Notify buddyDbId = " + String.valueOf(buddyDbId));
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(mContext)
-                        .setContentTitle(nick)
+                        .setContentTitle(buddyNick)
                         .setContentText(message)
                         .setLargeIcon(icon)
                         .setSmallIcon(R.drawable.ic_inc_bubble)

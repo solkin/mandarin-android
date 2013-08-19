@@ -155,7 +155,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                     try {
                         /** Initialize service **/
                         serviceInteraction.initService();
-
+                        /** Clear counter for opened notification **/
                         int notificationId = getIntent().getIntExtra(NotificationHelper.NOTIFICATION_ID,
                                 NotificationHelper.NOT_EXISTS_NOTIFICATION_ID);
                         if (notificationId != NotificationHelper.NOT_EXISTS_NOTIFICATION_ID){
@@ -163,6 +163,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                             getIntent().removeExtra(NotificationHelper.NOTIFICATION_ID);
                         }
                     } catch (RemoteException e) {
+                        Log.d(Settings.LOG_TAG, "RemoteException = " + e.getMessage());
                     }
                 }
             };

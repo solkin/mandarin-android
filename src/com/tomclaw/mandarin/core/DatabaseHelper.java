@@ -32,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
-            // if(true)return;
+            if(true)return;
             ContentValues cv0 = new ContentValues();
             ContentValues cv1 = new ContentValues();
             ContentValues cv2 = new ContentValues();

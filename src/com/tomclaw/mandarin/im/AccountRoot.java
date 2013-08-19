@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import com.tomclaw.mandarin.core.CoreObject;
+import com.tomclaw.mandarin.core.NotificationHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.util.StatusUtil;
 
@@ -35,6 +36,15 @@ public abstract class AccountRoot extends CoreObject {
      */
     protected transient Context context;
     protected transient int accountDbId;
+    protected transient NotificationHelper notificationHelper;
+
+    public void setNotificationHelper(NotificationHelper notificationHelper){
+        this.notificationHelper = notificationHelper;
+    }
+
+    public NotificationHelper getNotificationHelper(){
+        return notificationHelper;
+    }
 
     public void setContext(Context context) {
         this.context = context;

@@ -93,6 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j - 24 * 60 * 60 * 1000 - 10);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, "0");
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }

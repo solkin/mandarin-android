@@ -233,6 +233,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, "0");
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -253,6 +254,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, "0");
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         cursor.close();
         // Checking for dialog activate needed.

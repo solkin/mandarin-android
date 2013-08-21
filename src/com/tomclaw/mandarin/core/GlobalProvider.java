@@ -71,6 +71,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_STATE = "message_state";
     public static final String HISTORY_MESSAGE_TIME = "message_time";
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
+    public static final String HISTORY_MESSAGE_READ_STATE = "message_read_state";
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
@@ -105,7 +106,7 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
-            + HISTORY_MESSAGE_TEXT + " text" + ");";
+            + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_MESSAGE_READ_STATE + " int" + ");";
 
     // Database helper object
     private DatabaseHelper databaseHelper;

@@ -60,19 +60,25 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
     private static int COLUMN_MESSAGE_STATE;
+    private static int COLUMN_MESSAGE_READ_STATE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
 
     private Context context;
     private LayoutInflater mInflater;
+    private Runnable onUpdate;
+    // onUpdate must be called only once
+    private boolean isUpdate = false;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, Runnable onUpdate) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.onUpdate = onUpdate;
         ADAPTER_ID = buddyBdId;
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
+        //isUpdate = false;
     }
 
     @Override
@@ -89,10 +95,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
         COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
+        COLUMN_MESSAGE_READ_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE);
         COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
         COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
         // Changing current cursor.
         swapCursor(cursor);
+
+        if (!isUpdate){
+            onUpdate.run();
+            isUpdate = true;
+        }
     }
 
     @Override
@@ -155,6 +167,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
+        int messageReadState = cursor.getInt(COLUMN_MESSAGE_READ_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
         // Selected flag check box.
@@ -170,7 +183,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
-                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
+                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText + "\n" + String.valueOf(messageReadState));
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }

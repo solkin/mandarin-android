@@ -233,7 +233,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, "0");
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1) ? "0" : "2");
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -254,7 +254,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, "0");
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1) ? "0" : "2");
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         cursor.close();
         // Checking for dialog activate needed.
@@ -293,6 +293,13 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
         contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                 GlobalProvider.HISTORY_MESSAGE_COOKIE + " LIKE '%" + cookie + "%'", null);
+    }
+
+    public static void updateMessage(ContentResolver contentResolver, int messageDbId, int messageReadState){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, messageReadState);
+        contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
+                GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
@@ -452,5 +459,19 @@ public class QueryHelper {
             return cursor.getString(nameColumnIndex);
         }
         throw new AccountNotFoundException();
+    }
+
+    public static int getFirstUnreadPosition(ContentResolver contentResolver, int dialogDbId) {
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + dialogDbId + "'", null,
+                GlobalProvider.ROW_AUTO_ID + " ASC");
+        int indexReadStateColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE);
+        while (cursor.moveToNext()) {
+            //Log.d(Settings.LOG_TAG, "State = " + String.valueOf(cursor.getInt(indexReadStateColumn)));
+            if (cursor.getInt(indexReadStateColumn) == 0){
+                return cursor.getPosition();
+            }
+        }
+        return cursor.getPosition();
     }
 }

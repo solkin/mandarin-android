@@ -7,15 +7,16 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.HistorySelection;
 import com.tomclaw.mandarin.util.StatusUtil;
@@ -38,6 +39,8 @@ public class ChatPagerAdapter extends PagerAdapter implements
     private Runnable onUpdate;
     private Runnable onLongClick;
 
+    private ListView chatList;
+
     public ChatPagerAdapter(Activity activity, LoaderManager loaderManager,
                             Runnable onUpdate, Runnable onLongClick) {
         super();
@@ -58,10 +61,44 @@ public class ChatPagerAdapter extends PagerAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         View view = inflater.inflate(R.layout.chat_dialog, null);
-        ListView chatList = (ListView) view.findViewById(R.id.chat_list);
+        chatList = (ListView) view.findViewById(R.id.chat_list);
+        chatList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                /* Change state when scroll stop */
+                if (scrollState == 0) {
+                    int lastVisiblePosition = view.getLastVisiblePosition();
+                    Cursor listViewCursor = (Cursor) view.getItemAtPosition(lastVisiblePosition);
+                    int readState, messageDbId;
+                    do {
+                        readState = listViewCursor.getInt(listViewCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE));
+                        if (readState == 0){
+                            messageDbId = listViewCursor.getInt(listViewCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                            QueryHelper.updateMessage(activity.getContentResolver(), messageDbId, 1);
+                        }
+                    } while (listViewCursor.moveToPrevious() && readState == 0);
+                    //notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                //Log.d(Settings.LOG_TAG, "OnScroll firstvisibleItem = " + String.valueOf(firstVisibleItem) + "visibleItemCount = " + String.valueOf(visibleItemCount) + "totalItemCount = " + String.valueOf(totalItemCount));
+            }
+        });
+        int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        final int firstUnreadPosition = QueryHelper.getFirstUnreadPosition(activity.getContentResolver(), buddyDbId);
+        Runnable onUpdate = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(Settings.LOG_TAG, "In onUpdate");
+                chatList.setSelection(firstUnreadPosition);
+            }
+        };
         final ChatHistoryAdapter chatHistoryAdapter = new ChatHistoryAdapter(activity, loaderManager,
-                cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)));
+                cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID)), onUpdate);
         chatList.setAdapter(chatHistoryAdapter);
+        Log.d(Settings.LOG_TAG, "first unread position = " + String.valueOf(firstUnreadPosition));
         // Long-click listener to activate action mode and show check-boxes.
         AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
 

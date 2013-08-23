@@ -22,20 +22,21 @@ import com.tomclaw.mandarin.util.StatusUtil;
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
- * Date: 6/27/13
- * Time: 10:05 PM
+ * Date: 4/28/13
+ * Time: 9:54 PM
  */
-public class RosterFavoriteAdapter extends CursorAdapter implements
+public class ChatDialogsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Adapter ID
      */
-    private static final int ADAPTER_FAVORITE_ID = -4;
+    private static final int ADAPTER_DIALOGS_ID = -2;
 
     /**
      * Columns
      */
+    private static int COLUMN_ROSTER_ROW_AUTO_ID;
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
@@ -46,26 +47,28 @@ public class RosterFavoriteAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private int selectedBuddyDbId;
+    private int selectedPosition;
 
-    public RosterFavoriteAdapter(Activity context, LoaderManager loaderManager) {
+    public ChatDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
         // Initialize loader for dialogs Id.
-        loaderManager.initLoader(ADAPTER_FAVORITE_ID, null, this);
+        loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context,
-                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_FAVORITE + "='" + 1 + "'",
-                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
-                + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
+                null, GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROSTER_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
@@ -96,7 +99,7 @@ public class RosterFavoriteAdapter extends CursorAdapter implements
             bindView(v, context, getCursor());
         } catch (Throwable ex) {
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = mInflater.inflate(R.layout.buddy_item, parent, false);
+            v = mInflater.inflate(R.layout.dialogs_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return v;
@@ -104,12 +107,15 @@ public class RosterFavoriteAdapter extends CursorAdapter implements
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        return inflater.inflate(R.layout.buddy_item, viewGroup, false);
+        return inflater.inflate(R.layout.dialogs_item, viewGroup, false);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Setup values
+        if(cursor.getInt(COLUMN_ROSTER_ROW_AUTO_ID) == selectedBuddyDbId) {
+            selectedPosition = cursor.getPosition();
+        }
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
@@ -123,5 +129,28 @@ public class RosterFavoriteAdapter extends CursorAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
+
+    public String getBuddyNick(int position) {
+        if (!getCursor().moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
+        return getCursor().getString(getCursor().getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
+    }
+
+    /**
+     * Setup selected buddyDbId.
+     * @param buddyDbId
+     */
+    public void setSelection(int buddyDbId) {
+        this.selectedBuddyDbId = buddyDbId;
+    }
+
+    @Override
+    protected void onContentChanged() {
+        super.onContentChanged();
+        if(getCursor().moveToPosition(selectedPosition)) {
+
+        }
     }
 }

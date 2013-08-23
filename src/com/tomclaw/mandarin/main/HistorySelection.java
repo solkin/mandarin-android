@@ -1,12 +1,10 @@
 package com.tomclaw.mandarin.main;
 
 import android.text.TextUtils;
-import com.actionbarsherlock.view.CollapsibleActionView;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,20 +14,11 @@ import java.util.Set;
  */
 public class HistorySelection {
 
-    private static class Holder {
-
-        static HistorySelection instance = new HistorySelection();
-    }
-
-    public static HistorySelection getInstance() {
-        return Holder.instance;
-    }
-
     private Map<Integer, String> selectionMap;
     private boolean selectionMode;
 
     public HistorySelection() {
-        selectionMap = new HashMap<Integer, String>();
+        selectionMap = new TreeMap<Integer, String>();
         selectionMode = false;
     }
 
@@ -46,7 +35,7 @@ public class HistorySelection {
         for(String message : selection) {
             selectionBuilder.append(message).append('\n').append('\n');
         }
-        return selectionBuilder.toString();
+        return selectionBuilder.toString().trim();
     }
 
     public boolean getSelectionMode() {

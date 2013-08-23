@@ -48,6 +48,11 @@ public class IcqMessageRequest extends WimRequest {
                 }
             }
             return REQUEST_DELETE;
+        } else if(statusCode >= 600  && statusCode < 700) {
+            // Target error.
+            String requestId = responseObject.getString(REQUEST_ID);
+            QueryHelper.updateMessage(getAccountRoot().getContentResolver(), requestId, 1);
+            return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or McDonald's.
         return REQUEST_PENDING;

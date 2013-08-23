@@ -1,14 +1,10 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -340,8 +336,8 @@ public class IcqSession {
                 String buddyStatus = sourceObject.getString(STATE);
                 String buddyType = sourceObject.getString(USER_TYPE);
 
-                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
-                        icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
+                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                        buddyId, 1, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {

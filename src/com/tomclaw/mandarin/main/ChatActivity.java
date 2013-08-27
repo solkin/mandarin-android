@@ -70,15 +70,9 @@ public class ChatActivity extends ChiefActivity {
             String selection = historySelection.buildSelection();
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    if(Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                getSystemService(CLIPBOARD_SERVICE);
-                        clipboard.setText(selection);
-                    } else {
-                        ClipboardManager clipboardManager = (ClipboardManager)
-                                getSystemService(CLIPBOARD_SERVICE);
-                        clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
-                    }
+                    ClipboardManager clipboardManager = (ClipboardManager)
+                            getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
                     break;
                 case R.id.message_create_note:
                     break;
@@ -163,6 +157,7 @@ public class ChatActivity extends ChiefActivity {
 
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.chat_activity);
+        // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
         bar.setDisplayShowTitleEnabled(true);
@@ -216,24 +211,31 @@ public class ChatActivity extends ChiefActivity {
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
+        // drawerList.setCacheColorHint(0);
+        // drawerList.setScrollingCacheEnabled(false);
+        // drawerList.setScrollContainer(false);
+        // drawerList.setFastScrollEnabled(true);
+        // drawerList.setSmoothScrollbarEnabled(true);
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
-        drawerList.setCacheColorHint(0);
-        drawerList.setScrollingCacheEnabled(false);
-        drawerList.setScrollContainer(false);
-        drawerList.setFastScrollEnabled(true);
-        drawerList.setSmoothScrollbarEnabled(true);
 
         title = drawerTitle = getTitle();
-        // actionBarHelper = new ActionBarHelper();
-        // actionBarHelper.init();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        // ActionBarDrawerToggle provides convenient helpers for tying together the
-        // prescribed interactions between a top-level sliding drawer and the action bar.
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
-                R.string.drawer_open, R.string.drawer_close);
+                R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(title);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(drawerTitle);
+                invalidateOptionsMenu();
+            }
+        };
+        drawerLayout.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
         // Send button and message field initialization.
@@ -273,9 +275,18 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
+    public void setTitle(CharSequence title) {
+        this.title = title;
+        getActionBar().setTitle(title);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+        if(drawerToggle != null) {
+            // Pass any configuration change to the drawer toggles
+            drawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     /**
@@ -286,56 +297,22 @@ public class ChatActivity extends ChiefActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // Checking for history selection now and action mode is not null, finish it!
-            if(historySelection.getSelectionMode() && mActionMode != null) {
-                // Finish history selection first to only close action mode on finish method bottom.
-                historySelection.finish();
-                mActionMode.finish();
-            }
-            // Changing chat history adapter loader.
-            int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
-            chatDialogsAdapter.setSelection(buddyDbId);
-            chatHistoryAdapter.setBuddyDbId(buddyDbId);
-            getActionBar().setTitle(chatDialogsAdapter.getBuddyNick(position));
-            drawerLayout.closeDrawer(drawerList);
+            selectItem(position);
         }
     }
 
-    private class ActionBarHelper {
-        private final ActionBar mActionBar;
-        private CharSequence mDrawerTitle;
-        private CharSequence mTitle;
-
-        private ActionBarHelper() {
-            mActionBar = getActionBar();
+    private void selectItem(int position) {
+        // Checking for history selection now and action mode is not null, finish it!
+        if(historySelection.getSelectionMode() && mActionMode != null) {
+            // Finish history selection first to only close action mode on finish method bottom.
+            historySelection.finish();
+            mActionMode.finish();
         }
-
-        public void init() {
-            mActionBar.setDisplayHomeAsUpEnabled(true);
-            mActionBar.setHomeButtonEnabled(true);
-            mTitle = mDrawerTitle = getTitle();
-        }
-
-        /**
-         * When the drawer is closed we restore the action bar state reflecting
-         * the specific contents in view.
-         */
-        public void onDrawerClosed() {
-            mActionBar.setTitle(mTitle);
-        }
-
-        /**
-         * When the drawer is open we set the action bar to a generic title. The
-         * action bar should only contain data relevant at the top level of the
-         * nav hierarchy represented by the drawer, as the rest of your content
-         * will be dimmed down and non-interactive.
-         */
-        public void onDrawerOpened() {
-            mActionBar.setTitle(mDrawerTitle);
-        }
-
-        public void setTitle(CharSequence title) {
-            mTitle = title;
-        }
+        // Changing chat history adapter loader.
+        int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
+        chatDialogsAdapter.setSelection(buddyDbId);
+        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+        getActionBar().setTitle(chatDialogsAdapter.getBuddyNick(position));
+        drawerLayout.closeDrawer(drawerList);
     }
 }

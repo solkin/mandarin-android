@@ -148,24 +148,20 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    /*public class UpdateListViewSetSelectionHelper implements Runnable{
+    /* *
+     * This class needed for call listView.setSelection(int position) from Adapter
+     */
+    public class UpdateListViewHelper {
         ListView listView;
-        int position;
 
-        private UpdateListViewSetSelectionHelper(ListView listView){
+        private UpdateListViewHelper(ListView listView){
             this.listView = listView;
         }
 
-        public void setPosition(int position){
-            this.position = position;
-        }
-
-        @Override
-        public void run() {
-            Log.d(Settings.LOG_TAG, "In onUpdate");
+        public void setSelection(int position){
             listView.setSelection(position);
         }
-    }*/
+    }
 
     @Override
     public void onCoreServiceReady() {
@@ -189,9 +185,9 @@ public class ChatActivity extends ChiefActivity {
 
         historySelection = new HistorySelection();
         chatList = (ListView) findViewById(R.id.chat_list);
-        //UpdateListViewSetSelectionHelper helper = new UpdateListViewSetSelectionHelper(chatList);
+        UpdateListViewHelper helper = new UpdateListViewHelper(chatList);
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this,
-                getLoaderManager(), historySelection, buddyDbId/*, helper*/);
+                getLoaderManager(), historySelection, buddyDbId, helper);
         chatList.setAdapter(chatHistoryAdapter);
         // Long-click listener to activate action mode and show check-boxes.
         AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {

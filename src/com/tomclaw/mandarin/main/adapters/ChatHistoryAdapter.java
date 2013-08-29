@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.HistorySelection;
 
 import java.text.SimpleDateFormat;
@@ -68,18 +69,18 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private LayoutInflater mInflater;
     private LoaderManager loaderManager;
     private HistorySelection historySelection;
-    //private ChatActivity.UpdateListViewSetSelectionHelper helper;
-    // onUpdate must be called only once
-    //private boolean isUpdate;
+    private ChatActivity.UpdateListViewHelper helper;
+    // ListView must be updated only when cursor reloaded
+    private boolean isUpdate;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
-                              HistorySelection historySelection, int buddyBdId/*, ChatActivity.UpdateListViewSetSelectionHelper helper*/) {
+                              HistorySelection historySelection, int buddyBdId, ChatActivity.UpdateListViewHelper helper) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.loaderManager = loaderManager;
         this.historySelection = historySelection;
-        //this.helper = helper;
+        this.helper = helper;
         setBuddyDbId(buddyBdId);
     }
 
@@ -103,7 +104,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        //isUpdate = false;
+        isUpdate = false;
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
                 GlobalProvider.ROW_AUTO_ID + " ASC");
@@ -122,16 +123,17 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         // Changing current cursor.
         swapCursor(cursor);
 
-        /*if (!isUpdate){
+        if (!isUpdate){
+            // Get position of first unread message
             cursor.moveToFirst();
             int currentBuddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
             int firstUnreadPosition = QueryHelper.getFirstUnreadPosition(context.getContentResolver(), currentBuddyDbId);
-            Log.d(Settings.LOG_TAG, "first unread position = " + String.valueOf(firstUnreadPosition));
-            helper.setPosition(firstUnreadPosition);
-            //notifyDataSetChanged();
-            helper.run();
+            Log.d(Settings.LOG_TAG, "First unread position = " + String.valueOf(firstUnreadPosition));
+            // Very important call this,otherwise setSelection work only once
+            notifyDataSetInvalidated();
+            helper.setSelection(firstUnreadPosition);
             isUpdate = true;
-        }*/
+        }
     }
 
     @Override

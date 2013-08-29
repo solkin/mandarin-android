@@ -341,6 +341,19 @@ public class QueryHelper {
                 GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
     }
 
+    public static void readMessages(ContentResolver contentResolver, Cursor cursor, int from, int to){
+        int readState, messageDbId;
+        cursor.moveToPosition(from);
+        do {
+            readState = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE));
+            if (readState == 0){
+                messageDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                QueryHelper.updateMessage(contentResolver, messageDbId, 1);
+            }
+            from += 1;
+        } while (cursor.moveToNext() && from <= to);
+    }
+
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
         contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);

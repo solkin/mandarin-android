@@ -37,6 +37,7 @@ public class ChatActivity extends ChiefActivity {
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence drawerTitle;
     private CharSequence title;
+    public int lastVisiblePosition;
 
     // private ActionBarHelper actionBarHelper;
     private ChatDialogsAdapter chatDialogsAdapter;
@@ -149,7 +150,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     /* *
-     * This class needed for call listView.setSelection(int position) from Adapter
+     * This class needed for call listView.setSelection(int position) from Adapter and set lastVisiblePosition
      */
     public class UpdateListViewHelper {
         ListView listView;
@@ -160,6 +161,10 @@ public class ChatActivity extends ChiefActivity {
 
         public void setSelection(int position){
             listView.setSelection(position);
+        }
+
+        public void setLastVisiblePosition(int position){
+            lastVisiblePosition = position;
         }
     }
 
@@ -230,17 +235,18 @@ public class ChatActivity extends ChiefActivity {
                 /* Change state when scroll stop */
                 if (scrollState == 0) {
                     int lastVisiblePosition = view.getLastVisiblePosition();
+                    int firstVisiblePosition = view.getFirstVisiblePosition();
+                    int oldLastVisiblePosition = ChatActivity.this.lastVisiblePosition;
                     Cursor listViewCursor = (Cursor) view.getItemAtPosition(lastVisiblePosition);
-                    int readState, messageDbId;
-                    // mark as read all unread messages before lase visible position
-                    do {
-                        readState = listViewCursor.getInt(listViewCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE));
-                        if (readState == 0){
-                            messageDbId = listViewCursor.getInt(listViewCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                            QueryHelper.updateMessage(ChatActivity.this.getContentResolver(), messageDbId, 1);
-                        }
-                    } while (listViewCursor.moveToPrevious() && readState == 0);
-                    //notifyDataSetChanged();
+                    // mark as read all unread scrolled messages
+                    if (lastVisiblePosition > oldLastVisiblePosition){
+                        // Scrolled Down
+                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), listViewCursor, oldLastVisiblePosition, lastVisiblePosition);
+                    }
+                    else {
+                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), listViewCursor, firstVisiblePosition, oldLastVisiblePosition);
+                    }
+                    ChatActivity.this.lastVisiblePosition = lastVisiblePosition;
                 }
             }
 

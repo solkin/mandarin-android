@@ -133,6 +133,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             notifyDataSetInvalidated();
             helper.setSelection(firstUnreadPosition);
             isUpdate = true;
+            // Set lastVisiblePosition in ListView
+            helper.setLastVisiblePosition(firstUnreadPosition);
         }
     }
 
@@ -209,7 +211,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
-                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText + "\n" + String.valueOf(messageReadState));
+                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }

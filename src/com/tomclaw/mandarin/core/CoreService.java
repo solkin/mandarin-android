@@ -149,21 +149,12 @@ public class CoreService extends Service {
         Log.d(Settings.LOG_TAG, "CoreService serviceInit");
         updateState(STATE_LOADING);
         // ...
-        new Thread() {
-            public void run() {
-                // Loading all data for this application session.
-                sessionHolder.load();
-                requestDispatcher.startObservation();
-                // For testing purposes only!
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {
-                }
-                // Service is now ready.
-                updateState(STATE_UP);
-            }
-        }.start();
-
+        // Loading all data for this application session.
+        sessionHolder.load();
+        requestDispatcher.startObservation();
+        // Service is now ready.
+        updateState(STATE_UP);
+        Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");
     }
 
     /**

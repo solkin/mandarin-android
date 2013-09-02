@@ -154,8 +154,8 @@ public class ChatActivity extends ChiefActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = messageText.getText().toString();
-                if (TextUtils.isEmpty(message)) {
+                String message = messageText.getText().toString().trim();
+                if (!TextUtils.isEmpty(message)) {
                     try {
                         int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                         String cookie = String.valueOf(System.currentTimeMillis());

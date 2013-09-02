@@ -123,7 +123,6 @@ public class ChatActivity extends ChiefActivity {
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
-        chatDialogsAdapter.setSelection(buddyDbId);
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
@@ -155,21 +154,23 @@ public class ChatActivity extends ChiefActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    String cookie = String.valueOf(System.currentTimeMillis());
-                    String appSession = getServiceInteraction().getAppSession();
-                    String message = messageText.getText().toString();
-                    QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
-                            cookie, message, false);
-                    // Sending protocol message request.
-                    RequestHelper.requestMessage(getContentResolver(), appSession,
-                            buddyDbId, cookie, message);
-                    // Clearing text view.
-                    messageText.setText("");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // TODO: Couldn't put message into database. This exception must be processed.
+                String message = messageText.getText().toString();
+                if (TextUtils.isEmpty(message)) {
+                    try {
+                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                        String cookie = String.valueOf(System.currentTimeMillis());
+                        String appSession = getServiceInteraction().getAppSession();
+                        QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
+                                cookie, message, false);
+                        // Sending protocol message request.
+                        RequestHelper.requestMessage(getContentResolver(), appSession,
+                                buddyDbId, cookie, message);
+                        // Clearing text view.
+                        messageText.setText("");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // TODO: Couldn't put message into database. This exception must be processed.
+                    }
                 }
             }
         });
@@ -194,7 +195,7 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(drawerToggle != null) {
+        if (drawerToggle != null) {
             // Pass any configuration change to the drawer toggles
             drawerToggle.onConfigurationChanged(newConfig);
         }
@@ -215,7 +216,6 @@ public class ChatActivity extends ChiefActivity {
     private void selectItem(int position) {
         // Changing chat history adapter loader.
         int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
-        chatDialogsAdapter.setSelection(buddyDbId);
         chatHistoryAdapter.setBuddyDbId(buddyDbId);
         setTitle(chatDialogsAdapter.getBuddyNick(position));
         drawerLayout.closeDrawer(drawerList);
@@ -238,14 +238,14 @@ public class ChatActivity extends ChiefActivity {
             // Building selected messages.
             StringBuilder selectionBuilder = new StringBuilder();
             Collection<String> selection = selectionMap.values();
-            for(String message : selection) {
+            for (String message : selection) {
                 selectionBuilder.append(message).append('\n').append('\n');
             }
             return selectionBuilder.toString().trim();
         }
 
         public void setSelection(int position, String value) {
-            if(TextUtils.isEmpty(value)) {
+            if (TextUtils.isEmpty(value)) {
                 selectionMap.remove(position);
             } else {
                 selectionMap.put(position, value);

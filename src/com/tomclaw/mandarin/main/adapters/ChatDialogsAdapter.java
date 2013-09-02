@@ -115,6 +115,9 @@ public class ChatDialogsAdapter extends CursorAdapter implements
         // Setup values
         if(cursor.getInt(COLUMN_ROSTER_ROW_AUTO_ID) == selectedBuddyDbId) {
             selectedPosition = cursor.getPosition();
+            view.setSelected(true);
+        } else {
+            view.setSelected(false);
         }
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));

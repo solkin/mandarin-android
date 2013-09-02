@@ -14,10 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -89,6 +86,9 @@ public class ChatActivity extends ChiefActivity {
         public void onDestroyActionMode(ActionMode mode) {
             if(historySelection.getSelectionMode()) {
                 historySelection.finish();
+                chatList.clearChoices();
+                // Update choice mode to disable selection.
+                chatList.setChoiceMode(AbsListView.CHOICE_MODE_NONE);
                 chatHistoryAdapter.notifyDataSetChanged();
             }
         }
@@ -170,8 +170,8 @@ public class ChatActivity extends ChiefActivity {
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this,
                 getLoaderManager(), historySelection, buddyDbId);
         chatList.setAdapter(chatHistoryAdapter);
-        // Long-click listener to activate action mode and show check-boxes.
-        AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        // Long-click listener to activate action mode.
+        chatList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -182,17 +182,17 @@ public class ChatActivity extends ChiefActivity {
                 }
                 // Update selection data.
                 historySelection.setSelectionMode(true);
-                // Update history adapter to show checkboxes.
+                // Update choice mode to show selection.
+                chatList.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
                 // historySelection.notifyHistoryAdapter();
-                chatHistoryAdapter.notifyDataSetChanged();
+                //chatHistoryAdapter.notifyDataSetChanged();
                 // Starting action mode.
-                startActionMode(mActionModeCallback);
-                return true;
+                // startActionMode(mActionModeCallback);
+                return chatList.performLongClick();
             }
-        };
-        chatList.setOnItemLongClickListener(itemLongClickListener);
+        });
         // Click listener for item clicked events (in selection mode).
-        AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        /*chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Checking for action mode is activated.
@@ -200,11 +200,67 @@ public class ChatActivity extends ChiefActivity {
                     boolean selectionExist = historySelection.isSelectionExist(position);
                     historySelection.setSelection(position, selectionExist ?
                             null : chatHistoryAdapter.getItemText(position));
+                }
+            }
+        });*/
+
+        chatList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                Log.d(Settings.LOG_TAG, "position: " + position + " checked: " + checked);
+                // Checking for action mode is activated.
+                if (historySelection.getSelectionMode()) {
+                    historySelection.setSelection(position, checked ?
+                            null : chatHistoryAdapter.getItemText(position));
+                }
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                // Assumes that you have menu resources
+                inflater.inflate(R.menu.chat_history_edit_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                mActionMode = mode;
+                return false;  // Return false if nothing is done.
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                String selection = historySelection.buildSelection();
+                switch (item.getItemId()) {
+                    case R.id.message_copy:
+                        ClipboardManager clipboardManager = (ClipboardManager)
+                                getSystemService(CLIPBOARD_SERVICE);
+                        clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
+                        break;
+                    case R.id.message_create_note:
+                        break;
+                    case R.id.message_share:
+                        break;
+                    default:
+                        return false;
+                }
+                mode.finish();
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                if(historySelection.getSelectionMode()) {
+                    historySelection.finish();
+                    chatList.clearChoices();
+                    // Update choice mode to disable selection.
+                    chatList.setChoiceMode(AbsListView.CHOICE_MODE_NONE);
                     chatHistoryAdapter.notifyDataSetChanged();
                 }
             }
-        };
-        chatList.setOnItemClickListener(itemClickListener);
+        });
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
         chatDialogsAdapter.setSelection(buddyDbId);
@@ -312,7 +368,7 @@ public class ChatActivity extends ChiefActivity {
         int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
         chatDialogsAdapter.setSelection(buddyDbId);
         chatHistoryAdapter.setBuddyDbId(buddyDbId);
-        getActionBar().setTitle(chatDialogsAdapter.getBuddyNick(position));
+        setTitle(chatDialogsAdapter.getBuddyNick(position));
         drawerLayout.closeDrawer(drawerList);
     }
 }

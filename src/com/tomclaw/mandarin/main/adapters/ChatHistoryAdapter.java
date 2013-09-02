@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,7 +19,6 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.main.HistorySelection;
 
 import java.text.SimpleDateFormat;
 
@@ -66,15 +64,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private Context context;
     private LayoutInflater mInflater;
     private LoaderManager loaderManager;
-    private HistorySelection historySelection;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
-                              HistorySelection historySelection, int buddyBdId) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.loaderManager = loaderManager;
-        this.historySelection = historySelection;
         setBuddyDbId(buddyBdId);
     }
 
@@ -175,10 +170,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
-        // Selection flag.
-        view.setSelected(historySelection.getSelectionMode()
-                && historySelection.isSelectionExist(cursor.getPosition()));
-        view.setActivated(view.isSelected());
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {

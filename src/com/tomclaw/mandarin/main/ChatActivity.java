@@ -22,6 +22,7 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.util.Collection;
 import java.util.Map;
@@ -115,11 +116,11 @@ public class ChatActivity extends ChiefActivity {
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        chatList = (ListView) findViewById(R.id.chat_list);
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this,
                 getLoaderManager(), buddyDbId);
-        chatList.setAdapter(chatHistoryAdapter);
 
+        chatList = (ListView) findViewById(R.id.chat_list);
+        chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
@@ -221,45 +222,14 @@ public class ChatActivity extends ChiefActivity {
         drawerLayout.closeDrawer(drawerList);
     }
 
-    private class SelectionHelper {
-
-        private Map<Integer, String> selectionMap;
-
-        public SelectionHelper() {
-            selectionMap = new TreeMap<Integer, String>();
-        }
-
-        public void finish() {
-            // Clearing all.
-            selectionMap.clear();
-        }
-
-        public String buildSelection() {
-            // Building selected messages.
-            StringBuilder selectionBuilder = new StringBuilder();
-            Collection<String> selection = selectionMap.values();
-            for (String message : selection) {
-                selectionBuilder.append(message).append('\n').append('\n');
-            }
-            return selectionBuilder.toString().trim();
-        }
-
-        public void setSelection(int position, String value) {
-            if (TextUtils.isEmpty(value)) {
-                selectionMap.remove(position);
-            } else {
-                selectionMap.put(position, value);
-            }
-        }
-    }
-
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.setSelection(position, checked ? chatHistoryAdapter.getItemText(position) : null);
+            selectionHelper.onStateChanged(position, id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
 
         @Override
@@ -280,12 +250,17 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            String selection = selectionHelper.buildSelection();
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    ClipboardManager clipboardManager = (ClipboardManager)
-                            getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
+                    StringBuilder selectionBuilder = new StringBuilder();
+                    // Obtain selected positions.
+                    Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+                    // Iterating for all selected positions.
+                    for(int position : selectedPositions) {
+                        selectionBuilder.append(chatHistoryAdapter.getItemText(position)).append('\n').append('\n');
+                    }
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
                     break;
                 case R.id.message_create_note:
                     break;
@@ -300,8 +275,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.finish();
-            chatList.clearChoices();
+            selectionHelper.clearSelection();
         }
     }
 }

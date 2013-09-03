@@ -17,7 +17,7 @@
                 android:text="05.07.13"
                 android:id="@+id/message_date" android:layout_gravity="center_horizontal" android:paddingBottom="5dip"
                 android:background="@drawable/ic_date_back" android:visibility="visible" android:typeface="normal"
-                />
+                android:textSize="16sp"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
@@ -38,7 +38,7 @@
                         android:layout_height="wrap_content"
                         android:text="Chat Message Chat Message Chat Message Chat Message "
                         android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
-                        android:singleLine="false" android:padding="4dip"/>
+                        android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -73,7 +73,7 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                           android:text="Chat Message"
                           android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
-                          android:singleLine="false" android:padding="4dip"/>
+                          android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -86,6 +86,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/error_bubble"
-                android:id="@+id/error_text" android:padding="4dip"/>
+                android:id="@+id/error_text" android:padding="4dip" android:textSize="16sp"/>
     </LinearLayout>
 </LinearLayout>

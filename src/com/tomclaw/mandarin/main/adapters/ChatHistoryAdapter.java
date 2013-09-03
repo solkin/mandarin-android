@@ -214,15 +214,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     public String getItemText(int position) {
-        if (getCursor().moveToPosition(position)) {
+        Cursor cursor = getCursor();
+        if (cursor.moveToPosition(position)) {
             // Message data.
-            int messageType = getCursor().getInt(COLUMN_MESSAGE_TYPE);
-            String messageText = getCursor().getString(COLUMN_MESSAGE_TEXT);
-            long messageTime = getCursor().getLong(COLUMN_MESSAGE_TIME);
+            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+            String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
+            long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
             String messageTimeText = simpleTimeFormat.format(messageTime);
             String messageDateText = simpleDateFormat.format(messageTime);
-            int accountDbId = getCursor().getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
-            int buddyDbId = getCursor().getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
+            int accountDbId = cursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
+            int buddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
             String buddyNick = "unknown";
             try {
                 // Select message type.

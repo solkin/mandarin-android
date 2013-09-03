@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/theme-mandarin/theme-mandarin.iml" filepath="$PROJECT_DIR$/libs/theme-mandarin/theme-mandarin.iml" />
     </modules>
   </component>
 </project>

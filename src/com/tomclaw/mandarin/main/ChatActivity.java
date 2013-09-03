@@ -25,8 +25,6 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -256,7 +254,7 @@ public class ChatActivity extends ChiefActivity {
                     // Obtain selected positions.
                     Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
                     // Iterating for all selected positions.
-                    for(int position : selectedPositions) {
+                    for (int position : selectedPositions) {
                         selectionBuilder.append(chatHistoryAdapter.getItemText(position)).append('\n').append('\n');
                     }
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);

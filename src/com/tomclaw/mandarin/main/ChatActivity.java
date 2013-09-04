@@ -134,14 +134,26 @@ public class ChatActivity extends ChiefActivity {
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
                 R.string.drawer_open, R.string.drawer_close) {
+
+            @Override
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(title);
                 invalidateOptionsMenu();
             }
 
+            @Override
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(drawerTitle);
                 invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                super.onDrawerStateChanged(newState);
+                if(newState == DrawerLayout.STATE_SETTLING) {
+                    int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
+                    drawerList.setItemChecked(position, true);
+                }
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);

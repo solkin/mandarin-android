@@ -36,6 +36,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     /**
      * Columns
      */
+    private static int COLUMN_ROSTER_BUDDY_DB_ID;
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
@@ -65,6 +66,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROSTER_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
@@ -134,5 +136,23 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     @Override
     protected void onContentChanged() {
         super.onContentChanged();
+    }
+
+    /**
+     * Returns position of specified buddy db id.
+     * @param buddyDbId buddy database row id.
+     * @return position of specified buddy in chat dialogs selection.
+     */
+    public int getBuddyPosition(int buddyDbId) {
+        Cursor cursor = getCursor();
+        // Iterate cursor positions to get know buddyDbId position.
+        if(cursor.moveToFirst()) {
+            do {
+                if(cursor.getInt(COLUMN_ROSTER_BUDDY_DB_ID) == buddyDbId) {
+                    return cursor.getPosition();
+                }
+            } while(cursor.moveToNext());
+        }
+        return -1;
     }
 }

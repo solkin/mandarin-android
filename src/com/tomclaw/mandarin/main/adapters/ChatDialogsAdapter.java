@@ -141,7 +141,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     /**
      * Returns position of specified buddy db id.
      * @param buddyDbId buddy database row id.
-     * @return position of specified buddy in chat dialogs selection.
+     * @return position of specified buddy in chat dialogs selection or -1 if there is no such buddy.
      */
     public int getBuddyPosition(int buddyDbId) {
         Cursor cursor = getCursor();

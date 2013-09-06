@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -37,11 +38,9 @@ public class ChatActivity extends ChiefActivity {
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
-    private CharSequence drawerTitle;
     private CharSequence title;
 
     private ChatDialogsAdapter chatDialogsAdapter;
-    private ListView chatList;
     private ChatHistoryAdapter chatHistoryAdapter;
 
     @Override
@@ -95,17 +94,10 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceReady() {
-        Bundle bundle = getIntent().getExtras();
-
-        int buddyDbId = -1;
-        // Checking for bundle condition.
-        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
-            // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
-        }
-
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
+
         setContentView(R.layout.chat_activity);
+
         // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
@@ -114,10 +106,23 @@ public class ChatActivity extends ChiefActivity {
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this,
-                getLoaderManager(), buddyDbId);
+        Bundle bundle = getIntent().getExtras();
 
-        chatList = (ListView) findViewById(R.id.chat_list);
+        int buddyDbId = -1;
+        // Checking for bundle condition.
+        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+            // Setup active page.
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+            try {
+                // This will provide buddy nick by db id.
+                setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+            } catch (BuddyNotFoundException ignored) {
+            }
+        }
+
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+
+        ListView chatList = (ListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
 
@@ -126,8 +131,6 @@ public class ChatActivity extends ChiefActivity {
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        title = drawerTitle = getTitle();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -143,14 +146,15 @@ public class ChatActivity extends ChiefActivity {
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(drawerTitle);
+                getActionBar().setTitle(R.string.dialogs);
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerStateChanged(int newState) {
                 super.onDrawerStateChanged(newState);
-                if(newState == DrawerLayout.STATE_SETTLING) {
+                if(newState == DrawerLayout.STATE_SETTLING
+                        || newState == DrawerLayout.STATE_DRAGGING) {
                     int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
                     drawerList.setItemChecked(position, true);
                 }
@@ -189,12 +193,12 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceDown() {
-
+        // TODO: must be implemented.
     }
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-
+        // TODO: must be implemented.
     }
 
     @Override

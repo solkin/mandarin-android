@@ -2,12 +2,8 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -37,7 +33,9 @@ public class ChatActivity extends ChiefActivity {
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence drawerTitle;
     private CharSequence title;
-    public int lastVisiblePosition;
+    private int lastVisiblePosition;
+    private int currentBuddyDbId;
+
 
     // private ActionBarHelper actionBarHelper;
     private ChatDialogsAdapter chatDialogsAdapter;
@@ -150,7 +148,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     /* *
-     * This class needed for call listView.setSelection(int position) from Adapter and set lastVisiblePosition
+     * This class couple ChatActivity with ChatHistoryAdapter
      */
     public class UpdateListViewHelper {
         ListView listView;
@@ -165,6 +163,10 @@ public class ChatActivity extends ChiefActivity {
 
         public void setLastVisiblePosition(int position){
             lastVisiblePosition = position;
+        }
+
+        public void setCurrentBuddyDbId(int buddyDbId) {
+            currentBuddyDbId = buddyDbId;
         }
     }
 
@@ -233,20 +235,21 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 /* Change state when scroll stop */
-                if (scrollState == 0) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                     int lastVisiblePosition = view.getLastVisiblePosition();
                     int firstVisiblePosition = view.getFirstVisiblePosition();
                     int oldLastVisiblePosition = ChatActivity.this.lastVisiblePosition;
-                    Cursor listViewCursor = (Cursor) view.getItemAtPosition(lastVisiblePosition);
                     // mark as read all unread scrolled messages
                     if (lastVisiblePosition > oldLastVisiblePosition){
                         // Scrolled Down
-                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), listViewCursor, oldLastVisiblePosition, lastVisiblePosition);
+                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), ChatActivity.this.currentBuddyDbId, oldLastVisiblePosition, lastVisiblePosition);
                     }
                     else {
-                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), listViewCursor, firstVisiblePosition, oldLastVisiblePosition);
+                        QueryHelper.readMessages(ChatActivity.this.getContentResolver(), ChatActivity.this.currentBuddyDbId, firstVisiblePosition, oldLastVisiblePosition);
                     }
                     ChatActivity.this.lastVisiblePosition = lastVisiblePosition;
+                    /*getSharedPreferences("com.tomclaw.mandarin", Context.MODE_PRIVATE).edit()
+                            .putInt("firstUnreadMessagePositionForBuddyId=" + currentBuddyDbId, lastVisiblePosition).commit();*/
                 }
             }
 

@@ -131,6 +131,11 @@ public class GlobalProvider extends ContentProvider {
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
     }
 
+    // Read/Unread message state
+    public static final int HISTORY_INCOMING_UNREAD_MESSAGE_STATE = 0;
+    public static final int HISTORY_INCOMING_READ_MESSAGE_STATE = 1;
+    public static final int HISTORY_OUTGOING_MESSAGE_STATE = 2;
+
     @Override
     public boolean onCreate() {
         Log.d(Settings.LOG_TAG, "GlobalProvider onCreate");

@@ -266,7 +266,8 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1) ? "0" : "2");
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1)
+                        ? GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE : GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -288,7 +289,8 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1) ? "0" : "2");
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, (messageType == 1)
+                ? GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE : GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         // Closing cursor.
         cursor.close();
@@ -341,17 +343,21 @@ public class QueryHelper {
                 GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
     }
 
-    public static void readMessages(ContentResolver contentResolver, Cursor cursor, int from, int to){
+    public static void readMessages(ContentResolver contentResolver, int buddyDbId, int from, int to){
         int readState, messageDbId;
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
+                new String[]{GlobalProvider.ROW_AUTO_ID, GlobalProvider.HISTORY_MESSAGE_READ_STATE},
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
+                GlobalProvider.ROW_AUTO_ID + " ASC");
         cursor.moveToPosition(from);
         do {
             readState = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE));
-            if (readState == 0){
+            if (readState == GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE){
                 messageDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                QueryHelper.updateMessage(contentResolver, messageDbId, 1);
+                QueryHelper.updateMessage(contentResolver, messageDbId, GlobalProvider.HISTORY_INCOMING_READ_MESSAGE_STATE);
             }
-            from += 1;
-        } while (cursor.moveToNext() && from <= to);
+        } while (cursor.moveToNext() && ++from <= to);
+        cursor.close();
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
@@ -540,18 +546,65 @@ public class QueryHelper {
         throw new AccountNotFoundException();
     }
 
-    public static int getFirstUnreadPosition(ContentResolver contentResolver, int dialogDbId) {
+    public static int getFirstUnreadMessagePositionInBuddyHistory(ContentResolver contentResolver, int buddyDbId) {
+        int result;
+        /*
+        //Самое медленное решение
+        String selection = GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'" + " AND " + GlobalProvider.HISTORY_MESSAGE_READ_STATE +"='0'";
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
+                new String[]{GlobalProvider.ROW_AUTO_ID, GlobalProvider.HISTORY_MESSAGE_READ_STATE}, selection, null,
+                GlobalProvider.ROW_AUTO_ID + " ASC");
+        if (cursor.moveToFirst()) {
+            //if unread messages exists, get row_auto_id of first and find its position in history for this buddy
+            int firstUnreadMessageDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            cursor.close();
+            selection = GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'" + " AND " + GlobalProvider.ROW_AUTO_ID + "<" + firstUnreadMessageDbId;
+            cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
+                    new String[]{GlobalProvider.ROW_AUTO_ID}, selection, null,
+                    GlobalProvider.ROW_AUTO_ID + " ASC");
+            result = cursor.getCount();
+            cursor.close();
+            return result;
+        }
+        // if that messages doesn't exists, return count of messages for this buddyDbId
+        cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
+                new String[]{GlobalProvider.ROW_AUTO_ID}, GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
+                null);
+        result = cursor.getCount();
+        cursor.close();
+        return result;  */
+        //Быстрее
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + dialogDbId + "'", null,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
                 GlobalProvider.ROW_AUTO_ID + " ASC");
         int indexReadStateColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE);
         while (cursor.moveToNext()) {
-            //Log.d(Settings.LOG_TAG, "State = " + String.valueOf(cursor.getInt(indexReadStateColumn)));
-            if (cursor.getInt(indexReadStateColumn) == 0){
-                return cursor.getPosition();
+            if (cursor.getInt(indexReadStateColumn) == GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE){
+                result = cursor.getPosition();
+                cursor.close();
+                return result;
             }
         }
-        return cursor.getPosition();
+        result = cursor.getPosition();
+        cursor.close();
+        return result;
+        /*
+        // Потенциально самое быстрое решение, но делает некоторое допущение
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, new String[]{GlobalProvider.ROW_AUTO_ID, GlobalProvider.HISTORY_MESSAGE_READ_STATE},
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
+                GlobalProvider.ROW_AUTO_ID + " ASC");
+        int indexReadStateColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE);
+        cursor.moveToLast();
+        do {
+            if (cursor.getInt(indexReadStateColumn) == GlobalProvider.HISTORY_INCOMING_READ_MESSAGE_STATE){   endTime = System.currentTimeMillis();
+                result = cursor.getPosition();
+                cursor.close();
+                return position;
+            }
+        }
+        while (cursor.moveToPrevious());
+        cursor.close();
+        return 0;*/
     }
 
     public static void clearHistory(ContentResolver contentResolver, int buddyDbId) {

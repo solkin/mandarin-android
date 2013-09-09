@@ -124,16 +124,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         swapCursor(cursor);
 
         if (!isUpdate){
-            // Get position of first unread message
-            cursor.moveToFirst();
-            int currentBuddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
-            int firstUnreadPosition = QueryHelper.getFirstUnreadPosition(context.getContentResolver(), currentBuddyDbId);
+            int firstUnreadPosition = getFirstUnreadMessagePositionInBuddyHistory();
             Log.d(Settings.LOG_TAG, "First unread position = " + String.valueOf(firstUnreadPosition));
-            // Very important call this,otherwise setSelection work only once
+            // Very important call this,otherwise setSelection works only once
             notifyDataSetInvalidated();
             helper.setSelection(firstUnreadPosition);
+            helper.setCurrentBuddyDbId(buddyDbId);
             isUpdate = true;
-            // Set lastVisiblePosition in ListView
             helper.setLastVisiblePosition(firstUnreadPosition);
         }
     }
@@ -280,5 +277,20 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             return messageBuilder.toString();
         }
         return null;
+    }
+
+    private int getFirstUnreadMessagePositionInBuddyHistory(){
+        /*int firstUnreadMessagePosition = context.getSharedPreferences("com.tomclaw.mandarin", Context.MODE_PRIVATE)
+                .getInt("firstUnreadMessagePositionForBuddyId=" + buddyDbId, -1);
+        if(firstUnreadMessagePosition != -1){
+            return firstUnreadMessagePosition;
+        }
+        else {
+            firstUnreadMessagePosition = QueryHelper.getFirstUnreadMessagePositionInBuddyHistory(context.getContentResolver(), buddyDbId);
+            context.getSharedPreferences("com.tomclaw.mandarin", Context.MODE_PRIVATE).edit()
+                    .putInt("firstUnreadMessagePositionForBuddyId=" + buddyDbId, firstUnreadMessagePosition).commit();
+            return firstUnreadMessagePosition;
+        }*/
+        return QueryHelper.getFirstUnreadMessagePositionInBuddyHistory(context.getContentResolver(), buddyDbId);
     }
 }

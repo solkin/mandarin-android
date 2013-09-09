@@ -344,20 +344,13 @@ public class QueryHelper {
     }
 
     public static void readMessages(ContentResolver contentResolver, int buddyDbId, int from, int to){
-        int readState, messageDbId;
-        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
-                new String[]{GlobalProvider.ROW_AUTO_ID, GlobalProvider.HISTORY_MESSAGE_READ_STATE},
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
-                GlobalProvider.ROW_AUTO_ID + " ASC");
-        cursor.moveToPosition(from);
-        do {
-            readState = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE));
-            if (readState == GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE){
-                messageDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                QueryHelper.updateMessage(contentResolver, messageDbId, GlobalProvider.HISTORY_INCOMING_READ_MESSAGE_STATE);
-            }
-        } while (cursor.moveToNext() && ++from <= to);
-        cursor.close();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ_STATE, GlobalProvider.HISTORY_INCOMING_READ_MESSAGE_STATE);
+        contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'" + " AND "
+                        + GlobalProvider.HISTORY_MESSAGE_READ_STATE + "='"
+                        + GlobalProvider.HISTORY_INCOMING_UNREAD_MESSAGE_STATE + "' AND ("
+                        + GlobalProvider.ROW_AUTO_ID + " BETWEEN '" + from + "' AND '" + to + "')", null);
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
@@ -574,7 +567,8 @@ public class QueryHelper {
         cursor.close();
         return result;  */
         //Быстрее
-        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI,
+                new String[]{GlobalProvider.ROW_AUTO_ID, GlobalProvider.HISTORY_MESSAGE_READ_STATE},
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
                 GlobalProvider.ROW_AUTO_ID + " ASC");
         int indexReadStateColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ_STATE);
@@ -585,7 +579,7 @@ public class QueryHelper {
                 return result;
             }
         }
-        result = cursor.getPosition();
+        result = cursor.getCount() - 1;
         cursor.close();
         return result;
         /*

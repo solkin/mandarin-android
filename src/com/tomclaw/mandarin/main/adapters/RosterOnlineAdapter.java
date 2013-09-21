@@ -1,17 +1,17 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -84,18 +84,15 @@ public class RosterOnlineAdapter extends CursorAdapter implements
     public View getView(int position, View convertView, ViewGroup parent) {
         View v;
         try {
-            if (!mDataValid) {
-                throw new IllegalStateException("this should only be called when the cursor is valid");
-            }
-            if (!mCursor.moveToPosition(position)) {
+            if (!getCursor().moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                v = newView(mContext, mCursor, parent);
+                v = newView(context, getCursor(), parent);
             } else {
                 v = convertView;
             }
-            bindView(v, mContext, mCursor);
+            bindView(v, context, getCursor());
         } catch (Throwable ex) {
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = mInflater.inflate(R.layout.buddy_item, parent, false);
@@ -122,9 +119,9 @@ public class RosterOnlineAdapter extends CursorAdapter implements
     }
 
     public int getBuddyDbId(int position) {
-        if (!mCursor.moveToPosition(position)) {
+        if (!getCursor().moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return mCursor.getInt(mCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 }

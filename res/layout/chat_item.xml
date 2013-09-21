@@ -1,101 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:gravity="center_vertical">
-
+              android:layout_height="wrap_content" android:gravity="center_vertical"
+              android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dip"
+              android:paddingTop="5dip" android:paddingRight="5dip">
     <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dip" android:paddingTop="5dip" android:paddingRight="5dip" android:layout_weight="1">
+            android:layout_height="wrap_content" android:id="@+id/date_layout"
+            android:gravity="center_horizontal" android:paddingBottom="5dip">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="05.07.13"
+                android:id="@+id/message_date" android:layout_gravity="center_horizontal" android:paddingBottom="5dip"
+                android:background="@drawable/ic_date_back" android:visibility="visible" android:typeface="normal"
+                android:textSize="16sp"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/incoming_message">
         <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/date_layout"
-                android:gravity="center_horizontal" android:paddingBottom="5dip">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="05.07.13"
-                    android:id="@+id/message_date" android:layout_gravity="center_horizontal" android:paddingBottom="5dip"
-                    android:background="@drawable/ic_date_back" android:visibility="visible" android:typeface="normal"
-                    />
-        </LinearLayout>
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/incoming_message">
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="5dip" android:layout_weight="1">
-                <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:background="@drawable/ic_inc_bubble"
-                        android:id="@+id/inc_bubble_back">
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chat Message Chat Message Chat Message Chat Message "
-                            android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
-                            android:singleLine="false" android:padding="4dip"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip" android:layout_weight="1">
             <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" android:gravity="right">
+                    android:layout_height="wrap_content" android:background="@drawable/ic_inc_bubble"
+                    android:id="@+id/inc_bubble_back">
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10:21"
-                        android:id="@+id/inc_time" android:layout_gravity="right"/>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout android:orientation="horizontal" android:layout_width="match_parent"
-                      android:layout_height="wrap_content" android:id="@+id/outgoing_message">
-            <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
-                          android:layout_height="wrap_content" android:gravity="right">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                          android:text="10:21" android:id="@+id/out_time" android:layout_gravity="right"/>
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/message_delivery" android:src="@drawable/ic_delivered"
-                        />
-            </LinearLayout>
-            <LinearLayout android:orientation="vertical" android:layout_width="0dp"
-                          android:layout_height="wrap_content"
-                          android:layout_weight="1" android:paddingLeft="5dip">
-                <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
-                              android:layout_height="wrap_content" android:background="@drawable/ic_out_bubble"
-                              android:id="@+id/out_bubble_back" android:layout_gravity="right">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:text="Chat Message"
-                              android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
-                              android:singleLine="false" android:padding="4dip"/>
-                </LinearLayout>
+                        android:text="Chat Message Chat Message Chat Message Chat Message "
+                        android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
+                        android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/error_message"
-                android:background="@drawable/ic_error_bubble">
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:gravity="right">
             <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/error_bubble"
-                    android:id="@+id/error_text" android:padding="4dip"/>
+                    android:text="10:21"
+                    android:id="@+id/inc_time" android:layout_gravity="right"/>
         </LinearLayout>
     </LinearLayout>
-    <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/selected_check" android:visibility="gone" android:checked="false"
-            android:clickable="false" android:focusable="false" android:focusableInTouchMode="false"/>
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent"
+                  android:layout_height="wrap_content" android:id="@+id/outgoing_message">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+                      android:layout_height="wrap_content" android:gravity="right">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="10:21" android:id="@+id/out_time" android:layout_gravity="right"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/message_delivery" android:src="@drawable/ic_delivered"
+                    />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1" android:paddingLeft="5dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+                          android:layout_height="wrap_content" android:background="@drawable/ic_out_bubble"
+                          android:id="@+id/out_bubble_back" android:layout_gravity="right">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:text="Chat Message"
+                          android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
+                          android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/error_message"
+            android:background="@drawable/ic_error_bubble">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/error_bubble"
+                android:id="@+id/error_text" android:padding="4dip" android:textSize="16sp"/>
+    </LinearLayout>
 </LinearLayout>

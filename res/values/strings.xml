@@ -46,6 +46,22 @@
     <string name="message_save">Save message</string>
     <string name="message_share">Share</string>
 
+    <string name="clear_history_title">Clear history?</string>
+    <string name="clear_history_text">Do you really want to clear the history with that contact?</string>
+    <string name="yes_clear">Yes, clear</string>
+    <string name="do_not_clear">No!</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="selected_items">%d selected</string>
+    <string name="yes_remove">Yes, remove</string>
+    <string name="remove_accounts_title">Remove accounts?</string>
+    <string name="remove_accounts_text">Do you really wants to remove accounts information and stored chatting history?
+        This action cannot be undone.
+    </string>
+    <string name="do_not_remove">No</string>
+
     <string-array name="status_list">
         <item>@string/status_unavailable</item>
         <item>@string/status_available</item>

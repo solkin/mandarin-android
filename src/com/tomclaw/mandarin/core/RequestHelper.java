@@ -21,7 +21,7 @@ public class RequestHelper {
         gson = new Gson();
     }
 
-    public static void requestMessage(ContentResolver contentResolver, String appSession, int accountDbId,
+    public static void requestMessage(ContentResolver contentResolver, String appSession,
                                       int buddyDbId, String cookie, String message) {
         // Obtain account db id.
         // TODO: out this method.
@@ -30,8 +30,8 @@ public class RequestHelper {
         // Cursor may have more than only one entry.
         // TODO: check for at least one buddy present.
         if (cursor.moveToFirst()) {
-            final int BUDDY_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
-            String buddyId = cursor.getString(BUDDY_ID_COLUMN);
+            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+            String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
             IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
             // Writing to requests database.
             ContentValues contentValues = new ContentValues();

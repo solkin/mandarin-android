@@ -1,24 +1,26 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
+import android.view.*;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.StatusUtil;
+
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,79 +31,18 @@ import com.tomclaw.mandarin.util.StatusUtil;
 public class AccountsActivity extends ChiefActivity {
 
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
-    protected int selectedItem;
-    private AccountsAdapter sAdapter;
-    protected boolean mActionMode;
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
-        // Called when the action mode is created; startActionMode() was called
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            inflater.inflate(R.menu.accounts_edit_menu, menu);
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after
-        // onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.edit_account_menu:
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                case R.id.remove_account_menu:
-                    Cursor cursor = sAdapter.getCursor();
-                    if (cursor.moveToPosition(selectedItem)) {
-                        // Detecting columns.
-                        int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-                        int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
-                        String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-                        String userId = cursor.getString(COLUMN_USER_ID);
-                        try {
-                            // Trying to remove account.
-                            if (getServiceInteraction().removeAccount(accountType, userId)) {
-                                // Action picked, so close the CAB
-                                mode.finish();
-                                return true;
-                            }
-                        } catch (RemoteException e) {
-                            // Heh... Nothing to do in this case.
-                        }
-                    }
-                    // Show error.
-                    show(R.string.error_no_such_account);
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = false;
-            selectedItem = -1;
-        }
-    };
+    private AccountsAdapter accountsAdapter;
+    private ListView accountsList;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.accounts_list_menu, menu);
+        getMenuInflater().inflate(R.menu.accounts_list_menu, menu);
         return true;
     }
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -142,20 +83,18 @@ public class AccountsActivity extends ChiefActivity {
     private void initAccountsList() {
         // Set up list as default container.
         setContentView(R.layout.accounts_list);
-        ListView listView = (ListView) findViewById(R.id.accounts_list_wiew);
+        accountsList = (ListView) findViewById(R.id.accounts_list_wiew);
         // Creating adapter for accounts list
-        sAdapter = new AccountsAdapter(this, getSupportLoaderManager());
+        accountsAdapter = new AccountsAdapter(this, getLoaderManager());
         // Bind to our new adapter.
-        listView.setAdapter(sAdapter);
-        listView.setItemsCanFocus(true);
-        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+        accountsList.setAdapter(accountsAdapter);
+        accountsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+        accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Update selected item first.
-                selectedItem = position;
                 // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
-                Cursor cursor = sAdapter.getCursor();
-                if (cursor.moveToPosition(selectedItem)) {
+                Cursor cursor = accountsAdapter.getCursor();
+                if (cursor.moveToPosition(position)) {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
                     int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
                     int COLUMN_ACCOUNT_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
@@ -173,24 +112,6 @@ public class AccountsActivity extends ChiefActivity {
                 }
             }
         });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // Update selected item first.
-                selectedItem = position;
-                // Checking for action mode is already activated.
-                if (mActionMode) {
-                    return false;
-                }
-                // Start the CAB using the ActionMode.Callback defined above
-                mActionMode = true;
-                startActionMode(mActionModeCallback);
-                view.setSelected(true);
-                return true;
-            }
-        });
     }
 
     @Override
@@ -203,5 +124,87 @@ public class AccountsActivity extends ChiefActivity {
 
     private void show(int stringRes) {
         Toast.makeText(AccountsActivity.this, stringRes, Toast.LENGTH_LONG).show();
+    }
+
+    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            selectionHelper = new SelectionHelper();
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.accounts_edit_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.remove_account_menu:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AccountsActivity.this);
+                    builder.setTitle(R.string.remove_accounts_title);
+                    builder.setMessage(R.string.remove_accounts_text);
+                    builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Cursor cursor = accountsAdapter.getCursor();
+                            // Obtain selected positions.
+                            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+                            int positionsBeingRemoved = selectedPositions.size();
+                            // Iterating for all selected positions.
+                            for(int position : selectedPositions) {
+                                // Checking for position available.
+                                if (cursor.moveToPosition(position)) {
+                                    // Detecting columns.
+                                    int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                                    int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+                                    String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
+                                    String userId = cursor.getString(COLUMN_USER_ID);
+                                    try {
+                                        // Trying to remove account.
+                                        if (getServiceInteraction().removeAccount(accountType, userId)) {
+                                            // Position successfully removed.
+                                            positionsBeingRemoved--;
+                                        }
+                                    } catch (RemoteException ignored) {
+                                        // Heh... Nothing to do in this case.
+                                    }
+                                }
+                            }
+                            // Checking for something is not removed.
+                            if(positionsBeingRemoved > 0) {
+                                // Show error.
+                                show(R.string.error_no_such_account);
+                            }
+                            // Action picked, so close the CAB
+                            mode.finish();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.do_not_remove, null);
+                    builder.show();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
+        }
     }
 }

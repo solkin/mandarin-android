@@ -1,17 +1,16 @@
 package com.tomclaw.mandarin.main.adapters;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -20,7 +19,6 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.main.HistorySelection;
 
 import java.text.SimpleDateFormat;
 
@@ -52,9 +50,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
 
     /**
-     * Adapter ID, equals to buddy db id of this chat
+     * Adapter ID
      */
-    private final int ADAPTER_ID;
+    private int buddyDbId = -1;
 
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
@@ -65,20 +63,38 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private Context context;
     private LayoutInflater mInflater;
+    private LoaderManager loaderManager;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ADAPTER_ID = buddyBdId;
+        this.loaderManager = loaderManager;
+        setBuddyDbId(buddyBdId);
+    }
+
+    public void setBuddyDbId(int buddyDbId) {
+        if(buddyDbId >= 0) {
+            // Checking for there was opened cursor.
+            if(getCursor() != null) {
+                getCursor().close();
+            }
+            // Destroy current loader.
+            loaderManager.destroyLoader(buddyDbId);
+        }
+        this.buddyDbId = buddyDbId;
         // Initialize loader for adapter Id.
-        loaderManager.initLoader(ADAPTER_ID, null, this);
+        loaderManager.initLoader(buddyDbId, null, this);
+    }
+
+    public int getBuddyDbId() {
+        return buddyDbId;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + ADAPTER_ID + "'", null,
+                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
                 GlobalProvider.ROW_AUTO_ID + " ASC");
     }
 
@@ -107,18 +123,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         try {
-            if (!mDataValid) {
-                throw new IllegalStateException("this should only be called when the cursor is valid");
-            }
-            if (!mCursor.moveToPosition(position)) {
+            if (!getCursor().moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                view = newView(mContext, mCursor, parent);
+                view = newView(context, getCursor(), parent);
             } else {
                 view = convertView;
             }
-            bindView(view, mContext, mCursor);
+            bindView(view, context, getCursor());
         } catch (Throwable ex) {
             if (convertView == null) {
                 view = mInflater.inflate(R.layout.chat_item, parent, false);
@@ -157,11 +170,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
-        // Selected flag check box.
-        view.findViewById(R.id.selected_check).setVisibility(
-                HistorySelection.getInstance().getSelectionMode() ? View.VISIBLE : View.GONE);
-        ((CheckBox) view.findViewById(R.id.selected_check)).setChecked(
-                HistorySelection.getInstance().isSelectionExist(cursor.getPosition()));
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -206,15 +214,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     public String getItemText(int position) {
-        if (mCursor.moveToPosition(position)) {
+        Cursor cursor = getCursor();
+        if (cursor.moveToPosition(position)) {
             // Message data.
-            int messageType = mCursor.getInt(COLUMN_MESSAGE_TYPE);
-            String messageText = mCursor.getString(COLUMN_MESSAGE_TEXT);
-            long messageTime = mCursor.getLong(COLUMN_MESSAGE_TIME);
+            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+            String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
+            long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
             String messageTimeText = simpleTimeFormat.format(messageTime);
             String messageDateText = simpleDateFormat.format(messageTime);
-            int accountDbId = mCursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
-            int buddyDbId = mCursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
+            int accountDbId = cursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
+            int buddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
             String buddyNick = "unknown";
             try {
                 // Select message type.

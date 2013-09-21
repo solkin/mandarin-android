@@ -1,27 +1,32 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
+import android.view.*;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
+import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
+
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,69 +36,22 @@ import com.tomclaw.mandarin.main.adapters.ChatPagerAdapter;
  */
 public class ChatActivity extends ChiefActivity {
 
-    private ChatPagerAdapter mAdapter;
-    private ViewPager mPager;
-    private PagerSlidingTabStrip mIndicator;
-    private ActionMode mActionMode;
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
+    private ActionBarDrawerToggle drawerToggle;
+    private CharSequence title;
 
-        // Called when the action mode is created; startActionMode() was called
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            inflater.inflate(R.menu.chat_history_edit_menu, menu);
-            return true;
-        }
+    private ChatDialogsAdapter chatDialogsAdapter;
+    private ChatHistoryAdapter chatHistoryAdapter;
 
-        // Called each time the action mode is shown. Always called after
-        // onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            mActionMode = mode;
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            String selection = HistorySelection.getInstance().buildSelection();
-            switch (item.getItemId()) {
-                case R.id.message_copy:
-                    if(Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                getSystemService(CLIPBOARD_SERVICE);
-                        clipboard.setText(selection);
-                    } else {
-                        ClipboardManager clipboardManager = (ClipboardManager)
-                                getSystemService(CLIPBOARD_SERVICE);
-                        clipboardManager.setPrimaryClip(ClipData.newPlainText("", selection));
-                    }
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                case R.id.message_create_note:
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                case R.id.message_share:
-                    // Action picked, so close the CAB
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        public void onDestroyActionMode(ActionMode mode) {
-            HistorySelection.getInstance().finish();
-            mAdapter.notifyDataSetChanged();
-        }
-    };
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.chat_menu, menu);
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
         return true;
     }
 
@@ -101,16 +59,33 @@ public class ChatActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                drawerToggle.onOptionsItemSelected(item);
                 return true;
             }
             case R.id.close_chat_menu: {
                 try {
-                    QueryHelper.modifyDialog(getContentResolver(), getCurrentPageBuddyDbId(), false);
-                } catch (Exception e) {
+                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                } catch (Exception ignored) {
                     // Nothing to do in this case.
                 }
+                return true;
+            }
+            case R.id.clear_history_menu: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.clear_history_title);
+                builder.setMessage(R.string.clear_history_text);
+                builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            QueryHelper.clearHistory(getContentResolver(), chatHistoryAdapter.getBuddyDbId());
+                        } catch (Exception ignored) {
+                            // Nothing to do in this case.
+                        }
+                    }
+                });
+                builder.setNegativeButton(R.string.do_not_clear, null);
+                builder.show();
                 return true;
             }
             default:
@@ -121,87 +96,128 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
-        setContentView(R.layout.chat_pager);
-        ActionBar bar = getSupportActionBar();
+
+        setContentView(R.layout.chat_activity);
+
+        // Initialize action bar.
+        ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        /** View pager **/
-        Runnable onUpdate = new Runnable() {
+
+        Bundle bundle = getIntent().getExtras();
+
+        int buddyDbId = -1;
+        // Checking for bundle condition.
+        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+            // Setup active page.
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+            try {
+                // This will provide buddy nick by db id.
+                setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+            } catch (BuddyNotFoundException ignored) {
+            }
+        }
+
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+
+        ListView chatList = (ListView) findViewById(R.id.chat_list);
+        chatList.setAdapter(chatHistoryAdapter);
+        chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+
+        ChatDialogsAdapter.ContentChangedCallback contentChangedCallback
+                = new ChatDialogsAdapter.ContentChangedCallback() {
+
             @Override
-            public void run() {
-                Bundle bundle = getIntent().getExtras();
-                // Checking for bundle condition.
-                if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
-                    // Setup active page.
-                    int position = mAdapter.getPagePosition(bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0));
-                    mPager.setCurrentItem(position);
-                    getIntent().removeExtra(GlobalProvider.HISTORY_BUDDY_DB_ID);
+            public void onContentChanged() {
+                // Checking for selection is invalid.
+                if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
+                    Log.d(Settings.LOG_TAG, "No selected item anymore.");
+                    // Checking for another opened chat.
+                    if(chatDialogsAdapter.getCount() > 0) {
+                        int moreActiveBuddyPosition;
+                        try {
+                            // Trying to obtain more active dialog position.
+                            moreActiveBuddyPosition = chatDialogsAdapter.getBuddyPosition(
+                                    QueryHelper.getMoreActiveDialog(getContentResolver()));
+                        } catch (BuddyNotFoundException ignored) {
+                            // Something really strange. No opened dialogs. So switch to first position.
+                            moreActiveBuddyPosition = 0;
+                        } catch (MessageNotFoundException ignored) {
+                            // No messages in all opened dialogs. So switch to first position.
+                            moreActiveBuddyPosition = 0;
+                        }
+                        selectItem(moreActiveBuddyPosition);
+                    } else {
+                        // No more content on this activity.
+                        finish();
+                    }
                 }
-                // Notify page indicator and base adapter data was changed.
-                mIndicator.notifyDataSetChanged();
-                mAdapter.notifyDataSetChanged();
             }
         };
-        Runnable onLongClick = new Runnable() {
+
+        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager(), contentChangedCallback);
+
+        drawerList = (ListView) findViewById(R.id.left_drawer);
+        drawerList.setAdapter(chatDialogsAdapter);
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
+                R.string.drawer_open, R.string.drawer_close) {
+
             @Override
-            public void run() {
-                // Checking for action mode is already activated.
-                if (HistorySelection.getInstance().getSelectionMode()) {
-                    return;
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(title);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(R.string.dialogs);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                super.onDrawerStateChanged(newState);
+                if(newState == DrawerLayout.STATE_SETTLING
+                        || newState == DrawerLayout.STATE_DRAGGING) {
+                    int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
+                    drawerList.setItemChecked(position, true);
                 }
-                // Start the CAB using the ActionMode.Callback defined above
-                HistorySelection.getInstance().setSelectionMode(true);
-                startActionMode(mActionModeCallback);
             }
         };
-        mIndicator = (PagerSlidingTabStrip) findViewById(R.id.chat_indicator);
-        mAdapter = new ChatPagerAdapter(this, getSupportLoaderManager(), onUpdate, onLongClick);
-        mPager = (ViewPager) findViewById(R.id.chat_pager);
-        mPager.setAdapter(mAdapter);
-        mIndicator.setViewPager(mPager);
-        mIndicator.setIndicatorColorResource(R.color.background_action_bar);
+        drawerLayout.setDrawerListener(drawerToggle);
+        drawerToggle.syncState();
 
-        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i2) {
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                // Checking for history selection now and action mode is not null, finish it!
-                if(HistorySelection.getInstance().getSelectionMode() && mActionMode != null) {
-                    mActionMode.finish();
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-            }
-        });
-        /** Send button **/
+        // Send button and message field initialization.
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    String cookie = String.valueOf(System.currentTimeMillis());
-                    String appSession = getServiceInteraction().getAppSession();
-                    int accountDbId = getCurrentPageAccountDbId();
-                    int buddyDbId = getCurrentPageBuddyDbId();
-                    String message = messageText.getText().toString();
-                    QueryHelper.insertMessage(getContentResolver(), appSession,
-                            accountDbId, buddyDbId, 2, // TODO: real message type
-                            cookie, message, false);
-                    // Sending protocol message request.
-                    RequestHelper.requestMessage(getContentResolver(), appSession,
-                            accountDbId, buddyDbId, cookie, message);
-                    // Clearing text view.
-                    messageText.setText("");
-                } catch (Exception e) {
-                    // Couldn't put message into database. This exception must be processed.
+                String message = messageText.getText().toString().trim();
+                if (!TextUtils.isEmpty(message)) {
+                    try {
+                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                        String cookie = String.valueOf(System.currentTimeMillis());
+                        String appSession = getServiceInteraction().getAppSession();
+                        QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
+                                cookie, message, false);
+                        // Sending protocol message request.
+                        RequestHelper.requestMessage(getContentResolver(), appSession,
+                                buddyDbId, cookie, message);
+                        // Clearing text view.
+                        messageText.setText("");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // TODO: Couldn't put message into database. This exception must be processed.
+                    }
                 }
             }
         });
@@ -209,33 +225,103 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceDown() {
-
+        // TODO: must be implemented.
     }
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
+        // TODO: must be implemented.
+    }
 
+    @Override
+    public void setTitle(CharSequence title) {
+        this.title = title;
+        getActionBar().setTitle(title);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (drawerToggle != null) {
+            // Pass any configuration change to the drawer toggles
+            drawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     /**
-     * Obtain current item position and checking for it valid.
-     *
-     * @return int
-     * @throws Exception
+     * This list item click listener implements very simple view switching by
+     * changing the primary content text. The drawer is closed when a selection
+     * is made.
      */
-    private int getCurrentPageBuddyDbId() throws Exception {
-        int position = mPager.getCurrentItem();
-        if (position < 0) {
-            throw new Exception("No active page.");
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
         }
-        return mAdapter.getPageBuddyDbId(position);
     }
 
-    public int getCurrentPageAccountDbId() throws Exception {
-        int position = mPager.getCurrentItem();
-        if (position < 0) {
-            throw new Exception("No active page.");
+    private void selectItem(int position) {
+        // Changing chat history adapter loader.
+        int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
+        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+        setTitle(chatDialogsAdapter.getBuddyNick(position));
+        drawerLayout.closeDrawer(drawerList);
+    }
+
+    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
-        return mAdapter.getPageAccountDbId(position);
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create selection helper to store selected messages.
+            selectionHelper = new SelectionHelper();
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.chat_history_edit_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;  // Return false if nothing is done.
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.message_copy:
+                    StringBuilder selectionBuilder = new StringBuilder();
+                    // Obtain selected positions.
+                    Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+                    // Iterating for all selected positions.
+                    for (int position : selectedPositions) {
+                        selectionBuilder.append(chatHistoryAdapter.getItemText(position)).append('\n').append('\n');
+                    }
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
+                    break;
+                case R.id.message_create_note:
+                    break;
+                case R.id.message_share:
+                    break;
+                default:
+                    return false;
+            }
+            mode.finish();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
+        }
     }
 }

@@ -1,15 +1,12 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ServiceInteraction;
@@ -21,13 +18,14 @@ import com.tomclaw.mandarin.core.Settings;
  * Date: 09.01.13
  * Time: 20:22
  */
-public abstract class ChiefActivity extends SherlockFragmentActivity {
+public abstract class ChiefActivity extends Activity {
 
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
     private boolean isActivityInactive;
+    private boolean isCoreServiceReady;
 
     /**
      * Called when the activity is first created.
@@ -36,19 +34,13 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_Mandarin);
-
-        Drawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.background_action_bar));
-        Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
-        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {
-                colorDrawable, bottomDrawable });
-
-        getSupportActionBar().setBackgroundDrawable(layerDrawable);
 
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;
         isActivityInactive = false;
+        isCoreServiceReady = false;
+
         startCoreService();
     }
 
@@ -122,6 +114,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                     Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
                     /** Checking for activity state isn't stop **/
                     if (isActivityInactive) {
+                        // TODO: Incorrect service events logic! Inactive activities will lose potential important info.
                         return;
                     }
                     /** Checking for special message from service **/
@@ -130,8 +123,10 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                         int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
                         /** Checking for service state is up **/
                         if (serviceState == CoreService.STATE_UP) {
+                            isCoreServiceReady = true;
                             onCoreServiceReady();
                         } else if (serviceState == CoreService.STATE_DOWN) {
+                            isCoreServiceReady = false;
                             onCoreServiceDown();
                         }
                     } else {
@@ -154,7 +149,7 @@ public abstract class ChiefActivity extends SherlockFragmentActivity {
                     try {
                         /** Initialize service **/
                         serviceInteraction.initService();
-                    } catch (RemoteException e) {
+                    } catch (RemoteException ignored) {
                     }
                 }
             };

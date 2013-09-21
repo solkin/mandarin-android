@@ -21,6 +21,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -126,7 +127,38 @@ public class ChatActivity extends ChiefActivity {
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
 
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
+        ChatDialogsAdapter.ContentChangedCallback contentChangedCallback
+                = new ChatDialogsAdapter.ContentChangedCallback() {
+
+            @Override
+            public void onContentChanged() {
+                // Checking for selection is invalid.
+                if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
+                    Log.d(Settings.LOG_TAG, "No selected item anymore.");
+                    // Checking for another opened chat.
+                    if(chatDialogsAdapter.getCount() > 0) {
+                        int moreActiveBuddyPosition;
+                        try {
+                            // Trying to obtain more active dialog position.
+                            moreActiveBuddyPosition = chatDialogsAdapter.getBuddyPosition(
+                                    QueryHelper.getMoreActiveDialog(getContentResolver()));
+                        } catch (BuddyNotFoundException ignored) {
+                            // Something really strange. No opened dialogs. So switch to first position.
+                            moreActiveBuddyPosition = 0;
+                        } catch (MessageNotFoundException ignored) {
+                            // No messages in all opened dialogs. So switch to first position.
+                            moreActiveBuddyPosition = 0;
+                        }
+                        selectItem(moreActiveBuddyPosition);
+                    } else {
+                        // No more content on this activity.
+                        finish();
+                    }
+                }
+            }
+        };
+
+        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager(), contentChangedCallback);
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);

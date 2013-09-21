@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.util.StatusUtil;
@@ -521,5 +522,49 @@ public class QueryHelper {
     public static void clearHistory(ContentResolver contentResolver, int buddyDbId) {
         contentResolver.delete(Settings.HISTORY_RESOLVER_URI,
                 GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null);
+    }
+
+    public static int getMoreActiveDialog(ContentResolver contentResolver) throws BuddyNotFoundException, MessageNotFoundException {
+        StringBuilder queryBuilder = new StringBuilder();
+        // Query for opened dialogs.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                queryBuilder.append(GlobalProvider.ROSTER_BUDDY_DIALOG).append("='").append(1).append("'").toString(),
+                null, null);
+        // Cursor may have more than only one entry.
+        if (cursor.moveToFirst()) {
+            int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            // Creating query to history table, contains all messages from all opened dialogs.
+            queryBuilder = new StringBuilder();
+            do {
+                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                queryBuilder.append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("='").append(buddyDbId).append("'");
+                if(!cursor.isLast()) {
+                    queryBuilder.append(" OR ");
+                }
+            } while(cursor.moveToNext());
+            // Closing cursor.
+            cursor.close();
+            // Query for the most recent message.
+            cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
+                    queryBuilder.toString(), null, GlobalProvider.ROW_AUTO_ID + " DESC");
+            // Cursor may have more than only one entry. We need only first.
+            if (cursor.moveToFirst()) {
+                BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+                int moreActiveBuddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                // Closing cursor.
+                cursor.close();
+                return moreActiveBuddyDbId;
+            } else {
+                // Closing cursor.
+                cursor.close();
+                // Really no messages.
+                throw new MessageNotFoundException();
+            }
+        } else {
+            // Closing cursor.
+            cursor.close();
+            // No opened dialogs.
+            throw new BuddyNotFoundException();
+        }
     }
 }

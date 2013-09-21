@@ -47,11 +47,14 @@ public class ChatDialogsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private ContentChangedCallback contentChangedCallback;
 
-    public ChatDialogsAdapter(Activity context, LoaderManager loaderManager) {
+    public ChatDialogsAdapter(Activity context, LoaderManager loaderManager,
+                              ContentChangedCallback contentChangedCallback) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
+        this.contentChangedCallback = contentChangedCallback;
         // Initialize loader for dialogs Id.
         loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -134,8 +137,10 @@ public class ChatDialogsAdapter extends CursorAdapter implements
     }
 
     @Override
-    protected void onContentChanged() {
-        super.onContentChanged();
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        // Notify callback about content changes.
+        contentChangedCallback.onContentChanged();
     }
 
     /**
@@ -154,5 +159,10 @@ public class ChatDialogsAdapter extends CursorAdapter implements
             } while(cursor.moveToNext());
         }
         return -1;
+    }
+
+    public interface ContentChangedCallback {
+
+        void onContentChanged();
     }
 }

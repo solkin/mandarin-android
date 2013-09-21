@@ -238,7 +238,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         }
 
         mPager.setCurrentItem(1);
-        new Thread() {
+        /*new Thread() {
             public void run() {
                 boolean isFavorite = false;
                 while(true) {
@@ -251,7 +251,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     }
                 }
             }
-        }.start();
+        }.start();*/
     }
 
     @Override

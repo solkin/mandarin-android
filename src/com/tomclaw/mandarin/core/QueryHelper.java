@@ -333,6 +333,20 @@ public class QueryHelper {
                 GlobalProvider.HISTORY_MESSAGE_COOKIE + " LIKE '%" + cookie + "%'", null);
     }
 
+    public static void readMessages(ContentResolver contentResolver, int buddyDbId,
+                                    long messageDbIdFirst, long messageDbIdLast) {
+        // Plain messages modify by buddy db id and messages db id.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("='").append(buddyDbId).append("'")
+                .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append(">=").append(messageDbIdFirst)
+                .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append("<=").append(messageDbIdLast);
+
+        contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues, queryBuilder.toString(), null);
+    }
+
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
         contentResolver.update(Settings.BUDDY_RESOLVER_URI, contentValues,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null);

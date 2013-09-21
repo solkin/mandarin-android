@@ -19,6 +19,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 
 import java.text.SimpleDateFormat;
 
@@ -60,6 +61,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_STATE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
+    private static int COLUMN_MESSAGE_READ;
+    private static int COLUMN_ROW_AUTO_ID;
 
     private Context context;
     private LayoutInflater mInflater;
@@ -101,12 +104,14 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_MESSAGE_TEXT = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
         COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
         COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
         COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+        COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -170,6 +175,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
+        boolean messageRead = cursor.getInt(COLUMN_MESSAGE_READ) == 1;
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -179,6 +185,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
+                ((TextView) view.findViewById(R.id.inc_text)).setTextColor(messageRead ? 0xff0000ff : 0xffff0000);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }
@@ -213,7 +220,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         }
     }
 
-    public String getItemText(int position) {
+    public long getMessageDbId(int position) throws MessageNotFoundException {
+        Cursor cursor = getCursor();
+        if (cursor.moveToPosition(position)) {
+            long messageDbId = cursor.getLong(COLUMN_ROW_AUTO_ID);
+            return messageDbId;
+        }
+        throw new MessageNotFoundException();
+    }
+
+    public String getMessageText(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
         if (cursor.moveToPosition(position)) {
             // Message data.
@@ -247,6 +263,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             messageBuilder.append(messageText);
             return messageBuilder.toString();
         }
-        return null;
+        throw new MessageNotFoundException();
     }
 }

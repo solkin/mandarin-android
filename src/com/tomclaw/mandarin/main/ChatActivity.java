@@ -126,6 +126,7 @@ public class ChatActivity extends ChiefActivity {
         ListView chatList = (ListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+        chatList.setOnScrollListener(new ChatScrollListener());
 
         ChatDialogsAdapter.ContentChangedCallback contentChangedCallback
                 = new ChatDialogsAdapter.ContentChangedCallback() {
@@ -303,7 +304,11 @@ public class ChatActivity extends ChiefActivity {
                     Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
                     // Iterating for all selected positions.
                     for (int position : selectedPositions) {
-                        selectionBuilder.append(chatHistoryAdapter.getItemText(position)).append('\n').append('\n');
+                        try {
+                            selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
+                        } catch (MessageNotFoundException ignored) {
+                            Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
+                        }
                     }
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
@@ -322,6 +327,53 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+    }
+
+    private class ChatScrollListener implements AbsListView.OnScrollListener {
+
+        private int startFirstVisiblePosition, startLastVisiblePosition;
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            int firstVisiblePosition = view.getFirstVisiblePosition();
+            int lastVisiblePosition = view.getLastVisiblePosition();
+            switch (scrollState) {
+                case SCROLL_STATE_TOUCH_SCROLL: {
+                    // Scroll stared.
+                    startFirstVisiblePosition = firstVisiblePosition;
+                    startLastVisiblePosition = lastVisiblePosition;
+                    break;
+                }
+                case SCROLL_STATE_IDLE: {
+                    // Scroll ended.
+                    int firstPosition;
+                    int lastPosition;
+                    if(firstVisiblePosition > startFirstVisiblePosition) {
+                        // Scroll to bottom.
+                        firstPosition = startFirstVisiblePosition;
+                        lastPosition = lastVisiblePosition;
+                    } else {
+                        // Scroll to top.
+                        firstPosition = firstVisiblePosition;
+                        lastPosition = startLastVisiblePosition;
+                    }
+                    Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
+                    try {
+                        QueryHelper.readMessages(getContentResolver(),
+                                chatHistoryAdapter.getBuddyDbId(),
+                                chatHistoryAdapter.getMessageDbId(firstPosition),
+                                chatHistoryAdapter.getMessageDbId(lastPosition));
+                    } catch (MessageNotFoundException ignored) {
+                        Log.d(Settings.LOG_TAG, "Error while marking messages as read");
+                    }
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         }
     }
 }

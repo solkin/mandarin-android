@@ -278,8 +278,10 @@ public class ChatActivity extends ChiefActivity {
     private boolean readVisibleMessages() {
         int firstVisiblePosition = chatList.getFirstVisiblePosition();
         int lastVisiblePosition = chatList.getLastVisiblePosition();
+        Log.d(Settings.LOG_TAG, "Reading visible messages ["
+                + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
-        if(lastVisiblePosition > firstVisiblePosition) {
+        if(lastVisiblePosition >= firstVisiblePosition) {
             try {
                 QueryHelper.readMessages(getContentResolver(),
                         chatHistoryAdapter.getBuddyDbId(),

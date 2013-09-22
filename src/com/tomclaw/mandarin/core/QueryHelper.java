@@ -267,6 +267,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -286,6 +287,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
@@ -331,6 +333,31 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
         contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                 GlobalProvider.HISTORY_MESSAGE_COOKIE + " LIKE '%" + cookie + "%'", null);
+    }
+
+    public static void readMessages(ContentResolver contentResolver, int buddyDbId,
+                                    long messageDbIdFirst, long messageDbIdLast) {
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("='").append(buddyDbId).append("'")
+                .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append(">=").append(messageDbIdFirst)
+                .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append("<=").append(messageDbIdLast)
+                .append(" AND ").append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
+                .append(" AND ").append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
+
+        // Obtain unread messages count.
+        Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
+                queryBuilder.toString(), null, null);
+        // Checking for unread messages.
+        if(cursor.getCount() > 0) {
+            // Plain messages modify by buddy db id and messages db id.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+
+            contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues, queryBuilder.toString(), null);
+        } else {
+            Log.d(Settings.LOG_TAG, "Marking as read query, but no unread messages found");
+        }
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {

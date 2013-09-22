@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -40,6 +41,8 @@ public class ChatActivity extends ChiefActivity {
     private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence title;
+
+    private ChatListView chatList;
 
     private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
@@ -123,15 +126,21 @@ public class ChatActivity extends ChiefActivity {
 
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
 
-        ListView chatList = (ListView) findViewById(R.id.chat_list);
+        chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-
-        ChatDialogsAdapter.ContentChangedCallback contentChangedCallback
-                = new ChatDialogsAdapter.ContentChangedCallback() {
-
+        chatList.setOnScrollListener(new ChatScrollListener());
+        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
             @Override
-            public void onContentChanged() {
+            public void onDataChanged() {
+                readVisibleMessages();
+            }
+        });
+
+        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
+        chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
                 // Checking for selection is invalid.
                 if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
                     Log.d(Settings.LOG_TAG, "No selected item anymore.");
@@ -156,9 +165,7 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
             }
-        };
-
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager(), contentChangedCallback);
+        });
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
@@ -268,6 +275,25 @@ public class ChatActivity extends ChiefActivity {
         drawerLayout.closeDrawer(drawerList);
     }
 
+    private boolean readVisibleMessages() {
+        int firstVisiblePosition = chatList.getFirstVisiblePosition();
+        int lastVisiblePosition = chatList.getLastVisiblePosition();
+        // Checking for the list view is ready.
+        if(lastVisiblePosition > firstVisiblePosition) {
+            try {
+                QueryHelper.readMessages(getContentResolver(),
+                        chatHistoryAdapter.getBuddyDbId(),
+                        chatHistoryAdapter.getMessageDbId(firstVisiblePosition),
+                        chatHistoryAdapter.getMessageDbId(lastVisiblePosition));
+                return true;
+            } catch (MessageNotFoundException ignored) {
+                Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
+                        + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
+            }
+        }
+        return false;
+    }
+
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper selectionHelper;
@@ -303,7 +329,11 @@ public class ChatActivity extends ChiefActivity {
                     Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
                     // Iterating for all selected positions.
                     for (int position : selectedPositions) {
-                        selectionBuilder.append(chatHistoryAdapter.getItemText(position)).append('\n').append('\n');
+                        try {
+                            selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
+                        } catch (MessageNotFoundException ignored) {
+                            Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
+                        }
                     }
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
@@ -322,6 +352,53 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+    }
+
+    private class ChatScrollListener implements AbsListView.OnScrollListener {
+
+        private int startFirstVisiblePosition, startLastVisiblePosition;
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            int firstVisiblePosition = view.getFirstVisiblePosition();
+            int lastVisiblePosition = view.getLastVisiblePosition();
+            switch (scrollState) {
+                case SCROLL_STATE_TOUCH_SCROLL: {
+                    // Scroll stared.
+                    startFirstVisiblePosition = firstVisiblePosition;
+                    startLastVisiblePosition = lastVisiblePosition;
+                    break;
+                }
+                case SCROLL_STATE_IDLE: {
+                    // Scroll ended.
+                    int firstPosition;
+                    int lastPosition;
+                    if(firstVisiblePosition > startFirstVisiblePosition) {
+                        // Scroll to bottom.
+                        firstPosition = startFirstVisiblePosition;
+                        lastPosition = lastVisiblePosition;
+                    } else {
+                        // Scroll to top.
+                        firstPosition = firstVisiblePosition;
+                        lastPosition = startLastVisiblePosition;
+                    }
+                    Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
+                    try {
+                        QueryHelper.readMessages(getContentResolver(),
+                                chatHistoryAdapter.getBuddyDbId(),
+                                chatHistoryAdapter.getMessageDbId(firstPosition),
+                                chatHistoryAdapter.getMessageDbId(lastPosition));
+                    } catch (MessageNotFoundException ignored) {
+                        Log.d(Settings.LOG_TAG, "Error while marking messages as read");
+                    }
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         }
     }
 }

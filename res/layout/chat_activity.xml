@@ -11,7 +11,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <ListView
+        <com.tomclaw.mandarin.main.ChatListView
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:id="@+id/chat_list"

@@ -86,12 +86,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {
+                                int messageType = (random.nextInt(3) == 1) ? 2 : 1;
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, (random.nextInt(3) == 1) ? "2" : "1");
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, "1");
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 1);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j - 24 * 60 * 60 * 1000 - 10);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, messageType == 1 ? 0 : 1);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }

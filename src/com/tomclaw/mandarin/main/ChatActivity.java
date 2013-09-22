@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -41,8 +42,14 @@ public class ChatActivity extends ChiefActivity {
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence title;
 
+    private ListView chatList;
+
     private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
+
+    // This value indicates that it is necessary to read the messages that are displayed on the screen.
+    // Exhibited only when the data changed, but chat list was not ready yet.
+    private boolean isReadPending;
 
     @Override
     protected void onDestroy() {
@@ -122,17 +129,24 @@ public class ChatActivity extends ChiefActivity {
         }
 
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatHistoryAdapter.registerDataSetObserver(new DataSetObserver() {
 
-        ListView chatList = (ListView) findViewById(R.id.chat_list);
+            @Override
+            public void onChanged() {
+                isReadPending = !readVisibleMessages();
+            }
+        });
+
+        chatList = (ListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
         chatList.setOnScrollListener(new ChatScrollListener());
 
-        ChatDialogsAdapter.ContentChangedCallback contentChangedCallback
-                = new ChatDialogsAdapter.ContentChangedCallback() {
 
+        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
+        chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
-            public void onContentChanged() {
+            public void onChanged() {
                 // Checking for selection is invalid.
                 if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
                     Log.d(Settings.LOG_TAG, "No selected item anymore.");
@@ -157,9 +171,7 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
             }
-        };
-
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager(), contentChangedCallback);
+        });
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
@@ -269,6 +281,25 @@ public class ChatActivity extends ChiefActivity {
         drawerLayout.closeDrawer(drawerList);
     }
 
+    private boolean readVisibleMessages() {
+        int firstVisiblePosition = chatList.getFirstVisiblePosition();
+        int lastVisiblePosition = chatList.getLastVisiblePosition();
+        // Checking for the list view is ready.
+        if(lastVisiblePosition > firstVisiblePosition) {
+            try {
+                QueryHelper.readMessages(getContentResolver(),
+                        chatHistoryAdapter.getBuddyDbId(),
+                        chatHistoryAdapter.getMessageDbId(firstVisiblePosition),
+                        chatHistoryAdapter.getMessageDbId(lastVisiblePosition));
+                return true;
+            } catch (MessageNotFoundException ignored) {
+                Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
+                        + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
+            }
+        }
+        return false;
+    }
+
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper selectionHelper;
@@ -374,6 +405,13 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            // Checking for chat list update is necessary.
+            if(isReadPending) {
+                Log.d(Settings.LOG_TAG, "Reading messages on first scroll");
+                readVisibleMessages();
+                // No need to read messages more.
+                isReadPending = false;
+            }
         }
     }
 }

@@ -47,14 +47,11 @@ public class ChatDialogsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
-    private ContentChangedCallback contentChangedCallback;
 
-    public ChatDialogsAdapter(Activity context, LoaderManager loaderManager,
-                              ContentChangedCallback contentChangedCallback) {
+    public ChatDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
-        this.contentChangedCallback = contentChangedCallback;
         // Initialize loader for dialogs Id.
         loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -136,13 +133,6 @@ public class ChatDialogsAdapter extends CursorAdapter implements
         return getCursor().getString(getCursor().getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-        // Notify callback about content changes.
-        contentChangedCallback.onContentChanged();
-    }
-
     /**
      * Returns position of specified buddy db id.
      * @param buddyDbId buddy database row id.
@@ -159,10 +149,5 @@ public class ChatDialogsAdapter extends CursorAdapter implements
             } while(cursor.moveToNext());
         }
         return -1;
-    }
-
-    public interface ContentChangedCallback {
-
-        void onContentChanged();
     }
 }

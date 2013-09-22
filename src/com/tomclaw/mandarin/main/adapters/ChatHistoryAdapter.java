@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -185,7 +186,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
-                ((TextView) view.findViewById(R.id.inc_text)).setTextColor(messageRead ? 0xff0000ff : 0xffff0000);
+                ((TextView) view.findViewById(R.id.inc_text))
+                        .setTypeface(null, messageRead ? Typeface.NORMAL : Typeface.BOLD);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }
@@ -223,8 +225,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public long getMessageDbId(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
         if (cursor.moveToPosition(position)) {
-            long messageDbId = cursor.getLong(COLUMN_ROW_AUTO_ID);
-            return messageDbId;
+            return cursor.getLong(COLUMN_ROW_AUTO_ID);
         }
         throw new MessageNotFoundException();
     }

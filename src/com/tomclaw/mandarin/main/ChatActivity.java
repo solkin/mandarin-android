@@ -42,14 +42,10 @@ public class ChatActivity extends ChiefActivity {
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence title;
 
-    private ListView chatList;
+    private ChatListView chatList;
 
     private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
-
-    // This value indicates that it is necessary to read the messages that are displayed on the screen.
-    // Exhibited only when the data changed, but chat list was not ready yet.
-    private boolean isReadPending;
 
     @Override
     protected void onDestroy() {
@@ -129,19 +125,17 @@ public class ChatActivity extends ChiefActivity {
         }
 
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
-        chatHistoryAdapter.registerDataSetObserver(new DataSetObserver() {
 
-            @Override
-            public void onChanged() {
-                isReadPending = !readVisibleMessages();
-            }
-        });
-
-        chatList = (ListView) findViewById(R.id.chat_list);
+        chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
         chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
         chatList.setOnScrollListener(new ChatScrollListener());
-
+        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
+            @Override
+            public void onDataChanged() {
+                readVisibleMessages();
+            }
+        });
 
         chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
         chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
@@ -405,13 +399,6 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            // Checking for chat list update is necessary.
-            if(isReadPending) {
-                Log.d(Settings.LOG_TAG, "Reading messages on first scroll");
-                readVisibleMessages();
-                // No need to read messages more.
-                isReadPending = false;
-            }
         }
     }
 }

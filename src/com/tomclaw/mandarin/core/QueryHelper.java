@@ -267,6 +267,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -286,6 +287,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
@@ -340,7 +342,8 @@ public class QueryHelper {
         queryBuilder.append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("='").append(buddyDbId).append("'")
                 .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append(">=").append(messageDbIdFirst)
                 .append(" AND ").append(GlobalProvider.ROW_AUTO_ID).append("<=").append(messageDbIdLast)
-                .append(" AND ").append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'");
+                .append(" AND ").append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
+                .append(" AND ").append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
 
         // Obtain unread messages count.
         Cursor cursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,

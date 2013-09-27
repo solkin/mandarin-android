@@ -4,24 +4,17 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MergeCursor;
-import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.Settings;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
     final ForceLoadContentObserver mObserver;
 
-    Uri mUri;
-    String[] mProjection;
-    String mSelection;
-    String[] mSelectionArgs;
-    String mSortOrder;
+    private QueryParametersContainer[] queryParameters;
 
     MergeCursor mCursor;
     CancellationSignal mCancellationSignal;
@@ -36,22 +29,23 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
             mCancellationSignal = new CancellationSignal();
         }
         try {
-            Cursor cursor1 = getContext().getContentResolver().query(
-                    Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_FAVORITE + "='" + 1 + "'",
-                    null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
-                    + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
-            Cursor cursor2 = getContext().getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null, null, null, GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
-            Cursor mergedCursors[] = new Cursor[]{cursor1, cursor2};
-            MergeCursor cursor = new MergeCursor(mergedCursors);
-            if (cursor1 != null && cursor2 != null) {
-                try {
-                    // Ensure the cursor window is filled.
-                    cursor.getCount();
-                    cursor.registerContentObserver(mObserver);
-                } catch (RuntimeException ex) {
-                    cursor.close();
-                    throw ex;
-                }
+            ArrayList<Cursor> mergedCursors = new ArrayList<Cursor>();
+            for (QueryParametersContainer container : queryParameters){
+                Cursor cursor = getContext().getContentResolver().query(container.uri, container.projection,
+                        container.selection, container.selectionArgs, container.sortOrder);
+                cursor.moveToFirst();
+                if (!cursor.isAfterLast())
+                    mergedCursors.add(cursor);
+            }
+            Cursor[] cursors = new Cursor[mergedCursors.size()];
+            MergeCursor cursor = new MergeCursor(mergedCursors.toArray(cursors));
+            try {
+                // Ensure the cursor window is filled.
+                cursor.getCount();
+                cursor.registerContentObserver(mObserver);
+            } catch (RuntimeException ex) {
+                cursor.close();
+                throw ex;
             }
             return cursor;
         } finally {
@@ -94,31 +88,19 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
         }
     }
 
-    /**
-     * Creates an empty unspecified CursorLoader.  You must follow this with
-     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
-     * to specify the query to perform.
-     */
     public MergeCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
     }
 
-    /**
-     * Creates a fully-specified CursorLoader.  See
-     * {@link android.content.ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     */
-    public MergeCursorLoader(Context context, Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
+    public MergeCursorLoader(Context context, QueryParametersContainer[] containers) {
         super(context);
         mObserver = new ForceLoadContentObserver();
-        mUri = uri;
-        mProjection = projection;
-        mSelection = selection;
-        mSelectionArgs = selectionArgs;
-        mSortOrder = sortOrder;
+        queryParameters = containers;
+    }
+
+    public void setQueryParameters(QueryParametersContainer[] containers){
+        queryParameters = containers;
     }
 
     /**
@@ -167,50 +149,10 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
         mCursor = null;
     }
 
-    public Uri getUri() {
-        return mUri;
-    }
-
-    public void setUri(Uri uri) {
-        mUri = uri;
-    }
-
-    public String[] getProjection() {
-        return mProjection;
-    }
-
-    public void setProjection(String[] projection) {
-        mProjection = projection;
-    }
-
-    public String getSelection() {
-        return mSelection;
-    }
-
-    public void setSelection(String selection) {
-        mSelection = selection;
-    }
-
-    public String[] getSelectionArgs() {
-        return mSelectionArgs;
-    }
-
-    public void setSelectionArgs(String[] selectionArgs) {
-        mSelectionArgs = selectionArgs;
-    }
-
-    public String getSortOrder() {
-        return mSortOrder;
-    }
-
-    public void setSortOrder(String sortOrder) {
-        mSortOrder = sortOrder;
-    }
-
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("mUri="); writer.println(mUri);
+        /*writer.print(prefix); writer.print("mUri="); writer.println(mUri);
         writer.print(prefix); writer.print("mProjection=");
         writer.println(Arrays.toString(mProjection));
         writer.print(prefix); writer.print("mSelection="); writer.println(mSelection);
@@ -218,7 +160,7 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
         writer.println(Arrays.toString(mSelectionArgs));
         writer.print(prefix); writer.print("mSortOrder="); writer.println(mSortOrder);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
-        //writer.print(prefix); writer.print("mContentChanged="); writer.println(mContentChanged);
+        writer.print(prefix); writer.print("mContentChanged="); writer.println(mContentChanged);*/
     }
 }
 

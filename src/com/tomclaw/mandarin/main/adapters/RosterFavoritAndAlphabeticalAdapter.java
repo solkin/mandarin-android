@@ -15,7 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.MergeCursorLoader;
+import com.tomclaw.mandarin.util.QueryParametersContainer;
 import com.tomclaw.mandarin.util.StatusUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -60,7 +62,14 @@ public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implement
 
     @Override
     public Loader<MergeCursor> onCreateLoader(int id, Bundle bundle) {
-        return new MergeCursorLoader(context);
+        QueryParametersContainer[] containers = new QueryParametersContainer[2];
+        containers[0] = new QueryParametersContainer(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_FAVORITE + "='" + 1 + "'",null, "(CASE WHEN " +
+                GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE+
+                " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+        containers[1] = new QueryParametersContainer(Settings.BUDDY_RESOLVER_URI, null, null, null,
+                GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+        return new MergeCursorLoader(context, containers);
     }
 
     @Override

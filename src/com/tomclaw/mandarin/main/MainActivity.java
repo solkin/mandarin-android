@@ -11,17 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.adapters.RosterFavoritAndAlphabeticalAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,10 +168,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         });
         pages.add(onlineList);
         // All friends.
-        ExpandableListView generalList = new ExpandableListView(this);
-        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getLoaderManager());
+        StickyListHeadersListView generalList = new StickyListHeadersListView(this);
+        final RosterFavoritAndAlphabeticalAdapter generalAdapter = new RosterFavoritAndAlphabeticalAdapter(this, getLoaderManager());
         generalList.setAdapter(generalAdapter);
-        generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        /*generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                         int childPosition, long id) {
@@ -189,7 +189,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
                 return true;
             }
-        });
+        });*/
         pages.add(generalList);
         /** View pager **/
         mAdapter = new RosterPagerAdapter(pages);

@@ -17,7 +17,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.RosterFavoritAndAlphabeticalAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterFavoriteAndAlphabeticalAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
@@ -169,7 +169,9 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         pages.add(onlineList);
         // All friends.
         StickyListHeadersListView generalList = new StickyListHeadersListView(this);
-        final RosterFavoritAndAlphabeticalAdapter generalAdapter = new RosterFavoritAndAlphabeticalAdapter(this, getLoaderManager());
+        // Set header view not transparent
+        generalList.setDrawingListUnderStickyHeader(false);
+        final RosterFavoriteAndAlphabeticalAdapter generalAdapter = new RosterFavoriteAndAlphabeticalAdapter(this, getLoaderManager());
         generalList.setAdapter(generalAdapter);
         /*generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override

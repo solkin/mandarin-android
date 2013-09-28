@@ -21,13 +21,7 @@ import com.tomclaw.mandarin.util.QueryParametersContainer;
 import com.tomclaw.mandarin.util.StatusUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
-/**
- * Created with IntelliJ IDEA.
- * User: solkin
- * Date: 6/27/13
- * Time: 10:05 PM
- */
-public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implements
+public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<MergeCursor>, StickyListHeadersAdapter {
 
     /**
@@ -52,7 +46,7 @@ public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implement
     private String[] firstLetters;
     private int favoritesSize;
 
-    public RosterFavoritAndAlphabeticalAdapter(Activity context, LoaderManager loaderManager) {
+    public RosterFavoriteAndAlphabeticalAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
@@ -96,7 +90,6 @@ public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implement
         if (cursor.isAfterLast())
             return null;
 
-        //firstLetters[0] = "Favorite";
         int i = 0;
         while (i < favoritesSize){
             firstLetters[i++] = "Favorite";
@@ -109,6 +102,9 @@ public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implement
         return firstLetters;
     }
 
+    /**
+     * Return number of favorite contacts
+     */
     private int getFavoritesSize(MergeCursor cursor){
         int count = 0;
         cursor.moveToFirst();
@@ -145,6 +141,9 @@ public class RosterFavoritAndAlphabeticalAdapter extends CursorAdapter implement
         return convertView;
     }
 
+    /**
+     * Return 0 for items from "Favorite" section. Return first letter for items from alphabetical list
+     */
     @Override
     public long getHeaderId(int position) {
         if (position < favoritesSize){

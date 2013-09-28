@@ -43,6 +43,8 @@ public class HistoryDispatcher {
         // Registering created observers.
         contentResolver.registerContentObserver(
                 Settings.HISTORY_RESOLVER_URI, true, historyObserver);
+
+        historyObserver.onChange(true);
     }
 
     private class HistoryObserver extends ContentObserver {
@@ -120,10 +122,10 @@ public class HistoryDispatcher {
                                 .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'");
                         Cursor messageCursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
                                 messageQueryBuilder.toString(), null, GlobalProvider.ROW_AUTO_ID + " DESC");
+                        unread += messageCursor.getCount();
                         if (messageCursor.moveToFirst()) {
                             int HISTORY_MESSAGE_TEXT_COLUMN = messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
                             // int accountDbId = messageCursor.getInt(HISTORY_BUDDY_ACCOUNT_DB_ID_COLUMN);
-                            int count = messageCursor.getCount();
                             String nickName;
                             try {
                                 nickName = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
@@ -144,7 +146,6 @@ public class HistoryDispatcher {
                             Log.d(Settings.LOG_TAG, "HistoryObserver: message: " + message);
 
                             inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
-                            unread += count;
 
                         /*NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
                         bigText.bigText(message);
@@ -175,12 +176,13 @@ public class HistoryDispatcher {
                     Notification notification = new NotificationCompat.Builder(context)
                             .setContentTitle(title)
                             .setContentText(content)
-                                    // .setSubText("Mandarin")
                             .setSmallIcon(R.drawable.ic_notification)
                             .setStyle(inboxStyle)
-                                    //.setStyle(inboxStyle)
-                            .setNumber(unread)
+                            //.setNumber(unread)
+                            //.addAction(R.drawable.ic)
                             .build();
+                    notification.defaults |= Notification.DEFAULT_ALL;
+
                     notificationManager.notify(0, notification);
 
                     // Plain messages modify by buddy db id and messages db id.

@@ -68,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
                     cv1.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
-                    db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
+                    long groupDbId = db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 5 + random.nextInt(5); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
@@ -78,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, String.valueOf(groupDbId));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);

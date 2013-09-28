@@ -22,7 +22,7 @@ import com.tomclaw.mandarin.util.StatusUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implements
-        LoaderManager.LoaderCallbacks<MergeCursor>, StickyListHeadersAdapter {
+        LoaderManager.LoaderCallbacks<MergeCursor>, StickyListHeadersAdapter, BuddyDbIdGetter {
 
     /**
      * Adapter ID
@@ -155,6 +155,7 @@ public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implemen
         return firstLetters[position].charAt(0);
     }
 
+    @Override
     public int getBuddyDbId(int position){
         if (!mergeCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);

@@ -17,10 +17,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.RosterFavoriteAndAlphabeticalAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
+import com.tomclaw.mandarin.main.adapters.*;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import java.util.ArrayList;
@@ -32,6 +29,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     private ViewPager mPager;
     // private PagerSlidingTabStrip mIndicator;
     private List<View> pages = new ArrayList<View>();
+    private StickyListHeadersListView generalList;
+    private boolean isDefaultGeneralAdapter = true;
 
 
     @Override
@@ -70,6 +69,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 Intent intent = new Intent(this, ChatActivity.class);
                 startActivity(intent);
                 return true;
+            }
+            case R.id.change_adapter: {
+                isDefaultGeneralAdapter = !isDefaultGeneralAdapter;
+                setGeneralAdapter();
             }
             default:
                 return super.onOptionsItemSelected(item);
@@ -168,28 +171,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         });
         pages.add(onlineList);
         // All friends.
-        StickyListHeadersListView generalList = new StickyListHeadersListView(this);
+        generalList = new StickyListHeadersListView(this);
         // Set header view not transparent
         generalList.setDrawingListUnderStickyHeader(false);
-        final RosterFavoriteAndAlphabeticalAdapter generalAdapter = new RosterFavoriteAndAlphabeticalAdapter(this, getLoaderManager());
-        generalList.setAdapter(generalAdapter);
-        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    // Nothing to do in this case.
-                }
-            }
-        });
+        setGeneralAdapter();
         pages.add(generalList);
         /** View pager **/
         mAdapter = new RosterPagerAdapter(pages);
@@ -252,6 +237,34 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
             }
         }.start();*/
+    }
+
+    private void setGeneralAdapter() {
+        final BuddyDbIdGetter generalAdapter;
+        if (isDefaultGeneralAdapter){
+            generalAdapter = new RosterFavoriteAndAlphabeticalAdapter(this, getLoaderManager());
+            generalList.setAdapter((RosterFavoriteAndAlphabeticalAdapter) generalAdapter);
+        } else {
+            generalAdapter = new RosterGroupsAdapter(this, getLoaderManager());
+            generalList.setAdapter((RosterGroupsAdapter) generalAdapter);
+        }
+        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int buddyDbId = generalAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                try {
+                    // Trying to open dialog with this buddy.
+                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    // Open chat dialog for this buddy.
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
+            }
+        });
     }
 
     @Override

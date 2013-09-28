@@ -27,6 +27,7 @@ public class CoreService extends Service {
 
     private SessionHolder sessionHolder;
     private RequestDispatcher requestDispatcher;
+    private HistoryDispatcher historyDispatcher;
 
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
@@ -106,9 +107,10 @@ public class CoreService extends Service {
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this, sessionHolder);
+        historyDispatcher = new HistoryDispatcher(this);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Display a notification about us starting.
-        showNotification();
+        // showNotification();
     }
 
     @Override
@@ -152,6 +154,7 @@ public class CoreService extends Service {
         // Loading all data for this application session.
         sessionHolder.load();
         requestDispatcher.startObservation();
+        historyDispatcher.startObservation();
         // Service is now ready.
         updateState(STATE_UP);
         Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");

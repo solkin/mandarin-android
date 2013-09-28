@@ -28,7 +28,10 @@ public class ChatListView extends ListView {
 
     @Override
     protected void layoutChildren() {
-        super.layoutChildren();
+        try {
+            super.layoutChildren();
+        } catch (Throwable ignored) {
+        }
         // This will check for the messages on the
         // screen and read them if they are visible.
         if(dataChangedListener != null) {

@@ -24,6 +24,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_GROUP_TABLE = "roster_group";
     public static final String ROSTER_BUDDY_TABLE = "roster_buddy";
     public static final String CHAT_HISTORY_TABLE = "chat_history";
+    public static final String CHAT_HISTORY_TABLE_DISTINCT = "chat_history_distinct";
 
     // Fields
     public static final String ROW_AUTO_ID = "_id";
@@ -72,6 +73,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_TIME = "message_time";
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
     public static final String HISTORY_MESSAGE_READ = "message_read";
+    public static final String HISTORY_NOTICE_SHOWN = "notice_shown";
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
@@ -106,7 +108,8 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
-            + HISTORY_MESSAGE_READ + " int, " + HISTORY_MESSAGE_TEXT + " text" + ");";
+            + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
+            + HISTORY_MESSAGE_TEXT + " text" + ");";
 
     // Database helper object
     private DatabaseHelper databaseHelper;
@@ -118,6 +121,7 @@ public class GlobalProvider extends ContentProvider {
     private static final int URI_BUDDY = 3;
     private static final int URI_GROUP = 4;
     private static final int URI_HISTORY = 5;
+    private static final int URI_HISTORY_DISTINCT = 6;
 
     // URI tool instance
     private static final UriMatcher uriMatcher;
@@ -129,6 +133,7 @@ public class GlobalProvider extends ContentProvider {
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_GROUP_TABLE, URI_GROUP);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, ROSTER_BUDDY_TABLE, URI_BUDDY);
         uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, CHAT_HISTORY_TABLE, URI_HISTORY);
+        uriMatcher.addURI(Settings.GLOBAL_AUTHORITY, CHAT_HISTORY_TABLE_DISTINCT, URI_HISTORY_DISTINCT);
     }
 
     @Override
@@ -141,6 +146,7 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         String table;
+        boolean isDistinct = false;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
             case URI_REQUEST: // Default Uri
@@ -175,11 +181,20 @@ public class GlobalProvider extends ContentProvider {
                 // Default sort if not specified
                 table = CHAT_HISTORY_TABLE;
                 break;
+            case URI_HISTORY_DISTINCT:
+                table = CHAT_HISTORY_TABLE;
+                isDistinct = true;
+                break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
-        Cursor cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor;
+        if(isDistinct) {
+            cursor = sqLiteDatabase.query(true, table, projection, selection, selectionArgs, null, null, sortOrder, null);
+        } else {
+            cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
+        }
         // Cursor cursor = sqLiteDatabase.query(distinct, table, projection, selection, selectionArgs, null, null, sortOrder, null);
 
         // Cursor cursor = sqLiteDatabase.query(true, ROSTER_GROUP_TABLE, new String[]{ROSTER_GROUP_NAME}, null, null, null, null, null, null);

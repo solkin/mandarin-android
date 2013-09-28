@@ -23,9 +23,9 @@ public class RequestDispatcher {
      * Variables
      */
     private final SessionHolder sessionHolder;
+    private final ContentResolver contentResolver;
     private final ContentObserver requestObserver;
     private final ContentObserver accountObserver;
-    private final ContentResolver contentResolver;
     private Thread dispatcherThread;
     private final Object sync;
     private Gson gson;
@@ -33,11 +33,11 @@ public class RequestDispatcher {
     public RequestDispatcher(Context context, SessionHolder sessionHolder) {
         // Session holder.
         this.sessionHolder = sessionHolder;
+        // Variables.
+        contentResolver = context.getContentResolver();
         // Creating observers.
         requestObserver = new RequestObserver();
         accountObserver = new AccountObserver();
-        // Variables.
-        contentResolver = context.getContentResolver();
         // Initializing thread.
         sync = new Object();
         gson = new Gson();

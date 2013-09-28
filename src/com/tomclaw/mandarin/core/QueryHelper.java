@@ -53,21 +53,6 @@ public class QueryHelper {
         return accountRootList;
     }
 
-    /*public static AccountRoot getAccount(ContentResolver contentResolver, int accountDbId) {
-        // Obtain specified account. If exist.
-        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
-        // Checking for there is at least one account and switching to it.
-        if (cursor.moveToFirst()) {
-            // Obtain necessary column index.
-            int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
-            int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-            return createAccountRoot(contentResolver, cursor.getString(typeColumnIndex),
-                    cursor.getString(bundleColumnIndex));
-        }
-        return null;
-    }*/
-
     public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
             throws AccountNotFoundException {
         // Obtain account db id.
@@ -268,6 +253,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+                contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
                 // Update query.
                 contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues,
                         GlobalProvider.ROW_AUTO_ID + "='" + messageDbId + "'", null);
@@ -288,6 +274,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
@@ -353,6 +340,7 @@ public class QueryHelper {
             // Plain messages modify by buddy db id and messages db id.
             ContentValues contentValues = new ContentValues();
             contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+            contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
 
             contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues, queryBuilder.toString(), null);
         } else {

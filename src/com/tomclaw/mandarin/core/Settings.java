@@ -25,4 +25,6 @@ public class Settings {
             + GLOBAL_AUTHORITY + "/" + GlobalProvider.ROSTER_BUDDY_TABLE);
     public static Uri HISTORY_RESOLVER_URI = Uri.parse("content://"
             + GLOBAL_AUTHORITY + "/" + GlobalProvider.CHAT_HISTORY_TABLE);
+    public static Uri HISTORY_DISTINCT_RESOLVER_URI = Uri.parse("content://"
+            + GLOBAL_AUTHORITY + "/" + GlobalProvider.CHAT_HISTORY_TABLE_DISTINCT);
 }

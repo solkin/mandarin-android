@@ -45,6 +45,7 @@ public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implemen
     private LayoutInflater inflater;
     private String[] firstLetters;
     private int favoritesSize;
+    private MergeCursor mergeCursor;
 
     public RosterFavoriteAndAlphabeticalAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -75,12 +76,14 @@ public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implemen
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
         COLUMN_ROSTER_BUDDY_FAVORITE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_FAVORITE);
         swapCursor(cursor);
+        this.mergeCursor = cursor;
         firstLetters = getFirstLetters(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<MergeCursor> cursorLoader) {
         swapCursor(null);
+        this.mergeCursor = null;
     }
 
     private String[] getFirstLetters(MergeCursor cursor){
@@ -150,5 +153,12 @@ public class RosterFavoriteAndAlphabeticalAdapter extends CursorAdapter implemen
             return 0;
         }
         return firstLetters[position].charAt(0);
+    }
+
+    public int getBuddyDbId(int position){
+        if (!mergeCursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move mergeCursor to position " + position);
+        }
+        return mergeCursor.getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 }

@@ -173,11 +173,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         generalList.setDrawingListUnderStickyHeader(false);
         final RosterFavoriteAndAlphabeticalAdapter generalAdapter = new RosterFavoriteAndAlphabeticalAdapter(this, getLoaderManager());
         generalList.setAdapter(generalAdapter);
-        /*generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                        int childPosition, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int buddyDbId = generalAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
                 try {
                     // Trying to open dialog with this buddy.
@@ -189,9 +188,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 } catch (Exception e) {
                     // Nothing to do in this case.
                 }
-                return true;
             }
-        });*/
+        });
         pages.add(generalList);
         /** View pager **/
         mAdapter = new RosterPagerAdapter(pages);

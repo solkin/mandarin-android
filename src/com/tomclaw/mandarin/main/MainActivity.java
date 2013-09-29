@@ -242,8 +242,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     private void setGeneralAdapter() {
         final BuddyDbIdGetter generalAdapter;
         if (isDefaultGeneralAdapter){
-            generalAdapter = new RosterFavoriteAndAlphabeticalAdapter(this, getLoaderManager());
-            generalList.setAdapter((RosterFavoriteAndAlphabeticalAdapter) generalAdapter);
+            generalAdapter = new RosterAlphabeticalAdapter(this, getLoaderManager());
+            generalList.setAdapter((RosterAlphabeticalAdapter) generalAdapter);
         } else {
             generalAdapter = new RosterGroupsAdapter(this, getLoaderManager());
             generalList.setAdapter((RosterGroupsAdapter) generalAdapter);

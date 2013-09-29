@@ -10,13 +10,14 @@ import android.os.OperationCanceledException;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
     final ForceLoadContentObserver mObserver;
 
     private QueryParametersContainer[] queryParameters;
 
-    MergeCursor mCursor;
+    MergeCursor mMergeCursor;
     CancellationSignal mCancellationSignal;
 
     /* Runs on a worker thread */
@@ -33,20 +34,20 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
             for (QueryParametersContainer container : queryParameters){
                 Cursor cursor = getContext().getContentResolver().query(container.uri, container.projection,
                         container.selection, container.selectionArgs, container.sortOrder);
-                cursor.moveToFirst();
-                if (!cursor.isAfterLast())
-                    mergedCursors.add(cursor);
+                if (cursor != null) {
+                    try {
+                        // Ensure the cursor window is filled.
+                        cursor.getCount();
+                        cursor.registerContentObserver(mObserver);
+                    } catch (RuntimeException ex) {
+                        cursor.close();
+                        throw ex;
+                    }
+                }
+                mergedCursors.add(cursor);
             }
             Cursor[] cursors = new Cursor[mergedCursors.size()];
             MergeCursor cursor = new MergeCursor(mergedCursors.toArray(cursors));
-            try {
-                // Ensure the cursor window is filled.
-                cursor.getCount();
-                cursor.registerContentObserver(mObserver);
-            } catch (RuntimeException ex) {
-                cursor.close();
-                throw ex;
-            }
             return cursor;
         } finally {
             synchronized (this) {
@@ -76,8 +77,8 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
             }
             return;
         }
-        MergeCursor oldCursor = mCursor;
-        mCursor = cursor;
+        MergeCursor oldCursor = mMergeCursor;
+        mMergeCursor = cursor;
 
         if (isStarted()) {
             super.deliverResult(cursor);
@@ -112,10 +113,10 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
      */
     @Override
     protected void onStartLoading() {
-        if (mCursor != null) {
-            deliverResult(mCursor);
+        if (mMergeCursor != null) {
+            deliverResult(mMergeCursor);
         }
-        if (takeContentChanged() || mCursor == null) {
+        if (takeContentChanged() || mMergeCursor == null) {
             forceLoad();
         }
     }
@@ -143,24 +144,29 @@ public class MergeCursorLoader extends AsyncTaskLoader<MergeCursor> {
         // Ensure the loader is stopped
         onStopLoading();
 
-        if (mCursor != null && !mCursor.isClosed()) {
-            mCursor.close();
+        if (mMergeCursor != null && !mMergeCursor.isClosed()) {
+            mMergeCursor.close();
         }
-        mCursor = null;
+        mMergeCursor = null;
     }
 
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        /*writer.print(prefix); writer.print("mUri="); writer.println(mUri);
+        for ( QueryParametersContainer container : queryParameters){
+            dumpQueryParameterConteiner(prefix, fd, writer, args, container);
+        }
+    }
+
+    private void dumpQueryParameterConteiner(String prefix, FileDescriptor fd, PrintWriter writer, String[] args, QueryParametersContainer container){
+        writer.print(prefix); writer.print("mUri="); writer.println(container.uri);
         writer.print(prefix); writer.print("mProjection=");
-        writer.println(Arrays.toString(mProjection));
-        writer.print(prefix); writer.print("mSelection="); writer.println(mSelection);
+        writer.println(Arrays.toString(container.projection));
+        writer.print(prefix); writer.print("mSelection="); writer.println(container.selection);
         writer.print(prefix); writer.print("mSelectionArgs=");
-        writer.println(Arrays.toString(mSelectionArgs));
-        writer.print(prefix); writer.print("mSortOrder="); writer.println(mSortOrder);
-        writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
-        writer.print(prefix); writer.print("mContentChanged="); writer.println(mContentChanged);*/
+        writer.println(Arrays.toString(container.selectionArgs));
+        writer.print(prefix); writer.print("mSortOrder="); writer.println(container.sortOrder);
+        writer.print(prefix); writer.print("mMergeCursor="); writer.println(mMergeCursor);
     }
 }
 

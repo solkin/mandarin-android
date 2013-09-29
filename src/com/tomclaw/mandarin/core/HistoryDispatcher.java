@@ -104,6 +104,15 @@ public class HistoryDispatcher {
                 // Checking for non-shown messages exist.
                 // If yes - we must update notification with all unread messages. If no - nothing to do now.
                 if (unShownCursor.moveToFirst()) {
+                    boolean isAlarmRequired = false;
+                    int HISTORY_NOTICE_SHOWN_COLUMN = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
+                    do {
+                        if(unShownCursor.getInt(HISTORY_NOTICE_SHOWN_COLUMN) != -1) {
+                            isAlarmRequired = true;
+                            break;
+                        }
+                    } while (unShownCursor.moveToNext());
+
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -159,7 +168,7 @@ public class HistoryDispatcher {
                     NotificationCompat.Style style;
                     // Checking for required style.
                     if(multipleSenders) {
-                        title = unread + " new messages";
+                        title = context.getString(R.string.count_new_messages, unread);
                         content = nickNamesBuilder.toString();
                         replyIcon = R.drawable.social_reply_all;
                         inboxStyle.setBigContentTitle(title);
@@ -184,9 +193,10 @@ public class HistoryDispatcher {
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setStyle(style)
-                            .addAction(replyIcon, "Reply now", replyNowIntent)
-                            .addAction(R.drawable.social_chat, "Open chats", openChatsIntent)
-                            .setDefaults(Notification.DEFAULT_ALL)
+                            .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
+                            .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
+                            .setDefaults(isAlarmRequired ? Notification.DEFAULT_ALL : 0)
+                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
                             .build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);

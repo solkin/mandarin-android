@@ -75,4 +75,10 @@
         <item>@string/group_online</item>
         <item>@string/group_all</item>
     </string-array>
+
+    <string name="count_new_messages">%d new messages</string>
+    <string name="do_not_remove">No</string>
+    <string name="do_not_remove">No</string>
+    <string name="reply_now">Reply now</string>
+    <string name="open_chats">Open chats</string>
 </resources>

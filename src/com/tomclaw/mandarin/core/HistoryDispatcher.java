@@ -2,20 +2,21 @@ package com.tomclaw.mandarin.core;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
-import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.main.ChatActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,6 +30,21 @@ public class HistoryDispatcher {
     private NotificationManager notificationManager;
     private ContentResolver contentResolver;
     private ContentObserver historyObserver;
+
+    private static final int NOTIFICATION_ID = 0x01;
+
+    private static final String[] unReadProjection = new String[] {
+            GlobalProvider.HISTORY_BUDDY_DB_ID,
+            GlobalProvider.HISTORY_MESSAGE_TYPE,
+            GlobalProvider.HISTORY_MESSAGE_READ
+    };
+
+    private static final String[] unShownProjection = new String[] {
+            GlobalProvider.HISTORY_BUDDY_DB_ID,
+            GlobalProvider.HISTORY_MESSAGE_TYPE,
+            GlobalProvider.HISTORY_MESSAGE_READ,
+            GlobalProvider.HISTORY_NOTICE_SHOWN
+    };
 
     public HistoryDispatcher(Context context) {
         // Variables.
@@ -61,158 +77,133 @@ public class HistoryDispatcher {
             super.onChange(selfChange);
             Log.d(Settings.LOG_TAG, "HistoryObserver: onChange [selfChange = " + selfChange + "]");
             // Obtain unique unread buddies. If exist.
-            String[] projection = new String[] {
-                    GlobalProvider.HISTORY_BUDDY_DB_ID,
-                    GlobalProvider.HISTORY_MESSAGE_TYPE,
-                    GlobalProvider.HISTORY_MESSAGE_READ
-            };
-
             StringBuilder queryBuilder = new StringBuilder();
-            /*queryBuilder.append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'").append(" AND ")
-                    .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'").append(" AND ")
-                    .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(0).append("'");
-
-            Cursor unShownCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, projection,
-                    queryBuilder.toString(), null, null);*/
-
-            queryBuilder = new StringBuilder();
-            queryBuilder.append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'").append(" AND ")
-                    .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'");
-
-            Cursor cursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, projection,
+            queryBuilder
+                    .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
+                    .append(" AND ")
+                    .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
+            Cursor unReadCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, unReadProjection,
                     queryBuilder.toString(), null, null);
-
-            if (cursor.moveToFirst()) {
-
+            // Checking for unread messages exist. If no, we must cancel notification.
+            if (unReadCursor.moveToFirst()) {
                 queryBuilder = new StringBuilder();
-                queryBuilder.append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'").append(" AND ((")
-                        .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'").append(" AND ")
-                        .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(0).append("'").append(") OR ")
-                        .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(-1).append("')");
-
-                projection = new String[] {
-                        GlobalProvider.HISTORY_BUDDY_DB_ID,
-                        GlobalProvider.HISTORY_MESSAGE_TYPE,
-                        GlobalProvider.HISTORY_MESSAGE_READ,
-                        GlobalProvider.HISTORY_NOTICE_SHOWN // Нет разницы для первой и второй выборки?
-                };
-
-                Cursor unShownCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, projection,
+                queryBuilder
+                        .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
+                        .append(" AND ")
+                        .append("(")
+                            .append("(")
+                                .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0)
+                                .append(" AND ")
+                                .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("=").append(0)
+                            .append(")")
+                            .append(" OR ")
+                            .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(-1)
+                        .append("')");
+                Cursor unShownCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, unShownProjection,
                         queryBuilder.toString(), null, null);
-
-                // Если есть входящие непрочитанные, то не убираем уведомление.
-                // Если нет входящих непрочитанных, то уведомление убирается.
-                // Показываться должны только сообщения с пометкой о непоказанности.
+                // Checking for non-shown messages exist.
+                // If yes - we must update notification with all unread messages. If no - nothing to do now.
                 if (unShownCursor.moveToFirst()) {
+                    // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                    NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+                    // Building variables.
                     int unread = 0;
-                    String content = "";
+                    boolean multipleSenders = (unReadCursor.getCount() > 1);
+                    StringBuilder nickNamesBuilder = new StringBuilder();
+                    // Last-message variables.
+                    int buddyDbId;
+                    String message = "";
 
-                    int HISTORY_BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-                    // int HISTORY_BUDDY_ACCOUNT_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
+                    int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
                     do {
-                        int buddyDbId = cursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
+                        buddyDbId = unReadCursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
                         Log.d(Settings.LOG_TAG, "HistoryObserver: buddy: " + buddyDbId);
                         StringBuilder messageQueryBuilder = new StringBuilder();
-                        messageQueryBuilder.append(
-                                GlobalProvider.HISTORY_BUDDY_DB_ID).append("='").append(buddyDbId).append("'")
+                        messageQueryBuilder
+                                .append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("=").append(buddyDbId)
                                 .append(" AND ")
-                                .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'")
+                                .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
                                 .append(" AND ")
-                                .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'");
+                                .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
                         Cursor messageCursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
                                 messageQueryBuilder.toString(), null, GlobalProvider.ROW_AUTO_ID + " DESC");
-                        unread += messageCursor.getCount();
+                        // Checking for the last message. Yeah, the last, not first.
                         if (messageCursor.moveToFirst()) {
                             int HISTORY_MESSAGE_TEXT_COLUMN = messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
-                            // int accountDbId = messageCursor.getInt(HISTORY_BUDDY_ACCOUNT_DB_ID_COLUMN);
+                            // Obtaining and collecting message-specific data.
+                            unread += messageCursor.getCount();
+                            message = messageCursor.getString(HISTORY_MESSAGE_TEXT_COLUMN);
                             String nickName;
                             try {
                                 nickName = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
                             } catch (BuddyNotFoundException ignored) {
+                                // TODO: check with no-nick and unknown buddies.
                                 nickName = "unknown";
                             }
-                            if (!TextUtils.isEmpty(content)) {
-                                content += ", ";
+                            if (!TextUtils.isEmpty(nickNamesBuilder)) {
+                                nickNamesBuilder.append(", ");
                             }
-                            content += nickName;
-                        /*String summary;
-                        try {
-                            summary = QueryHelper.getAccountName(contentResolver, accountDbId);
-                        } catch (AccountNotFoundException e) {
-                            summary = "unknown";
-                        }*/
-                            String message = messageCursor.getString(HISTORY_MESSAGE_TEXT_COLUMN);
-                            Log.d(Settings.LOG_TAG, "HistoryObserver: message: " + message);
-
-                            inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
-
-                        /*NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-                        bigText.bigText(message);
-                        bigText.setBigContentTitle(title);
-                        bigText.setSummaryText(summary);*/
-
-                        /*Notification notification = new NotificationCompat.Builder(context)
-                                .setContentTitle(title)
-                                .setContentText(message)
-                                .setSubText(summary)
-                                .setSmallIcon(R.drawable.ic_notification)
-                                .setLargeIcon(BitmapFactory.decodeResource(
-                                        context.getResources(), R.drawable.ic_default_avatar))
-                                .setStyle(bigText)
-                                //.setStyle(inboxStyle)
-                                .setNumber(count)
-                                .build();
-                        notificationManager.notify(buddyDbId, notification);*/
+                            nickNamesBuilder.append(nickName);
+                            // Checking for style type for correct filling.
+                            if(multipleSenders) {
+                                inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
+                            }
                         }
                         messageCursor.close();
-
-                    } while (cursor.moveToNext());
-                    String title = unread + " new messages";
-
-                    inboxStyle.setBigContentTitle(title);
-                    inboxStyle.setSummaryText("Mandarin");
-
+                    } while (unReadCursor.moveToNext());
+                    // Common notification variables.
+                    String title;
+                    String content;
+                    int replyIcon;
+                    NotificationCompat.Style style;
+                    // Checking for required style.
+                    if(multipleSenders) {
+                        title = unread + " new messages";
+                        content = nickNamesBuilder.toString();
+                        replyIcon = R.drawable.social_reply_all;
+                        inboxStyle.setBigContentTitle(title);
+                        style = inboxStyle;
+                    } else {
+                        title = nickNamesBuilder.toString();
+                        content = message;
+                        replyIcon = R.drawable.social_reply;
+                        bigTextStyle.bigText(message);
+                        bigTextStyle.setBigContentTitle(title);
+                        style = bigTextStyle;
+                    }
+                    // Show chat activity with concrete buddy.
+                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
+                            new Intent(context, ChatActivity.class).putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId), PendingIntent.FLAG_CANCEL_CURRENT);
+                    // Simply open chats list.
+                    PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
+                            new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                    // Notification prepare.
                     Notification notification = new NotificationCompat.Builder(context)
                             .setContentTitle(title)
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)
-                            .setStyle(inboxStyle)
-                            //.setNumber(unread)
-                            //.addAction(R.drawable.ic)
+                            .setStyle(style)
+                            .addAction(replyIcon, "Reply now", replyNowIntent)
+                            .addAction(R.drawable.social_chat, "Open chats", openChatsIntent)
+                            .setDefaults(Notification.DEFAULT_ALL)
                             .build();
-                    notification.defaults |= Notification.DEFAULT_ALL;
-
-                    notificationManager.notify(0, notification);
-
-                    // Plain messages modify by buddy db id and messages db id.
+                    // Notify it right now!
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                    // Update shown messages flag.
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-
-                    /*queryBuilder = new StringBuilder();
-                    queryBuilder.append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'").append(" AND ")
-                            .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'").append(" AND ")
-                            .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(0).append("'"); */
-                    contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues, queryBuilder.toString(), null);
-
-
-                    /*contentValues = new ContentValues();
-                    contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 3);
-
-                    queryBuilder = new StringBuilder();
-                    queryBuilder.append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("='").append(1).append("'").append(" AND ")
-                            .append(GlobalProvider.HISTORY_MESSAGE_READ).append("='").append(0).append("'").append(" AND ")
-                            .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(2).append("'");
-                    contentResolver.update(Settings.HISTORY_RESOLVER_URI, contentValues, queryBuilder.toString(), null);*/
+                    contentResolver.update(Settings.HISTORY_RESOLVER_URI,
+                            contentValues, queryBuilder.toString(), null);
                 } else {
-                    Log.d(Settings.LOG_TAG, "HistoryObserver: No unshown messages found");
+                    Log.d(Settings.LOG_TAG, "HistoryObserver: Non-shown messages not found");
                 }
                 unShownCursor.close();
             } else {
                 Log.d(Settings.LOG_TAG, "HistoryObserver: No unread messages found");
-                notificationManager.cancel(0);
+                notificationManager.cancel(NOTIFICATION_ID);
             }
-            cursor.close();
+            unReadCursor.close();
         }
     }
 }

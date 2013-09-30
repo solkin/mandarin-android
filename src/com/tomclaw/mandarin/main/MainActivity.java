@@ -11,17 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
+import com.tomclaw.mandarin.main.adapters.*;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +29,8 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
     private ViewPager mPager;
     // private PagerSlidingTabStrip mIndicator;
     private List<View> pages = new ArrayList<View>();
+    private StickyListHeadersListView generalList;
+    private boolean isDefaultGeneralAdapter = true;
 
 
     @Override
@@ -168,28 +167,10 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         });
         pages.add(onlineList);
         // All friends.
-        ExpandableListView generalList = new ExpandableListView(this);
-        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getLoaderManager());
-        generalList.setAdapter(generalAdapter);
-        generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                        int childPosition, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    // Nothing to do in this case.
-                }
-                return true;
-            }
-        });
+        generalList = new StickyListHeadersListView(this);
+        // Set header view not transparent
+        generalList.setDrawingListUnderStickyHeader(false);
+        setGeneralAdapter();
         pages.add(generalList);
         /** View pager **/
         mAdapter = new RosterPagerAdapter(pages);
@@ -252,6 +233,29 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 }
             }
         }.start();*/
+    }
+
+    private void setGeneralAdapter() {
+        final BuddyDbIdGetter generalAdapter;
+        generalAdapter = new RosterAlphabeticalAdapter(this, getLoaderManager());
+        generalList.setAdapter((RosterAlphabeticalAdapter) generalAdapter);
+        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int buddyDbId = generalAdapter.getBuddyDbId(position);
+                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                try {
+                    // Trying to open dialog with this buddy.
+                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    // Open chat dialog for this buddy.
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // Nothing to do in this case.
+                }
+            }
+        });
     }
 
     @Override

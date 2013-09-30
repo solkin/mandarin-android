@@ -81,4 +81,7 @@
     <string name="do_not_remove">No</string>
     <string name="reply_now">Reply now</string>
     <string name="open_chats">Open chats</string>
+    <string name="pref_buddy_list_title">Buddy list</string>
+    <string name="pref_summary_show_online">Show buddies online list on main screen</string>
+    <string name="pref_title_show_online">Show onlines list</string>
 </resources>

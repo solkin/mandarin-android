@@ -53,7 +53,7 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, null, null,
-                GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                GlobalProvider.ROSTER_BUDDY_NICK + " COLLATE NOCASE ASC");
     }
 
     @Override
@@ -96,7 +96,7 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.divider_text)).
-                setText(String.valueOf(getFirstChar(getCursor().getString(COLUMN_ROSTER_BUDDY_NICK))));
+                setText(getFirstLetter(getCursor().getString(COLUMN_ROSTER_BUDDY_NICK)));
         return convertView;
     }
 
@@ -109,18 +109,23 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
     }
 
     @Override
-    public int getBuddyDbId(int position){
+    public int getBuddyDbId(int position) {
         if (!getCursor().moveToPosition(position)) {
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);
         }
         return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
     }
 
+    public String getFirstLetter(String word) {
+        return String.valueOf(getFirstChar(word));
+    }
+
     private static char getFirstChar(String word) {
-        char letter = Character.toUpperCase(word.charAt(0));
-        if (!Character.isLetter(letter)) {
-            letter = UNCLASSIFIED;
+        char letter = word.charAt(0);
+        if (Character.isLetter(letter)) {
+            return Character.toUpperCase(letter);
         }
-        return letter;
+        return UNCLASSIFIED;
     }
 }
+

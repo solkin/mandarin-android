@@ -10,4 +10,24 @@
                 android:title="@string/pref_title_show_online"
                 android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/pref_notifications_title"
+            android:key="pref_notification_settings">
+        <CheckBoxPreference
+                android:key="pref_system_notifications"
+                android:disableDependentsState="true"
+                android:title="@string/pref_title_system_notifications"
+                android:summary="@string/pref_summary_system_notifications"
+                android:defaultValue="true"/>
+        <RingtonePreference
+                android:dependency="pref_system_notifications"
+                android:summary="@string/pref_summary_notification_sound"
+                android:title="@string/pref_title_notification_sound"
+                android:key="pref_notification_sound"/>
+        <CheckBoxPreference
+                android:dependency="pref_system_notifications"
+                android:key="pref_vibrate"
+                android:title="@string/pref_title_vibrate"
+                android:defaultValue="false"/>
+    </PreferenceCategory>
 </PreferenceScreen>

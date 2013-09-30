@@ -26,6 +26,7 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
      * Adapter ID
      */
     private static final int ADAPTER_ALPHABETICAL_FAVORITE_ID = -6;
+    private static final char UNCLASSIFIED = ' ';
 
     /**
      * Columns
@@ -95,7 +96,7 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.divider_text)).
-                setText(getCursor().getString(COLUMN_ROSTER_BUDDY_NICK).substring(0, 1));
+                setText(String.valueOf(getFirstChar(getCursor().getString(COLUMN_ROSTER_BUDDY_NICK))));
         return convertView;
     }
 
@@ -104,7 +105,7 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
         if (!getCursor().moveToPosition(position)) {
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);
         }
-        return getCursor().getString(COLUMN_ROSTER_BUDDY_NICK).substring(0, 1).charAt(0);
+        return getFirstChar(getCursor().getString(COLUMN_ROSTER_BUDDY_NICK));
     }
 
     @Override
@@ -113,5 +114,13 @@ public class RosterAlphabeticalAdapter extends CursorAdapter implements
             throw new IllegalStateException("couldn't move mergeCursor to position " + position);
         }
         return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
+
+    private static char getFirstChar(String word) {
+        char letter = Character.toUpperCase(word.charAt(0));
+        if (!Character.isLetter(letter)) {
+            letter = UNCLASSIFIED;
+        }
+        return letter;
     }
 }

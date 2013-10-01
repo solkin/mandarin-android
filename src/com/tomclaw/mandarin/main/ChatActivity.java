@@ -97,6 +97,18 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(Settings.LOG_TAG, "onNewIntent");
+
+        int buddyDbId = getIntentBuddyDbId(intent);
+
+        setTitleByBuddyDbId(buddyDbId);
+
+        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+    }
+
+    @Override
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
 
@@ -110,19 +122,9 @@ public class ChatActivity extends ChiefActivity {
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        Bundle bundle = getIntent().getExtras();
+        int buddyDbId = getIntentBuddyDbId(getIntent());
 
-        int buddyDbId = -1;
-        // Checking for bundle condition.
-        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
-            // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
-            try {
-                // This will provide buddy nick by db id.
-                setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
-            } catch (BuddyNotFoundException ignored) {
-            }
-        }
+        setTitleByBuddyDbId(buddyDbId);
 
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
 
@@ -238,6 +240,28 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onCoreServiceIntent(Intent intent) {
         // TODO: must be implemented.
+    }
+
+    private int getIntentBuddyDbId(Intent intent) {
+        Bundle bundle = intent.getExtras();
+
+        int buddyDbId = -1;
+        // Checking for bundle condition.
+        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+            // Setup active page.
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+        }
+
+        return buddyDbId;
+    }
+
+    private void setTitleByBuddyDbId(int buddyDbId) {
+        try {
+            // This will provide buddy nick by db id.
+            setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+        } catch (BuddyNotFoundException ignored) {
+            Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
+        }
     }
 
     @Override

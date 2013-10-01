@@ -183,7 +183,10 @@ public class HistoryDispatcher {
                     }
                     // Show chat activity with concrete buddy.
                     PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
-                            new Intent(context, ChatActivity.class).putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId), PendingIntent.FLAG_CANCEL_CURRENT);
+                            new Intent(context, ChatActivity.class)
+                                    .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                                    .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                            PendingIntent.FLAG_CANCEL_CURRENT);
                     // Simply open chats list.
                     PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
                             new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);

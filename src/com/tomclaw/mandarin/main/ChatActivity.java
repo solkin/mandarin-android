@@ -389,7 +389,7 @@ public class ChatActivity extends ChiefActivity {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
-            return shareIntent;
+            return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
         }
     }
 

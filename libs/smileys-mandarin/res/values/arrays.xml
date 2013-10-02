@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="default_smiley_texts">
+      <item>:-)</item>
+      <item>:-(</item>
+      <item>;-)</item>
+      <item>:-P</item>
+      <item>=-O</item>
+      <item>:-*</item>
+      <item>:O</item>
+      <item>B-)</item>
+      <item>:-$</item>
+      <item>:-!</item>
+      <item>:-[</item>
+      <item>O:-)</item>
+      <item>:-\\</item>
+      <item>:\'(</item>
+      <item>:-X</item>
+      <item>:-D</item>
+      <item>o_O</item>
+    </string-array>
+
+    <string-array name="default_smiley_names">
+        <item>Happy</item>
+        <item>Sad</item>
+        <item>Winking</item>
+        <item>Tongue sticking out</item>
+        <item>Surprised</item>
+        <item>Kissing</item>
+        <item>Yelling</item>
+        <item>Cool</item>
+        <item>Money mouth</item>
+        <item>Foot in mouth</item>
+        <item>Embarrassed</item>
+        <item>Angel</item>
+        <item>Undecided</item>
+        <item>Crying</item>
+        <item>Lips are sealed</item>
+        <item>Laughing</item>
+        <item>Confused</item>
+    </string-array>
+
+    <integer-array name="default_smileys_images">
+        <item>@drawable/emo_im_happy</item>
+        <item>@drawable/emo_im_sad</item>
+        <item>@drawable/emo_im_winking</item>
+        <item>@drawable/emo_im_tongue_sticking_out</item>
+        <item>@drawable/emo_im_surprised</item>
+        <item>@drawable/emo_im_kissing</item>
+        <item>@drawable/emo_im_yelling</item>
+        <item>@drawable/emo_im_cool</item>
+        <item>@drawable/emo_im_money_mouth</item>
+        <item>@drawable/emo_im_foot_in_mouth</item>
+        <item>@drawable/emo_im_embarrassed</item>
+        <item>@drawable/emo_im_angel</item>
+        <item>@drawable/emo_im_undecided</item>
+        <item>@drawable/emo_im_crying</item>
+        <item>@drawable/emo_im_lips_are_sealed</item>
+        <item>@drawable/emo_im_laughing</item>
+        <item>@drawable/emo_im_wtf</item>
+    </integer-array>
+</resources>

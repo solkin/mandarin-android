@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -12,7 +9,6 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.RequestDispatcher;
-import com.tomclaw.mandarin.main.MainActivity;
 
 import java.util.List;
 import java.util.Random;
@@ -37,11 +33,6 @@ public class CoreService extends Service {
     private long serviceCreateTime;
     private static final String appSession = String.valueOf(System.currentTimeMillis())
             .concat(String.valueOf(new Random().nextInt()));
-
-    /**
-     * For showing and hiding our notification.
-     */
-    NotificationManager notificationManager;
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
         public boolean initService() throws RemoteException {
@@ -108,9 +99,6 @@ public class CoreService extends Service {
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this, sessionHolder);
         historyDispatcher = new HistoryDispatcher(this);
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Display a notification about us starting.
-        // showNotification();
     }
 
     @Override
@@ -131,8 +119,6 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         // Reset creation time.
         serviceCreateTime = 0;
-        // Cancel the persistent notification.
-        notificationManager.cancel(R.string.app_name);
         // Tell the user we stopped.
         Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
         super.onDestroy();
@@ -191,25 +177,5 @@ public class CoreService extends Service {
         intent.putExtra("Staff", true);
         intent.putExtra("State", serviceState);
         sendBroadcast(intent);
-    }
-
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-        CharSequence text = getText(R.string.app_name);
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
-        // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.ic_notification, text,
-                System.currentTimeMillis());
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, getText(R.string.app_name),
-                text, contentIntent);
-        // Send the notification.
-        // We use a string id because it is a unique number.  We use it later to cancel.
-        notificationManager.notify(R.string.app_name, notification);
     }
 }

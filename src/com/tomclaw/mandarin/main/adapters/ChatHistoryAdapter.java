@@ -21,6 +21,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.util.SmileyParser;
 
 import java.text.SimpleDateFormat;
 
@@ -75,6 +76,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.loaderManager = loaderManager;
         setBuddyDbId(buddyBdId);
+        // Initialize smileys.
+        SmileyParser.init(context);
     }
 
     public void setBuddyDbId(int buddyDbId) {
@@ -171,7 +174,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public void bindView(View view, Context context, Cursor cursor) {
         // Message data.
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
+        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);

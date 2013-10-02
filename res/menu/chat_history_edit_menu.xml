@@ -8,15 +8,15 @@
             android:title="@string/message_copy">
     </item>
     <item
-            android:id="@+id/message_create_note"
-            android:icon="@drawable/content_save"
-            android:showAsAction="ifRoom|withText"
-            android:title="@string/message_save">
-    </item>
-    <item
             android:id="@+id/message_share"
             android:icon="@drawable/social_share"
             android:showAsAction="ifRoom|withText"
             android:title="@string/message_share">
+    </item>
+    <item
+            android:id="@+id/message_create_note"
+            android:icon="@drawable/content_save"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/message_save">
     </item>
 </menu>

@@ -350,23 +350,13 @@ public class ChatActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    StringBuilder selectionBuilder = new StringBuilder();
-                    // Obtain selected positions.
-                    Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
-                    // Iterating for all selected positions.
-                    for (int position : selectedPositions) {
-                        try {
-                            selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
-                        } catch (MessageNotFoundException ignored) {
-                            Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
-                        }
-                    }
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
-                    break;
-                case R.id.message_create_note:
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", getSelectedMessages()));
                     break;
                 case R.id.message_share:
+                    startActivity(createShareIntent());
+                    break;
+                case R.id.message_create_note:
                     break;
                 default:
                     return false;
@@ -378,6 +368,28 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+
+        private String getSelectedMessages() {
+            StringBuilder selectionBuilder = new StringBuilder();
+            // Obtain selected positions.
+            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+            // Iterating for all selected positions.
+            for (int position : selectedPositions) {
+                try {
+                    selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
+                } catch (MessageNotFoundException ignored) {
+                    Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
+                }
+            }
+            return selectionBuilder.toString().trim();
+        }
+
+        private Intent createShareIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
+            return shareIntent;
         }
     }
 

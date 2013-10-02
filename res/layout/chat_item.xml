@@ -36,9 +36,9 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chat Message Chat Message Chat Message Chat Message "
-                        android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
-                        android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
+                        android:text="" android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
+                        android:singleLine="false" android:padding="4dip" android:textSize="16sp"
+                        android:autoLink="web"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -71,9 +71,9 @@
                           android:layout_height="wrap_content" android:background="@drawable/ic_out_bubble"
                           android:id="@+id/out_bubble_back" android:layout_gravity="right">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                          android:text="Chat Message"
-                          android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
-                          android:singleLine="false" android:padding="4dip" android:textSize="16sp"/>
+                          android:text="" android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
+                          android:singleLine="false" android:padding="4dip" android:textSize="16sp"
+                          android:autoLink="web"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

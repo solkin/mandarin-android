@@ -81,4 +81,5 @@
     <string name="do_not_remove">No</string>
     <string name="reply_now">Reply now</string>
     <string name="open_chats">Open chats</string>
+    <string name="share_messages_via">Share messages via</string>
 </resources>

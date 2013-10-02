@@ -97,6 +97,18 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(Settings.LOG_TAG, "onNewIntent");
+
+        int buddyDbId = getIntentBuddyDbId(intent);
+
+        setTitleByBuddyDbId(buddyDbId);
+
+        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+    }
+
+    @Override
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
 
@@ -110,19 +122,9 @@ public class ChatActivity extends ChiefActivity {
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        Bundle bundle = getIntent().getExtras();
+        int buddyDbId = getIntentBuddyDbId(getIntent());
 
-        int buddyDbId = -1;
-        // Checking for bundle condition.
-        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
-            // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
-            try {
-                // This will provide buddy nick by db id.
-                setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
-            } catch (BuddyNotFoundException ignored) {
-            }
-        }
+        setTitleByBuddyDbId(buddyDbId);
 
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
 
@@ -240,6 +242,28 @@ public class ChatActivity extends ChiefActivity {
         // TODO: must be implemented.
     }
 
+    private int getIntentBuddyDbId(Intent intent) {
+        Bundle bundle = intent.getExtras();
+
+        int buddyDbId = -1;
+        // Checking for bundle condition.
+        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+            // Setup active page.
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+        }
+
+        return buddyDbId;
+    }
+
+    private void setTitleByBuddyDbId(int buddyDbId) {
+        try {
+            // This will provide buddy nick by db id.
+            setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+        } catch (BuddyNotFoundException ignored) {
+            Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
+        }
+    }
+
     @Override
     public void setTitle(CharSequence title) {
         this.title = title;
@@ -326,23 +350,13 @@ public class ChatActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    StringBuilder selectionBuilder = new StringBuilder();
-                    // Obtain selected positions.
-                    Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
-                    // Iterating for all selected positions.
-                    for (int position : selectedPositions) {
-                        try {
-                            selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
-                        } catch (MessageNotFoundException ignored) {
-                            Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
-                        }
-                    }
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", selectionBuilder.toString().trim()));
-                    break;
-                case R.id.message_create_note:
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", getSelectedMessages()));
                     break;
                 case R.id.message_share:
+                    startActivity(createShareIntent());
+                    break;
+                case R.id.message_create_note:
                     break;
                 default:
                     return false;
@@ -354,6 +368,28 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+
+        private String getSelectedMessages() {
+            StringBuilder selectionBuilder = new StringBuilder();
+            // Obtain selected positions.
+            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+            // Iterating for all selected positions.
+            for (int position : selectedPositions) {
+                try {
+                    selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
+                } catch (MessageNotFoundException ignored) {
+                    Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
+                }
+            }
+            return selectionBuilder.toString().trim();
+        }
+
+        private Intent createShareIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
+            return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
         }
     }
 

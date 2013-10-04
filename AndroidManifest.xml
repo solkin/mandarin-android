@@ -24,7 +24,6 @@
         <activity android:name=".main.AccountsActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
-                  android:launchMode="singleTask"
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.StatusActivity"

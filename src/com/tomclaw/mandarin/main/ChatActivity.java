@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.WallpaperManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
@@ -46,6 +47,11 @@ public class ChatActivity extends ChiefActivity {
 
     private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     protected void onDestroy() {

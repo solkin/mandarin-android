@@ -110,7 +110,7 @@ public class CoreService extends Service {
         } else {
             Log.d(Settings.LOG_TAG, "Flag other");
         }
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override

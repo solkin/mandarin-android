@@ -104,8 +104,8 @@ public class CoreService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
-        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY) {
-            Log.d(Settings.LOG_TAG, "START_FLAG_REDELIVERY");
+        if (flags == 0) {
+            Log.d(Settings.LOG_TAG, "Normal service start");
             CoreService.this.serviceInit();
         } else {
             Log.d(Settings.LOG_TAG, "Flag other");

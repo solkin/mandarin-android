@@ -9,7 +9,6 @@ import java.util.TreeMap;
  * User: Solkin
  * Date: 04.09.13
  * Time: 0:47
- * To change this template use File | Settings | File Templates.
  */
 public class SelectionHelper {
 

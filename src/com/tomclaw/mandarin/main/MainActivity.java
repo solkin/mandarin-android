@@ -30,7 +30,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     private RosterPagerAdapter mAdapter;
     private ViewPager mPager;
-    // private PagerSlidingTabStrip mIndicator;
     private List<View> pages = new ArrayList<View>();
 
 
@@ -81,29 +80,12 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
         setContentView(R.layout.buddy_list);
         final ActionBar bar = getActionBar();
-        /*bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setDisplayShowHomeEnabled(true);*/
 
         bar.setDisplayShowHomeEnabled(false);
         bar.setDisplayShowTitleEnabled(false);
 
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        /*bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
-                ActionBar.DISPLAY_SHOW_CUSTOM);
-        bar.setCustomView(bar,
-                new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT,
-                        Gravity.CENTER_VERTICAL | Gravity.RIGHT));*/
-
-        // bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        /** Status spinner **/
-        /*ArrayAdapter<CharSequence> listAdapter = ArrayAdapter.createFromResource(this, R.array.status_list,
-                R.layout.sherlock_spinner_item);
-        listAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-        bar.setListNavigationCallbacks(listAdapter, this);/
-        /** Lists **/
         pages.clear();
         // Favorite.
         final ListView favoriteList = new ListView(this);
@@ -122,7 +104,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                     Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                     startActivity(intent);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                     // Nothing to do in this case.
                 }
             }
@@ -195,9 +177,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         mAdapter = new RosterPagerAdapter(pages);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-        /*mIndicator = (PagerSlidingTabStrip) findViewById(R.id.indicator);
-        mIndicator.setViewPager(mPager);
-        mIndicator.setIndicatorColorResource(R.color.background_action_bar);*/
         mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {

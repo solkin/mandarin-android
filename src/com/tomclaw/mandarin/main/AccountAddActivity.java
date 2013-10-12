@@ -21,14 +21,14 @@ import com.tomclaw.mandarin.im.AccountRoot;
  */
 public class AccountAddActivity extends ChiefActivity {
 
-    public static final String CLASS_NAME_EXTRA = "ClassName";
+    public static final String EXTRA_CLASS_NAME = "class_name";
     private AccountRoot accountRoot;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Obtain class name extra to setup AccountRoot type.
-        String className = getIntent().getStringExtra(CLASS_NAME_EXTRA);
+        String className = getIntent().getStringExtra(EXTRA_CLASS_NAME);
         Log.d(Settings.LOG_TAG, "AccountAddActivity start for " + className);
         try {
             Class<? extends AccountRoot> accountRootClass = Class.forName(className).asSubclass(AccountRoot.class);

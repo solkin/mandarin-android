@@ -97,14 +97,6 @@ public class AccountsAdapter extends CursorAdapter implements
         } else {
             userStatus.clearColorFilter();
         }
-        // Creating listeners for status click
-        /*view.findViewById(R.id.user_status).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        context.startActivity(new Intent(context, StatusActivity.class));
-                    }
-                });*/
     }
 
     @Override

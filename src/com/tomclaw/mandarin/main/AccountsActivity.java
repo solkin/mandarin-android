@@ -60,7 +60,7 @@ public class AccountsActivity extends ChiefActivity {
                 return true;
             case R.id.add_account_menu:
                 Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
-                accountAddIntent.putExtra(AccountAddActivity.CLASS_NAME_EXTRA, IcqAccountRoot.class.getName());
+                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
                 startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
                 return true;
             default:

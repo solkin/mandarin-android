@@ -84,8 +84,22 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder startComplexExpression() {
+        select.append("(");
+        return this;
+    }
+
+    public QueryBuilder finishComplexExpression() {
+        select.append(")");
+        return this;
+    }
+
     public Cursor query(ContentResolver contentResolver, Uri uri) {
-        return contentResolver.query(uri, null, select.toString(), null, sort.toString());
+        return query(contentResolver, uri, null);
+    }
+
+    public Cursor query(ContentResolver contentResolver, Uri uri, String[] projection) {
+        return contentResolver.query(uri, projection, select.toString(), null, sort.toString());
     }
 
     public int delete(ContentResolver contentResolver, Uri uri) {

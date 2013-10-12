@@ -25,6 +25,9 @@ public class CoreService extends Service {
     private RequestDispatcher requestDispatcher;
     private HistoryDispatcher historyDispatcher;
 
+    public static final String ACTION_CORE_SERVICE = "core_service";
+    public static final String EXTRA_STAFF_PARAM = "staff";
+    public static final String EXTRA_STATE_PARAM = "state";
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
@@ -173,9 +176,9 @@ public class CoreService extends Service {
      * Sending state to broadcast
      */
     private void sendState() {
-        Intent intent = new Intent("CoreService");
-        intent.putExtra("Staff", true);
-        intent.putExtra("State", serviceState);
+        Intent intent = new Intent(ACTION_CORE_SERVICE);
+        intent.putExtra(EXTRA_STAFF_PARAM, true);
+        intent.putExtra(EXTRA_STATE_PARAM, serviceState);
         sendBroadcast(intent);
     }
 }

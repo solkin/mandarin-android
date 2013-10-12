@@ -107,7 +107,7 @@ public abstract class ChiefActivity extends Activity {
         if (!isServiceBound) {
             /** Broadcast receiver **/
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("CoreService");
+            intentFilter.addAction(CoreService.ACTION_CORE_SERVICE);
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -118,9 +118,9 @@ public abstract class ChiefActivity extends Activity {
                         return;
                     }
                     /** Checking for special message from service **/
-                    if (intent.getBooleanExtra("Staff", false)) {
+                    if (intent.getBooleanExtra(CoreService.EXTRA_STAFF_PARAM, false)) {
                         /** Obtain service state **/
-                        int serviceState = intent.getIntExtra("State", CoreService.STATE_DOWN);
+                        int serviceState = intent.getIntExtra(CoreService.EXTRA_STATE_PARAM, CoreService.STATE_DOWN);
                         /** Checking for service state is up **/
                         if (serviceState == CoreService.STATE_UP) {
                             isCoreServiceReady = true;

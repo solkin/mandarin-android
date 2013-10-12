@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -77,30 +78,23 @@ public class HistoryDispatcher {
             super.onChange(selfChange);
             Log.d(Settings.LOG_TAG, "HistoryObserver: onChange [selfChange = " + selfChange + "]");
             // Obtain unique unread buddies. If exist.
-            StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder
-                    .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
-                    .append(" AND ")
-                    .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
-            Cursor unReadCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, unReadProjection,
-                    queryBuilder.toString(), null, null);
+            QueryBuilder queryBuilder = new QueryBuilder();
+            queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
+                    .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+            Cursor unReadCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
+                    unReadProjection);
             // Checking for unread messages exist. If no, we must cancel notification.
             if (unReadCursor.moveToFirst()) {
-                queryBuilder = new StringBuilder();
-                queryBuilder
-                        .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
-                        .append(" AND ")
-                        .append("(")
-                            .append("(")
-                                .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0)
-                                .append(" AND ")
-                                .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("=").append(0)
-                            .append(")")
-                            .append(" OR ")
-                            .append(GlobalProvider.HISTORY_NOTICE_SHOWN).append("='").append(-1)
-                        .append("')");
-                Cursor unShownCursor = contentResolver.query(Settings.HISTORY_DISTINCT_RESOLVER_URI, unShownProjection,
-                        queryBuilder.toString(), null, null);
+                queryBuilder.recycle();
+                queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
+                            .startComplexExpression()
+                                .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
+                            .finishComplexExpression()
+                            .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
+                        .finishComplexExpression();
+                Cursor unShownCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
+                        unShownProjection);
                 // Checking for non-shown messages exist.
                 // If yes - we must update notification with all unread messages. If no - nothing to do now.
                 if (unShownCursor.moveToFirst()) {
@@ -112,7 +106,6 @@ public class HistoryDispatcher {
                             break;
                         }
                     } while (unShownCursor.moveToNext());
-
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -123,20 +116,16 @@ public class HistoryDispatcher {
                     // Last-message variables.
                     int buddyDbId;
                     String message = "";
-
                     int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
                     do {
                         buddyDbId = unReadCursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
                         Log.d(Settings.LOG_TAG, "HistoryObserver: buddy: " + buddyDbId);
-                        StringBuilder messageQueryBuilder = new StringBuilder();
-                        messageQueryBuilder
-                                .append(GlobalProvider.HISTORY_BUDDY_DB_ID).append("=").append(buddyDbId)
-                                .append(" AND ")
-                                .append(GlobalProvider.HISTORY_MESSAGE_TYPE).append("=").append(1)
-                                .append(" AND ")
-                                .append(GlobalProvider.HISTORY_MESSAGE_READ).append("=").append(0);
-                        Cursor messageCursor = contentResolver.query(Settings.HISTORY_RESOLVER_URI, null,
-                                messageQueryBuilder.toString(), null, GlobalProvider.ROW_AUTO_ID + " DESC");
+                        QueryBuilder messageQueryBuilder = new QueryBuilder();
+                        messageQueryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
+                                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+                        messageQueryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
+                        Cursor messageCursor = messageQueryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
                         // Checking for the last message. Yeah, the last, not first.
                         if (messageCursor.moveToFirst()) {
                             int HISTORY_MESSAGE_TEXT_COLUMN = messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
@@ -206,8 +195,7 @@ public class HistoryDispatcher {
                     // Update shown messages flag.
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-                    contentResolver.update(Settings.HISTORY_RESOLVER_URI,
-                            contentValues, queryBuilder.toString(), null);
+                    queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
                 } else {
                     Log.d(Settings.LOG_TAG, "HistoryObserver: Non-shown messages not found");
                 }

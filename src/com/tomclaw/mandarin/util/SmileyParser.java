@@ -63,8 +63,7 @@ public class SmileyParser {
             throw new IllegalStateException("Smiley resource ID/text mismatch");
         }
 
-        HashMap<String, Integer> smileyToRes =
-                new HashMap<String, Integer>(mSmileyTexts.length);
+        HashMap<String, Integer> smileyToRes = new HashMap<String, Integer>(mSmileyTexts.length);
         for (int i = 0; i < mSmileyTexts.length; i++) {
             smileyToRes.put(mSmileyTexts[i], mSmileyDrawables.getResourceId(i, 0));
         }

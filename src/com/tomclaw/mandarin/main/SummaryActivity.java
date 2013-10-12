@@ -10,7 +10,6 @@ import com.tomclaw.mandarin.core.Settings;
  * User: anton
  * Date: 4/5/13
  * Time: 7:57 PM
- * To change this template use File | Settings | File Templates.
  */
 public class SummaryActivity extends ChiefActivity {
 

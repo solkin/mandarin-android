@@ -174,7 +174,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public void bindView(View view, Context context, Cursor cursor) {
         // Message data.
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(cursor.getString(COLUMN_MESSAGE_TEXT));
+        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
+                cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = simpleTimeFormat.format(messageTime);

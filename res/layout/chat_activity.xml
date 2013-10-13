@@ -28,13 +28,16 @@
                     android:id="@+id/message_text"
                     android:hint="@string/enter_your_message"
                     android:layout_gravity="center"
-                    android:layout_weight="1" android:inputType="textCapSentences|textAutoCorrect"/>
+                    android:layout_weight="1"
+                    android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
+                    android:maxLines="3"/>
             <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/send_button"
                     android:layout_gravity="center_horizontal|bottom"
-                    android:src="@drawable/social_send_now"/>
+                    android:src="@drawable/social_send_now"
+                    style="?android:attr/borderlessButtonStyle"/>
         </LinearLayout>
     </LinearLayout>
 

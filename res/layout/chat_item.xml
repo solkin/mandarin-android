@@ -56,7 +56,7 @@
         <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
                       android:layout_height="wrap_content" android:gravity="right">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:id="@+id/out_time" android:layout_gravity="right" android:text="10:40"/>
+                      android:id="@+id/out_time" android:layout_gravity="right"/>
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

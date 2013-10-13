@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dip">
+                android:paddingLeft="10dp">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

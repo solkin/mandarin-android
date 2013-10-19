@@ -55,8 +55,6 @@ public class RosterAlphabetAdapter extends CursorAdapter
         loaderManager.initLoader(ADAPTER_ALPHABET_ID, null, this);
     }
 
-    // Cursor adapter.
-
     /**
      * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
      */
@@ -97,8 +95,6 @@ public class RosterAlphabetAdapter extends CursorAdapter
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
     }
 
-    // StickyListHeadersAdapter.
-
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -119,8 +115,6 @@ public class RosterAlphabetAdapter extends CursorAdapter
         }
         return getCursor().getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
     }
-
-    // Cursor loader. LoaderCallbacks.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

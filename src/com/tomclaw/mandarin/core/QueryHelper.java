@@ -18,7 +18,6 @@ import com.tomclaw.mandarin.util.StatusUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created with IntelliJ IDEA.

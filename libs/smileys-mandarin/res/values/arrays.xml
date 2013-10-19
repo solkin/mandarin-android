@@ -49,7 +49,7 @@
         <item>:-\'(</item>
         <item>&gt;###20###img021&gt;</item>
         <item>8-)</item>
-        <item>8)</item>
+        <item>\a 8)\z</item>
         <item>&lt;###20###img014&gt;</item>
         <item>&lt;###20###img036&gt;</item>
         <item>:-[</item>
@@ -113,7 +113,7 @@
         <item>:-\\</item>
         <item>:-/</item>
         <item>:\\</item>
-        <item>:/</item>
+        <item>\a :/\z</item>
         <item>*BEEE*</item>
         <item>&lt;###20###img027&gt;</item>
         <item>*JOKINGLY*</item>
@@ -138,6 +138,8 @@
         <item>\@&gt;}--`---</item>
         <item>*SHOUT*</item>
         <item>*shout*</item>
+        <item>*SIGH*</item>
+        <item>*sigh*</item>
         <item>*THUMBS UP*</item>
         <item>*GOOD*</item>
         <item>*THUMBS_UP*</item>
@@ -149,7 +151,7 @@
         <item>*goodbye*</item>
         <item>*bye*</item>
         <item>*GOODBYE*</item>
-        <item>%)</item>
+        <item>\a %)\z</item>
         <item>%-)</item>
         <item>:$</item>
         <item>*DRINK*</item>
@@ -351,6 +353,8 @@
         <item>@drawable/ax</item>
         <item>@drawable/bx</item>
         <item>@drawable/bx</item>
+        <item>@drawable/ca</item>
+        <item>@drawable/ca</item>
         <item>@drawable/ay</item>
         <item>@drawable/ay</item>
         <item>@drawable/ay</item>

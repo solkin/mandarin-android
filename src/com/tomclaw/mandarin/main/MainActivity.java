@@ -18,10 +18,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterFavoriteAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterGeneralAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterOnlineAdapter;
+import com.tomclaw.mandarin.main.adapters.*;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,14 +148,14 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
         });
         pages.add(onlineList);
         // All friends.
-        ExpandableListView generalList = new ExpandableListView(this);
-        final RosterGeneralAdapter generalAdapter = new RosterGeneralAdapter(this, getLoaderManager());
+        StickyListHeadersListView generalList = new StickyListHeadersListView(this);
+        final RosterAlphabetAdapter generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager());
         generalList.setAdapter(generalAdapter);
-        generalList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                        int childPosition, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(groupPosition, childPosition);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int buddyDbId = generalAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
                 try {
                     // Trying to open dialog with this buddy.
@@ -169,7 +167,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 } catch (Exception e) {
                     // Nothing to do in this case.
                 }
-                return true;
             }
         });
         pages.add(generalList);

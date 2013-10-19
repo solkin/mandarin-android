@@ -3,6 +3,10 @@
     <color name="background_action_bar">#FFFF9E16</color>
     <color name="background_split_action_bar">#FF555555</color>
     <color name="item_background_action_bar">#FFFFFFFF</color>
+    <color name="header_head_color">#F0CCCCCC</color>
+    <color name="header_back_color">#99CCCCCC</color>
+    <color name="header_font_color">#AA000000</color>
+    <color name="header_line_color">#E0CCCCCC</color>
     <!-- <style name="Theme.Mandarin" parent="android:Theme.Holo.Light"> -->
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
     <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>

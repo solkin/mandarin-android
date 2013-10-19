@@ -33,6 +33,7 @@
     </orderEntry>
     <orderEntry type="module" module-name="theme-mandarin" />
     <orderEntry type="module" module-name="smileys-mandarin" />
+    <orderEntry type="module" module-name="sticky-list-headers" />
   </component>
 </module>
 

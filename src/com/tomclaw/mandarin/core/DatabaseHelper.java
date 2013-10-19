@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
 
@@ -83,6 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {

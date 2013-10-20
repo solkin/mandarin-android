@@ -112,8 +112,8 @@ public class IcqAccountRoot extends AccountRoot {
         return getClass().getName();
     }
 
-    public static int[] getStatusResources() {
-        return new int[]{
+    public static int[] getStatusDrawables() {
+        return new int[] {
                 R.drawable.status_icq_offline,
                 R.drawable.status_icq_mobile,
                 R.drawable.status_icq_online,
@@ -123,6 +123,14 @@ public class IcqAccountRoot extends AccountRoot {
                 R.drawable.status_icq_dnd,
                 R.drawable.status_icq_na,
                 R.drawable.status_icq_busy
+        };
+    }
+
+    public static Integer[] getConnectStatuses() {
+        return new Integer[] {
+                StatusUtil.STATUS_MOBILE,
+                StatusUtil.STATUS_BUSY,
+                StatusUtil.STATUS_INVISIBLE
         };
     }
 

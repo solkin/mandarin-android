@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mandarin</string>
-    <string name="start">Start service</string>
-    <string name="stop">Stop service</string>
     <string name="menu_search">Search</string>
-    <string name="item2">Item2</string>
-    <string name="item3">Item3</string>
-    <string name="item4">Item4</string>
     <string name="accounts">Accounts</string>
     <string name="add_account">Add account</string>
     <string name="edit_account">Edit</string>
@@ -30,10 +25,15 @@
     <string name="enter_your_message">Enter your message</string>
     <string name="error_bubble">Error loading message from database. Reinstall program to let this error left.</string>
 
-    <string name="status_unavailable">Unavailable</string>
-    <string name="status_available">Available</string>
-    <string name="status_busy">Busy</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_mobile">Mobile</string>
+    <string name="status_online">Online</string>
     <string name="status_invisible">Invisible</string>
+    <string name="status_chat">Chat</string>
+    <string name="status_away">Away</string>
+    <string name="status_dnd">Do not disturb</string>
+    <string name="status_na">Not available</string>
+    <string name="status_busy">Busy</string>
 
     <string name="group_favorite">Favorite</string>
     <string name="group_dialogs">Dialogs</string>
@@ -62,13 +62,6 @@
     </string>
     <string name="do_not_remove">No</string>
 
-    <string-array name="status_list">
-        <item>@string/status_unavailable</item>
-        <item>@string/status_available</item>
-        <item>@string/status_busy</item>
-        <item>@string/status_invisible</item>
-    </string-array>
-
     <string-array name="default_groups">
         <item>@string/group_favorite</item>
         <item>@string/group_dialogs</item>
@@ -82,4 +75,8 @@
     <string name="reply_now">Reply now</string>
     <string name="open_chats">Open chats</string>
     <string name="share_messages_via">Share messages via</string>
+    <string name="connect_account_message">This account is not yet connected. Connect now?</string>
+    <string name="connect_account_title">Connect account</string>
+    <string name="connect_yes">Connect</string>
+    <string name="connect_no">Not now</string>
 </resources>

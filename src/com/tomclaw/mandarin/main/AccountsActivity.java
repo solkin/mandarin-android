@@ -8,15 +8,13 @@ import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
+import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.StatusUtil;
 
@@ -98,16 +96,39 @@ public class AccountsActivity extends ChiefActivity {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
                     int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
                     int COLUMN_ACCOUNT_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
-                    String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-                    String userId = cursor.getString(COLUMN_USER_ID);
-                    int statusIndex = cursor.getInt(COLUMN_ACCOUNT_STATUS);
-                    try {
-                        // Trying to connect account.
-                        getServiceInteraction().updateAccountStatus(accountType, userId,
-                                statusIndex == StatusUtil.STATUS_OFFLINE ?
-                                        StatusUtil.STATUS_ONLINE : StatusUtil.STATUS_OFFLINE);
-                    } catch (RemoteException e) {
-                        // Heh... Nothing to do in this case.
+                    final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
+                    final String userId = cursor.getString(COLUMN_USER_ID);
+                    final int statusIndex = cursor.getInt(COLUMN_ACCOUNT_STATUS);
+
+                    // Checking for account is offline and we need to connect.
+                    if(statusIndex == StatusUtil.STATUS_OFFLINE) {
+                        View connectDialog = getLayoutInflater().inflate(R.layout.connect_dialog, null);
+                        final Spinner statusSpinner = (Spinner) connectDialog.findViewById(R.id.status_spinner);
+
+                        final StatusSpinnerAdapter spinnerAdapter =
+                                new StatusSpinnerAdapter(AccountsActivity.this, accountType);
+                        statusSpinner.setAdapter(spinnerAdapter);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AccountsActivity.this);
+                        builder.setTitle(R.string.connect_account_title);
+                        builder.setMessage(R.string.connect_account_message);
+                        builder.setView(connectDialog);
+                        builder.setPositiveButton(R.string.connect_yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    int selectedStatusIndex = spinnerAdapter.getStatus(
+                                            statusSpinner.getSelectedItemPosition());
+                                    // Trying to connect account.
+                                    getServiceInteraction().updateAccountStatus(
+                                            accountType, userId, selectedStatusIndex);
+                                } catch (RemoteException e) {
+                                    // Heh... Nothing to do in this case.
+                                }
+                            }
+                        });
+                        builder.setNegativeButton(R.string.connect_no, null);
+                        builder.show();
                     }
                 }
             }

@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -49,7 +52,6 @@ public class WimConstants {
     public static final String FETCH_BASE_URL = "fetchBaseURL";
     public static final String MY_INFO = "myInfo";
     public static final String WELL_KNOWN_URLS = "wellKnownUrls";
-    public static final String END_SESSION_URL = "http://api.icq.net/aim/endSession";
     public static final String EVENTS_ARRAY = "events";
     public static final String TYPE = "type";
     public static final String EVENT_DATA_OBJECT = "eventData";

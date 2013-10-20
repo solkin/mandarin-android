@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.StatusUtil;
@@ -100,7 +102,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void disconnect() {
-        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+        RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
     }
 
     public void updateStatus(int statusIndex) {

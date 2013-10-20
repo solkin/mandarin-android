@@ -31,6 +31,8 @@ public class StatusUtil {
     static {
         statuses = new HashMap<String, int[]>();
         statuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getStatusDrawables());
+
+        connectStatuses = new HashMap<String, Integer[]>();
         connectStatuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getConnectStatuses());
 
         statusStrings = new int[] {

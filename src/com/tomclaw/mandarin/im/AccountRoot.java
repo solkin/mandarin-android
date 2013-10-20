@@ -104,7 +104,7 @@ public abstract class AccountRoot extends CoreObject {
                 updateAccountState(statusIndex, true);
                 connect();
             } else if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                updateAccountState(statusIndex, false);
+                updateAccountState(true);
                 disconnect();
             } else {
                 updateAccountState(statusIndex, false);
@@ -125,6 +125,10 @@ public abstract class AccountRoot extends CoreObject {
             // Yeah, connect!
             connect();
         }
+    }
+
+    public void carriedOff() {
+        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
     }
 
     /**

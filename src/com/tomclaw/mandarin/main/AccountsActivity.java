@@ -129,6 +129,15 @@ public class AccountsActivity extends ChiefActivity {
                         });
                         builder.setNegativeButton(R.string.connect_no, null);
                         builder.show();
+                    } else {
+                        // Debug purposes only.
+                        try {
+                            // Trying to connect account.
+                            getServiceInteraction().updateAccountStatus(
+                                    accountType, userId, StatusUtil.STATUS_OFFLINE);
+                        } catch (RemoteException e) {
+                            // Heh... Nothing to do in this case.
+                        }
                     }
                 }
             }

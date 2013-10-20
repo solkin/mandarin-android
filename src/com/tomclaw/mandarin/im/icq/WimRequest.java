@@ -28,6 +28,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 public abstract class WimRequest extends Request<IcqAccountRoot> {
 
     protected static final transient int WIM_OK = 200;
+    protected static final transient int WIM_AUTH_REQUIRED = 401;
 
     // One ttp client for all Wim requests, cause they invokes coherently.
     private static final transient HttpClient httpClient;

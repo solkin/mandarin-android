@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/libs/SlidingMenu/SlidingMenu.iml" filepath="$PROJECT_DIR$/libs/SlidingMenu/SlidingMenu.iml" />
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" filepath="$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" filepath="$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" />

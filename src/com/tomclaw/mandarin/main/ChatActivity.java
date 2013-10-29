@@ -2,33 +2,28 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.WallpaperManager;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.ListView;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
-import com.tomclaw.mandarin.util.SelectionHelper;
-
-import java.util.Collection;
+import com.tomclaw.mandarin.main.fragments.ChatDialogsFragment;
+import com.tomclaw.mandarin.main.fragments.ChatFragment;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +31,7 @@ import java.util.Collection;
  * Date: 5/5/13
  * Time: 11:49 PM
  */
-public class ChatActivity extends ChiefActivity {
+public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
 
     private DrawerLayout drawerLayout;
     private ListView drawerList;
@@ -48,9 +43,24 @@ public class ChatActivity extends ChiefActivity {
     private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
 
+    private ChatDialogsFragment chatDialogsFragment;
+    private ChatFragment chatFragment;
+
+    private SlidingActivityHelper mHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Логика SlideActivityBase завязана на mHelper. Его нужно создать самым первым, так как он вызывается во всех переопределенных методах.
+        mHelper = new SlidingActivityHelper(this);
+
         super.onCreate(savedInstanceState);
+        mHelper.onCreate(savedInstanceState);
+
+        setContentView(R.layout.content_frame);
+        setBehindContentView(R.layout.menu_frame);
+
+        getSlidingMenu().setSlidingEnabled(true);
+        getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
     }
 
     @Override
@@ -68,7 +78,7 @@ public class ChatActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                drawerToggle.onOptionsItemSelected(item);
+                //drawerToggle.onOptionsItemSelected(item);
                 return true;
             }
             case R.id.close_chat_menu: {
@@ -111,14 +121,12 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+        //chatHistoryAdapter.setBuddyDbId(buddyDbId);
     }
 
     @Override
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
-
-        setContentView(R.layout.chat_activity);
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
@@ -132,32 +140,24 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatFragment = new ChatFragment(this, buddyDbId);
+        chatDialogsFragment = new ChatDialogsFragment(this);
 
-        chatList = (ChatListView) findViewById(R.id.chat_list);
-        chatList.setAdapter(chatHistoryAdapter);
-        chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-        chatList.setOnScrollListener(new ChatScrollListener());
-        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
-            @Override
-            public void onDataChanged() {
-                readVisibleMessages();
-            }
-        });
+        //chatHistoryAdapter = chatFragment.chatHistoryAdapter;
 
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
-        chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
+        //chatDialogsAdapter = chatDialogsFragment.chatDialogsAdapter;
+        chatDialogsFragment.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 // Checking for selection is invalid.
-                if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
+                if(chatDialogsFragment.getBuddyPosition(chatFragment.getBuddyDbId()) == -1) {
                     Log.d(Settings.LOG_TAG, "No selected item anymore.");
                     // Checking for another opened chat.
-                    if(chatDialogsAdapter.getCount() > 0) {
+                    if(chatDialogsFragment.getCount() > 0) {
                         int moreActiveBuddyPosition;
                         try {
                             // Trying to obtain more active dialog position.
-                            moreActiveBuddyPosition = chatDialogsAdapter.getBuddyPosition(
+                            moreActiveBuddyPosition = chatDialogsFragment.getBuddyPosition(
                                     QueryHelper.getMoreActiveDialog(getContentResolver()));
                         } catch (BuddyNotFoundException ignored) {
                             // Something really strange. No opened dialogs. So switch to first position.
@@ -175,7 +175,18 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
-        drawerList = (ListView) findViewById(R.id.left_drawer);
+        getFragmentManager().beginTransaction().replace(R.id.menu_frame, chatDialogsFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, chatFragment).commit();
+
+        // customize the SlidingMenu
+        SlidingMenu sm = getSlidingMenu();
+        sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        sm.setShadowWidthRes(R.dimen.shadow_width);
+        sm.setShadowDrawable(R.drawable.shadow);
+        sm.setBehindScrollScale(0.25f);
+        sm.setFadeDegree(0.25f);
+
+        /*drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(chatDialogsAdapter);
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -208,34 +219,9 @@ public class ChatActivity extends ChiefActivity {
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        drawerToggle.syncState();*/
 
-        // Send button and message field initialization.
-        ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
-        final TextView messageText = (TextView) findViewById(R.id.message_text);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = messageText.getText().toString().trim();
-                if (!TextUtils.isEmpty(message)) {
-                    try {
-                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                        String cookie = String.valueOf(System.currentTimeMillis());
-                        String appSession = getServiceInteraction().getAppSession();
-                        QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
-                                cookie, message, false);
-                        // Sending protocol message request.
-                        RequestHelper.requestMessage(getContentResolver(), appSession,
-                                buddyDbId, cookie, message);
-                        // Clearing text view.
-                        messageText.setText("");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // TODO: Couldn't put message into database. This exception must be processed.
-                    }
-                }
-            }
-        });
+
     }
 
     @Override
@@ -276,173 +262,126 @@ public class ChatActivity extends ChiefActivity {
         getActionBar().setTitle(title);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (drawerToggle != null) {
-            // Pass any configuration change to the drawer toggles
-            drawerToggle.onConfigurationChanged(newConfig);
-        }
-    }
-
-    /**
-     * This list item click listener implements very simple view switching by
-     * changing the primary content text. The drawer is closed when a selection
-     * is made.
-     */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         // Changing chat history adapter loader.
-        int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
-        setTitle(chatDialogsAdapter.getBuddyNick(position));
-        drawerLayout.closeDrawer(drawerList);
+        int buddyDbId = chatDialogsFragment.getBuddyDbId(position);
+        chatFragment.setBuddyDbId(buddyDbId);
+        String nick = chatDialogsFragment.getBuddyNick(position);
+        setTitle(nick);
     }
 
-    private boolean readVisibleMessages() {
-        int firstVisiblePosition = chatList.getFirstVisiblePosition();
-        int lastVisiblePosition = chatList.getLastVisiblePosition();
-        Log.d(Settings.LOG_TAG, "Reading visible messages ["
-                + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-        // Checking for the list view is ready.
-        if(lastVisiblePosition >= firstVisiblePosition) {
-            try {
-                QueryHelper.readMessages(getContentResolver(),
-                        chatHistoryAdapter.getBuddyDbId(),
-                        chatHistoryAdapter.getMessageDbId(firstVisiblePosition),
-                        chatHistoryAdapter.getMessageDbId(lastVisiblePosition));
-                return true;
-            } catch (MessageNotFoundException ignored) {
-                Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
-                        + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-            }
-        }
-        return false;
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mHelper.onPostCreate(savedInstanceState);
     }
 
-    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
-
-        private SelectionHelper selectionHelper;
-
-        @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged(position, id, checked);
-            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper();
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            inflater.inflate(R.menu.chat_history_edit_menu, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;  // Return false if nothing is done.
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.message_copy:
-                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", getSelectedMessages()));
-                    break;
-                case R.id.message_share:
-                    startActivity(createShareIntent());
-                    break;
-                case R.id.message_create_note:
-                    break;
-                default:
-                    return false;
-            }
-            mode.finish();
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.clearSelection();
-        }
-
-        private String getSelectedMessages() {
-            StringBuilder selectionBuilder = new StringBuilder();
-            // Obtain selected positions.
-            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
-            // Iterating for all selected positions.
-            for (int position : selectedPositions) {
-                try {
-                    selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
-                } catch (MessageNotFoundException ignored) {
-                    Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
-                }
-            }
-            return selectionBuilder.toString().trim();
-        }
-
-        private Intent createShareIntent() {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
-            return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
-        }
+    @Override
+    public View findViewById(int id) {
+        View v = super.findViewById(id);
+        if (v != null)
+            return v;
+        return mHelper.findViewById(id);
     }
 
-    private class ChatScrollListener implements AbsListView.OnScrollListener {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mHelper.onSaveInstanceState(outState);
+    }
 
-        private int startFirstVisiblePosition, startLastVisiblePosition;
+    @Override
+    public void setContentView(int id) {
+        setContentView(getLayoutInflater().inflate(id, null));
+    }
 
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-            int firstVisiblePosition = view.getFirstVisiblePosition();
-            int lastVisiblePosition = view.getLastVisiblePosition();
-            switch (scrollState) {
-                case SCROLL_STATE_TOUCH_SCROLL: {
-                    // Scroll stared.
-                    startFirstVisiblePosition = firstVisiblePosition;
-                    startLastVisiblePosition = lastVisiblePosition;
-                    break;
-                }
-                case SCROLL_STATE_IDLE: {
-                    // Scroll ended.
-                    int firstPosition;
-                    int lastPosition;
-                    if(firstVisiblePosition > startFirstVisiblePosition) {
-                        // Scroll to bottom.
-                        firstPosition = startFirstVisiblePosition;
-                        lastPosition = lastVisiblePosition;
-                    } else {
-                        // Scroll to top.
-                        firstPosition = firstVisiblePosition;
-                        lastPosition = startLastVisiblePosition;
-                    }
-                    Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
-                    try {
-                        QueryHelper.readMessages(getContentResolver(),
-                                chatHistoryAdapter.getBuddyDbId(),
-                                chatHistoryAdapter.getMessageDbId(firstPosition),
-                                chatHistoryAdapter.getMessageDbId(lastPosition));
-                    } catch (MessageNotFoundException ignored) {
-                        Log.d(Settings.LOG_TAG, "Error while marking messages as read");
-                    }
-                    break;
-                }
-            }
-        }
+    /* (non-Javadoc)
+     * @see android.app.Activity#setContentView(android.view.View)
+     */
+    @Override
+    public void setContentView(View v) {
+        setContentView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
 
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        }
+    /* (non-Javadoc)
+     * @see android.app.Activity#setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+     */
+    @Override
+    public void setContentView(View v, ViewGroup.LayoutParams params) {
+        super.setContentView(v, params);
+        mHelper.registerAboveContentView(v, params);
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(int)
+     */
+    public void setBehindContentView(int id) {
+        setBehindContentView(getLayoutInflater().inflate(id, null));
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(android.view.View)
+     */
+    public void setBehindContentView(View v) {
+        setBehindContentView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(android.view.View, android.view.ViewGroup.LayoutParams)
+     */
+    public void setBehindContentView(View v, ViewGroup.LayoutParams params) {
+        mHelper.setBehindContentView(v, params);
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#getSlidingMenu()
+     */
+    public SlidingMenu getSlidingMenu() {
+        return mHelper.getSlidingMenu();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#toggle()
+     */
+    public void toggle() {
+        mHelper.toggle();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showAbove()
+     */
+    public void showContent() {
+        mHelper.showContent();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showBehind()
+     */
+    public void showMenu() {
+        mHelper.showMenu();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showSecondaryMenu()
+     */
+    public void showSecondaryMenu() {
+        mHelper.showSecondaryMenu();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setSlidingActionBarEnabled(boolean)
+     */
+    public void setSlidingActionBarEnabled(boolean b) {
+        mHelper.setSlidingActionBarEnabled(b);
+    }
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onKeyUp(int, android.view.KeyEvent)
+     */
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        boolean b = mHelper.onKeyUp(keyCode, event);
+        if (b) return b;
+        return super.onKeyUp(keyCode, event);
     }
 }

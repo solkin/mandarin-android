@@ -52,6 +52,8 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         getSlidingMenu().setSlidingEnabled(true);
         getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 
+        setSlidingActionBarEnabled(false);
+
         handler = new Handler();
     }
 
@@ -189,7 +191,6 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         sm.setShadowDrawable(R.drawable.shadow);
         sm.setBehindScrollScale(0.25f);
         sm.setFadeDegree(0.25f);
-
     }
 
     @Override

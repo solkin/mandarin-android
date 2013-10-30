@@ -17,8 +17,8 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.ChatListView;
+import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
@@ -33,37 +33,24 @@ import java.util.Collection;
  */
 public class ChatFragment extends Fragment {
 
-    //TODO: buddyDbId есть еще и в адаптере, может оставить только один?
-    private int buddyDbId;
-
-    public ChatHistoryAdapter chatHistoryAdapter;
+    private ChatHistoryAdapter chatHistoryAdapter;
     private ChatListView chatList;
 
-    private ChatActivity chatActivity;
+    private ChiefActivity activity;
 
-    public ChatFragment(ChatActivity activity, int pos){
-        buddyDbId = pos;
-        chatActivity = activity;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            buddyDbId = savedInstanceState.getInt("position");
-        }
-        super.onCreate(savedInstanceState);
+    public ChatFragment(ChiefActivity activity, int buddyDbId){
+        this.activity = activity;
+        chatHistoryAdapter = new ChatHistoryAdapter(this.activity, this.activity.getLoaderManager(), buddyDbId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return chatActivity.getLayoutInflater().inflate(R.layout.chat_fragment, null);
+        return activity.getLayoutInflater().inflate(R.layout.chat_fragment, null);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        chatHistoryAdapter = new ChatHistoryAdapter(chatActivity, getLoaderManager(), buddyDbId);
 
         chatList = (ChatListView) getActivity().findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
@@ -74,16 +61,16 @@ public class ChatFragment extends Fragment {
             public void onDataChanged() {
                 try {
                     readVisibleMessages();
-                } catch (IllegalStateException exception) {
-                    // onDataChanged вызывается раньше onLoadFinished. Поэтому метод пытается работать с уже закрытым курсором
+                } catch (RuntimeException exception) {
+                    // onDataChanged вызывается раньше onLoadFinished. Поэтому метод пытается работать с уже закрытым курсором.
                     Log.d(Settings.LOG_TAG, "Error while marking messages as read positions. " + exception.getMessage());
                 }
             }
         });
 
         // Send button and message field initialization.
-        ImageButton sendButton = (ImageButton) chatActivity.findViewById(R.id.send_button);
-        final TextView messageText = (TextView) chatActivity.findViewById(R.id.message_text);
+        ImageButton sendButton = (ImageButton) activity.findViewById(R.id.send_button);
+        final TextView messageText = (TextView) activity.findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,11 +79,11 @@ public class ChatFragment extends Fragment {
                     try {
                         int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                         String cookie = String.valueOf(System.currentTimeMillis());
-                        String appSession = chatActivity.getServiceInteraction().getAppSession();
-                        QueryHelper.insertMessage(chatActivity.getContentResolver(), buddyDbId, 2, // TODO: real message type
+                        String appSession = activity.getServiceInteraction().getAppSession();
+                        QueryHelper.insertMessage(activity.getContentResolver(), buddyDbId, 2, // TODO: real message type
                                 cookie, message, false);
                         // Sending protocol message request.
-                        RequestHelper.requestMessage(chatActivity.getContentResolver(), appSession,
+                        RequestHelper.requestMessage(activity.getContentResolver(), appSession,
                                 buddyDbId, cookie, message);
                         // Clearing text view.
                         messageText.setText("");
@@ -107,12 +94,6 @@ public class ChatFragment extends Fragment {
                 }
             }
         });
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("position", buddyDbId);
     }
 
     private boolean readVisibleMessages() {
@@ -136,16 +117,12 @@ public class ChatFragment extends Fragment {
         return false;
     }
 
-    public void selectItem(int buddyDbId){
+    public void selectItem(int buddyDbId) {
         chatHistoryAdapter.setBuddyDbId(buddyDbId);
     }
 
-    public void setBuddyDbId(int buddyDbId) {
-        this.buddyDbId = buddyDbId;
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
-    }
     public int getBuddyDbId() {
-        return buddyDbId;
+        return chatHistoryAdapter.getBuddyDbId();
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {

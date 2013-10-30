@@ -6,11 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
+import android.os.Handler;
 import android.util.Log;
 import android.view.*;
-import android.widget.ListView;
+import android.widget.AdapterView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
@@ -20,8 +19,6 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
-import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.fragments.ChatDialogsFragment;
 import com.tomclaw.mandarin.main.fragments.ChatFragment;
 
@@ -33,34 +30,29 @@ import com.tomclaw.mandarin.main.fragments.ChatFragment;
  */
 public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
 
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
-    private ActionBarDrawerToggle drawerToggle;
     private CharSequence title;
-
-    private ChatListView chatList;
-
-    private ChatDialogsAdapter chatDialogsAdapter;
-    private ChatHistoryAdapter chatHistoryAdapter;
 
     private ChatDialogsFragment chatDialogsFragment;
     private ChatFragment chatFragment;
 
-    private SlidingActivityHelper mHelper;
+    private SlidingActivityHelper slidingActivityHelper;
+    private Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // Логика SlideActivityBase завязана на mHelper. Его нужно создать самым первым, так как он вызывается во всех переопределенных методах.
-        mHelper = new SlidingActivityHelper(this);
+        // Логика SlideActivityBase завязана на slidingActivityHelper. Его нужно создать самым первым, так как он вызывается во всех переопределенных методах.
+        slidingActivityHelper = new SlidingActivityHelper(this);
 
         super.onCreate(savedInstanceState);
-        mHelper.onCreate(savedInstanceState);
+        slidingActivityHelper.onCreate(savedInstanceState);
 
         setContentView(R.layout.content_frame);
         setBehindContentView(R.layout.menu_frame);
 
         getSlidingMenu().setSlidingEnabled(true);
         getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+
+        handler = new Handler();
     }
 
     @Override
@@ -83,7 +75,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
             }
             case R.id.close_chat_menu: {
                 try {
-                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                    QueryHelper.modifyDialog(getContentResolver(), chatFragment.getBuddyDbId(), false);
                 } catch (Exception ignored) {
                     // Nothing to do in this case.
                 }
@@ -97,7 +89,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
-                            QueryHelper.clearHistory(getContentResolver(), chatHistoryAdapter.getBuddyDbId());
+                            QueryHelper.clearHistory(getContentResolver(), chatFragment.getBuddyDbId());
                         } catch (Exception ignored) {
                             // Nothing to do in this case.
                         }
@@ -121,7 +113,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        //chatHistoryAdapter.setBuddyDbId(buddyDbId);
+        chatFragment.selectItem(buddyDbId);
     }
 
     @Override
@@ -143,9 +135,6 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         chatFragment = new ChatFragment(this, buddyDbId);
         chatDialogsFragment = new ChatDialogsFragment(this);
 
-        //chatHistoryAdapter = chatFragment.chatHistoryAdapter;
-
-        //chatDialogsAdapter = chatDialogsFragment.chatDialogsAdapter;
         chatDialogsFragment.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -175,6 +164,21 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
             }
         });
 
+        chatDialogsFragment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+                // Задержка для того, чтобы дать возможность перезагрузить контент в чате, иначе переключение будет с рывком
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSlidingMenu().showContent();
+                    }
+                }, 50);
+
+            }
+        });
+
         getFragmentManager().beginTransaction().replace(R.id.menu_frame, chatDialogsFragment).commit();
         getFragmentManager().beginTransaction().replace(R.id.content_frame, chatFragment).commit();
 
@@ -185,42 +189,6 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         sm.setShadowDrawable(R.drawable.shadow);
         sm.setBehindScrollScale(0.25f);
         sm.setFadeDegree(0.25f);
-
-        /*drawerList = (ListView) findViewById(R.id.left_drawer);
-        drawerList.setAdapter(chatDialogsAdapter);
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
-                R.string.drawer_open, R.string.drawer_close) {
-
-            @Override
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(title);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(R.string.dialogs);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                super.onDrawerStateChanged(newState);
-                if(newState == DrawerLayout.STATE_SETTLING
-                        || newState == DrawerLayout.STATE_DRAGGING) {
-                    int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
-                    drawerList.setItemChecked(position, true);
-                }
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();*/
-
 
     }
 
@@ -265,7 +233,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     public void selectItem(int position) {
         // Changing chat history adapter loader.
         int buddyDbId = chatDialogsFragment.getBuddyDbId(position);
-        chatFragment.setBuddyDbId(buddyDbId);
+        chatFragment.selectItem(buddyDbId);
         String nick = chatDialogsFragment.getBuddyNick(position);
         setTitle(nick);
     }
@@ -273,7 +241,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mHelper.onPostCreate(savedInstanceState);
+        slidingActivityHelper.onPostCreate(savedInstanceState);
     }
 
     @Override
@@ -281,13 +249,13 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         View v = super.findViewById(id);
         if (v != null)
             return v;
-        return mHelper.findViewById(id);
+        return slidingActivityHelper.findViewById(id);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mHelper.onSaveInstanceState(outState);
+        slidingActivityHelper.onSaveInstanceState(outState);
     }
 
     @Override
@@ -309,7 +277,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     @Override
     public void setContentView(View v, ViewGroup.LayoutParams params) {
         super.setContentView(v, params);
-        mHelper.registerAboveContentView(v, params);
+        slidingActivityHelper.registerAboveContentView(v, params);
     }
 
     /* (non-Javadoc)
@@ -330,49 +298,49 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(android.view.View, android.view.ViewGroup.LayoutParams)
      */
     public void setBehindContentView(View v, ViewGroup.LayoutParams params) {
-        mHelper.setBehindContentView(v, params);
+        slidingActivityHelper.setBehindContentView(v, params);
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#getSlidingMenu()
      */
     public SlidingMenu getSlidingMenu() {
-        return mHelper.getSlidingMenu();
+        return slidingActivityHelper.getSlidingMenu();
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#toggle()
      */
     public void toggle() {
-        mHelper.toggle();
+        slidingActivityHelper.toggle();
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showAbove()
      */
     public void showContent() {
-        mHelper.showContent();
+        slidingActivityHelper.showContent();
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showBehind()
      */
     public void showMenu() {
-        mHelper.showMenu();
+        slidingActivityHelper.showMenu();
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showSecondaryMenu()
      */
     public void showSecondaryMenu() {
-        mHelper.showSecondaryMenu();
+        slidingActivityHelper.showSecondaryMenu();
     }
 
     /* (non-Javadoc)
      * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setSlidingActionBarEnabled(boolean)
      */
     public void setSlidingActionBarEnabled(boolean b) {
-        mHelper.setSlidingActionBarEnabled(b);
+        slidingActivityHelper.setSlidingActionBarEnabled(b);
     }
 
     /* (non-Javadoc)
@@ -380,7 +348,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
      */
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        boolean b = mHelper.onKeyUp(keyCode, event);
+        boolean b = slidingActivityHelper.onKeyUp(keyCode, event);
         if (b) return b;
         return super.onKeyUp(keyCode, event);
     }

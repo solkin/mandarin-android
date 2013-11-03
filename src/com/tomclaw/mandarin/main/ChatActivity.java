@@ -37,6 +37,9 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
 
     private SlidingActivityHelper slidingActivityHelper;
     private Handler handler;
+    private boolean slidingModeOn;
+
+    private Bundle lastSavedInstanceState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,15 +49,10 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         super.onCreate(savedInstanceState);
         slidingActivityHelper.onCreate(savedInstanceState);
 
-        setContentView(R.layout.content_frame);
-        setBehindContentView(R.layout.menu_frame);
-
-        getSlidingMenu().setSlidingEnabled(true);
-        getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-
-        setSlidingActionBarEnabled(false);
-
         handler = new Handler();
+
+        // Сохраняем состояние для того, чтобы передать его в onPostCreate, который вызывается в конце onCoreServiceReady.
+        lastSavedInstanceState = savedInstanceState;
     }
 
     @Override
@@ -72,7 +70,8 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                //drawerToggle.onOptionsItemSelected(item);
+                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                startActivity(mainActivityIntent);
                 return true;
             }
             case R.id.close_chat_menu: {
@@ -122,12 +121,31 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
 
+        setContentView(R.layout.responsive_content_frame);
+
+        if (findViewById(R.id.menu_frame) == null) {
+            // this case when activity view contains only content frame
+            setBehindContentView(R.layout.menu_frame);
+            getSlidingMenu().setSlidingEnabled(true);
+            getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+
+            slidingModeOn = true;
+        } else {
+            // add a dummy view
+            View v = new View(this);
+            setBehindContentView(v);
+            getSlidingMenu().setSlidingEnabled(false);
+            getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+
+            slidingModeOn = false;
+        }
+
         // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
         bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         int buddyDbId = getIntentBuddyDbId(getIntent());
@@ -169,15 +187,16 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         chatDialogsFragment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-                // Задержка для того, чтобы дать возможность перезагрузить контент в чате, иначе переключение будет с рывком
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getSlidingMenu().showContent();
-                    }
-                }, 50);
-
+                selectItem(position);               
+                if (slidingModeOn) {
+                    // Задержка для того, чтобы дать возможность перезагрузить контент в чате, иначе переключение будет с рывком
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSlidingMenu().showContent();
+                        }
+                    }, 50);
+                }
             }
         });
 
@@ -191,6 +210,10 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         sm.setShadowDrawable(R.drawable.shadow);
         sm.setBehindScrollScale(0.25f);
         sm.setFadeDegree(0.25f);
+
+        // Пердполагается что этот метод должен вызываться в onPostCreate. Но у нас немного измененная архитектура.
+        // Создание интерфейса заканчивается в onCoreServiceReady, а не в onCreate. Поэтому вызываем именно здесь.
+        slidingActivityHelper.onPostCreate(lastSavedInstanceState);
     }
 
     @Override
@@ -234,15 +257,9 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     public void selectItem(int position) {
         // Changing chat history adapter loader.
         int buddyDbId = chatDialogsFragment.getBuddyDbId(position);
-        chatFragment.selectItem(buddyDbId);
         String nick = chatDialogsFragment.getBuddyNick(position);
         setTitle(nick);
-    }
-
-    @Override
-    public void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        slidingActivityHelper.onPostCreate(savedInstanceState);
+        chatFragment.selectItem(buddyDbId);
     }
 
     @Override

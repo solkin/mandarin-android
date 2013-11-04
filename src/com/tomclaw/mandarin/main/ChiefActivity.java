@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.ExceptionHandler;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
@@ -33,6 +34,9 @@ public abstract class ChiefActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "onCreate");
+        // Release all reports.
+        ((ExceptionHandler) Thread.getDefaultUncaughtExceptionHandler()).releaseReports();
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.progress);

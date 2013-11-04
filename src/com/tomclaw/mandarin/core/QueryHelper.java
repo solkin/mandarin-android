@@ -187,6 +187,10 @@ public class QueryHelper {
                 removeBuilder.recycle();
                 removeBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
                 removeBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+                // Removing all pending requests.
+                removeBuilder.recycle();
+                removeBuilder.columnEquals(GlobalProvider.REQUEST_ACCOUNT, accountDbId);
+                removeBuilder.delete(contentResolver, Settings.REQUEST_RESOLVER_URI);
             } while (cursor.moveToNext());
         }
         // Closing cursor.

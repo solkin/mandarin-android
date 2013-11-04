@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.util;
 
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 
 import java.util.HashMap;
@@ -24,13 +25,38 @@ public class StatusUtil {
     public static int STATUS_BUSY = 0x08;
 
     private static Map<String, int[]> statuses;
+    private static Map<String, Integer[]> connectStatuses;
+    private static int[] statusStrings;
 
     static {
         statuses = new HashMap<String, int[]>();
-        statuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getStatusResources());
+        statuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getStatusDrawables());
+
+        connectStatuses = new HashMap<String, Integer[]>();
+        connectStatuses.put(IcqAccountRoot.class.getName(), IcqAccountRoot.getConnectStatuses());
+
+        statusStrings = new int[] {
+                R.string.status_offline,
+                R.string.status_mobile,
+                R.string.status_online,
+                R.string.status_invisible,
+                R.string.status_chat,
+                R.string.status_away,
+                R.string.status_dnd,
+                R.string.status_na,
+                R.string.status_busy
+        };
     }
 
     public static int getStatusResource(String accountType, int statusIndex) {
         return statuses.get(accountType)[statusIndex];
+    }
+
+    public static Integer[] getConnectStatuses(String accountType) {
+        return connectStatuses.get(accountType);
+    }
+
+    public static int getStatusTitle(int statusIndex) {
+        return statusStrings[statusIndex];
     }
 }

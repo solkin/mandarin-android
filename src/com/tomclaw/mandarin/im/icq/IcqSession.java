@@ -149,7 +149,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, "1209600"));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair(VIEW, "mobile"));
+            nameValuePairs.add(new BasicNameValuePair(VIEW, IcqStatusUtil.getStatusView(icqAccountRoot.getStatusIndex())));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
                     .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
@@ -186,23 +186,6 @@ public class IcqSession {
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "start session exception: " + e.getMessage());
             return INTERNAL_ERROR;
-        }
-    }
-
-    public void endSession(String aimSid) {
-        try {
-            // Create a new HttpClient and Post Header
-            HttpPost httpPost = new HttpPost(END_SESSION_URL);
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair(AIM_SID, aimSid));
-            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            // Execute HTTP Post Request
-            HttpResponse response = httpClient.execute(httpPost);
-            Log.d(Settings.LOG_TAG, "end session = " + EntityUtils.toString(response.getEntity()));
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "end session exception: " + e.getMessage());
         }
     }
 

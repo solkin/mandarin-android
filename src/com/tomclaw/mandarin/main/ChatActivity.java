@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.WallpaperManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
@@ -18,10 +17,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
@@ -305,25 +301,28 @@ public class ChatActivity extends ChiefActivity {
         drawerLayout.closeDrawer(drawerList);
     }
 
-    private boolean readVisibleMessages() {
-        int firstVisiblePosition = chatList.getFirstVisiblePosition();
-        int lastVisiblePosition = chatList.getLastVisiblePosition();
+    private void readVisibleMessages() {
+        final int firstVisiblePosition = chatList.getFirstVisiblePosition();
+        final int lastVisiblePosition = chatList.getLastVisiblePosition();
         Log.d(Settings.LOG_TAG, "Reading visible messages ["
                 + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
         if(lastVisiblePosition >= firstVisiblePosition) {
+            final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             try {
-                QueryHelper.readMessages(getContentResolver(),
-                        chatHistoryAdapter.getBuddyDbId(),
-                        chatHistoryAdapter.getMessageDbId(firstVisiblePosition),
-                        chatHistoryAdapter.getMessageDbId(lastVisiblePosition));
-                return true;
+                final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
+                final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
+                TaskExecutor.getInstance().execute(new Task() {
+                    @Override
+                    public void execute() throws MessageNotFoundException {
+                        QueryHelper.readMessages(getContentResolver(), buddyDbId, firstMessageDbId, lastMessageDbId);
+                    }
+                });
             } catch (MessageNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
             }
         }
-        return false;
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {

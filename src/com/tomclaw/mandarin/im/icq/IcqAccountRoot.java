@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.StatusUtil;
@@ -100,7 +102,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void disconnect() {
-        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+        RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
     }
 
     public void updateStatus(int statusIndex) {
@@ -112,8 +114,8 @@ public class IcqAccountRoot extends AccountRoot {
         return getClass().getName();
     }
 
-    public static int[] getStatusResources() {
-        return new int[]{
+    public static int[] getStatusDrawables() {
+        return new int[] {
                 R.drawable.status_icq_offline,
                 R.drawable.status_icq_mobile,
                 R.drawable.status_icq_online,
@@ -123,6 +125,14 @@ public class IcqAccountRoot extends AccountRoot {
                 R.drawable.status_icq_dnd,
                 R.drawable.status_icq_na,
                 R.drawable.status_icq_busy
+        };
+    }
+
+    public static Integer[] getConnectStatuses() {
+        return new Integer[] {
+                StatusUtil.STATUS_MOBILE,
+                StatusUtil.STATUS_BUSY,
+                StatusUtil.STATUS_INVISIBLE
         };
     }
 

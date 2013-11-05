@@ -211,6 +211,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         sm.setBehindScrollScale(0.25f);
         sm.setFadeDegree(0.25f);
 
+        setSlidingActionBarEnabled(false);
         // Пердполагается что этот метод должен вызываться в onPostCreate. Но у нас немного измененная архитектура.
         // Создание интерфейса заканчивается в onCoreServiceReady, а не в onCreate. Поэтому вызываем именно здесь.
         slidingActivityHelper.onPostCreate(lastSavedInstanceState);

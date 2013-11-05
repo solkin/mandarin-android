@@ -81,14 +81,17 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     public void setBuddyDbId(int buddyDbId) {
-        if (buddyDbId >= 0) {
-            this.buddyDbId = buddyDbId;
-            if (getCursor() == null) {
-                loaderManager.initLoader(buddyDbId, null, this);
-            } else {
-                loaderManager.restartLoader(buddyDbId, null, this);
+        if(buddyDbId >= 0) {
+            // Checking for there was opened cursor.
+            if(getCursor() != null) {
+                getCursor().close();
             }
+            // Destroy current loader.
+            loaderManager.destroyLoader(buddyDbId);
         }
+        this.buddyDbId = buddyDbId;
+        // Initialize loader for adapter Id.
+        loaderManager.initLoader(buddyDbId, null, this);
     }
 
     public int getBuddyDbId() {

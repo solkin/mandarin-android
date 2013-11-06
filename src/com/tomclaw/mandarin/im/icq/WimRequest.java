@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Request;
+import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -12,12 +13,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +26,7 @@ public abstract class WimRequest extends Request<IcqAccountRoot> {
     protected static final transient int WIM_OK = 200;
     protected static final transient int WIM_AUTH_REQUIRED = 401;
 
-    // One ttp client for all Wim requests, cause they invokes coherently.
+    // One http client for all Wim requests, cause they invokes coherently.
     private static final transient HttpClient httpClient;
 
     static {
@@ -42,11 +38,11 @@ public abstract class WimRequest extends Request<IcqAccountRoot> {
         try {
             // Obtain request-specific url.
             String url = getUrl();
-            String parameters = prepareParameters(getParams());
+            String parameters = HttpUtil.prepareParameters(getParams());
             Log.d(Settings.LOG_TAG, "try to send request to ".concat(url)
-                    .concat(" with parameters: ").concat(parameters));
+                    .concat(" with parameters: ").concat(WimConstants.QUE).concat(parameters));
 
-            HttpGet httpGet = new HttpGet(url.concat(parameters));
+            HttpGet httpGet = new HttpGet(url.concat(WimConstants.QUE).concat(parameters));
             HttpResponse response = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
@@ -71,28 +67,4 @@ public abstract class WimRequest extends Request<IcqAccountRoot> {
      * @return List of Get parameters.
      */
     public abstract List<Pair<String, String>> getParams();
-
-    /**
-     * Builds Url request string from specified parameters.
-     * @param pairs
-     * @return String - Url request parameters.
-     * @throws UnsupportedEncodingException
-     */
-    public static String prepareParameters(List<Pair<String, String>> pairs)
-            throws UnsupportedEncodingException {
-        StringBuilder builder = new StringBuilder();
-        // Perform pair concatenation.
-        for (Pair<String, String> pair : pairs) {
-            if (builder.length() == 0) {
-                builder.append(WimConstants.QUE);
-            } else {
-                builder.append(WimConstants.AMP);
-            }
-            builder.append(pair.first)
-                    .append(WimConstants.EQUAL)
-                    .append(URLEncoder.encode(pair.second, "UTF-8")
-                            .replace("+", "%20"));
-        }
-        return builder.toString();
-    }
 }

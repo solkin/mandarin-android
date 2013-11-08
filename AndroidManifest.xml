@@ -12,7 +12,7 @@
                  android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin">
         <service android:name=".core.CoreService" android:process=":remote"/>
         <activity android:name=".main.MainActivity"
-                  android:label="@string/app_name"
+                  android:label="@string/dialogs"
                   android:windowActionBarOverlay="true"
                   android:launchMode="singleTask"
                   android:configChanges="orientation|screenSize">

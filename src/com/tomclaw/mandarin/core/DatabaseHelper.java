@@ -91,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 1);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 4);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, messageType == 1 ? 1 : 0);

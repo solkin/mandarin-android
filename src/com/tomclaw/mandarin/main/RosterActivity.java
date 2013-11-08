@@ -73,6 +73,7 @@ public class RosterActivity extends ChiefActivity {
                     Intent intent = new Intent(RosterActivity.this, ChatActivity.class);
                     intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                     startActivity(intent);
+                    finish();
                 } catch (Exception e) {
                     // Nothing to do in this case.
                 }

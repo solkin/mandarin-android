@@ -205,12 +205,6 @@ public class QueryHelper {
         modifyBuddy(contentResolver, buddyDbId, contentValues);
     }
 
-    public static void modifyFavorite(ContentResolver contentResolver, int buddyDbId, boolean isFavorite) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite ? 1 : 0);
-        modifyBuddy(contentResolver, buddyDbId, contentValues);
-    }
-
     public static boolean checkDialog(ContentResolver contentResolver, int buddyDbId) {
         boolean dialogFlag = false;
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -409,7 +403,6 @@ public class QueryHelper {
         // buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupDbId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
-        buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -420,10 +413,8 @@ public class QueryHelper {
         if (buddyCursor.moveToFirst()) {
             long buddyDbId = buddyCursor.getLong(buddyCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
             int buddyDialogFlag = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG));
-            int buddyFavorite = buddyCursor.getInt(buddyCursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_FAVORITE));
             // Update dialog and favorite flags.
             buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag);
-            buddyValues.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, buddyFavorite);
             // Update this row.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);

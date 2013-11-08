@@ -74,7 +74,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
                         boolean isDialog = (random.nextInt(10) == 1);
-                        boolean isFavorite = (random.nextInt(20) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
@@ -82,7 +81,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_FAVORITE, isFavorite);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
@@ -96,7 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 1);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, messageType == 1 ? 0 : 1);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, messageType == 1 ? 1 : 0);
                                 cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);

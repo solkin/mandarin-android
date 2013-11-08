@@ -15,6 +15,7 @@
     <string name="add_buddy">Add buddy</string>
     <string name="display_options">Display options</string>
     <string name="show_dialogs">Show dialogs</string>
+    <string name="create_dialog">Create dialog</string>
     <string name="settings">Settings</string>
     <string name="info">Info</string>
     <string name="feedback">Feedback</string>
@@ -24,6 +25,7 @@
     <string name="clear_history">Clear history</string>
     <string name="enter_your_message">Enter your message</string>
     <string name="error_bubble">Error loading message from database. Reinstall program to let this error left.</string>
+    <string name="select_buddy">Select buddy</string>
 
     <string name="status_offline">Offline</string>
     <string name="status_mobile">Mobile</string>

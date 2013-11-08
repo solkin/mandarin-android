@@ -7,10 +7,10 @@
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="com.actionbarsherlock.widget.SearchView"/>
     <item
-            android:id="@+id/add_buddy"
-            android:icon="@drawable/social_add_person"
-            android:showAsAction="ifRoom|collapseActionView"
-            android:title="@string/add_buddy"/>
+            android:id="@+id/create_dialog"
+            android:icon="@drawable/social_new_chat"
+            android:showAsAction="ifRoom"
+            android:title="@string/create_dialog"/>
     <item
             android:id="@+id/show_dialogs"
             android:icon="@drawable/social_chat"

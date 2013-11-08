@@ -3,33 +3,19 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.*;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends ChiefActivity implements ActionBar.OnNavigationListener {
-
-    private RosterPagerAdapter mAdapter;
-    private ViewPager mPager;
-    private List<View> pages = new ArrayList<View>();
-
+public class MainActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +34,7 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.buddy_list_menu, menu);
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Configure the search info and add any event listeners
         return true;
@@ -68,6 +54,11 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 startActivity(intent);
                 return true;
             }
+            case R.id.create_dialog: {
+                Intent intent = new Intent(this, RosterActivity.class);
+                startActivity(intent);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -75,41 +66,15 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     @Override
     public void onCoreServiceReady() {
-        Log.d(Settings.LOG_TAG, "onCoreServiceReady");
-        setContentView(R.layout.buddy_list);
+        setContentView(R.layout.main_activity);
+
         final ActionBar bar = getActionBar();
+        bar.setDisplayShowHomeEnabled(true);
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        bar.setDisplayShowHomeEnabled(false);
-        bar.setDisplayShowTitleEnabled(false);
-
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        pages.clear();
-        // Favorite.
-        final ListView favoriteList = new ListView(this);
-        final RosterFavoriteAdapter favoriteAdapter = new RosterFavoriteAdapter(this, getLoaderManager());
-        favoriteList.setAdapter(favoriteAdapter);
-        favoriteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = favoriteAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
-            }
-        });
-        pages.add(favoriteList);
-        // Dialogs.
-        final ListView dialogsList = new ListView(this);
+        // Dialogs list.
+        final ListView dialogsList = (ListView) findViewById(R.id.chats_list_view);
         final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
         dialogsList.setAdapter(dialogsAdapter);
         dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,111 +88,6 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
                 startActivity(intent);
             }
         });
-        pages.add(dialogsList);
-        // Online.
-        ListView onlineList = new ListView(this);
-        final RosterOnlineAdapter onlineAdapter = new RosterOnlineAdapter(this, getLoaderManager());
-        onlineList.setAdapter(onlineAdapter);
-        onlineList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = onlineAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    // Nothing to do in this case.
-                }
-            }
-        });
-        pages.add(onlineList);
-        // All friends.
-        StickyListHeadersListView generalList = new StickyListHeadersListView(this);
-        final RosterAlphabetAdapter generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager());
-        generalList.setAdapter(generalAdapter);
-        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    // Nothing to do in this case.
-                }
-            }
-        });
-        pages.add(generalList);
-        /** View pager **/
-        mAdapter = new RosterPagerAdapter(pages);
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
-        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i2) {
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                bar.selectTab(bar.getTabAt(i));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-            }
-        });
-
-        int[] icons = new int[]{R.drawable.rating_important, R.drawable.social_chat, R.drawable.social_person, R.drawable.social_group};
-        for (int i = 0; i < pages.size(); i++) {
-            ActionBar.Tab tab = getActionBar().newTab();
-            // tab.setText(getResources().getStringArray(R.array.default_groups)[i]);
-            Log.d(Settings.LOG_TAG, "icons["+i+"] = " + icons[i]);
-            tab.setIcon(icons[i]);
-            tab.setTabListener(new ActionBar.TabListener() {
-
-                @Override
-                public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-                    mPager.setCurrentItem(tab.getPosition());
-                }
-
-                @Override
-                public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-                }
-
-                @Override
-                public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-                }
-            });
-            bar.addTab(tab);
-        }
-
-        mPager.setCurrentItem(1);
-        /*new Thread() {
-            public void run() {
-                boolean isFavorite = false;
-                while(true) {
-                QueryHelper.modifyFavorite(MainActivity.this.getContentResolver(), 10, isFavorite);
-                    isFavorite = !isFavorite;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-            }
-        }.start();*/
     }
 
     @Override
@@ -237,47 +97,5 @@ public class MainActivity extends ChiefActivity implements ActionBar.OnNavigatio
 
     public void onCoreServiceIntent(Intent intent) {
         Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        Log.d(Settings.LOG_TAG, "selected: position = " + itemPosition + ", id = "
-                + itemId);
-        return false;
-    }
-
-    private class RosterPagerAdapter extends PagerAdapter {
-        private List<View> pages;
-
-        public RosterPagerAdapter(List<View> pages) {
-            this.pages = pages;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View page = pages.get(position);
-            container.addView(page);
-            return page;
-        }
-
-        @Override
-        public int getCount() {
-            return pages.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return getResources().getStringArray(R.array.default_groups)[position % getCount()];
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view.equals(object);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
     }
 }

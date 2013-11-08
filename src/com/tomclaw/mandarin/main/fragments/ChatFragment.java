@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -40,12 +41,12 @@ public class ChatFragment extends Fragment {
 
     public ChatFragment(ChiefActivity activity, int buddyDbId){
         this.activity = activity;
-        chatHistoryAdapter = new ChatHistoryAdapter(this.activity, this.activity.getLoaderManager(), buddyDbId);
+        chatHistoryAdapter = new ChatHistoryAdapter(activity, activity.getLoaderManager(), buddyDbId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return activity.getLayoutInflater().inflate(R.layout.chat_fragment, null);
+        return activity.getLayoutInflater().inflate(R.layout.chat_fragment, container, false);
     }
 
     @Override

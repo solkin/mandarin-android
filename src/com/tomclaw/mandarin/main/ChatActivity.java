@@ -6,13 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -28,31 +27,18 @@ import com.tomclaw.mandarin.main.fragments.ChatFragment;
  * Date: 5/5/13
  * Time: 11:49 PM
  */
-public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
+public class ChatActivity extends ChiefActivity {
 
     private CharSequence title;
 
     private ChatDialogsFragment chatDialogsFragment;
     private ChatFragment chatFragment;
 
-    private SlidingActivityHelper slidingActivityHelper;
-    private Handler handler;
-    private boolean slidingModeOn;
-
-    private Bundle lastSavedInstanceState;
+    private SlidingPaneLayout slidingPane;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // Логика SlideActivityBase завязана на slidingActivityHelper. Его нужно создать самым первым, так как он вызывается во всех переопределенных методах.
-        slidingActivityHelper = new SlidingActivityHelper(this);
-
         super.onCreate(savedInstanceState);
-        slidingActivityHelper.onCreate(savedInstanceState);
-
-        handler = new Handler();
-
-        // Сохраняем состояние для того, чтобы передать его в onPostCreate, который вызывается в конце onCoreServiceReady.
-        lastSavedInstanceState = savedInstanceState;
     }
 
     @Override
@@ -121,24 +107,9 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
     public void onCoreServiceReady() {
         Log.d(Settings.LOG_TAG, "onCoreServiceReady");
 
-        setContentView(R.layout.responsive_content_frame);
+        setContentView(R.layout.sliding_pane);
 
-        if (findViewById(R.id.menu_frame) == null) {
-            // this case when activity view contains only content frame
-            setBehindContentView(R.layout.menu_frame);
-            getSlidingMenu().setSlidingEnabled(true);
-            getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-
-            slidingModeOn = true;
-        } else {
-            // add a dummy view
-            View v = new View(this);
-            setBehindContentView(v);
-            getSlidingMenu().setSlidingEnabled(false);
-            getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
-
-            slidingModeOn = false;
-        }
+        slidingPane = (SlidingPaneLayout) findViewById(R.id.sliding_pane);
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
@@ -148,14 +119,7 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        int buddyDbId = getIntentBuddyDbId(getIntent());
-
-        setTitleByBuddyDbId(buddyDbId);
-
-        chatFragment = new ChatFragment(this, buddyDbId);
-        chatDialogsFragment = new ChatDialogsFragment(this);
-
-        chatDialogsFragment.registerDataSetObserver(new DataSetObserver() {
+        DataSetObserver dataSetObserver = new DataSetObserver() {
             @Override
             public void onChanged() {
                 // Checking for selection is invalid.
@@ -182,39 +146,25 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
                     }
                 }
             }
-        });
+        };
 
-        chatDialogsFragment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);               
-                if (slidingModeOn) {
-                    // Задержка для того, чтобы дать возможность перезагрузить контент в чате, иначе переключение будет с рывком
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getSlidingMenu().showContent();
-                        }
-                    }, 50);
-                }
+                selectItem(position);
+                slidingPane.closePane();
             }
-        });
+        };
 
-        getFragmentManager().beginTransaction().replace(R.id.menu_frame, chatDialogsFragment).commit();
-        getFragmentManager().beginTransaction().replace(R.id.content_frame, chatFragment).commit();
+        int buddyDbId = getIntentBuddyDbId(getIntent());
 
-        // customize the SlidingMenu
-        SlidingMenu sm = getSlidingMenu();
-        sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        sm.setShadowWidthRes(R.dimen.shadow_width);
-        sm.setShadowDrawable(R.drawable.shadow);
-        sm.setBehindScrollScale(0.25f);
-        sm.setFadeDegree(0.25f);
+        setTitleByBuddyDbId(buddyDbId);
 
-        setSlidingActionBarEnabled(false);
-        // Пердполагается что этот метод должен вызываться в onPostCreate. Но у нас немного измененная архитектура.
-        // Создание интерфейса заканчивается в onCoreServiceReady, а не в onCreate. Поэтому вызываем именно здесь.
-        slidingActivityHelper.onPostCreate(lastSavedInstanceState);
+        chatFragment = new ChatFragment(this, buddyDbId);
+        chatDialogsFragment = new ChatDialogsFragment(onItemClickListener, dataSetObserver);
+
+        getFragmentManager().beginTransaction().replace(R.id.left_pane, chatDialogsFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.right_pane, chatFragment).commit();
     }
 
     @Override
@@ -261,114 +211,5 @@ public class ChatActivity extends ChiefActivity implements SlidingActivityBase {
         String nick = chatDialogsFragment.getBuddyNick(position);
         setTitle(nick);
         chatFragment.selectItem(buddyDbId);
-    }
-
-    @Override
-    public View findViewById(int id) {
-        View v = super.findViewById(id);
-        if (v != null)
-            return v;
-        return slidingActivityHelper.findViewById(id);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        slidingActivityHelper.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void setContentView(int id) {
-        setContentView(getLayoutInflater().inflate(id, null));
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#setContentView(android.view.View)
-     */
-    @Override
-    public void setContentView(View v) {
-        setContentView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-     */
-    @Override
-    public void setContentView(View v, ViewGroup.LayoutParams params) {
-        super.setContentView(v, params);
-        slidingActivityHelper.registerAboveContentView(v, params);
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(int)
-     */
-    public void setBehindContentView(int id) {
-        setBehindContentView(getLayoutInflater().inflate(id, null));
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(android.view.View)
-     */
-    public void setBehindContentView(View v) {
-        setBehindContentView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setBehindContentView(android.view.View, android.view.ViewGroup.LayoutParams)
-     */
-    public void setBehindContentView(View v, ViewGroup.LayoutParams params) {
-        slidingActivityHelper.setBehindContentView(v, params);
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#getSlidingMenu()
-     */
-    public SlidingMenu getSlidingMenu() {
-        return slidingActivityHelper.getSlidingMenu();
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#toggle()
-     */
-    public void toggle() {
-        slidingActivityHelper.toggle();
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showAbove()
-     */
-    public void showContent() {
-        slidingActivityHelper.showContent();
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showBehind()
-     */
-    public void showMenu() {
-        slidingActivityHelper.showMenu();
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#showSecondaryMenu()
-     */
-    public void showSecondaryMenu() {
-        slidingActivityHelper.showSecondaryMenu();
-    }
-
-    /* (non-Javadoc)
-     * @see com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase#setSlidingActionBarEnabled(boolean)
-     */
-    public void setSlidingActionBarEnabled(boolean b) {
-        slidingActivityHelper.setSlidingActionBarEnabled(b);
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onKeyUp(int, android.view.KeyEvent)
-     */
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        boolean b = slidingActivityHelper.onKeyUp(keyCode, event);
-        if (b) return b;
-        return super.onKeyUp(keyCode, event);
     }
 }

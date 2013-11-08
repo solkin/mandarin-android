@@ -27,24 +27,34 @@ public class ChatDialogsFragment extends Fragment {
     private Activity activity;
 
     private AdapterView.OnItemClickListener onItemClickListener;
+    private DataSetObserver dataSetObserver;
 
-    public ChatDialogsFragment(Activity activity){
-        this.activity = activity;
-        chatDialogsAdapter = new ChatDialogsAdapter(this.activity, this.activity.getLoaderManager());
+    public ChatDialogsFragment(AdapterView.OnItemClickListener onItemClickListener, DataSetObserver dataSetObserver) {
+        this.onItemClickListener = onItemClickListener;
+        this.dataSetObserver = dataSetObserver;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return activity.getLayoutInflater().inflate(R.layout.chat_dialogs_list_fragment, null);
+        return getActivity().getLayoutInflater().inflate(R.layout.chat_dialogs_list_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        chatDialogsAdapter = new ChatDialogsAdapter(getActivity(), getActivity().getLoaderManager());
+        chatDialogsAdapter.registerDataSetObserver(dataSetObserver);
+
         dialogsList = (ListView) getActivity().findViewById(R.id.chat_dialogs_list);
         dialogsList.setAdapter(chatDialogsAdapter);
         dialogsList.setOnItemClickListener(onItemClickListener);
+
     }
 
     public int getBuddyDbId(int position) {
@@ -61,13 +71,5 @@ public class ChatDialogsFragment extends Fragment {
 
     public int getCount() {
         return chatDialogsAdapter.getCount();
-    }
-
-    public void registerDataSetObserver(DataSetObserver observer) {
-        chatDialogsAdapter.registerDataSetObserver(observer);
-    }
-
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
-        onItemClickListener = listener;
     }
 }

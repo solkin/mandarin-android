@@ -42,7 +42,7 @@
     <string name="group_online">Online</string>
     <string name="group_all">All friends</string>
 
-    <string name="error_no_such_account">Error! No such account.</string>
+    <string name="error_remove_account">Sorry, error while removing accounts.</string>
     <string name="recycle">Recycle</string>
     <string name="message_copy">Copy</string>
     <string name="message_save">Save message</string>

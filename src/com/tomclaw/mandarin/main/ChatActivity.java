@@ -379,8 +379,11 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            // Show error.
-            Toast.makeText(ChatActivity.this, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
+            Context context = getWeakContext().get();
+            if(context != null) {
+                // Show error.
+                Toast.makeText(context, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -388,14 +391,14 @@ public class ChatActivity extends ChiefActivity {
 
         private final int buddyDbId;
         private String message;
+        private final MessageCallback callback;
         private final WeakReference<ChiefActivity> weakActivity;
-        private final WeakReference<MessageCallback> weakCallback;
 
         public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
             this.buddyDbId = buddyDbId;
             this.message = message;
             this.weakActivity = new WeakReference<ChiefActivity>(activity);
-            this.weakCallback = new WeakReference<MessageCallback>(callback);
+            this.callback = callback;
         }
 
         @Override
@@ -415,10 +418,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onSuccessMain() {
-            MessageCallback messageCallback = weakCallback.get();
-            if(messageCallback != null) {
-                messageCallback.onSuccess();
-            }
+            callback.onSuccess();
         }
 
         @Override
@@ -428,10 +428,7 @@ public class ChatActivity extends ChiefActivity {
                 // Show error.
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
-            MessageCallback messageCallback = weakCallback.get();
-            if(messageCallback != null) {
-                messageCallback.onFailed();
-            }
+            callback.onFailed();
         }
     }
 

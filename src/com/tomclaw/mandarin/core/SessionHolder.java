@@ -35,8 +35,9 @@ public class SessionHolder {
 
     public void updateAccountRoot(AccountRoot accountRoot) {
         // Attempting to update account.
-        if (QueryHelper.updateAccount(context, accountRoot)) {
-            // Account was created.
+        if (!QueryHelper.updateAccount(context, accountRoot)) {
+            // Account needs to be created.
+            QueryHelper.insertAccount(context, accountRoot);
             accountRootList.add(accountRoot);
         }
     }

@@ -113,11 +113,16 @@ public class QueryHelper {
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
             queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            return false;
+            return true;
         }
         // Closing cursor.
         cursor.close();
-        // No matching account. Creating new account.
+        return false;
+    }
+
+    public static void insertAccount(Context context, AccountRoot accountRoot) {
+        ContentResolver contentResolver = context.getContentResolver();
+        // Creating new account.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
         contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
@@ -136,7 +141,6 @@ public class QueryHelper {
             // Hey, I'm inserted it 3 lines ago!
             Log.d(Settings.LOG_TAG, "updateAccount method: no accounts after inserting.");
         }
-        return true;
     }
 
     public static boolean updateAccountStatus(ContentResolver contentResolver, AccountRoot accountRoot) {

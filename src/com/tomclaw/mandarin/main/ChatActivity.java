@@ -148,15 +148,12 @@ public class ChatActivity extends ChiefActivity {
                         @Override
                         public void onSuccess() {
                             messageText.setText("");
-                            sendButton.setEnabled(true);
                         }
 
                         @Override
                         public void onFailed() {
-                            sendButton.setEnabled(true);
                         }
                     };
-                    sendButton.setEnabled(false);
                     TaskExecutor.getInstance().execute(
                             new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
                 }

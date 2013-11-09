@@ -2,10 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -24,6 +21,7 @@ import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -82,11 +80,9 @@ public class ChatActivity extends ChiefActivity {
                 builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            QueryHelper.clearHistory(getContentResolver(), chatHistoryAdapter.getBuddyDbId());
-                        } catch (Exception ignored) {
-                            // Nothing to do in this case.
-                        }
+                        ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
+                                chatHistoryAdapter.getBuddyDbId());
+                        TaskExecutor.getInstance().execute(clearHistoryTask);
                     }
                 });
                 builder.setNegativeButton(R.string.do_not_clear, null);
@@ -312,12 +308,8 @@ public class ChatActivity extends ChiefActivity {
             try {
                 final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
                 final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
-                TaskExecutor.getInstance().execute(new Task() {
-                    @Override
-                    public void execute() throws MessageNotFoundException {
-                        QueryHelper.readMessages(getContentResolver(), buddyDbId, firstMessageDbId, lastMessageDbId);
-                    }
-                });
+                TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+                        firstMessageDbId, lastMessageDbId));
             } catch (MessageNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
@@ -327,7 +319,7 @@ public class ChatActivity extends ChiefActivity {
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper selectionHelper;
+        private SelectionHelper<Integer, Long> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -338,7 +330,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper();
+            selectionHelper = new SelectionHelper<Integer, Long>();
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
@@ -427,13 +419,13 @@ public class ChatActivity extends ChiefActivity {
                         lastPosition = startLastVisiblePosition;
                     }
                     Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
+                    final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                     try {
-                        QueryHelper.readMessages(getContentResolver(),
-                                chatHistoryAdapter.getBuddyDbId(),
-                                chatHistoryAdapter.getMessageDbId(firstPosition),
-                                chatHistoryAdapter.getMessageDbId(lastPosition));
+                        final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
+                        final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastPosition);
+                        TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+                                firstMessageDbId, lastMessageDbId));
                     } catch (MessageNotFoundException ignored) {
-                        Log.d(Settings.LOG_TAG, "Error while marking messages as read");
                     }
                     break;
                 }
@@ -442,6 +434,52 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        }
+    }
+
+    private class ReadMessagesTask extends Task {
+
+        final WeakReference<ContentResolver> weakContentResolver;
+        final int buddyDbId;
+        final long firstMessageDbId;
+        final long lastMessageDbId;
+
+        public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
+                                long firstMessageDbId, long lastMessageDbId) {
+            this.weakContentResolver = new WeakReference<ContentResolver>(contentResolver);
+            this.buddyDbId = buddyDbId;
+            this.firstMessageDbId = firstMessageDbId;
+            this.lastMessageDbId = lastMessageDbId;
+        }
+
+        @Override
+        public void executeBackground() throws MessageNotFoundException {
+            ContentResolver contentResolver = weakContentResolver.get();
+            if(contentResolver != null) {
+                QueryHelper.readMessages(contentResolver,
+                        buddyDbId, firstMessageDbId, lastMessageDbId);
+            }
+        }
+    }
+
+    private class ClearHistoryTask extends PleaseWaitTask {
+
+        private final int buddyDbId;
+
+        public ClearHistoryTask(Context context, int buddyDbId) {
+            super(context);
+            this.buddyDbId = buddyDbId;
+        }
+
+        @Override
+        public void executeBackground() {
+            QueryHelper.clearHistory(getContentResolver(), buddyDbId);
+        }
+
+        @Override
+        public void onFailMain() {
+            // Show error.
+            Toast.makeText(ChatActivity.this, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
         }
     }
 }

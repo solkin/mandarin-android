@@ -11,14 +11,33 @@ public abstract class Task implements Runnable {
     @Override
     public void run() {
         try {
-            execute();
-            onSuccess();
+            executeBackground();
+            onSuccessBackground();
+            MainExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    onPostExecuteMain();
+                    onSuccessMain();
+                }
+            });
         } catch(Throwable ex) {
-            onFail();
+            ex.printStackTrace();
+            onFailBackground();
+            MainExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    onPostExecuteMain();
+                    onFailMain();
+                }
+            });
         }
     }
 
-    public abstract void execute() throws Throwable;
-    public void onSuccess() {}
-    public void onFail() {}
+    public void onPreExecuteMain() {}
+    public abstract void executeBackground() throws Throwable;
+    public void onPostExecuteMain() {}
+    public void onSuccessBackground() {}
+    public void onFailBackground() {}
+    public void onSuccessMain() {};
+    public void onFailMain() {}
 }

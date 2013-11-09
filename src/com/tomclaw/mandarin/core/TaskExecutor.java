@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.core;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,7 +33,13 @@ public class TaskExecutor {
         return Holder.instance;
     }
 
-    public void execute(Task task) {
-        mThreadPoolExecutor.execute(task);
+    public void execute(final Task task) {
+        MainExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.onPreExecuteMain();
+                mThreadPoolExecutor.execute(task);
+            }
+        });
     }
 }

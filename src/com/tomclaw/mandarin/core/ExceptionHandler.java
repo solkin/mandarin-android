@@ -95,8 +95,9 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     public void releaseReports() {
         Task task = new Task() {
+
             @Override
-            public void execute() throws Throwable {
+            public void executeBackground() throws Throwable {
                 Log.d(Settings.LOG_TAG, "Checking for unreleased reports...");
                 File[] reports = stacktraceDir.listFiles();
                 int total = reports.length;

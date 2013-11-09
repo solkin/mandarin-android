@@ -165,16 +165,14 @@ public class QueryHelper {
         return false;
     }
 
-    public static boolean removeAccount(ContentResolver contentResolver, String accountType, String userId) {
+    public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
-                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         // Obtain account db id.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
         // Cursor may have no more than only one entry. But lets check.
         if (cursor.moveToFirst()) {
             do {
-                long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 QueryBuilder removeBuilder = new QueryBuilder();
                 removeBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                 // Removing roster groups.

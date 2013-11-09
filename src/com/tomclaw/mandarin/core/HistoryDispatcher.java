@@ -174,11 +174,13 @@ public class HistoryDispatcher {
                     PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
                             new Intent(context, ChatActivity.class)
                                     .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
                     // Simply open chats list.
                     PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
-                            new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                            new Intent(context, MainActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                            PendingIntent.FLAG_CANCEL_CURRENT);
                     // Notification prepare.
                     Notification notification = new NotificationCompat.Builder(context)
                             .setContentTitle(title)

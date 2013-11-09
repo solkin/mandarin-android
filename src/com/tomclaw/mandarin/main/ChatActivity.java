@@ -94,12 +94,14 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatList.setAdapter(chatHistoryAdapter);
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

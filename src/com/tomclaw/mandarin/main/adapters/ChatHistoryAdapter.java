@@ -80,7 +80,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         SmileyParser.init(context);
     }
 
-    public void setBuddyDbId(int buddyDbId) {
+    private void setBuddyDbId(int buddyDbId) {
         if(buddyDbId >= 0) {
             // Destroy current loader.
             loaderManager.destroyLoader(buddyDbId);

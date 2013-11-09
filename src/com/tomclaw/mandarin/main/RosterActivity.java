@@ -35,13 +35,19 @@ public class RosterActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                onBackPressed();
                 return true;
             }
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override
@@ -68,8 +74,9 @@ public class RosterActivity extends ChiefActivity {
                     // Trying to open dialog with this buddy.
                     QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
                     // Open chat dialog for this buddy.
-                    Intent intent = new Intent(RosterActivity.this, ChatActivity.class);
-                    intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                    Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                     startActivity(intent);
                     finish();
                 } catch (Exception e) {

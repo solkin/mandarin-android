@@ -57,7 +57,8 @@ public class AccountsActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                Intent mainActivityIntent = new Intent(this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainActivityIntent);
                 return true;
             case R.id.add_account_menu:

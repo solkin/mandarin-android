@@ -76,10 +76,11 @@ public class MainActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                 int buddyDbId = dialogsAdapter.getBuddyDbId(position);
                 Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
-                intent.putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                Intent intent = new Intent(MainActivity.this, ChatActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                 startActivity(intent);
             }
         });

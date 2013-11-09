@@ -32,14 +32,7 @@ import java.util.Collection;
  */
 public class ChatActivity extends ChiefActivity {
 
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
-    private ActionBarDrawerToggle drawerToggle;
-    private CharSequence title;
-
     private ChatListView chatList;
-
-    private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
 
     @Override
@@ -62,7 +55,8 @@ public class ChatActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                drawerToggle.onOptionsItemSelected(item);
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
                 return true;
             }
             case R.id.close_chat_menu: {
@@ -137,71 +131,6 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
-        chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                // Checking for selection is invalid.
-                if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
-                    Log.d(Settings.LOG_TAG, "No selected item anymore.");
-                    // Checking for another opened chat.
-                    if(chatDialogsAdapter.getCount() > 0) {
-                        int moreActiveBuddyPosition;
-                        try {
-                            // Trying to obtain more active dialog position.
-                            moreActiveBuddyPosition = chatDialogsAdapter.getBuddyPosition(
-                                    QueryHelper.getMoreActiveDialog(getContentResolver()));
-                        } catch (BuddyNotFoundException ignored) {
-                            // Something really strange. No opened dialogs. So switch to first position.
-                            moreActiveBuddyPosition = 0;
-                        } catch (MessageNotFoundException ignored) {
-                            // No messages in all opened dialogs. So switch to first position.
-                            moreActiveBuddyPosition = 0;
-                        }
-                        selectItem(moreActiveBuddyPosition);
-                    } else {
-                        // No more content on this activity.
-                        finish();
-                    }
-                }
-            }
-        });
-
-        drawerList = (ListView) findViewById(R.id.left_drawer);
-        drawerList.setAdapter(chatDialogsAdapter);
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
-                R.string.drawer_open, R.string.drawer_close) {
-
-            @Override
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(title);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(R.string.dialogs);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                super.onDrawerStateChanged(newState);
-                if(newState == DrawerLayout.STATE_SETTLING
-                        || newState == DrawerLayout.STATE_DRAGGING) {
-                    int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
-                    drawerList.setItemChecked(position, true);
-                }
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
         // Send button and message field initialization.
         ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
@@ -256,45 +185,10 @@ public class ChatActivity extends ChiefActivity {
     private void setTitleByBuddyDbId(int buddyDbId) {
         try {
             // This will provide buddy nick by db id.
-            setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+            getActionBar().setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
         } catch (BuddyNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
         }
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        this.title = title;
-        getActionBar().setTitle(title);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (drawerToggle != null) {
-            // Pass any configuration change to the drawer toggles
-            drawerToggle.onConfigurationChanged(newConfig);
-        }
-    }
-
-    /**
-     * This list item click listener implements very simple view switching by
-     * changing the primary content text. The drawer is closed when a selection
-     * is made.
-     */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    private void selectItem(int position) {
-        // Changing chat history adapter loader.
-        int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
-        setTitle(chatDialogsAdapter.getBuddyNick(position));
-        drawerLayout.closeDrawer(drawerList);
     }
 
     private void readVisibleMessages() {

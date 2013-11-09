@@ -82,10 +82,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     public void setBuddyDbId(int buddyDbId) {
         if(buddyDbId >= 0) {
-            // Checking for there was opened cursor.
-            if(getCursor() != null) {
-                getCursor().close();
-            }
             // Destroy current loader.
             loaderManager.destroyLoader(buddyDbId);
         }

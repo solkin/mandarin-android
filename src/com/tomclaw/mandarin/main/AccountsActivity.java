@@ -232,8 +232,11 @@ public class AccountsActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            // Show error.
-            Toast.makeText(AccountsActivity.this, R.string.error_remove_account, Toast.LENGTH_LONG).show();
+            Context context = getWeakContext().get();
+            if(context != null) {
+                // Show error.
+                Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

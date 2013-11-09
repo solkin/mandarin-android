@@ -65,6 +65,7 @@
     <string name="do_not_remove">No</string>
     <string name="please_wait">Please, wait...</string>
     <string name="error_clearing_history">Sorry, error while clearing history.</string>
+    <string name="error_sending_message">Unable to send message!</string>
 
     <string-array name="default_groups">
         <item>@string/group_favorite</item>

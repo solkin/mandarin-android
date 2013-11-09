@@ -1,14 +1,11 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
-import android.content.res.Configuration;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
@@ -17,7 +14,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
@@ -60,6 +56,7 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
+
                 try {
                     QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
                 } catch (Exception ignored) {
@@ -132,28 +129,33 @@ public class ChatActivity extends ChiefActivity {
         });
 
         // Send button and message field initialization.
-        ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
+        final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = messageText.getText().toString().trim();
+                final String message = messageText.getText().toString().trim();
                 if (!TextUtils.isEmpty(message)) {
-                    try {
-                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                        String cookie = String.valueOf(System.currentTimeMillis());
-                        String appSession = getServiceInteraction().getAppSession();
-                        QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
-                                cookie, message, false);
-                        // Sending protocol message request.
-                        RequestHelper.requestMessage(getContentResolver(), appSession,
-                                buddyDbId, cookie, message);
-                        // Clearing text view.
-                        messageText.setText("");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // TODO: Couldn't put message into database. This exception must be processed.
-                    }
+                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    MessageCallback callback = new MessageCallback() {
+
+                        @Override
+                        public void onSuccess() {
+                            messageText.setText("");
+                            messageText.setEnabled(true);
+                            sendButton.setEnabled(true);
+                        }
+
+                        @Override
+                        public void onFailed() {
+                            messageText.setEnabled(true);
+                            sendButton.setEnabled(true);
+                        }
+                    };
+                    messageText.setEnabled(false);
+                    sendButton.setEnabled(false);
+                    TaskExecutor.getInstance().execute(
+                            new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
                 }
             }
         });
@@ -333,10 +335,10 @@ public class ChatActivity extends ChiefActivity {
 
     private class ReadMessagesTask extends Task {
 
-        final WeakReference<ContentResolver> weakContentResolver;
-        final int buddyDbId;
-        final long firstMessageDbId;
-        final long lastMessageDbId;
+        private final WeakReference<ContentResolver> weakContentResolver;
+        private final int buddyDbId;
+        private final long firstMessageDbId;
+        private final long lastMessageDbId;
 
         public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
                                 long firstMessageDbId, long lastMessageDbId) {
@@ -359,15 +361,20 @@ public class ChatActivity extends ChiefActivity {
     private class ClearHistoryTask extends PleaseWaitTask {
 
         private final int buddyDbId;
+        private final WeakReference<ContentResolver> weakContentResolver;
 
         public ClearHistoryTask(Context context, int buddyDbId) {
             super(context);
+            this.weakContentResolver = new WeakReference<ContentResolver>(context.getContentResolver());
             this.buddyDbId = buddyDbId;
         }
 
         @Override
         public void executeBackground() {
-            QueryHelper.clearHistory(getContentResolver(), buddyDbId);
+            ContentResolver contentResolver = weakContentResolver.get();
+            if(contentResolver != null) {
+                QueryHelper.clearHistory(contentResolver, buddyDbId);
+            }
         }
 
         @Override
@@ -375,5 +382,62 @@ public class ChatActivity extends ChiefActivity {
             // Show error.
             Toast.makeText(ChatActivity.this, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private class SendMessageTask extends Task {
+
+        private final int buddyDbId;
+        private String message;
+        private final WeakReference<ChiefActivity> weakActivity;
+        private final WeakReference<MessageCallback> weakCallback;
+
+        public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+            this.buddyDbId = buddyDbId;
+            this.message = message;
+            this.weakActivity = new WeakReference<ChiefActivity>(activity);
+            this.weakCallback = new WeakReference<MessageCallback>(callback);
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            ChiefActivity activity = weakActivity.get();
+            if(activity != null) {
+                String appSession = activity.getServiceInteraction().getAppSession();
+                ContentResolver contentResolver = activity.getContentResolver();
+                String cookie = String.valueOf(System.currentTimeMillis());
+                QueryHelper.insertMessage(contentResolver, buddyDbId, 2, // TODO: real message type
+                        cookie, message, false);
+                // Sending protocol message request.
+                RequestHelper.requestMessage(contentResolver, appSession,
+                        buddyDbId, cookie, message);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            MessageCallback messageCallback = weakCallback.get();
+            if(messageCallback != null) {
+                messageCallback.onSuccess();
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            ChiefActivity activity = weakActivity.get();
+            if(activity != null) {
+                // Show error.
+                Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
+            }
+            MessageCallback messageCallback = weakCallback.get();
+            if(messageCallback != null) {
+                messageCallback.onFailed();
+            }
+        }
+    }
+
+    public abstract class MessageCallback {
+
+        public abstract void onSuccess();
+        public abstract void onFailed();
     }
 }

@@ -39,4 +39,8 @@ public abstract class PleaseWaitTask extends Task {
             progressDialog.hide();
         }
     }
+
+    public WeakReference<Context> getWeakContext() {
+        return weakContext;
+    }
 }

@@ -1,15 +1,16 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -51,14 +52,13 @@ public class ChatActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                onBackPressed();
                 return true;
             }
             case R.id.close_chat_menu: {
-
                 try {
                     QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                    onBackPressed();
                 } catch (Exception ignored) {
                     // Nothing to do in this case.
                 }
@@ -95,6 +95,12 @@ public class ChatActivity extends ChiefActivity {
         setTitleByBuddyDbId(buddyDbId);
 
         chatHistoryAdapter.setBuddyDbId(buddyDbId);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -142,17 +148,14 @@ public class ChatActivity extends ChiefActivity {
                         @Override
                         public void onSuccess() {
                             messageText.setText("");
-                            messageText.setEnabled(true);
                             sendButton.setEnabled(true);
                         }
 
                         @Override
                         public void onFailed() {
-                            messageText.setEnabled(true);
                             sendButton.setEnabled(true);
                         }
                     };
-                    messageText.setEnabled(false);
                     sendButton.setEnabled(false);
                     TaskExecutor.getInstance().execute(
                             new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));

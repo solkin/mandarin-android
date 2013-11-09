@@ -154,6 +154,7 @@ public abstract class ChiefActivity extends Activity {
                         /** Initialize service **/
                         serviceInteraction.initService();
                     } catch (RemoteException ignored) {
+                    } catch (IllegalArgumentException ignored) {
                     }
                 }
             };

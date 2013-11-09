@@ -5,5 +5,5 @@
           android:title="@string/menu_search"
           android:icon="@drawable/action_search"
           android:showAsAction="ifRoom|collapseActionView"
-          android:actionViewClass="com.actionbarsherlock.widget.SearchView"/>
+          android:actionViewClass="android.widget.SearchView"/>
 </menu>

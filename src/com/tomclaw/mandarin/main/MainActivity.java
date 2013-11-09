@@ -49,11 +49,6 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
                 return true;
             }
-            case R.id.show_dialogs: {
-                Intent intent = new Intent(this, ChatActivity.class);
-                startActivity(intent);
-                return true;
-            }
             case R.id.create_dialog: {
                 Intent intent = new Intent(this, RosterActivity.class);
                 startActivity(intent);

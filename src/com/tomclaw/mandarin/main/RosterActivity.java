@@ -7,14 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
-import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**

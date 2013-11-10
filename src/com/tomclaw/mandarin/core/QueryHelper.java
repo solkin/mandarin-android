@@ -200,7 +200,7 @@ public class QueryHelper {
                 removeBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
                 // Removing all pending requests.
                 removeBuilder.recycle();
-                removeBuilder.columnEquals(GlobalProvider.REQUEST_ACCOUNT, accountDbId);
+                removeBuilder.columnEquals(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
                 removeBuilder.delete(contentResolver, Settings.REQUEST_RESOLVER_URI);
             } while (cursor.moveToNext());
         }

@@ -72,7 +72,7 @@ public class RequestDispatcher {
                             int classColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
                             int sessionColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_SESSION);
                             int persistentColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_PERSISTENT);
-                            int accountColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT);
+                            int accountColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
                             int stateColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
                             int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
                             /**

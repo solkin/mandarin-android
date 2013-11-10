@@ -39,7 +39,7 @@ public class RequestHelper {
             contentValues.put(GlobalProvider.REQUEST_CLASS, IcqMessageRequest.class.getName());
             contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
             contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-            contentValues.put(GlobalProvider.REQUEST_ACCOUNT, accountDbId);
+            contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
             contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(messageRequest));
             contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
@@ -54,7 +54,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_CLASS, EndSessionRequest.class.getName());
         contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(endSessionRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);

@@ -32,7 +32,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String REQUEST_CLASS = "request_class";
     public static final String REQUEST_SESSION = "request_session";
     public static final String REQUEST_PERSISTENT = "request_persistent";
-    public static final String REQUEST_ACCOUNT = "account_db_id";
+    public static final String REQUEST_ACCOUNT_DB_ID = "account_db_id";
     public static final String REQUEST_STATE = "request_state";
     public static final String REQUEST_BUNDLE = "request_bundle";
 
@@ -79,7 +79,7 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
-            + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT + " int, "
+            + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT_DB_ID + " int, "
             + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text" + ");";
 
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("

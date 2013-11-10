@@ -113,6 +113,15 @@ public class QueryHelper {
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
             queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
+            if(accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                // Update status for account buddies to unknown.
+                contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+                // Update query.
+                queryBuilder.recycle();
+                queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+            }
             return true;
         }
         // Closing cursor.

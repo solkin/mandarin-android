@@ -20,53 +20,14 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        // Configure the search info and add any event listeners
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-            case R.id.accounts: {
-                Intent intent = new Intent(this, AccountsActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.create_dialog: {
-                Intent intent = new Intent(this, RosterActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onCoreServiceReady() {
         setContentView(R.layout.main_activity);
 
         final ActionBar bar = getActionBar();
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setTitle(R.string.dialogs);
 
         // Dialogs list.
         final ListView dialogsList = (ListView) findViewById(R.id.chats_list_view);
@@ -84,6 +45,55 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        // SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        // Configure the search info and add any event listeners
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+                return true;
+            }
+            case R.id.accounts: {
+                Intent intent = new Intent(this, AccountsActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            case R.id.create_dialog: {
+                Intent intent = new Intent(this, RosterActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
+    public void onCoreServiceReady() {
     }
 
     @Override

@@ -35,6 +35,59 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.chat_activity);
+
+        // Initialize action bar.
+        ActionBar bar = getActionBar();
+        bar.setTitle(R.string.dialogs);
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+        int buddyDbId = getIntentBuddyDbId(getIntent());
+
+        setTitleByBuddyDbId(buddyDbId);
+
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+
+        chatList = (ChatListView) findViewById(R.id.chat_list);
+        chatList.setAdapter(chatHistoryAdapter);
+        chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+        chatList.setOnScrollListener(new ChatScrollListener());
+        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
+            @Override
+            public void onDataChanged() {
+                readVisibleMessages();
+            }
+        });
+
+        // Send button and message field initialization.
+        final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
+        final TextView messageText = (TextView) findViewById(R.id.message_text);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String message = messageText.getText().toString().trim();
+                if (!TextUtils.isEmpty(message)) {
+                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    MessageCallback callback = new MessageCallback() {
+
+                        @Override
+                        public void onSuccess() {
+                            messageText.setText("");
+                        }
+
+                        @Override
+                        public void onFailed() {
+                        }
+                    };
+                    TaskExecutor.getInstance().execute(
+                            new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
+                }
+            }
+        });
     }
 
     @Override
@@ -103,64 +156,11 @@ public class ChatActivity extends ChiefActivity {
         Intent intent = new Intent(this, MainActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
 
     @Override
     public void onCoreServiceReady() {
-        Log.d(Settings.LOG_TAG, "onCoreServiceReady");
-
-        setContentView(R.layout.chat_activity);
-
-        // Initialize action bar.
-        ActionBar bar = getActionBar();
-        bar.setTitle(R.string.dialogs);
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
-        int buddyDbId = getIntentBuddyDbId(getIntent());
-
-        setTitleByBuddyDbId(buddyDbId);
-
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
-
-        chatList = (ChatListView) findViewById(R.id.chat_list);
-        chatList.setAdapter(chatHistoryAdapter);
-        chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-        chatList.setOnScrollListener(new ChatScrollListener());
-        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
-            @Override
-            public void onDataChanged() {
-                readVisibleMessages();
-            }
-        });
-
-        // Send button and message field initialization.
-        final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
-        final TextView messageText = (TextView) findViewById(R.id.message_text);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String message = messageText.getText().toString().trim();
-                if (!TextUtils.isEmpty(message)) {
-                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    MessageCallback callback = new MessageCallback() {
-
-                        @Override
-                        public void onSuccess() {
-                            messageText.setText("");
-                        }
-
-                        @Override
-                        public void onFailed() {
-                        }
-                    };
-                    TaskExecutor.getInstance().execute(
-                            new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
-                }
-            }
-        });
     }
 
     @Override

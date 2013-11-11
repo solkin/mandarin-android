@@ -51,8 +51,9 @@ public class IcqSession {
     private static final int EXTERNAL_SESSION_OK = 200;
     private static final int EXTERNAL_FETCH_OK = 200;
 
+    private static final int timeoutSocket = 65000;
     private static final int timeoutConnection = 60000;
-    private static final int timeoutSocket = 80000;
+    private static final int timeoutSession = 120000;
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
@@ -145,9 +146,9 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(LANGUAGE, "ru-ru"));
             nameValuePairs.add(new BasicNameValuePair(MINIMIZE_RESPONSE, "0"));
             nameValuePairs.add(new BasicNameValuePair(MOBILE, "1"));
-            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, "30000"));
+            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
-            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, "1209600"));
+            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
             nameValuePairs.add(new BasicNameValuePair(VIEW, IcqStatusUtil.getStatusView(icqAccountRoot.getStatusIndex())));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
@@ -255,7 +256,7 @@ public class IcqSession {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(icqAccountRoot.getFetchBaseUrl());
         stringBuilder.append(AMP).append(FORMAT).append(EQUAL).append("json");
-        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(60000);
+        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection);
         stringBuilder.append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis());
         stringBuilder.append(AMP).append(PEEK).append(EQUAL).append(0);
         return stringBuilder.toString();

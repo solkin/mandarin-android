@@ -82,6 +82,11 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
                 return true;
             }
+            case R.id.settings: {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }

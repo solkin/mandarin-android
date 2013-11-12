@@ -37,11 +37,6 @@
     <string name="status_na">Not available</string>
     <string name="status_busy">Busy</string>
 
-    <string name="group_favorite">Favorite</string>
-    <string name="group_dialogs">Dialogs</string>
-    <string name="group_online">Online</string>
-    <string name="group_all">All friends</string>
-
     <string name="error_remove_account">Sorry, error while removing accounts.</string>
     <string name="recycle">Recycle</string>
     <string name="message_copy">Copy</string>
@@ -66,13 +61,8 @@
     <string name="please_wait">Please, wait...</string>
     <string name="error_clearing_history">Sorry, error while clearing history.</string>
     <string name="error_sending_message">Unable to send message!</string>
-
-    <string-array name="default_groups">
-        <item>@string/group_favorite</item>
-        <item>@string/group_dialogs</item>
-        <item>@string/group_online</item>
-        <item>@string/group_all</item>
-    </string-array>
+    <string name="filter_show_all_buddies">All buddies</string>
+    <string name="filter_show_online_only">Online only</string>
 
     <string name="count_new_messages">%d new messages</string>
     <string name="do_not_remove">No</string>

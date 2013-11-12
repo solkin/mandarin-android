@@ -33,6 +33,12 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private static final int ADAPTER_ALPHABET_ID = -1;
 
     /**
+     * Filter
+     */
+    public static final int FILTER_ALL_BUDDIES = 0x00;
+    public static final int FILTER_ONLINE_ONLY = 0x01;
+
+    /**
      * Columns
      */
     private static int COLUMN_ROSTER_BUDDY_ID;
@@ -46,13 +52,21 @@ public class RosterAlphabetAdapter extends CursorAdapter
      */
     private Context context;
     private LayoutInflater inflater;
+    private int filter;
+    private LoaderManager loaderManager;
 
-    public RosterAlphabetAdapter(Activity context, LoaderManager loaderManager) {
+    public RosterAlphabetAdapter(Activity context, LoaderManager loaderManager, int filter) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = context.getLayoutInflater();
+        this.loaderManager = loaderManager;
+        this.filter = filter;
+        initLoader();
+    }
+
+    public void initLoader() {
         // Initialize loader for dialogs Id.
-        loaderManager.initLoader(ADAPTER_ALPHABET_ID, null, this);
+        loaderManager.restartLoader(ADAPTER_ALPHABET_ID, null, this);
     }
 
     /**
@@ -118,8 +132,18 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, null, null,
-                GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX + " ASC");
+        switch (filter) {
+            case FILTER_ONLINE_ONLY: {
+                return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null,
+                        GlobalProvider.ROSTER_BUDDY_STATUS + "!='" + StatusUtil.STATUS_OFFLINE + "'", null,
+                        GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+            }
+            case FILTER_ALL_BUDDIES:
+            default: {
+                return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, null, null,
+                        GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX + " ASC");
+            }
+        }
     }
 
     @Override
@@ -143,5 +167,13 @@ public class RosterAlphabetAdapter extends CursorAdapter
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+    }
+
+    public void setRosterFilter(int filter) {
+        this.filter = filter;
+    }
+
+    public int getRosterFilter() {
+        return filter;
     }
 }

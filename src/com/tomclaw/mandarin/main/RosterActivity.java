@@ -3,11 +3,13 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -24,21 +26,18 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class RosterActivity extends ChiefActivity {
 
+    private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.roster_activity);
 
-        final ActionBar bar = getActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setDisplayShowHomeEnabled(true);
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
         // Alphabetical list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
-        final RosterAlphabetAdapter generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager());
+        final RosterAlphabetAdapter generalAdapter =
+                new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
         generalList.setAdapter(generalAdapter);
         generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -60,6 +59,25 @@ public class RosterActivity extends ChiefActivity {
                 }
             }
         });
+
+        final ActionBar mActionBar = getActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.setDisplayShowHomeEnabled(true);
+        mActionBar.setDisplayShowTitleEnabled(false);
+        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(mActionBar.getThemedContext(),
+                R.array.roster_filter_strings, android.R.layout.simple_spinner_dropdown_item);
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        mActionBar.setListNavigationCallbacks(filterAdapter, new ActionBar.OnNavigationListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                setFilterValue(itemPosition);
+                generalAdapter.setRosterFilter(itemPosition);
+                generalAdapter.initLoader();
+                return true;
+            }
+        });
+        mActionBar.setSelectedNavigationItem(generalAdapter.getRosterFilter());
     }
 
     @Override
@@ -95,11 +113,19 @@ public class RosterActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceDown() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private int getFilterValue() {
+        return PreferenceManager.getDefaultSharedPreferences(RosterActivity.this)
+                .getInt(ROSTER_FILTER_PREFERENCE, RosterAlphabetAdapter.FILTER_ALL_BUDDIES);
+    }
+
+    private void setFilterValue(int filterValue) {
+        PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
+                .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
     }
 }

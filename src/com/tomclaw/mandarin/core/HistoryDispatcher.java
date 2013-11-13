@@ -207,6 +207,8 @@ public class HistoryDispatcher {
                 notificationManager.cancel(NOTIFICATION_ID);
             }
             unReadCursor.close();
+            // Call to update unread count.
+            contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
         }
     }
 }

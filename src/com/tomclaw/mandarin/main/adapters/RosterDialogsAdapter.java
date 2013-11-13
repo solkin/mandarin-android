@@ -40,6 +40,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
+    private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
 
     /**
      * Variables
@@ -70,6 +71,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
+        COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         swapCursor(cursor);
     }
 
@@ -109,13 +111,21 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // Setup values
+        // Setup values.
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
                 StatusUtil.getStatusResource(
                         cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
+        // Unread counter.
+        int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
+        if(unreadCount > 0) {
+            view.findViewById(R.id.counter_layout).setVisibility(View.VISIBLE);
+            ((TextView)view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
+        } else {
+            view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
+        }
     }
 
     public int getBuddyDbId(int position) {

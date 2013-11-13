@@ -83,10 +83,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, 0);
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
+                        int unreadCount = 0;
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {
                                 int messageType = (random.nextInt(3) == 1) ? 2 : 1;
+                                boolean isRead = (messageType == 1 ? false : true);
+                                unreadCount += isRead ? 0 : 1;
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
@@ -94,15 +98,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 4);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, messageType == 1 ? 1 : 0);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, isRead ? 1 : 0);
                                 cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }
+                        cv2 = new ContentValues();
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, unreadCount);
+                        //db.update(GlobalProvider.ROSTER_BUDDY_TABLE, cv2, GlobalProvider.ROW_AUTO_ID + "==" + id, null);
                     }
                 }
             }
+
+            String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
+                    + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
+                    + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_READ + "=0"
+                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE+"." + GlobalProvider.ROW_AUTO_ID + ");";
+            Log.d(Settings.LOG_TAG, "query: " + query);
+            db.execSQL(query);
+
             Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
         } catch (Throwable ex) {
             ex.printStackTrace();

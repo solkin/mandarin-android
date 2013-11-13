@@ -83,4 +83,5 @@
     <string name="pref_title_system_notifications">System notifications</string>
     <string name="pref_summary_system_notifications">Use system-configured notifications</string>
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="buddy_status">Buddy status</string>
 </resources>

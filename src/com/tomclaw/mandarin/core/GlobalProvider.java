@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -64,6 +65,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
     public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
     public static final String ROSTER_BUDDY_ALPHABET_INDEX = "buddy_alphabet_index";
+    public static final String ROSTER_BUDDY_UNREAD_COUNT = "buddy_unread_count";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -101,7 +103,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
             + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
-            + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int" + ");";
+            + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
+            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -114,6 +117,9 @@ public class GlobalProvider extends ContentProvider {
     // Database helper object
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
+
+    // Methods.
+    public static String METHOD_UPDATE_UNREAD = "update_unread";
 
     // URI id
     private static final int URI_REQUEST = 1;
@@ -237,6 +243,22 @@ public class GlobalProvider extends ContentProvider {
         // Notify ContentResolver about data changes.
         getContext().getContentResolver().notifyChange(uri, null);
         return rows;
+    }
+
+    @Override
+    public Bundle call(String method, String arg, Bundle extras) {
+        if(method.equals(METHOD_UPDATE_UNREAD)) {
+            String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
+                    + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
+                    + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_READ + "=0"
+                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_TYPE + "=1"
+                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_BUDDY_DB_ID + "="
+                        + GlobalProvider.ROSTER_BUDDY_TABLE+"." + GlobalProvider.ROW_AUTO_ID + ");";
+            sqLiteDatabase.execSQL(query);
+            getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+        }
+        return null;
     }
 
     private static String getTableName(Uri uri) {

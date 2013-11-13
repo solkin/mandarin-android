@@ -42,6 +42,20 @@
                     android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" android:gravity="center" android:visibility="gone"
+            android:id="@+id/counter_layout">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                android:id="@+id/counter_text" android:padding="4dp"
+                android:layout_margin="6dp" android:background="@drawable/counter_background"
+                android:textColor="#ffffff" android:textStyle="bold"
+                android:gravity="center" android:visibility="visible"/>
+    </LinearLayout>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -50,5 +64,6 @@
             android:layout_gravity="center_vertical"
             android:clickable="false"
             android:focusable="false"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:contentDescription="@string/buddy_status"/>
 </LinearLayout>

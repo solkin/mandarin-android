@@ -320,7 +320,7 @@ public class IcqSession {
                 String buddyStatus = sourceObject.getString(STATE);
                 String buddyType = sourceObject.getString(USER_TYPE);
 
-                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                QueryHelper.insertMessage(icqAccountRoot.getContext(), icqAccountRoot.getAccountDbId(),
                         buddyId, 1, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -337,7 +337,7 @@ public class IcqSession {
                     String sendReqId = imState.optString(SEND_REQ_ID);
                     for (int i = 0; i < IM_STATES.length; i++) {
                         if (state.equals(IM_STATES[i])) {
-                            QueryHelper.updateMessage(icqAccountRoot.getContentResolver(), sendReqId, i);
+                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), sendReqId, i);
                             break;
                         }
                     }

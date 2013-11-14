@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
@@ -233,15 +234,16 @@ public class QueryHelper {
         return dialogFlag;
     }
 
-    public static void insertMessage(ContentResolver contentResolver, int buddyDbId, int messageType, String cookie,
+    public static void insertMessage(Context context, int buddyDbId, int messageType, String cookie,
                                      String messageText, boolean activateDialog) throws BuddyNotFoundException {
-        insertMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+        insertMessage(context, getBuddyAccountDbId(context.getContentResolver(), buddyDbId), buddyDbId,
                 messageType, cookie, 0, messageText, activateDialog);
     }
 
-    public static void insertMessage(ContentResolver contentResolver, int accountDbId,
+    public static void insertMessage(Context context, int accountDbId,
                                      int buddyDbId, int messageType, String cookie, long messageTime,
                                      String messageText, boolean activateDialog) {
+        ContentResolver contentResolver = context.getContentResolver();
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
         // Checking for dialog activate needed.
         if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
@@ -251,40 +253,49 @@ public class QueryHelper {
         if(messageTime == 0) {
             messageTime = System.currentTimeMillis();
         }
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.getCount() >= 1) {
-            // Moving cursor to the last (and first) position and checking for operation success.
-            if (cursor.moveToLast()
-                    && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
-                    && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
-                    (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)
-                    && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE)) != 1) {
-                Log.d(Settings.LOG_TAG, "We have cookies!");
-                // We have cookies!
-                long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
-                cookies += " " + cookie;
-                String messagesText = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
-                messagesText += "\n" + messageText;
-                // Creating content values to update message.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
-                contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
-                // Update query.
-                queryBuilder.recycle();
-                queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, messageDbId);
-                queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
-                // Closing cursor.
-                cursor.close();
-                return;
+        boolean isCollapseMessages = context.getSharedPreferences(context.getPackageName() + "_preferences",
+                Context.MODE_MULTI_PROCESS).getBoolean(
+                context.getResources().getString(R.string.pref_collapse_messages),
+                context.getResources().getBoolean(R.bool.pref_collapse_messages_default));
+
+        if(isCollapseMessages) {
+            QueryBuilder queryBuilder = new QueryBuilder();
+            queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+            // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
+            Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+            // Cursor may have no more than only one entry. But we will check one and more.
+            if (cursor.getCount() >= 1) {
+                // Moving cursor to the last (and first) position and checking for operation success.
+                if (cursor.moveToLast()
+                        && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
+                        && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
+                        (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)
+                        && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE)) != 1) {
+                    Log.d(Settings.LOG_TAG, "We have cookies!");
+                    // We have cookies!
+                    long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                    String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
+                    cookies += " " + cookie;
+                    String messagesText = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
+                    messagesText += "\n" + messageText;
+                    // Creating content values to update message.
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+                    contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
+                    // Update query.
+                    queryBuilder.recycle();
+                    queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, messageDbId);
+                    queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+                    // Closing cursor.
+                    cursor.close();
+                    return;
+                }
             }
+            // Closing cursor.
+            cursor.close();
         }
         // No matching request message. Insert new message.
         ContentValues contentValues = new ContentValues();
@@ -298,14 +309,13 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-        // Closing cursor.
-        cursor.close();
     }
 
-    public static void insertMessage(ContentResolver contentResolver, int accountDbId, String userId,
+    public static void insertMessage(Context context, int accountDbId, String userId,
                                      int messageType, String cookie, long messageTime,
                                     String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
+        ContentResolver contentResolver = context.getContentResolver();
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, userId);
@@ -319,7 +329,7 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 // Plain message query.
-                insertMessage(contentResolver, accountDbId,
+                insertMessage(context, accountDbId,
                         buddyDbId, messageType, cookie, messageTime, messageText, activateDialog);
             } while(cursor.moveToNext());
             // Closing cursor.
@@ -331,7 +341,7 @@ public class QueryHelper {
         }
     }
 
-    public static void updateMessage(ContentResolver contentResolver, String cookie, int messageState) {
+    public static void updateMessageState(ContentResolver contentResolver, String cookie, int messageState) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         // Plain message modify by cookies.
@@ -459,7 +469,6 @@ public class QueryHelper {
         queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         Cursor removedCursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-
         if(removedCursor.moveToFirst()) {
             // Checking and creating recycle.
             queryBuilder.recycle();

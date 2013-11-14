@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_chat_settings">pref_chat_settings</string>
+    <string name="pref_buddy_list_settings">pref_buddy_list_settings</string>
+    <string name="pref_show_temp">pref_show_temp</string>
+    <string name="pref_collapse_messages">pref_collapse_messages</string>
+    <string name="pref_notification_settings">pref_notification_settings</string>
+    <string name="pref_system_notifications">pref_system_notifications</string>
+    <string name="pref_notification_sound">pref_notification_sound</string>
+    <string name="pref_vibrate">pref_vibrate</string>
+</resources>

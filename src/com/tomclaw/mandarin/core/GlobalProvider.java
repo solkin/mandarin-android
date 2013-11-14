@@ -114,6 +114,18 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
             + HISTORY_MESSAGE_TEXT + " text" + ");";
 
+    private static final String ROSTER_BUDDY_UPDATE_UNREAD = new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
+            .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
+                .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
+                .append(" WHERE ")
+                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_READ).append("=").append("0").append(" AND ")
+                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_TYPE).append("=").append("1").append(" AND ")
+                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROSTER_BUDDY_DIALOG).append("=").append("1").append(" AND ")
+                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_BUDDY_DB_ID)
+                        .append("=")
+                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
+            .append(");").toString();
+
     // Database helper object
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
@@ -248,16 +260,7 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
         if(method.equals(METHOD_UPDATE_UNREAD)) {
-            String query = "UPDATE " + ROSTER_BUDDY_TABLE + " SET "
-                    + ROSTER_BUDDY_UNREAD_COUNT + "=" + "("
-                        + "SELECT COUNT(*) FROM " + CHAT_HISTORY_TABLE
-                        + " WHERE "
-                            + CHAT_HISTORY_TABLE+"."+HISTORY_MESSAGE_READ + "=0" + " AND "
-                            + CHAT_HISTORY_TABLE+"."+HISTORY_MESSAGE_TYPE + "=1" + " AND "
-                            + ROSTER_BUDDY_TABLE+"."+ROSTER_BUDDY_DIALOG + "=1" + " AND "
-                            + CHAT_HISTORY_TABLE+"."+HISTORY_BUDDY_DB_ID + "=" + ROSTER_BUDDY_TABLE+"." + ROW_AUTO_ID
-                    + ");";
-            sqLiteDatabase.execSQL(query);
+            sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD);
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;

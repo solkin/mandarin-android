@@ -53,7 +53,7 @@ public class IcqSession {
 
     private static final int timeoutSocket = 65000;
     private static final int timeoutConnection = 60000;
-    private static final int timeoutSession = 120000;
+    private static final int timeoutSession = 600000;
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;

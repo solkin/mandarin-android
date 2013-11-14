@@ -89,7 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         if (isDialog) {
                             for (int j = 0; j < random.nextInt(1500) + 250; j++) {
                                 int messageType = (random.nextInt(3) == 1) ? 2 : 1;
-                                boolean isRead = (messageType == 1 ? false : true);
+                                boolean isRead = (messageType != 1);
                                 unreadCount += isRead ? 0 : 1;
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));

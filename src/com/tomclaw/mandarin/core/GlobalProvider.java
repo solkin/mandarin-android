@@ -248,13 +248,15 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
         if(method.equals(METHOD_UPDATE_UNREAD)) {
-            String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
-                    + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
-                    + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
-                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_READ + "=0"
-                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_TYPE + "=1"
-                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_BUDDY_DB_ID + "="
-                        + GlobalProvider.ROSTER_BUDDY_TABLE+"." + GlobalProvider.ROW_AUTO_ID + ");";
+            String query = "UPDATE " + ROSTER_BUDDY_TABLE + " SET "
+                    + ROSTER_BUDDY_UNREAD_COUNT + "=" + "("
+                        + "SELECT COUNT(*) FROM " + CHAT_HISTORY_TABLE
+                        + " WHERE "
+                            + CHAT_HISTORY_TABLE+"."+HISTORY_MESSAGE_READ + "=0" + " AND "
+                            + CHAT_HISTORY_TABLE+"."+HISTORY_MESSAGE_TYPE + "=1" + " AND "
+                            + ROSTER_BUDDY_TABLE+"."+ROSTER_BUDDY_DIALOG + "=1" + " AND "
+                            + CHAT_HISTORY_TABLE+"."+HISTORY_BUDDY_DB_ID + "=" + ROSTER_BUDDY_TABLE+"." + ROW_AUTO_ID
+                    + ");";
             sqLiteDatabase.execSQL(query);
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }

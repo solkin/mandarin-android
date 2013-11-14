@@ -243,6 +243,10 @@ public class QueryHelper {
                                      int buddyDbId, int messageType, String cookie, long messageTime,
                                      String messageText, boolean activateDialog) {
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
+        // Checking for dialog activate needed.
+        if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
+            modifyDialog(contentResolver, buddyDbId, true);
+        }
         // Checking for time specified.
         if(messageTime == 0) {
             messageTime = System.currentTimeMillis();
@@ -279,10 +283,6 @@ public class QueryHelper {
                 queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
                 // Closing cursor.
                 cursor.close();
-                // Checking for dialog activate needed.
-                if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
-                    modifyDialog(contentResolver, buddyDbId, true);
-                }
                 return;
             }
         }
@@ -300,10 +300,6 @@ public class QueryHelper {
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
         // Closing cursor.
         cursor.close();
-        // Checking for dialog activate needed.
-        if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
-            modifyDialog(contentResolver, buddyDbId, true);
-        }
     }
 
     public static void insertMessage(ContentResolver contentResolver, int accountDbId, String userId,

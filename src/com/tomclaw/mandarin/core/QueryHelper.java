@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
@@ -234,16 +235,16 @@ public class QueryHelper {
         return dialogFlag;
     }
 
-    public static void insertMessage(Context context, int buddyDbId, int messageType, String cookie,
-                                     String messageText, boolean activateDialog) throws BuddyNotFoundException {
-        insertMessage(context, getBuddyAccountDbId(context.getContentResolver(), buddyDbId), buddyDbId,
+    public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages, int buddyDbId,
+                                     int messageType, String cookie, String messageText, boolean activateDialog)
+            throws BuddyNotFoundException {
+        insertMessage(contentResolver, isCollapseMessages, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 messageType, cookie, 0, messageText, activateDialog);
     }
 
-    public static void insertMessage(Context context, int accountDbId,
-                                     int buddyDbId, int messageType, String cookie, long messageTime,
+    public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
+                                     int accountDbId, int buddyDbId, int messageType, String cookie, long messageTime,
                                      String messageText, boolean activateDialog) {
-        ContentResolver contentResolver = context.getContentResolver();
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
         // Checking for dialog activate needed.
         if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
@@ -253,10 +254,6 @@ public class QueryHelper {
         if(messageTime == 0) {
             messageTime = System.currentTimeMillis();
         }
-        boolean isCollapseMessages = context.getSharedPreferences(context.getPackageName() + "_preferences",
-                Context.MODE_MULTI_PROCESS).getBoolean(
-                context.getResources().getString(R.string.pref_collapse_messages),
-                context.getResources().getBoolean(R.bool.pref_collapse_messages_default));
 
         if(isCollapseMessages) {
             QueryBuilder queryBuilder = new QueryBuilder();
@@ -311,11 +308,10 @@ public class QueryHelper {
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
     }
 
-    public static void insertMessage(Context context, int accountDbId, String userId,
-                                     int messageType, String cookie, long messageTime,
-                                    String messageText, boolean activateDialog)
+    public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
+                                     int accountDbId, String userId, int messageType, String cookie, long messageTime,
+                                     String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
-        ContentResolver contentResolver = context.getContentResolver();
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, userId);
@@ -329,8 +325,8 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 // Plain message query.
-                insertMessage(context, accountDbId,
-                        buddyDbId, messageType, cookie, messageTime, messageText, activateDialog);
+                insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, cookie,
+                        messageTime, messageText, activateDialog);
             } while(cursor.moveToNext());
             // Closing cursor.
             cursor.close();

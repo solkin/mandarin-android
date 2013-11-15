@@ -410,7 +410,8 @@ public class ChatActivity extends ChiefActivity {
                 String appSession = activity.getServiceInteraction().getAppSession();
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
-                QueryHelper.insertMessage(activity, buddyDbId, 2, // TODO: real message type
+                boolean isCollapseMessages = PreferenceHelper.isCollapseMessages(activity);
+                QueryHelper.insertMessage(contentResolver, isCollapseMessages, buddyDbId, 2, // TODO: real message type
                         cookie, message, false);
                 // Sending protocol message request.
                 RequestHelper.requestMessage(contentResolver, appSession,

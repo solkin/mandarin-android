@@ -3,10 +3,8 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
@@ -405,7 +403,7 @@ public class QueryHelper {
     }
 
     public static void updateOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
-                                           long updateTime, String groupName,
+                                           long updateTime, int groupId, String groupName,
                                            String buddyId, String buddyNick, String buddyStatus) {
         ContentValues buddyValues = new ContentValues();
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
@@ -413,7 +411,7 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
-        // buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupDbId);
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
@@ -440,7 +438,6 @@ public class QueryHelper {
 
     public static void updateOrCreateGroup(ContentResolver contentResolver, int accountDbId, long updateTime,
                                            String groupName, int groupId) {
-        QueryBuilder queryBuilder = new QueryBuilder();
         ContentValues groupValues = new ContentValues();
         groupValues.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
         groupValues.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
@@ -448,6 +445,7 @@ public class QueryHelper {
         groupValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
         groupValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, updateTime);
         // Trying to update group
+        QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_ID, groupId).and()
                 .columnEquals(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
         int groupsModified = queryBuilder.update(contentResolver, groupValues, Settings.GROUP_RESOLVER_URI);

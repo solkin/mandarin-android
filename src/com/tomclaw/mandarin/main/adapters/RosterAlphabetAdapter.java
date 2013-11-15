@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StatusUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -53,6 +56,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private Context context;
     private LayoutInflater inflater;
     private int filter;
+    private boolean isShowTemp = false;
     private LoaderManager loaderManager;
 
     public RosterAlphabetAdapter(Activity context, LoaderManager loaderManager, int filter) {
@@ -61,6 +65,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         this.inflater = context.getLayoutInflater();
         this.loaderManager = loaderManager;
         this.filter = filter;
+        this.isShowTemp = PreferenceHelper.isShowTemp(context);
         initLoader();
     }
 
@@ -132,18 +137,20 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        QueryBuilder queryBuilder = new QueryBuilder();
         switch (filter) {
             case FILTER_ONLINE_ONLY: {
-                return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null,
-                        GlobalProvider.ROSTER_BUDDY_STATUS + "!='" + StatusUtil.STATUS_OFFLINE + "'", null,
-                        GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+                break;
             }
             case FILTER_ALL_BUDDIES:
-            default: {
-                return new CursorLoader(context, Settings.BUDDY_RESOLVER_URI, null, null, null,
-                        GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX + " ASC");
-            }
+            default:
         }
+        if(!isShowTemp) {
+            queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+        }
+        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
+        return queryBuilder.createCursorLoader(context, Settings.BUDDY_RESOLVER_URI);
     }
 
     @Override

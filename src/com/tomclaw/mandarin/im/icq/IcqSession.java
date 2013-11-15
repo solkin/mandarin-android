@@ -296,7 +296,7 @@ public class IcqSession {
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                groupName, buddyId, buddyNick, buddyStatus);
+                                groupId, groupName, buddyId, buddyNick, buddyStatus);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);

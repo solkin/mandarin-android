@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Activity;
 import android.content.Context;
 import com.tomclaw.mandarin.R;
 
@@ -13,6 +14,10 @@ public class PreferenceHelper {
 
     public static boolean isCollapseMessages(Context context) {
         return getBooleanPreference(context, R.string.pref_collapse_messages, R.bool.pref_collapse_messages_default);
+    }
+
+    public static boolean isShowTemp(Context context) {
+        return getBooleanPreference(context, R.string.pref_show_temp, R.bool.pref_show_temp_default);
     }
 
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {

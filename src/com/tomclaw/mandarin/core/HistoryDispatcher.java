@@ -181,16 +181,30 @@ public class HistoryDispatcher {
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
                     // Notification prepare.
-                    Notification notification = new NotificationCompat.Builder(context)
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                             .setContentTitle(title)
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setStyle(style)
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
-                            .setDefaults(isAlarmRequired ? Notification.DEFAULT_ALL : 0)
-                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
-                            .build();
+                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent);
+                    if(isAlarmRequired) {
+                        if(PreferenceHelper.isSystemNotifications(context)) {
+                            notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+                        } else {
+                            notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
+                            int defaults = 0;
+                            if(PreferenceHelper.isVibrate(context)) {
+                                defaults |= Notification.DEFAULT_VIBRATE;
+                            }
+                            // defaults |= Notification.DEFAULT_LIGHTS;
+                            notificationBuilder.setDefaults(defaults);
+                        }
+                    }
+                    notificationBuilder.setLights(0x00ff6600, 700, 700);
+
+                    Notification notification = notificationBuilder.build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);
                     // Update shown messages flag.

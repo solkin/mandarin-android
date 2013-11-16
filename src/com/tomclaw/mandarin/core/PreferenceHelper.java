@@ -1,7 +1,10 @@
 package com.tomclaw.mandarin.core;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 
 /**
@@ -20,9 +23,43 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_show_temp, R.bool.pref_show_temp_default);
     }
 
+    public static boolean isSystemNotifications(Context context) {
+        return getBooleanPreference(context, R.string.pref_system_notifications, R.bool.pref_system_notifications_default);
+    }
+
+    public static boolean isVibrate(Context context) {
+        return getBooleanPreference(context, R.string.pref_vibrate, R.bool.pref_vibrate_default);
+    }
+
+    public static Uri getNotificationUri(Context context) {
+        String uriValue = getStringPreference(context, R.string.pref_notification_sound,
+                R.string.pref_notification_sound_default);
+        if(TextUtils.isEmpty(uriValue)) {
+            return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
+        return Uri.parse(uriValue);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
-        return context.getSharedPreferences(context.getPackageName() + "_preferences",
-                Context.MODE_MULTI_PROCESS).getBoolean(context.getResources().getString(preferenceKey),
+        return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));
+    }
+
+    private static String getStringPreference(Context context, int preferenceKey, int defaultValueKey) {
+        return getSharedPreferences(context).getString(context.getResources().getString(preferenceKey),
+                context.getResources().getString(defaultValueKey));
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(getDefaultSharedPreferencesName(context),
+                getSharedPreferencesMode());
+    }
+
+    private static String getDefaultSharedPreferencesName(Context context) {
+        return context.getPackageName() + "_preferences";
+    }
+
+    private static int getSharedPreferencesMode() {
+        return Context.MODE_MULTI_PROCESS;
     }
 }

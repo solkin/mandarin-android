@@ -27,16 +27,17 @@
                 android:disableDependentsState="true"
                 android:title="@string/pref_title_system_notifications"
                 android:summary="@string/pref_summary_system_notifications"
-                android:defaultValue="true"/>
+                android:defaultValue="@bool/pref_system_notifications_default"/>
         <RingtonePreference
                 android:dependency="pref_system_notifications"
                 android:summary="@string/pref_summary_notification_sound"
                 android:title="@string/pref_title_notification_sound"
-                android:key="@string/pref_notification_sound"/>
+                android:key="@string/pref_notification_sound"
+                android:defaultValue="@string/pref_notification_sound_default"/>
         <CheckBoxPreference
                 android:dependency="pref_system_notifications"
                 android:key="@string/pref_vibrate"
                 android:title="@string/pref_title_vibrate"
-                android:defaultValue="false"/>
+                android:defaultValue="@bool/pref_vibrate_default"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -73,6 +72,7 @@ public class IcqSession {
         // Set the default socket timeout (SO_TIMEOUT).
         // in milliseconds which is the timeout for waiting for data.
         HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+        HttpConnectionParams.setTcpNoDelay(httpParameters, false);
         this.httpClient = new DefaultHttpClient(httpParameters);
     }
 

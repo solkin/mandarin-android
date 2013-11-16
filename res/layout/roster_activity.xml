@@ -14,5 +14,5 @@
             android:focusableInTouchMode="true"
             android:clickable="true"
             android:longClickable="true"
-            android:choiceMode="multipleChoiceModal"/>
+            android:choiceMode="multipleChoice"/>
 </LinearLayout>

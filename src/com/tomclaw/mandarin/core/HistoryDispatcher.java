@@ -119,7 +119,6 @@ public class HistoryDispatcher {
                     int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
                     do {
                         buddyDbId = unReadCursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
-                        Log.d(Settings.LOG_TAG, "HistoryObserver: buddy: " + buddyDbId);
                         QueryBuilder messageQueryBuilder = new QueryBuilder();
                         messageQueryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.util.StatusUtil;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -20,8 +21,11 @@ import java.util.Random;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private final Context context;
+
     public DatabaseHelper(Context context) {
         super(context, Settings.DB_NAME, null, Settings.DB_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -65,9 +69,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
                 for (int i = 1; i <= 4 + random.nextInt(3); i++) {
-                    String groupName = generateRandomWord(random);
+                    int groupId = (random.nextInt(10) == 1) ? GlobalProvider.GROUP_ID_RECYCLE : i;
+                    String groupName = groupId == GlobalProvider.GROUP_ID_RECYCLE ?
+                            context.getString(R.string.recycle) : generateRandomWord(random);
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
+                    cv1.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 5 + random.nextInt(5); c++) {
@@ -79,6 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());

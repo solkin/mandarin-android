@@ -5,7 +5,7 @@ import com.tomclaw.mandarin.core.CoreObject;
 interface ServiceInteraction
 {
     // Staff methods
-	boolean initService();
+	int getServiceState();
 	long getUpTime();
     String getAppSession();
 	// Accounts API

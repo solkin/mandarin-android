@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +39,8 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
+    private static int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
+    private static int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
 
@@ -70,6 +72,8 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
+        COLUMN_ROSTER_BUDDY_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE);
+        COLUMN_ROSTER_BUDDY_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE);
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         swapCursor(cursor);
@@ -97,6 +101,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             }
             bindView(v, context, getCursor());
         } catch (Throwable ex) {
+            ex.printStackTrace();
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = mInflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
@@ -112,12 +117,15 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Setup values.
-        ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
-                StatusUtil.getStatusResource(
+                StatusUtil.getStatusDrawable(
                         cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
+        String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
+        String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
+        ((TextView) view.findViewById(R.id.buddy_status_title)).setText(statusTitle);
+        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusMessage);
         // Unread counter.
         int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
         if(unreadCount > 0) {

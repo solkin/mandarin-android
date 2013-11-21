@@ -9,13 +9,15 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
+import com.tomclaw.mandarin.im.StatusUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -29,6 +31,10 @@ import org.json.JSONObject;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -152,7 +158,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair(VIEW, IcqStatusUtil.getStatusView(icqAccountRoot.getStatusIndex())));
+            nameValuePairs.add(new BasicNameValuePair(VIEW, StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
                     .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
@@ -242,8 +248,8 @@ public class IcqSession {
                         return false;
                     }
                 }
-            } catch (Throwable e) {
-                Log.d(Settings.LOG_TAG, "fetch events exception: " + e.getMessage());
+            } catch (Throwable ex) {
+                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
@@ -291,12 +297,38 @@ public class IcqSession {
                         if (TextUtils.isEmpty(buddyNick)) {
                             buddyNick = buddyObject.getString(DISPLAY_ID);
                         }
+
                         String buddyStatus = buddyObject.getString(STATE);
+                        String moodIcon = buddyObject.optString(MOOD_ICON);
+                        String statusMessage = buddyObject.optString(STATUS_MSG);
+                        String moodTitle = buddyObject.optString(MOOD_TITLE);
+
+                        int statusIndex;
+                        try {
+                            // Checking for mood present.
+                            if(TextUtils.isEmpty(moodIcon)) {
+                                statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+                            } else {
+                                statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+                            }
+                        } catch (StatusNotFoundException ex) {
+                            statusIndex = StatusUtil.STATUS_OFFLINE;
+                        }
+                        // Define status title.
+                        String statusTitle;
+                        if(TextUtils.isEmpty(moodTitle)) {
+                            // Default title for status index.
+                            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
+                        } else {
+                            // Buddy specified title.
+                            statusTitle = moodTitle;
+                        }
+
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                groupId, groupName, buddyId, buddyNick, buddyStatus);
+                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);
@@ -355,12 +387,38 @@ public class IcqSession {
                 if (TextUtils.isEmpty(buddyNick)) {
                     buddyNick = eventData.getString(DISPLAY_ID);
                 }
+
                 String buddyStatus = eventData.getString(STATE);
-                String buddyStatusMessage = eventData.optString(STATUS_MSG);
+                String moodIcon = eventData.optString(MOOD_ICON);
+                String statusMessage = eventData.optString(STATUS_MSG);
+                String moodTitle = eventData.optString(MOOD_TITLE);
+
+                int statusIndex;
+                try {
+                    // Checking for mood present.
+                    if(TextUtils.isEmpty(moodIcon)) {
+                        statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+                    } else {
+                        statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+                    }
+                } catch (StatusNotFoundException ex) {
+                    statusIndex = StatusUtil.STATUS_OFFLINE;
+                }
+                // Define status title.
+                String statusTitle;
+                if(TextUtils.isEmpty(moodTitle)) {
+                    // Default title for status index.
+                    statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
+                } else {
+                    // Buddy specified title.
+                    statusTitle = moodTitle;
+                }
+
                 String buddyType = eventData.getString(USER_TYPE);
+                String buddyIcon = eventData.optString(BUDDY_ICON);
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, IcqStatusUtil.getStatusIndex(buddyStatus));
+                        buddyId, statusIndex, statusTitle, statusMessage);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {
@@ -379,5 +437,48 @@ public class IcqSession {
         messageAuthenticationCode.update(key.getBytes());
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    /**
+     * Returns "id" parameter value from specified URL
+     */
+    private static String getIdParam(String url) {
+        URI uri = URI.create(url);
+        for (NameValuePair param : URLEncodedUtils.parse(uri, "UTF-8")) {
+            if (param.getName().equals("id")) {
+                return param.getValue();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
+     */
+    public static String parseMood(String moodUrl) {
+        if (moodUrl != null) {
+            final String id = getIdParam(moodUrl);
+
+            InputStream is = new InputStream() {
+                int pos = 0;
+                int length = id.length();
+
+                @Override
+                public int read() throws IOException {
+                    if (pos == length) return -1;
+                    char c1 = id.charAt(pos++);
+                    char c2 = id.charAt(pos++);
+
+                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
+                }
+            };
+            DataInputStream dis = new DataInputStream(is);
+            try {
+                return dis.readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return moodUrl;
     }
 }

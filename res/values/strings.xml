@@ -81,4 +81,41 @@
     <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
         течение двух минут
     </string>
+
+    <string name="status_icq_shop">Магазины</string>
+    <string name="status_icq_duck">В ванной</string>
+    <string name="status_icq_tired">Устал</string>
+    <string name="status_icq_party">Вечеринка</string>
+    <string name="status_icq_beer">Пиво</string>
+    <string name="status_icq_think">Думаю</string>
+    <string name="status_icq_eating">Кушаю</string>
+    <string name="status_icq_tv">Телевизор</string>
+    <string name="status_icq_friends">Друзья</string>
+    <string name="status_icq_coffee">Кофе</string>
+    <string name="status_icq_music">Музыка</string>
+    <string name="status_icq_business">Дела</string>
+    <string name="status_icq_cinema">Кино</string>
+    <string name="status_icq_fun">Развлекаюсь</string>
+    <string name="status_icq_phone">На телефоне</string>
+    <string name="status_icq_game">Играю</string>
+    <string name="status_icq_study">Учусь</string>
+    <string name="status_icq_sick">Болею</string>
+    <string name="status_icq_sleeping">Сплю</string>
+    <string name="status_icq_surfing">Отрываюсь</string>
+    <string name="status_icq_internet">В интернете</string>
+    <string name="status_icq_working">Работаю</string>
+    <string name="status_icq_typing">Пишу</string>
+    <string name="status_icq_angry">Злой</string>
+    <string name="status_icq_weekend">Отдыхаю</string>
+    <string name="status_icq_psp">Приставка</string>
+    <string name="status_icq_on_mobile">На мобильном</string>
+    <string name="status_icq_asleep">Засыпаю</string>
+    <string name="status_icq_wc">В туалете</string>
+    <string name="status_icq_question">Вопрос</string>
+    <string name="status_icq_way">В пути</string>
+    <string name="status_icq_love">Любовь</string>
+    <string name="status_icq_smoke">Курю</string>
+    <string name="status_icq_sex">Секс</string>
+    <string name="status_icq_search">Ищу</string>
+    <string name="status_icq_diary">Дневник</string>
 </resources>

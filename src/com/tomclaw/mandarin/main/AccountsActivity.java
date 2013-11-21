@@ -16,11 +16,11 @@ import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
-import com.tomclaw.mandarin.util.StatusUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

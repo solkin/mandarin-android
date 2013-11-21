@@ -32,14 +32,28 @@
                     android:singleLine="true"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="buddy@id"
-                    android:id="@+id/buddy_id"
-                    android:layout_gravity="left|center_vertical"
-                    android:singleLine="true"
-                    android:textSize="14sp"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="5dp"
+                        android:text="Status title"
+                        android:id="@+id/buddy_status_title"
+                        android:layout_gravity="left|center_vertical"
+                        android:singleLine="true"
+                        android:textSize="14sp" android:textStyle="bold"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Buddy status message"
+                        android:id="@+id/buddy_status_message"
+                        android:layout_gravity="left|center_vertical"
+                        android:singleLine="true"
+                        android:textSize="14sp"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout

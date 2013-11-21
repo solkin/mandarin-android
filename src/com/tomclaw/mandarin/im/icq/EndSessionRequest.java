@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
-import com.tomclaw.mandarin.util.StatusUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,7 +89,7 @@ public class AccountsAdapter extends CursorAdapter implements
         ((TextView) view.findViewById(R.id.user_nick)).setText(cursor.getString(COLUMN_USER_NICK));
         ImageView userStatus = ((ImageView) view.findViewById(R.id.user_status));
         userStatus.setImageResource(
-                StatusUtil.getStatusResource(
+                StatusUtil.getStatusDrawable(
                         cursor.getString(COLUMN_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_USER_STATUS)));
         if (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1) {

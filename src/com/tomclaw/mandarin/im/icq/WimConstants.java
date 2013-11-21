@@ -76,6 +76,8 @@ public class WimConstants {
     public static final String SOURCE_OBJECT = "source";
     public static final String PRESENCE = "presence";
     public static final String STATUS_MSG = "statusMsg";
+    public static final String MOOD_TITLE = "moodTitle";
+    public static final String MOOD_ICON = "moodIcon";
     public static final String TIMESTAMP = "timestamp";
     public static final String QUE = "?";
     public static final String OFFLINE_IM = "offlineIM";

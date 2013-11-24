@@ -12,8 +12,6 @@
         <item>@drawable/status_icq_na</item>
         <item>@drawable/status_icq_busy</item>
         <item>@drawable/status_icq_busy</item>
-        <item>@drawable/status_icq_offline</item>
-        <item>@drawable/status_icq_offline</item>
         <item>@drawable/status_icq_invisible</item>
         
         <item>@drawable/status_icq_shop</item>
@@ -48,8 +46,7 @@
         <item>@drawable/status_icq_question</item>
         <item>@drawable/status_icq_way</item>
         <item>@drawable/status_icq_love</item>
-        <item>@drawable/status_icq_smoke</item>
-        <item>@drawable/status_icq_sex</item>
+        <item>@drawable/status_icq_in_love</item>
         <item>@drawable/status_icq_search</item>
         <item>@drawable/status_icq_diary</item>
     </array>
@@ -65,8 +62,6 @@
         <item>@string/status_na</item>
         <item>@string/status_busy</item>
         <item>@string/status_busy</item>
-        <item>@string/status_offline</item>
-        <item>@string/status_offline</item>
         <item>@string/status_invisible</item>
 
         <item>@string/status_icq_shop</item>
@@ -101,8 +96,7 @@
         <item>@string/status_icq_question</item>
         <item>@string/status_icq_way</item>
         <item>@string/status_icq_love</item>
-        <item>@string/status_icq_smoke</item>
-        <item>@string/status_icq_sex</item>
+        <item>@string/status_icq_in_love</item>
         <item>@string/status_icq_search</item>
         <item>@string/status_icq_diary</item>
     </string-array>
@@ -118,46 +112,43 @@
         <item>na</item>
         <item>busy</item>
         <item>occupied</item>
-        <item>notFound</item>
-        <item>unknown</item>
         <item>idle</item>
 
-        <item>icqmood0</item>
-        <item>icqmood1</item>
-        <item>icqmood2</item>
-        <item>icqmood52</item>
-        <item>icqmood4</item>
-        <item>icqmood5</item>
-        <item>icqmood80</item>
-        <item>icqmood7</item>
-        <item>status_icq_friends</item>
-        <item>icqmood9</item>
-        <item>icqmood10</item>
-        <item>icqmood11</item>
-        <item>status_icq_cinema</item>
-        <item>icqmood46</item>
-        <item>icqmood14</item>
-        <item>icqmood81</item>
-        <item>icqmood16</item>
-        <item>icqmood17</item>
-        <item>icqmood70</item>
-        <item>status_icq_surfing</item>
-        <item>icqmood20</item>
-        <item>icqmood21</item>
-        <item>status_icq_typing</item>
-        <item>icqmood23</item>
-        <item>status_icq_weekend</item>
-        <item>icqmood15</item>
-        <item>icqmood71</item>
-        <item>icqmood18</item>
-        <item>icqmood68</item>
-        <item>icqmood77</item>
-        <item>icqmood35</item>
-        <item>icqmood61</item>
-        <item>status_icq_smoke</item>
-        <item>status_icq_sex</item>
-        <item>status_icq_search</item>
-        <item>icqmood84</item>
+        <item>0icqmood0</item>
+        <item>0icqmood1</item>
+        <item>0icqmood2</item>
+        <item>0icqmood3</item>
+        <item>0icqmood4</item>
+        <item>0icqmood5</item>
+        <item>0icqmood6</item>
+        <item>0icqmood7</item>
+        <item>0icqmood8</item>
+        <item>0icqmood9</item>
+        <item>0icqmood10</item>
+        <item>0icqmood11</item>
+        <item>0icqmood12</item>
+        <item>0icqmood13</item>
+        <item>0icqmood14</item>
+        <item>0icqmood81</item>
+        <item>0icqmood16</item>
+        <item>0icqmood17</item>
+        <item>0icqmood70</item>
+        <item>0icqmood19</item>
+        <item>0icqmood20</item>
+        <item>0icqmood21</item>
+        <item>0icqmood22</item>
+        <item>0icqmood23</item>
+        <item>0icqmood66</item>
+        <item>0icqmood15</item>
+        <item>0icqmood71</item>
+        <item>0icqmood18</item>
+        <item>0icqmood68</item>
+        <item>0icqmood77</item>
+        <item>0icqmood83</item>
+        <item>0icqmood61</item>
+        <item>0icqmood76</item>
+        <item>0icqmood85</item>
+        <item>0icqmood84</item>
     </string-array>
 
     <integer-array name="status_connect_icq">

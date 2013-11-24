@@ -6,7 +6,12 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,8 +129,9 @@ public class RosterDialogsAdapter extends CursorAdapter implements
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
         String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
         String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
-        ((TextView) view.findViewById(R.id.buddy_status_title)).setText(statusTitle);
-        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusMessage);
+        SpannableString statusString = new SpannableString(statusTitle + " " + statusMessage);
+        statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
         // Unread counter.
         int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
         if(unreadCount > 0) {

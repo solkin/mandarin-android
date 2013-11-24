@@ -26,34 +26,21 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Buddy Nick"
                     android:id="@+id/buddy_nick"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingRight="5dp"
-                        android:text="Status title"
-                        android:id="@+id/buddy_status_title"
-                        android:layout_gravity="left|center_vertical"
-                        android:singleLine="true"
-                        android:textSize="14sp" android:textStyle="bold"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Buddy status message"
-                        android:id="@+id/buddy_status_message"
-                        android:layout_gravity="left|center_vertical"
-                        android:singleLine="true"
-                        android:textSize="14sp"/>
-            </LinearLayout>
+            <com.tomclaw.mandarin.main.views.ScrollingTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buddy_status_message"
+                    android:layout_gravity="left|center_vertical"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -64,7 +51,6 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5"
                 android:id="@+id/counter_text" android:padding="4dp"
                 android:layout_margin="6dp" android:background="@drawable/counter_background"
                 android:textColor="#ffffff" android:textStyle="bold"

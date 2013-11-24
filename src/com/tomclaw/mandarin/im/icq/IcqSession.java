@@ -303,26 +303,8 @@ public class IcqSession {
                         String statusMessage = buddyObject.optString(STATUS_MSG);
                         String moodTitle = buddyObject.optString(MOOD_TITLE);
 
-                        int statusIndex;
-                        try {
-                            // Checking for mood present.
-                            if(TextUtils.isEmpty(moodIcon)) {
-                                statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
-                            } else {
-                                statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
-                            }
-                        } catch (StatusNotFoundException ex) {
-                            statusIndex = StatusUtil.STATUS_OFFLINE;
-                        }
-                        // Define status title.
-                        String statusTitle;
-                        if(TextUtils.isEmpty(moodTitle)) {
-                            // Default title for status index.
-                            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
-                        } else {
-                            // Buddy specified title.
-                            statusTitle = moodTitle;
-                        }
+                        int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                        String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
@@ -393,26 +375,8 @@ public class IcqSession {
                 String statusMessage = eventData.optString(STATUS_MSG);
                 String moodTitle = eventData.optString(MOOD_TITLE);
 
-                int statusIndex;
-                try {
-                    // Checking for mood present.
-                    if(TextUtils.isEmpty(moodIcon)) {
-                        statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
-                    } else {
-                        statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
-                    }
-                } catch (StatusNotFoundException ex) {
-                    statusIndex = StatusUtil.STATUS_OFFLINE;
-                }
-                // Define status title.
-                String statusTitle;
-                if(TextUtils.isEmpty(moodTitle)) {
-                    // Default title for status index.
-                    statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
-                } else {
-                    // Buddy specified title.
-                    statusTitle = moodTitle;
-                }
+                int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
                 String buddyType = eventData.getString(USER_TYPE);
                 String buddyIcon = eventData.optString(BUDDY_ICON);
@@ -437,6 +401,36 @@ public class IcqSession {
         messageAuthenticationCode.update(key.getBytes());
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    private String getStatusTitle(String moodTitle, int statusIndex) {
+        // Define status title.
+        String statusTitle;
+        if(TextUtils.isEmpty(moodTitle)) {
+            // Default title for status index.
+            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
+        } else {
+            // Buddy specified title.
+            statusTitle = moodTitle;
+        }
+        return statusTitle;
+    }
+
+    private int getStatusIndex(String moodIcon, String buddyStatus) {
+        int statusIndex;
+        // Checking for mood present.
+        if(!TextUtils.isEmpty(moodIcon)) {
+            try {
+                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+            } catch (StatusNotFoundException ignored) {
+            }
+        }
+        try {
+            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+        } catch (StatusNotFoundException ex) {
+            statusIndex = StatusUtil.STATUS_OFFLINE;
+        }
+        return statusIndex;
     }
 
     /**

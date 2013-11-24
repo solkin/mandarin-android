@@ -114,8 +114,7 @@
     <string name="status_icq_question">Вопрос</string>
     <string name="status_icq_way">В пути</string>
     <string name="status_icq_love">Любовь</string>
-    <string name="status_icq_smoke">Курю</string>
-    <string name="status_icq_sex">Секс</string>
+    <string name="status_icq_in_love">Влюблён</string>
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
 </resources>

@@ -12,9 +12,8 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.List;
@@ -376,7 +375,8 @@ public class QueryHelper {
     }
 
     public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
-                                         int buddyStatusIndex) throws BuddyNotFoundException {
+                                         int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage)
+            throws BuddyNotFoundException {
         // Obtain account db id.
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -391,6 +391,8 @@ public class QueryHelper {
                 // Plain buddy modify.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
+                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, buddyStatusTitle);
+                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, buddyStatusMessage);
                 modifyBuddy(contentResolver, buddyDbId, contentValues);
             } while(cursor.moveToNext());
             // Closing cursor.
@@ -404,7 +406,8 @@ public class QueryHelper {
 
     public static void updateOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
                                            long updateTime, int groupId, String groupName,
-                                           String buddyId, String buddyNick, String buddyStatus) {
+                                           String buddyId, String buddyNick, int statusIndex,
+                                           String statusTitle, String statusMessage) {
         ContentValues buddyValues = new ContentValues();
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountType);
@@ -412,7 +415,9 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
-        buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, IcqStatusUtil.getStatusIndex(buddyStatus));
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, statusIndex);
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, statusTitle);
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, statusMessage);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));

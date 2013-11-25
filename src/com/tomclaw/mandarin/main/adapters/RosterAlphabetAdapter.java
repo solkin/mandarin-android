@@ -5,7 +5,11 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +22,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 /**
@@ -47,6 +51,8 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
+    private static int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
+    private static int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
     private static int COLUMN_ROSTER_BUDDY_ALPHABET_INDEX;
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
@@ -107,12 +113,16 @@ public class RosterAlphabetAdapter extends CursorAdapter
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Setup values
-        ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
-                StatusUtil.getStatusResource(
+                StatusUtil.getStatusDrawable(
                         cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
+        String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
+        String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
+        SpannableString statusString = new SpannableString(statusTitle + " " + statusMessage);
+        statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
         // Unread counter.
         int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
         if(unreadCount > 0) {
@@ -168,6 +178,9 @@ public class RosterAlphabetAdapter extends CursorAdapter
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
+        COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
+        COLUMN_ROSTER_BUDDY_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE);
+        COLUMN_ROSTER_BUDDY_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE);
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
         COLUMN_ROSTER_BUDDY_ALPHABET_INDEX = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);

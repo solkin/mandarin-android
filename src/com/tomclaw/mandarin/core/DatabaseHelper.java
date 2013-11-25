@@ -8,7 +8,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
@@ -43,14 +43,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues cv2 = new ContentValues();
             ContentValues cv3 = new ContentValues();
             int[] statuses = new int[]{
-                    StatusUtil.STATUS_OFFLINE,
-                    StatusUtil.STATUS_ONLINE,
-                    StatusUtil.STATUS_AWAY,
-                    StatusUtil.STATUS_OFFLINE,
-                    StatusUtil.STATUS_CHAT,
-                    StatusUtil.STATUS_DND,
-                    StatusUtil.STATUS_OFFLINE,
-                    StatusUtil.STATUS_MOBILE,
                     StatusUtil.STATUS_OFFLINE
             };
             Random random = new Random(System.currentTimeMillis());
@@ -88,6 +80,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
@@ -135,6 +129,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static String generateRandomText(Random r) {
         int wordCount = 10 + r.nextInt(13);
+        return generateRandomText(r, wordCount);
+    }
+
+    public static String generateRandomText(Random r, int wordCount) {
+
         StringBuilder sb = new StringBuilder(wordCount);
         for (int i = 0; i < wordCount; i++) { // For each letter in the word
             sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
@@ -151,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Initialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
         for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
+            char tmp = (char) ('а' + r.nextInt('я' - 'а')); // Generate a letter between a and z
             sb.append(tmp); // Add it to the String
         }
         String word = sb.toString();

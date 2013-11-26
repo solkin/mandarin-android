@@ -8,9 +8,6 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Status;
 import com.tomclaw.mandarin.im.StatusCatalogue;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -32,7 +29,7 @@ public class IcqStatusCatalogue extends StatusCatalogue {
                     statusTitles[index], statusValues[index]);
             Log.d(Settings.LOG_TAG, "status value: " + status.getValue());
             indexMap.put(statusValues[index], index);
-            statusMap.put(index, status);
+            statusList.add(index, status);
             if(index < statusConnect.length) {
                 connectStatuses.add(statusConnect[index]);
             }

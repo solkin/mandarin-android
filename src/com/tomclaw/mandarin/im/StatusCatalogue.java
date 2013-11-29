@@ -14,12 +14,12 @@ import java.util.Map;
 public abstract class StatusCatalogue {
 
     protected Map<String, Integer> indexMap;
-    protected Map<Integer, Status> statusMap;
+    protected List<Status> statusList;
     protected List<Integer> connectStatuses;
 
     public StatusCatalogue() {
         indexMap = new HashMap<String, Integer>();
-        statusMap = new HashMap<Integer, Status>();
+        statusList = new ArrayList<Status>();
         connectStatuses = new ArrayList<Integer>();
     }
 
@@ -32,7 +32,7 @@ public abstract class StatusCatalogue {
     }
 
     public Status getStatus(int statusIndex) {
-        return statusMap.get(statusIndex);
+        return statusList.get(statusIndex);
     }
 
     public List<Integer> getConnectStatuses() {

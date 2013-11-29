@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -121,22 +122,30 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // Setup values.
-        ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
-        ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
-                StatusUtil.getStatusDrawable(
-                        cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
-                        cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
+        // Status image.
+        String accountType = cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE);
+        int statusIndex = cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS);
+        int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
+        // Status text.
         String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
         String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
+        if(statusIndex == StatusUtil.STATUS_OFFLINE
+                || TextUtils.equals(statusTitle, statusMessage)) {
+            // Buddy status is offline now or status message is only status title.
+            // No status message could be displayed.
+            statusMessage = "";
+        }
         SpannableString statusString = new SpannableString(statusTitle + " " + statusMessage);
         statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
-        // Unread counter.
+        // Unread count.
         int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
+        // Applying values.
+        ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
+        ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
+        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
         if(unreadCount > 0) {
             view.findViewById(R.id.counter_layout).setVisibility(View.VISIBLE);
-            ((TextView)view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
+            ((TextView) view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
         } else {
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }

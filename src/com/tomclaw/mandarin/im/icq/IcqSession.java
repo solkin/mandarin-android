@@ -51,11 +51,16 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class IcqSession {
 
+    private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered";
+    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType";
+
     public static final int INTERNAL_ERROR = 1000;
     public static final int EXTERNAL_LOGIN_OK = 200;
     public static final int EXTERNAL_LOGIN_ERROR = 330;
     public static final int EXTERNAL_UNKNOWN = 0;
     private static final int EXTERNAL_SESSION_OK = 200;
+    public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
     private static final int timeoutSocket = 65000;
@@ -90,7 +95,7 @@ public class IcqSession {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
             nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "3.2"));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID, "ao1mAegmj4_7xQOy"));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID, DEV_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
             nameValuePairs.add(new BasicNameValuePair(PASSWORD, icqAccountRoot.getUserPassword()));
@@ -140,17 +145,17 @@ public class IcqSession {
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, "094613504C7F11D18222444553540000"));
+            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, "4d616e646172696e20494d0003000000"));
             nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, "1234"));
             nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
             nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "v0.01"));
             nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, "deviceid"));
-            nameValuePairs.add(new BasicNameValuePair(EVENTS, "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered"));
+            nameValuePairs.add(new BasicNameValuePair(EVENTS, EVENTS_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(IMF, "plain"));
-            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType"));
+            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
             nameValuePairs.add(new BasicNameValuePair(INVISIBLE, "false"));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, "ao1mAegmj4_7xQOy"));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, DEV_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(LANGUAGE, "ru-ru"));
             nameValuePairs.add(new BasicNameValuePair(MINIMIZE_RESPONSE, "0"));
             nameValuePairs.add(new BasicNameValuePair(MOBILE, "1"));
@@ -158,9 +163,10 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair(VIEW, StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
-            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
-                    .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
+            nameValuePairs.add(new BasicNameValuePair(VIEW,
+                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
+            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
+                    .concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
                     getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -173,7 +179,7 @@ public class IcqSession {
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {
-                case EXTERNAL_LOGIN_OK: {
+                case EXTERNAL_SESSION_OK: {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
@@ -186,6 +192,9 @@ public class IcqSession {
                     // Update starts session result in database.
                     icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
                     return EXTERNAL_SESSION_OK;
+                }
+                case EXTERNAL_SESSION_RATE_LIMIT: {
+                    return EXTERNAL_SESSION_RATE_LIMIT;
                 }
                 // TODO: may be cases if ts incorrect. Mey be proceed too.
                 default: {

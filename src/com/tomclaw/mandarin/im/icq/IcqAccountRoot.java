@@ -77,6 +77,11 @@ public class IcqAccountRoot extends AccountRoot {
                         }
                         // Attempt to start session.
                         switch (icqSession.startSession()) {
+                            case IcqSession.EXTERNAL_SESSION_RATE_LIMIT: {
+                                // Show notification.
+                                updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                return;
+                            }
                             case IcqSession.EXTERNAL_UNKNOWN: {
                                 // Retry client login.
                                 resetLoginData();

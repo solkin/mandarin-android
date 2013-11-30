@@ -263,7 +263,13 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
         if(method.equals(METHOD_UPDATE_UNREAD)) {
-            sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());
+            sqLiteDatabase.beginTransaction();
+            try {
+                sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());
+                sqLiteDatabase.setTransactionSuccessful();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;

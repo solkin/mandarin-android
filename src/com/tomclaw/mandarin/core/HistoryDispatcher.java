@@ -202,7 +202,7 @@ public class HistoryDispatcher {
                             notificationBuilder.setDefaults(defaults);
                         }
                     }
-                    notificationBuilder.setLights(0x00ff6600, 2000, 2000);
+                    notificationBuilder.setLights(0x00ff6600, 1000, 1000);
 
                     Notification notification = notificationBuilder.build();
                     // Notify it right now!

@@ -213,13 +213,13 @@ public class HistoryDispatcher {
                             }
                             notificationBuilder.setDefaults(defaults);
                         }
+                        onNotificationShown();
                     }
                     notificationBuilder.setLights(0xffff6600, 1000, 1000);
 
                     Notification notification = notificationBuilder.build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);
-                    onNotificationShown();
                     // Update shown messages flag.
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);

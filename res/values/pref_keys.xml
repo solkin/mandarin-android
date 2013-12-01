@@ -8,4 +8,6 @@
     <string name="pref_system_notifications">pref_system_notifications</string>
     <string name="pref_notification_sound">pref_notification_sound</string>
     <string name="pref_vibrate">pref_vibrate</string>
+    <string name="pref_base_settings">pref_base_settings</string>
+    <string name="pref_autorun">pref_autorun</string>
 </resources>

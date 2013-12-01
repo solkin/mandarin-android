@@ -31,6 +31,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_vibrate, R.bool.pref_vibrate_default);
     }
 
+    public static boolean isAutorun(Context context) {
+        return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
+    }
+
     public static Uri getNotificationUri(Context context) {
         String uriValue = getStringPreference(context, R.string.pref_notification_sound,
                 R.string.pref_notification_sound_default);

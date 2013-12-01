@@ -81,6 +81,9 @@
     <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
         течение двух минут
     </string>
+    <string name="pref_base_title">Основное</string>
+    <string name="pref_title_autorun">Фоновый автозапуск</string>
+    <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
 
     <string name="status_icq_shop">Магазины</string>
     <string name="status_icq_duck">В ванной</string>

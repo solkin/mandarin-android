@@ -66,17 +66,30 @@ public class HistoryDispatcher {
 
     private class HistoryObserver extends ContentObserver {
 
+        HistoryDispatcherTask historyDispatcherTask;
+
         /**
          * Creates a content observer.
          */
         public HistoryObserver() {
             super(null);
+            historyDispatcherTask = new HistoryDispatcherTask();
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             Log.d(Settings.LOG_TAG, "HistoryObserver: onChange [selfChange = " + selfChange + "]");
+            TaskExecutor.getInstance().execute(historyDispatcherTask);
+        }
+    }
+
+    private class HistoryDispatcherTask extends Task {
+
+        private long notificationCancelTime = 0;
+
+        @Override
+        public void executeBackground() throws Throwable {
             // Obtain unique unread buddies. If exist.
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
@@ -87,11 +100,11 @@ public class HistoryDispatcher {
             if (unReadCursor.moveToFirst()) {
                 queryBuilder.recycle();
                 queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
-                            .startComplexExpression()
-                                .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
-                                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
-                            .finishComplexExpression()
-                            .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
+                        .startComplexExpression()
+                        .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                        .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
+                        .finishComplexExpression()
+                        .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
                         .finishComplexExpression();
                 Cursor unShownCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
                         unShownProjection);
@@ -189,7 +202,7 @@ public class HistoryDispatcher {
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent);
-                    if(isAlarmRequired) {
+                    if(isAlarmRequired && isNotificationCompleted()) {
                         if(PreferenceHelper.isSystemNotifications(context)) {
                             notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
                         } else {
@@ -206,6 +219,7 @@ public class HistoryDispatcher {
                     Notification notification = notificationBuilder.build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);
+                    onNotificationShown();
                     // Update shown messages flag.
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
@@ -216,11 +230,35 @@ public class HistoryDispatcher {
                 unShownCursor.close();
             } else {
                 Log.d(Settings.LOG_TAG, "HistoryObserver: No unread messages found");
+                onNotificationCancel();
                 notificationManager.cancel(NOTIFICATION_ID);
             }
             unReadCursor.close();
             // Call to update unread count.
             contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
+        }
+
+        private void onNotificationShown() {
+            notificationCancelTime = System.currentTimeMillis() + Settings.NOTIFICATION_MIN_DELAY;
+        }
+
+        private void onNotificationCancel() {
+            long notificationRemain = getNotificationRemain();
+            if(notificationRemain > 0) {
+                try {
+                    // Take some time to read this message and notification to be shown
+                    Thread.sleep(notificationRemain);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+
+        private boolean isNotificationCompleted() {
+            return getNotificationRemain() <= 0;
+        }
+
+        private long getNotificationRemain() {
+            return notificationCancelTime - System.currentTimeMillis();
         }
     }
 }

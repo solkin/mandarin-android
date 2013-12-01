@@ -54,6 +54,11 @@ public class IcqSession {
     private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType";
+    private static final String CLIENT_NAME_VALUE = "Android%20Agent";
+    private static final String CLIENT_VERSION_VALUE = "3.2";
+    private static final String BUILD_NUMBER_VALUE = "1234";
+    private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000";
+    private static final String DEVICE_ID_VALUE = "deviceid";
 
     public static final int INTERNAL_ERROR = 1000;
     public static final int EXTERNAL_LOGIN_OK = 200;
@@ -92,9 +97,9 @@ public class IcqSession {
             // Create a new post header.
             HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
             // Specifying login data.
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "3.2"));
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
             nameValuePairs.add(new BasicNameValuePair(DEV_ID, DEV_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
@@ -143,13 +148,13 @@ public class IcqSession {
             // Create a new HttpClient and Post Header
             HttpPost httpPost = new HttpPost(START_SESSION_URL);
             // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, "4d616e646172696e20494d0003000000"));
-            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, "1234"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "v0.01"));
-            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, "deviceid"));
+            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, ASSERT_CAPS_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, BUILD_NUMBER_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, DEVICE_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(EVENTS, EVENTS_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(IMF, "plain"));

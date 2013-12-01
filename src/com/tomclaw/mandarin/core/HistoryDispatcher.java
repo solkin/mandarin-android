@@ -198,7 +198,6 @@ public class HistoryDispatcher {
                             if(PreferenceHelper.isVibrate(context)) {
                                 defaults |= Notification.DEFAULT_VIBRATE;
                             }
-                            // defaults |= Notification.DEFAULT_LIGHTS;
                             notificationBuilder.setDefaults(defaults);
                         }
                     }

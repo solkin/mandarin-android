@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;

@@ -12,8 +12,8 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.List;

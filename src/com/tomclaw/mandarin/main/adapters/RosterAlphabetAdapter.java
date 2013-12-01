@@ -22,8 +22,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 /**

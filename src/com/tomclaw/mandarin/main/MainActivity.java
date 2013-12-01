@@ -14,7 +14,7 @@ import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.main.adapters.*;
+import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 
 public class MainActivity extends ChiefActivity {
 

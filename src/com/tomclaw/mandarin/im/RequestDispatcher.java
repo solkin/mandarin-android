@@ -7,7 +7,10 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.SessionHolder;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 
 /**

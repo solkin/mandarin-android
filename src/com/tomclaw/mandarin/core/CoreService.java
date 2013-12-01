@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.RequestDispatcher;
 

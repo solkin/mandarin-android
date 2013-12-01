@@ -1,12 +1,5 @@
 package com.tomclaw.mandarin.im;
 
-import android.content.Context;
-import android.util.Log;
-import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

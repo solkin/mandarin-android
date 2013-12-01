@@ -5,7 +5,6 @@ import android.content.Context;
 import com.tomclaw.mandarin.R;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.

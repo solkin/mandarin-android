@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.im.icq;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: solkin

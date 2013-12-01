@@ -13,8 +13,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
 
-import java.util.Arrays;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin

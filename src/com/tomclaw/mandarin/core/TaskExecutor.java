@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

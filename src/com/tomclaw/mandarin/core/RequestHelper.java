@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.im.Request;
 import com.tomclaw.mandarin.im.icq.EndSessionRequest;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
 
@@ -36,6 +35,7 @@ public class RequestHelper {
             IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
             // Writing to requests database.
             ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
             contentValues.put(GlobalProvider.REQUEST_CLASS, IcqMessageRequest.class.getName());
             contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
             contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
@@ -51,6 +51,7 @@ public class RequestHelper {
         EndSessionRequest endSessionRequest = new EndSessionRequest();
         // Writing to requests database.
         ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
         contentValues.put(GlobalProvider.REQUEST_CLASS, EndSessionRequest.class.getName());
         contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);

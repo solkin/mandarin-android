@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.Request;
+import com.tomclaw.mandarin.core.Request;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

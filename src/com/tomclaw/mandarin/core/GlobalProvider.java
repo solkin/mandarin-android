@@ -30,6 +30,7 @@ public class GlobalProvider extends ContentProvider {
     // Fields
     public static final String ROW_AUTO_ID = "_id";
 
+    public static final String REQUEST_TYPE = "request_type";
     public static final String REQUEST_CLASS = "request_class";
     public static final String REQUEST_SESSION = "request_session";
     public static final String REQUEST_PERSISTENT = "request_persistent";
@@ -81,7 +82,7 @@ public class GlobalProvider extends ContentProvider {
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
-            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
             + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT_DB_ID + " int, "
             + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text" + ");";

@@ -69,8 +69,6 @@ public class AvatarCache {
     }
 
     private File getBitmapFile(String avatarHash) {
-        File path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
         return new File(path, avatarHash + ".png");
     }
 

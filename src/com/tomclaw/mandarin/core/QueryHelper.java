@@ -404,8 +404,15 @@ public class QueryHelper {
     }
 
     public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
-                                         int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage)
+                                         int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage,
+                                         String buddyIcon)
             throws BuddyNotFoundException {
+        // Plain buddy modify.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, buddyStatusTitle);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, buddyStatusMessage);
+        String avatarHash;
         // Obtain buddy db id.
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -413,19 +420,23 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
-            final int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Cycling all the identical buddies in different groups.
             do {
-                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
-                // Plain buddy modify.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, buddyStatusTitle);
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, buddyStatusMessage);
+                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
+                // Checking for no buddy icon now, so, we must reset avatar hash.
+                if(TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
+                    contentValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
+                }
                 modifyBuddy(contentResolver, buddyDbId, contentValues);
             } while(cursor.moveToNext());
             // Closing cursor.
             cursor.close();
+            // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
+            if(!(TextUtils.equals(avatarHash, AvatarRequest.getAvatarHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
+                // TODO: This code must be duplicated for presence too.
+                RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+            }
         } else {
             // Closing cursor.
             cursor.close();
@@ -477,7 +488,6 @@ public class QueryHelper {
         buddyCursor.close();
 
         if(!(TextUtils.equals(avatarHash, AvatarRequest.getAvatarHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
-            // TODO: This code must be duplicated for presence too.
             RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
         }
     }

@@ -397,7 +397,7 @@ public class IcqSession {
                 String buddyIcon = eventData.optString(BUDDY_ICON);
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, statusIndex, statusTitle, statusMessage);
+                        buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {

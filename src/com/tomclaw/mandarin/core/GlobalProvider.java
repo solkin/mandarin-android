@@ -37,6 +37,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String REQUEST_ACCOUNT_DB_ID = "account_db_id";
     public static final String REQUEST_STATE = "request_state";
     public static final String REQUEST_BUNDLE = "request_bundle";
+    public static final String REQUEST_TAG = "request_tag";
 
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -85,7 +86,7 @@ public class GlobalProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
             + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT_DB_ID + " int, "
-            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text" + ");";
+            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text, " + REQUEST_TAG + " text" + ");";
 
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

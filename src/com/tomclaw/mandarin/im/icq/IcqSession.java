@@ -5,9 +5,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -322,6 +320,12 @@ public class IcqSession {
 
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
+
+                        if(!TextUtils.isEmpty(buddyIcon)) {
+                            // TODO: This code must be duplicated for presence too.
+                            RequestHelper.requestAvatar(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
+                                    icqAccountRoot.getAccountDbId(), buddyId, buddyIcon);
+                        }
 
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
                                 groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage);

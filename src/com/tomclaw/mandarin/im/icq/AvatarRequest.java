@@ -2,9 +2,8 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.util.Base64;
 import android.util.Log;
+import com.tomclaw.mandarin.core.AvatarCache;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Request;
 import com.tomclaw.mandarin.core.Settings;
@@ -14,7 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.*;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -95,25 +94,7 @@ public class AvatarRequest extends Request<IcqAccountRoot> {
     }
 
     private boolean saveBitmap(Bitmap bitmap) {
-        File path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File file = new File(path, avatarHash + ".png");
-
-        try {
-            // Make sure the Pictures directory exists.
-            path.mkdirs();
-
-            OutputStream os = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 95, os);
-            os.close();
-
-            return true;
-        } catch (IOException e) {
-            // Unable to create file, likely because external storage is
-            // not currently mounted.
-            Log.d(Settings.LOG_TAG, "Error writing avatar: " + file, e);
-        }
-        return false;
+        return AvatarCache.getInstance().saveBitmapSync(avatarHash, bitmap);
     }
 
     public static String getAvatarHash(String url) {

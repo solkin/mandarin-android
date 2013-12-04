@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -17,14 +18,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,6 +59,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
     private static int COLUMN_ROSTER_BUDDY_ALPHABET_INDEX;
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
+    private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
 
     /**
      * Variables
@@ -140,6 +143,35 @@ public class RosterAlphabetAdapter extends CursorAdapter
         } else {
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
+        // Avatar.
+        try {
+            final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
+            QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
+            contactBadge.setImageResource(R.drawable.ic_default_avatar);
+            if(!TextUtils.isEmpty(avatarHash)) {
+                final WeakReference<QuickContactBadge> badgeWeakReference = new WeakReference<QuickContactBadge>(contactBadge);
+                Task task = new Task() {
+
+                    private Bitmap bitmap;
+
+                    @Override
+                    public void executeBackground() throws Throwable {
+                        bitmap = AvatarCache.getInstance().getBitmapSync(avatarHash);
+                    }
+
+                    @Override
+                    public void onSuccessMain() {
+                        QuickContactBadge badge = badgeWeakReference.get();
+                        if(badge != null && bitmap != null) {
+                            badge.setImageBitmap(bitmap);
+                        }
+                    }
+                };
+                TaskExecutor.getInstance().execute(task);
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -193,6 +225,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
         COLUMN_ROSTER_BUDDY_ALPHABET_INDEX = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
+        COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
         swapCursor(cursor);
     }
 

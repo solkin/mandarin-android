@@ -15,6 +15,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +29,9 @@ public class AvatarRequest extends Request<IcqAccountRoot> {
 
     // One http client for all avatar requests, cause they invokes coherently.
     private static final transient HttpClient httpClient;
+
+    private static final String HASH_ALGORITHM = "MD5";
+    private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
     private String buddyId;
     private String url;
@@ -111,7 +117,19 @@ public class AvatarRequest extends Request<IcqAccountRoot> {
     }
 
     public static String getAvatarHash(String url) {
-        // TODO: real hash!
-        return Base64.encodeToString(url.getBytes(), Base64.NO_WRAP);
+        byte[] md5 = getMD5(url.getBytes());
+        BigInteger bi = new BigInteger(md5).abs();
+        return bi.toString(RADIX);
+    }
+
+    private static byte[] getMD5(byte[] data) {
+        byte[] hash = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+            digest.update(data);
+            hash = digest.digest();
+        } catch (NoSuchAlgorithmException ignored) {
+        }
+        return hash;
     }
 }

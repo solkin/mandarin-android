@@ -69,7 +69,7 @@ public class RequestHelper {
                 GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
         // Checking for at least one such download request exist.
         if (!cursor.moveToFirst()) {
-            AvatarRequest avatarRequest = new AvatarRequest(accountDbId, buddyId, url);
+            AvatarRequest avatarRequest = new AvatarRequest(buddyId, url);
             // Writing to requests database.
             ContentValues contentValues = new ContentValues();
             contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_DOWNLOAD);

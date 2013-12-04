@@ -70,6 +70,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
     public static final String ROSTER_BUDDY_ALPHABET_INDEX = "buddy_alphabet_index";
     public static final String ROSTER_BUDDY_UNREAD_COUNT = "buddy_unread_count";
+    public static final String ROSTER_BUDDY_AVATAR_HASH = "buddy_avatar_hash";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -109,7 +110,7 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_STATUS_MESSAGE + " text, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
-            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0" + ");";
+            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

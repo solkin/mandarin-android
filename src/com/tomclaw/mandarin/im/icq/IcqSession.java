@@ -321,14 +321,9 @@ public class IcqSession {
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
-                        if(!TextUtils.isEmpty(buddyIcon)) {
-                            // TODO: This code must be duplicated for presence too.
-                            RequestHelper.requestAvatar(icqAccountRoot.getContentResolver(), CoreService.getAppSession(),
-                                    icqAccountRoot.getAccountDbId(), buddyId, buddyIcon);
-                        }
-
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage);
+                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
+                                buddyIcon);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);

@@ -22,7 +22,7 @@ public class EndSessionRequest extends WimRequest {
     }
 
     @Override
-    public int parseResponse(JSONObject response) throws JSONException {
+    protected int parseJson(JSONObject response) throws JSONException {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
@@ -38,13 +38,13 @@ public class EndSessionRequest extends WimRequest {
     }
 
     @Override
-    public String getUrl() {
+    protected String getUrl() {
         return getAccountRoot().getWellKnownUrls().getWebApiBase()
                 .concat("aim/endSession");
     }
 
     @Override
-    public List<Pair<String, String>> getParams() {
+    protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", "json"));

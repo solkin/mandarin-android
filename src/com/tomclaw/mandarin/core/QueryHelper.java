@@ -14,7 +14,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.icq.AvatarRequest;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
@@ -433,7 +433,7 @@ public class QueryHelper {
             // Closing cursor.
             cursor.close();
             // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
-            if(!(TextUtils.equals(avatarHash, AvatarRequest.getAvatarHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
+            if(!(TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
                 // TODO: This code must be duplicated for presence too.
                 RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
             }
@@ -487,7 +487,7 @@ public class QueryHelper {
         }
         buddyCursor.close();
 
-        if(!(TextUtils.equals(avatarHash, AvatarRequest.getAvatarHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
+        if(!(TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
             RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
         }
     }

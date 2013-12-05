@@ -37,8 +37,8 @@ public abstract class Request<A extends AccountRoot> {
      */
     public final int onRequest(A accountRoot) {
         this.accountRoot = accountRoot;
-        return buildRequest();
+        return executeRequest();
     }
 
-    public abstract int buildRequest();
+    public abstract int executeRequest();
 }

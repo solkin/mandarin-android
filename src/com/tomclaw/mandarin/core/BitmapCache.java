@@ -14,47 +14,53 @@ import java.io.*;
  * Date: 12/5/13
  * Time: 1:32 AM
  */
-public class AvatarCache {
+public class BitmapCache {
 
     private static class Holder {
 
-        static AvatarCache instance = new AvatarCache();
+        static BitmapCache instance = new BitmapCache();
     }
 
-    public static AvatarCache getInstance() {
+    public static BitmapCache getInstance() {
         return Holder.instance;
     }
 
-    private static final int cacheSize = 4 * 1024 * 1024; // 4MiB
+    // Get max available VM memory, exceeding this amount will throw an
+    // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+    // int in its constructor.
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+    // Use 1/8th of the available memory for this memory cache.
+    final int cacheSize = maxMemory / 8;
 
     private LruCache<String, Bitmap> bitmapLruCache;
 
     private final File path;
 
-    public AvatarCache() {
+    public BitmapCache() {
         bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
         path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         path.mkdirs();
     }
 
-    public Bitmap getBitmapSync(String avatarHash) {
-        Bitmap bitmap = bitmapLruCache.get(avatarHash);
+    public Bitmap getBitmapSync(String hash) {
+        Bitmap bitmap = bitmapLruCache.get(hash);
         if(bitmap == null) {
-            File file = getBitmapFile(avatarHash);
+            File file = getBitmapFile(hash);
             try {
                 FileInputStream inputStream = new FileInputStream(file);
                 bitmap = BitmapFactory.decodeStream(inputStream);
-                bitmapLruCache.put(avatarHash, bitmap);
+                bitmapLruCache.put(hash, bitmap);
             } catch (FileNotFoundException ignored) {
-                Log.d(Settings.LOG_TAG, "Error while reading file for avatar hash: " + avatarHash);
+                Log.d(Settings.LOG_TAG, "Error while reading file for bitmap hash: " + hash);
             }
         }
         return bitmap;
     }
 
-    public boolean saveBitmapSync(String avatarHash, Bitmap bitmap) {
-        File file = getBitmapFile(avatarHash);
+    public boolean saveBitmapSync(String hash, Bitmap bitmap) {
+        File file = getBitmapFile(hash);
         try {
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 95, os);
@@ -63,13 +69,13 @@ public class AvatarCache {
         } catch (IOException e) {
             // Unable to create file, likely because external storage is
             // not currently mounted.
-            Log.d(Settings.LOG_TAG, "Error writing avatar: " + file, e);
+            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + file, e);
         }
         return false;
     }
 
-    private File getBitmapFile(String avatarHash) {
-        return new File(path, avatarHash + ".png");
+    private File getBitmapFile(String hash) {
+        return new File(path, hash + ".png");
     }
 
 }

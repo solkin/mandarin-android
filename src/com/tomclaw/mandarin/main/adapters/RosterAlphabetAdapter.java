@@ -156,7 +156,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
                     @Override
                     public void executeBackground() throws Throwable {
-                        bitmap = AvatarCache.getInstance().getBitmapSync(avatarHash);
+                        bitmap = BitmapCache.getInstance().getBitmapSync(avatarHash);
                     }
 
                     @Override

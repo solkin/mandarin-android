@@ -4,7 +4,10 @@ import android.util.Pair;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -14,6 +17,9 @@ import java.util.List;
  * Time: 14:40
  */
 public class HttpUtil {
+
+    private static final String HASH_ALGORITHM = "MD5";
+    private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
     /**
      * Builds Url request string from specified parameters.
@@ -35,5 +41,22 @@ public class HttpUtil {
                             .replace("+", "%20"));
         }
         return builder.toString();
+    }
+
+    public static String getUrlHash(String url) {
+        byte[] md5 = getMD5(url.getBytes());
+        BigInteger bi = new BigInteger(md5).abs();
+        return bi.toString(RADIX);
+    }
+
+    private static byte[] getMD5(byte[] data) {
+        byte[] hash = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+            digest.update(data);
+            hash = digest.digest();
+        } catch (NoSuchAlgorithmException ignored) {
+        }
+        return hash;
     }
 }

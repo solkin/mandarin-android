@@ -5,7 +5,6 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -21,12 +20,13 @@ import android.widget.ImageView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -144,33 +144,14 @@ public class RosterAlphabetAdapter extends CursorAdapter
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
         // Avatar.
-        try {
-            final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
-            QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
+        final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
+        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
+        String tagHashValue = (String) contactBadge.getTag();
+        if(!TextUtils.isEmpty(tagHashValue) && TextUtils.isEmpty(avatarHash)) {
             contactBadge.setImageResource(R.drawable.ic_default_avatar);
-            if(!TextUtils.isEmpty(avatarHash)) {
-                final WeakReference<QuickContactBadge> badgeWeakReference = new WeakReference<QuickContactBadge>(contactBadge);
-                Task task = new Task() {
-
-                    private Bitmap bitmap;
-
-                    @Override
-                    public void executeBackground() throws Throwable {
-                        bitmap = BitmapCache.getInstance().getBitmapSync(avatarHash);
-                    }
-
-                    @Override
-                    public void onSuccessMain() {
-                        QuickContactBadge badge = badgeWeakReference.get();
-                        if(badge != null && bitmap != null) {
-                            badge.setImageBitmap(bitmap);
-                        }
-                    }
-                };
-                TaskExecutor.getInstance().execute(task);
-            }
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+        }
+        if(!TextUtils.isEmpty(avatarHash)) {
+            BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash);
         }
     }
 

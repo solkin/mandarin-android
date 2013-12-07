@@ -9,7 +9,6 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -22,23 +21,26 @@ import java.util.List;
  */
 public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
-    // One http client for all Http requests, cause they invokes coherently.
-    protected static final transient HttpClient httpClient;
-
-    static {
-        httpClient = new DefaultHttpClient();
-    }
-
     @Override
     public int executeRequest() {
         try {
+            HttpClient httpClient = getHttpClient();
             HttpResponse response = httpClient.execute(getHttpRequestBase(getUrlWithParameters()));
-            return parseResponse(response);
+            // Process response.
+            int result = parseResponse(response);
+            try {
+                // Release connection.
+                response.getEntity().consumeContent();
+            } catch (Throwable ignored) {
+            }
+            return result;
         } catch (Throwable e) {
             e.printStackTrace();
             return REQUEST_PENDING;
         }
     }
+
+    public abstract HttpClient getHttpClient();
 
     /**
      * Returns request-specific request base: HttpGet or HttpPost.

@@ -7,8 +7,10 @@ import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -22,6 +24,13 @@ import java.util.List;
  */
 public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A> {
 
+    // One http client for all Http requests, cause they invokes coherently.
+    protected static final transient HttpClient httpClient;
+
+    static {
+        httpClient = new DefaultHttpClient();
+    }
+
     private String url;
 
     private transient String hash;
@@ -31,6 +40,11 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
 
     public BitmapRequest(String url) {
         this.url = url;
+    }
+
+    @Override
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 
     @Override

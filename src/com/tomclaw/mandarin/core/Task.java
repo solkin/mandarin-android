@@ -33,6 +33,9 @@ public abstract class Task implements Runnable {
         }
     }
 
+    public boolean isPreExecuteRequired() {
+        return false;
+    };
     public void onPreExecuteMain() {}
     public abstract void executeBackground() throws Throwable;
     public void onPostExecuteMain() {}

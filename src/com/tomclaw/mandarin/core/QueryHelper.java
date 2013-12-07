@@ -368,6 +368,7 @@ public class QueryHelper {
         } else {
             Log.d(Settings.LOG_TAG, "Marking as read query, but no unread messages found");
         }
+        cursor.close();
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
@@ -385,14 +386,19 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
-            final int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Cycling all the identical buddies in different groups.
             do {
-                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
                 // Plain buddy modify.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
                 modifyBuddy(contentResolver, buddyDbId, contentValues);
+                /* TODO: think about this.
+                if(!TextUtils.equals(dbAvatarHash, avatarHash)) {
+                    // Avatar changed or removed. No need for previous bitmap in cache.
+                    BitmapCache.getInstance().removeBitmap(dbAvatarHash);
+                }*/
             } while(cursor.moveToNext());
             // Closing cursor.
             cursor.close();
@@ -433,9 +439,11 @@ public class QueryHelper {
             // Closing cursor.
             cursor.close();
             // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
-            if(!(TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
-                // TODO: This code must be duplicated for presence too.
-                RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+            if(!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+                if(!TextUtils.isEmpty(buddyIcon)) {
+                    // Avatar is ready.
+                    RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+                }
             }
         } else {
             // Closing cursor.
@@ -487,8 +495,11 @@ public class QueryHelper {
         }
         buddyCursor.close();
 
-        if(!(TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon)) || TextUtils.isEmpty(buddyIcon))) {
-            RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+        if(!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+            if(!TextUtils.isEmpty(buddyIcon)) {
+                // Avatar is ready.
+                RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+            }
         }
     }
 

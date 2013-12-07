@@ -31,12 +31,16 @@ public class TaskExecutor {
     }
 
     public void execute(final Task task) {
-        MainExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                task.onPreExecuteMain();
-                mThreadPoolExecutor.execute(task);
-            }
-        });
+        if(task.isPreExecuteRequired()) {
+            MainExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    task.onPreExecuteMain();
+                    mThreadPoolExecutor.execute(task);
+                }
+            });
+        } else {
+            mThreadPoolExecutor.execute(task);
+        }
     }
 }

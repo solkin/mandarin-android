@@ -219,6 +219,7 @@ public class RequestDispatcher {
                     // Notified.
                 }
             }
+            cursor.close();
             return true;
         }
     }
@@ -237,7 +238,6 @@ public class RequestDispatcher {
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            Log.d(Settings.LOG_TAG, "RequestObserver: onChange [" + selfChange + "]");
             synchronized (sync) {
                 sync.notify();
             }

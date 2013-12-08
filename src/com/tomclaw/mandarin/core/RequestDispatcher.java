@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.im;
+package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -7,11 +7,10 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.SessionHolder;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,19 +26,20 @@ public class RequestDispatcher {
     private final SessionHolder sessionHolder;
     private final ContentResolver contentResolver;
     private final ContentObserver requestObserver;
-    private final ContentObserver accountObserver;
     private Thread dispatcherThread;
     private final Object sync;
     private Gson gson;
+    private int requestType;
 
-    public RequestDispatcher(Context context, SessionHolder sessionHolder) {
+    public RequestDispatcher(Context context, SessionHolder sessionHolder, int requestType) {
         // Session holder.
         this.sessionHolder = sessionHolder;
+        // Request type.
+        this.requestType = requestType;
         // Variables.
         contentResolver = context.getContentResolver();
         // Creating observers.
         requestObserver = new RequestObserver();
-        accountObserver = new AccountObserver();
         // Initializing thread.
         sync = new Object();
         gson = new Gson();
@@ -47,12 +47,8 @@ public class RequestDispatcher {
     }
 
     public void startObservation() {
-        // Registering created observers.
-        contentResolver.registerContentObserver(
-                Settings.REQUEST_RESOLVER_URI, true, requestObserver);
-        contentResolver.registerContentObserver(
-                Settings.ACCOUNT_RESOLVER_URI, true, accountObserver);
         // Almost done. Starting.
+        dispatcherThread.setPriority(Thread.MIN_PRIORITY);
         dispatcherThread.start();
     }
 
@@ -60,14 +56,27 @@ public class RequestDispatcher {
 
         @Override
         public void run() {
-            while (dispatch());
+            Cursor cursor;
+            QueryBuilder queryBuilder = new QueryBuilder();
+            queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType);
+            do {
+                // Registering created observers.
+                cursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
+                cursor.registerContentObserver(requestObserver);
+                /**
+                 * Needs to control account set change.
+                 * If account was deleted - drop all associated requests.
+                 * If status changed to any online - check queue and send associated requests.
+                 */
+                contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null)
+                    .registerContentObserver(requestObserver);
+            } while (dispatch(cursor));
         }
 
-        private boolean dispatch() {
+        @SuppressWarnings("unchecked")
+        private boolean dispatch(Cursor cursor) {
             synchronized (sync) {
-                Log.d(Settings.LOG_TAG, "Obtain requests. If exist.");
-                // Obtain requests. If exist.
-                Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null, null, null, null);
+                Log.d(Settings.LOG_TAG, "Dispatching requests.");
                 // Checking for at least one request in database.
                 if (cursor.moveToFirst()) {
                     do {
@@ -171,7 +180,7 @@ public class RequestDispatcher {
                                 continue;
                             }
                             // Preparing request.
-                            Request<AccountRoot> request = (Request<AccountRoot>) gson.fromJson(
+                            Request request = (Request) gson.fromJson(
                                     requestBundle, Class.forName(requestClass));
                             requestResult = request.onRequest(accountRoot);
                         } catch (AccountNotFoundException e) {
@@ -210,12 +219,13 @@ public class RequestDispatcher {
                     // Notified.
                 }
             }
+            cursor.close();
             return true;
         }
     }
 
     /**
-     * Handle all requests table changes.
+     * Handle all requests table and accounts changes.
      */
     private class RequestObserver extends ContentObserver {
         /**
@@ -228,30 +238,6 @@ public class RequestDispatcher {
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            Log.d(Settings.LOG_TAG, "RequestObserver: onChange [" + selfChange + "]");
-            synchronized (sync) {
-                sync.notify();
-            }
-        }
-    }
-
-    /**
-     * Needs to control account set change.
-     * If account was deleted - drop all associated requests.
-     * If status changed to any online - check queue and send associated requests.
-     */
-    private class AccountObserver extends ContentObserver {
-        /**
-         * Creates a content observer.
-         */
-        public AccountObserver() {
-            super(null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            Log.d(Settings.LOG_TAG, "AccountsObserver: onChange [selfChange = " + selfChange + "]");
             synchronized (sync) {
                 sync.notify();
             }

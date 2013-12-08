@@ -1,4 +1,6 @@
-package com.tomclaw.mandarin.im;
+package com.tomclaw.mandarin.core;
+
+import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,6 +9,13 @@ package com.tomclaw.mandarin.im;
  * Time: 7:25 PM
  */
 public abstract class Request<A extends AccountRoot> {
+
+    /**
+     * Request types
+     */
+    public static final int REQUEST_TYPE_SHORT = 0x00;
+    public static final int REQUEST_TYPE_DOWNLOAD = 0x01;
+    public static final int REQUEST_TYPE_UPLOAD = 0x02;
 
     /**
      * Request state flags
@@ -28,8 +37,8 @@ public abstract class Request<A extends AccountRoot> {
      */
     public final int onRequest(A accountRoot) {
         this.accountRoot = accountRoot;
-        return buildRequest();
+        return executeRequest();
     }
 
-    public abstract int buildRequest();
+    public abstract int executeRequest();
 }

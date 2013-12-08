@@ -23,6 +23,11 @@ public abstract class PleaseWaitTask extends Task {
     }
 
     @Override
+    public boolean isPreExecuteRequired() {
+        return true;
+    }
+
+    @Override
     public void onPreExecuteMain() {
         Context context = weakContext.get();
         if(context != null) {

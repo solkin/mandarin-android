@@ -15,7 +15,7 @@ public class SelectionHelper<K, V> {
     private Map<K, V> selection;
 
     public SelectionHelper() {
-        selection = new TreeMap();
+        selection = new TreeMap<K, V>();
     }
 
     public void onStateChanged(K position, V id, boolean checked) {

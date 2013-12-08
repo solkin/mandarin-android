@@ -6,7 +6,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.RequestDispatcher;
 
 import java.util.List;
 import java.util.Random;
@@ -21,6 +20,7 @@ public class CoreService extends Service {
 
     private SessionHolder sessionHolder;
     private RequestDispatcher requestDispatcher;
+    private RequestDispatcher downloadDispatcher;
     private HistoryDispatcher historyDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
@@ -82,12 +82,14 @@ public class CoreService extends Service {
         updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
-        requestDispatcher = new RequestDispatcher(this, sessionHolder);
+        requestDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_SHORT);
+        downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         historyDispatcher = new HistoryDispatcher(this);
         Log.d(Settings.LOG_TAG, "CoreService serviceInit");
         // Loading all data for this application session.
         sessionHolder.load();
         requestDispatcher.startObservation();
+        downloadDispatcher.startObservation();
         historyDispatcher.startObservation();
         // Service is now ready.
         updateState(STATE_UP);

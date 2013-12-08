@@ -324,7 +324,8 @@ public class IcqSession {
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage);
+                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
+                                buddyIcon);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);
@@ -396,7 +397,7 @@ public class IcqSession {
                 String buddyIcon = eventData.optString(BUDDY_ICON);
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, statusIndex, statusTitle, statusMessage);
+                        buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {

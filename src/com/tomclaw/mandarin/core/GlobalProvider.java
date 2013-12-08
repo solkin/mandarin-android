@@ -30,12 +30,14 @@ public class GlobalProvider extends ContentProvider {
     // Fields
     public static final String ROW_AUTO_ID = "_id";
 
+    public static final String REQUEST_TYPE = "request_type";
     public static final String REQUEST_CLASS = "request_class";
     public static final String REQUEST_SESSION = "request_session";
     public static final String REQUEST_PERSISTENT = "request_persistent";
     public static final String REQUEST_ACCOUNT_DB_ID = "account_db_id";
     public static final String REQUEST_STATE = "request_state";
     public static final String REQUEST_BUNDLE = "request_bundle";
+    public static final String REQUEST_TAG = "request_tag";
 
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -68,6 +70,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
     public static final String ROSTER_BUDDY_ALPHABET_INDEX = "buddy_alphabet_index";
     public static final String ROSTER_BUDDY_UNREAD_COUNT = "buddy_unread_count";
+    public static final String ROSTER_BUDDY_AVATAR_HASH = "buddy_avatar_hash";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -81,10 +84,10 @@ public class GlobalProvider extends ContentProvider {
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
-            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
             + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT_DB_ID + " int, "
-            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text" + ");";
+            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text, " + REQUEST_TAG + " text" + ");";
 
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -107,7 +110,7 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_STATUS_MESSAGE + " text, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
-            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0" + ");";
+            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

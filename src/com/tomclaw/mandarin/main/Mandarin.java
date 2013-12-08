@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.Application;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.ExceptionHandler;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -18,6 +19,7 @@ public class Mandarin extends Application {
     public void onCreate() {
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.inContext(this));
         StatusUtil.include(IcqAccountRoot.class.getName(), new IcqStatusCatalogue(this));
+        BitmapCache.getInstance().initStorage(this);
         super.onCreate();
     }
 }

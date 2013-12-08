@@ -146,13 +146,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
         QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
-        String tagHashValue = (String) contactBadge.getTag();
-        if(!TextUtils.isEmpty(tagHashValue) && TextUtils.isEmpty(avatarHash)) {
-            contactBadge.setImageResource(R.drawable.ic_default_avatar);
-        }
-        if(!TextUtils.isEmpty(avatarHash)) {
-            BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash);
-        }
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
 
     @Override

@@ -18,8 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -48,6 +50,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private static int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
+    private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
 
     /**
      * Variables
@@ -81,6 +84,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE);
         COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
+        COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
         swapCursor(cursor);
     }
 
@@ -148,6 +152,10 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         } else {
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
+        // Avatar.
+        final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
+        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
 
     public int getBuddyDbId(int position) {

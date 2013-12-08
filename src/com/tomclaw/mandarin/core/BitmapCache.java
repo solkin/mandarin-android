@@ -1,14 +1,14 @@
 package com.tomclaw.mandarin.core;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.io.*;
-import java.lang.ref.WeakReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +29,8 @@ public class BitmapCache {
 
     private static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
     private static final int BITMAP_SIZE_ORIGINAL = -1;
-    private final File path;
+    private final String BITMAP_CACHE_FOLDER = "bitmaps";
+    private File path;
     private LruCache<String, Bitmap> bitmapLruCache;
 
     public BitmapCache() {
@@ -37,21 +38,23 @@ public class BitmapCache {
         // Use 1/8th of the available memory for this memory cache.
         int cacheSize = maxMemory / 8;
         bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
-        path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        path.mkdirs();
+    }
+
+    public void initStorage(Context context) {
+        path = context.getDir(BITMAP_CACHE_FOLDER, Context.MODE_PRIVATE);
     }
 
     private static String getCacheKey(String hash, int width, int height) {
         return hash + "_" + width + "_" + height;
     }
 
-    public void getBitmapAsync(ImageView imageView, final String hash) {
-        BitmapTask bitmapTask = new BitmapTask(imageView, hash);
-        // Checking for image view contains no bitmap or another bitmap.
-        //if(bitmapTask.isUpdateRequired()) {
-            TaskExecutor.getInstance().execute(bitmapTask);
-        //}
+    public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
+        if(BitmapTask.isResetRequired(imageView, hash)) {
+            imageView.setImageResource(defaultResource);
+        }
+        if(!TextUtils.isEmpty(hash)) {
+            TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
+        }
     }
 
     public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional) {
@@ -116,61 +119,5 @@ public class BitmapCache {
 
     private File getBitmapFile(String hash) {
         return new File(path, hash.concat(".").concat(COMPRESS_FORMAT.name()));
-    }
-
-    private class BitmapTask extends Task {
-
-        private final WeakReference<ImageView> imageWeakReference;
-        private Bitmap bitmap;
-        private String hash;
-        private int width, height;
-
-        public BitmapTask(ImageView imageView, String hash) {
-            this.imageWeakReference = new WeakReference<ImageView>(imageView);
-            this.hash = hash;
-            this.width = imageView.getWidth();
-            this.height = imageView.getHeight();
-        }
-
-        /*public boolean isUpdateRequired() {
-            ImageView image = imageWeakReference.get();
-            if(image != null) {
-                String tagHashValue = (String) image.getTag();
-                if(!TextUtils.equals(tagHashValue, hash)) {
-                    // image.setImageResource(R.drawable.ic_default_avatar);
-                    return true;
-                } else if(TextUtils.isEmpty(hash)) {
-                    // image.setImageResource(R.drawable.ic_default_avatar);
-                }
-                Log.d(Settings.LOG_TAG, tagHashValue + " == " + hash);
-            } else {
-                Log.d(Settings.LOG_TAG, "Weak reference is null!");
-            }
-            return false;
-        }*/
-
-        @Override
-        public void executeBackground() throws Throwable {
-            ImageView image = imageWeakReference.get();
-            if(image != null) {
-                bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
-            }
-        }
-
-        @Override
-        public void onSuccessMain() {
-            ImageView image = imageWeakReference.get();
-            if(image != null && bitmap != null) {
-                /*Drawable[] layers = new Drawable[] {
-                    image.getDrawable(), new BitmapDrawable(Resources.getSystem(), bitmap)
-                };
-                TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-                image.setImageDrawable(transitionDrawable);
-                image.setTag(hash);
-                transitionDrawable.startTransition(700);*/
-                image.setTag(hash);
-                image.setImageBitmap(bitmap);
-            }
-        }
     }
 }

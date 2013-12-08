@@ -32,10 +32,11 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
                 // Release connection.
                 response.getEntity().consumeContent();
             } catch (Throwable ignored) {
+                Log.d(Settings.LOG_TAG, "Unable to consume content in http request.");
             }
             return result;
         } catch (Throwable e) {
-            e.printStackTrace();
+            Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);
             return REQUEST_PENDING;
         }
     }

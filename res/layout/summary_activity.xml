@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:padding="14dp">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="14dp"
+            >
+        <QuickContactBadge
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/buddy_badge"
+                android:layout_gravity="center_horizontal|top"
+                android:src="@drawable/ic_default_avatar"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+                android:paddingLeft="10dp">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New Text"
+                    android:id="@+id/textView" android:textStyle="bold"
+                    android:fontFamily="sans-serif"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New Text"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/textView1"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+            android:text="@string/dialogs"
+            style="?android:attr/listSeparatorTextViewStyle" />
+</LinearLayout>

@@ -42,7 +42,7 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name=".main.SummaryActivity"
+        <activity android:name=".main.BuddyInfoActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">

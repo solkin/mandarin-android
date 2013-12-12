@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.icq.AvatarRequest;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.im.icq.EndSessionRequest;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
 
@@ -79,6 +80,31 @@ public class RequestHelper {
             contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
             contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(avatarRequest));
+            contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        }
+        cursor.close();
+    }
+
+    public static void requestBuddyInfo(ContentResolver contentResolver, String appSession, int buddyDbId) {
+        // Obtain account db id.
+        // TODO: out this method.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Cursor may have more than only one entry.
+        // TODO: check for at least one buddy present.
+        if (cursor.moveToFirst()) {
+            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+            String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
+            BuddyInfoRequest buddyInfoRequest = new BuddyInfoRequest(buddyId);
+            // Writing to requests database.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+            contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyInfoRequest.class.getName());
+            contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+            contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
+            contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+            contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+            contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
             contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
         }
         cursor.close();

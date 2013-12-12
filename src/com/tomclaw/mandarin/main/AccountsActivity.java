@@ -95,7 +95,7 @@ public class AccountsActivity extends ChiefActivity {
         accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
+                // startActivity(new Intent(AccountsActivity.this, BuddyInfoActivity.class));
                 Cursor cursor = accountsAdapter.getCursor();
                 if (cursor.moveToPosition(position)) {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);

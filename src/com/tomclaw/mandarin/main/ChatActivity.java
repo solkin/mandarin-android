@@ -117,6 +117,11 @@ public class ChatActivity extends ChiefActivity {
                 }
                 return true;
             }
+            case R.id.buddy_info_menu: {
+                startActivity(new Intent(this, BuddyInfoActivity.class)
+                        .putExtra("BUDDY_DB_ID", chatHistoryAdapter.getBuddyDbId()));
+                return true;
+            }
             case R.id.clear_history_menu: {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.clear_history_title);

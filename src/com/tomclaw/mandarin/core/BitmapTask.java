@@ -26,9 +26,12 @@ public class BitmapTask extends Task {
         this.height = imageView.getHeight();
     }
 
+    public static String getImageTag(ImageView imageView) {
+        return (String) imageView.getTag();
+    }
+
     public static boolean isResetRequired(ImageView imageView, String hash) {
-        String tagHashValue = (String) imageView.getTag();
-        return !TextUtils.isEmpty(tagHashValue) && TextUtils.isEmpty(hash);
+        return !TextUtils.equals(getImageTag(imageView), hash);
     }
 
     @Override
@@ -42,15 +45,8 @@ public class BitmapTask extends Task {
     @Override
     public void onSuccessMain() {
         ImageView image = imageWeakReference.get();
-        if(image != null && bitmap != null) {
-            /*Drawable[] layers = new Drawable[] {
-                image.getDrawable(), new BitmapDrawable(Resources.getSystem(), bitmap)
-            };
-            TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-            image.setImageDrawable(transitionDrawable);
-            image.setTag(hash);
-            transitionDrawable.startTransition(700);*/
-            image.setTag(hash);
+        // Hash may be changed in another task.
+        if(image != null && bitmap != null && TextUtils.equals(getImageTag(image), hash)) {
             image.setImageBitmap(bitmap);
         }
     }

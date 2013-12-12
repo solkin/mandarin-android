@@ -52,9 +52,21 @@ public class BitmapCache {
         if(BitmapTask.isResetRequired(imageView, hash)) {
             imageView.setImageResource(defaultResource);
         }
+        imageView.setTag(hash);
         if(!TextUtils.isEmpty(hash)) {
-            TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
+            Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+            // Checking for bitmap cached or not.
+            if(bitmap == null) {
+                TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
+            } else {
+                imageView.setImageBitmap(bitmap);
+            }
         }
+    }
+
+    public Bitmap getBitmapSyncFromCache(String hash, int width, int height) {
+        String cacheKey = getCacheKey(hash, width, height);
+        return bitmapLruCache.get(cacheKey);
     }
 
     public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional) {

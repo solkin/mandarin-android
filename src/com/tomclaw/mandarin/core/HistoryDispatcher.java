@@ -31,6 +31,7 @@ public class HistoryDispatcher {
     private NotificationManager notificationManager;
     private ContentResolver contentResolver;
     private ContentObserver historyObserver;
+    private volatile long notificationCancelTime = 0;
 
     private static final int NOTIFICATION_ID = 0x01;
 
@@ -85,8 +86,6 @@ public class HistoryDispatcher {
     }
 
     private class HistoryDispatcherTask extends Task {
-
-        private long notificationCancelTime = 0;
 
         @Override
         public void executeBackground() throws Throwable {

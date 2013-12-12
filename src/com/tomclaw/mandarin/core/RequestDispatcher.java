@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,6 +24,7 @@ public class RequestDispatcher {
     /**
      * Variables
      */
+    private Service service;
     private final SessionHolder sessionHolder;
     private final ContentResolver contentResolver;
     private final ContentObserver requestObserver;
@@ -31,13 +33,14 @@ public class RequestDispatcher {
     private Gson gson;
     private int requestType;
 
-    public RequestDispatcher(Context context, SessionHolder sessionHolder, int requestType) {
+    public RequestDispatcher(Service service, SessionHolder sessionHolder, int requestType) {
+        this.service = service;
         // Session holder.
         this.sessionHolder = sessionHolder;
         // Request type.
         this.requestType = requestType;
         // Variables.
-        contentResolver = context.getContentResolver();
+        contentResolver = service.getContentResolver();
         // Creating observers.
         requestObserver = new RequestObserver();
         // Initializing thread.
@@ -182,7 +185,7 @@ public class RequestDispatcher {
                             // Preparing request.
                             Request request = (Request) gson.fromJson(
                                     requestBundle, Class.forName(requestClass));
-                            requestResult = request.onRequest(accountRoot);
+                            requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
                             Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
                                     "Cancelling.");

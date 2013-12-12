@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Service;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -25,9 +26,14 @@ public abstract class Request<A extends AccountRoot> {
     public static final int REQUEST_DELETE = 0xff;
 
     private transient A accountRoot;
+    private transient Service service;
 
     public A getAccountRoot() {
         return accountRoot;
+    }
+
+    public Service getService() {
+        return service;
     }
 
     /**
@@ -35,8 +41,9 @@ public abstract class Request<A extends AccountRoot> {
      *
      * @return int - status we must setup to this request
      */
-    public final int onRequest(A accountRoot) {
+    public final int onRequest(A accountRoot, Service service) {
         this.accountRoot = accountRoot;
+        this.service = service;
         return executeRequest();
     }
 

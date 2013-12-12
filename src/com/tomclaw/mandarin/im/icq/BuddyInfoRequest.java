@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.Intent;
 import android.util.Pair;
+import com.tomclaw.mandarin.core.CoreService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +42,11 @@ public class BuddyInfoRequest extends WimRequest {
                 JSONObject profile = firstProfile.getJSONObject("profile");
                 // Obtain buddy info from profile.
                 String aimId = profile.getString("aimId");
+
+                Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
+                intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
+                intent.putExtra("BUDDY_ID", aimId);
+                getService().sendBroadcast(intent);
             }
         } else {
 

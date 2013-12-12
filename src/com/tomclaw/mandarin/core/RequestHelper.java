@@ -85,16 +85,8 @@ public class RequestHelper {
         cursor.close();
     }
 
-    public static void requestBuddyInfo(ContentResolver contentResolver, String appSession, int buddyDbId) {
-        // Obtain account db id.
-        // TODO: out this method.
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Cursor may have more than only one entry.
-        // TODO: check for at least one buddy present.
-        if (cursor.moveToFirst()) {
-            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-            String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
+    public static void requestBuddyInfo(ContentResolver contentResolver, String appSession,
+                                        int accountDbId, String buddyId) {
             BuddyInfoRequest buddyInfoRequest = new BuddyInfoRequest(buddyId);
             // Writing to requests database.
             ContentValues contentValues = new ContentValues();
@@ -106,7 +98,5 @@ public class RequestHelper {
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
             contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
             contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
-        }
-        cursor.close();
     }
 }

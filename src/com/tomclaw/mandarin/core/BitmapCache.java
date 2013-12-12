@@ -49,12 +49,13 @@ public class BitmapCache {
     }
 
     public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
-        if(BitmapTask.isResetRequired(imageView, hash)) {
+        Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+        // Checking for there is no cached bitmap and reset is really required.
+        if(bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
             imageView.setImageResource(defaultResource);
         }
         imageView.setTag(hash);
         if(!TextUtils.isEmpty(hash)) {
-            Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
             // Checking for bitmap cached or not.
             if(bitmap == null) {
                 TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));

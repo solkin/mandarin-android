@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/share_buddy_info"
+            android:icon="@drawable/social_share"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/buddy_info_share">
+    </item>
+</menu>

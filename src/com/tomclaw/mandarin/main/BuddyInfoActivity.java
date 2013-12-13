@@ -5,10 +5,14 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -23,11 +27,31 @@ import com.tomclaw.mandarin.core.Settings;
  */
 public class BuddyInfoActivity extends ChiefActivity {
 
-    private int buddyDbId;
+    public static final String BUDDY_ID = "buddy_id";
+    public static final String BUDDY_NICK = "buddy_nick";
+    public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
+    public static final String ACCOUNT_DB_ID = "account_db_id";
+    public static final String NO_INFO_CASE = "no_info_case";
+
     private int accountDbId;
     private String buddyId;
-    private String buddyNick;
-    private String avatarHash;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.buddy_info_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,27 +59,21 @@ public class BuddyInfoActivity extends ChiefActivity {
         Log.d(Settings.LOG_TAG, "BuddyInfoActivity onCreate");
 
         Intent intent = getIntent();
-        buddyDbId = intent.getIntExtra("BUDDY_DB_ID", -1);
-
-        // Obtain basic buddy info.
-        // TODO: out this method.
-        Cursor cursor = getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Cursor may have more than only one entry.
-        // TODO: check for at least one buddy present.
-        if (cursor.moveToFirst()) {
-            accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-            buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-            buddyNick = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
-            avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
+        accountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+        buddyId = intent.getStringExtra(BUDDY_ID);
+        String buddyNick = intent.getStringExtra(BUDDY_NICK);
+        String avatarHash = intent.getStringExtra(BUDDY_AVATAR_HASH);
+        if(TextUtils.isEmpty(buddyId) || accountDbId == GlobalProvider.ROW_INVALID) {
+            Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
-        cursor.close();
 
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        bar.setTitle(R.string.accounts);
+        bar.setTitle(R.string.buddy_info);
 
         // Initialize accounts list
         setContentView(R.layout.buddy_info_activity);
@@ -77,19 +95,24 @@ public class BuddyInfoActivity extends ChiefActivity {
             ContentResolver contentResolver = getContentResolver();
             // Sending protocol buddy info request.
             RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
-        } catch (Throwable ignored) {
+        } catch (Throwable ex) {
+            Log.d(Settings.LOG_TAG, "Unable to publish buddy info request due to exception.", ex);
         }
     }
 
     @Override
     public void onCoreServiceDown() {
-
     }
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
         findViewById(R.id.progress_bar).setVisibility(View.GONE);
-        String buddyId = intent.getStringExtra("BUDDY_ID");
-        Log.d(Settings.LOG_TAG, "buddy id: " + buddyId);
+        boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
+        if(isInfoPresent) {
+            String buddyId = intent.getStringExtra(BUDDY_ID);
+            Log.d(Settings.LOG_TAG, "buddy id: " + buddyId);
+        } else {
+            Log.d(Settings.LOG_TAG, "No info case :(");
+        }
     }
 }

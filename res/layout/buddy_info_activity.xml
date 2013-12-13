@@ -44,6 +44,12 @@
         </LinearLayout>
     </LinearLayout>
     <TextView
-            android:text="@string/dialogs"
+            android:text="@string/info_status"
+            style="?android:attr/listSeparatorTextViewStyle" />
+    <TextView
+            android:text="@string/info_base"
+            style="?android:attr/listSeparatorTextViewStyle" />
+    <TextView
+            android:text="@string/info_extended"
             style="?android:attr/listSeparatorTextViewStyle" />
 </LinearLayout>

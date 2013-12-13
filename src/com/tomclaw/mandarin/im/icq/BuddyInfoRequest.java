@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 import android.util.Pair;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.main.BuddyInfoActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +32,9 @@ public class BuddyInfoRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
+        Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
+        intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
+        // Start to JSON parsing.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
@@ -43,14 +47,14 @@ public class BuddyInfoRequest extends WimRequest {
                 // Obtain buddy info from profile.
                 String aimId = profile.getString("aimId");
 
-                Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
-                intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
-                intent.putExtra("BUDDY_ID", aimId);
-                getService().sendBroadcast(intent);
+                intent.putExtra(BuddyInfoActivity.BUDDY_ID, aimId);
             }
         } else {
-
+            intent.putExtra(BuddyInfoActivity.NO_INFO_CASE, true);
         }
+        // We must send intent in any case,
+        // because our request is going to be deleted.
+        getService().sendBroadcast(intent);
         return REQUEST_DELETE;
     }
 

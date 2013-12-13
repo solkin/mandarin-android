@@ -103,8 +103,10 @@ public class BitmapCache {
                     bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
                 }
                 bitmapLruCache.put(cacheKey, bitmap);
-            } catch (FileNotFoundException ex) {
-                Log.d(Settings.LOG_TAG, "Error while reading file for bitmap hash: " + hash, ex);
+            } catch (FileNotFoundException ignored) {
+                Log.d(Settings.LOG_TAG, "Bitmap '" + hash + "' not found!");
+            } catch (Throwable ex) {
+                Log.d(Settings.LOG_TAG, "Couldn't cache '" + hash + "' bitmap!", ex);
             }
         }
         return bitmap;

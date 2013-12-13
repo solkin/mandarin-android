@@ -132,6 +132,8 @@ public class GlobalProvider extends ContentProvider {
                     .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
             .append(");");
 
+    public static final int ROW_INVALID = -1;
+
     // Database helper object
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;

@@ -80,7 +80,7 @@ public class BuddyInfoActivity extends ChiefActivity {
         // Check for required fields are correct.
         if (TextUtils.isEmpty(buddyId) || accountDbId == GlobalProvider.ROW_INVALID) {
             //Nothing we can do in this case. Only show toast and close activity.
-            Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
+            onBuddyInfoRequestError();
             finish();
             return;
         }
@@ -139,6 +139,7 @@ public class BuddyInfoActivity extends ChiefActivity {
             RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
         } catch (Throwable ex) {
             Log.d(Settings.LOG_TAG, "Unable to publish buddy info request due to exception.", ex);
+            onBuddyInfoRequestError();
         }
     }
 
@@ -154,11 +155,11 @@ public class BuddyInfoActivity extends ChiefActivity {
         boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
         Bundle bundle = intent.getExtras();
         if (isInfoPresent && bundle != null) {
-            String buddyId = intent.getStringExtra(BUDDY_ID);
-            Log.d(Settings.LOG_TAG, "buddy id: " + buddyId);
 
             int requestAccountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
             String requestBuddyId = intent.getStringExtra(BUDDY_ID);
+
+            Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
 
             // Checking for this is info we need.
             if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
@@ -183,9 +184,16 @@ public class BuddyInfoActivity extends ChiefActivity {
                         }
                     }
                 }
+            } else {
+                Log.d(Settings.LOG_TAG, "Wrong buddy info!");
             }
         } else {
             Log.d(Settings.LOG_TAG, "No info case :(");
+            onBuddyInfoRequestError();
         }
+    }
+
+    private void onBuddyInfoRequestError() {
+        Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
     }
 }

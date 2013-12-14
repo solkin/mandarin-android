@@ -35,13 +35,13 @@ public class HistoryDispatcher {
 
     private static final int NOTIFICATION_ID = 0x01;
 
-    private static final String[] unReadProjection = new String[] {
+    private static final String[] unReadProjection = new String[]{
             GlobalProvider.HISTORY_BUDDY_DB_ID,
             GlobalProvider.HISTORY_MESSAGE_TYPE,
             GlobalProvider.HISTORY_MESSAGE_READ
     };
 
-    private static final String[] unShownProjection = new String[] {
+    private static final String[] unShownProjection = new String[]{
             GlobalProvider.HISTORY_BUDDY_DB_ID,
             GlobalProvider.HISTORY_MESSAGE_TYPE,
             GlobalProvider.HISTORY_MESSAGE_READ,
@@ -113,7 +113,7 @@ public class HistoryDispatcher {
                     boolean isAlarmRequired = false;
                     int HISTORY_NOTICE_SHOWN_COLUMN = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
                     do {
-                        if(unShownCursor.getInt(HISTORY_NOTICE_SHOWN_COLUMN) != -1) {
+                        if (unShownCursor.getInt(HISTORY_NOTICE_SHOWN_COLUMN) != -1) {
                             isAlarmRequired = true;
                             break;
                         }
@@ -155,7 +155,7 @@ public class HistoryDispatcher {
                             }
                             nickNamesBuilder.append(nickName);
                             // Checking for style type for correct filling.
-                            if(multipleSenders) {
+                            if (multipleSenders) {
                                 inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
                             }
                         }
@@ -167,7 +167,7 @@ public class HistoryDispatcher {
                     int replyIcon;
                     NotificationCompat.Style style;
                     // Checking for required style.
-                    if(multipleSenders) {
+                    if (multipleSenders) {
                         title = context.getString(R.string.count_new_messages, unread);
                         content = nickNamesBuilder.toString();
                         replyIcon = R.drawable.social_reply_all;
@@ -201,13 +201,13 @@ public class HistoryDispatcher {
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent);
-                    if(isAlarmRequired && isNotificationCompleted()) {
-                        if(PreferenceHelper.isSystemNotifications(context)) {
+                    if (isAlarmRequired && isNotificationCompleted()) {
+                        if (PreferenceHelper.isSystemNotifications(context)) {
                             notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
                         } else {
                             notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
                             int defaults = 0;
-                            if(PreferenceHelper.isVibrate(context)) {
+                            if (PreferenceHelper.isVibrate(context)) {
                                 defaults |= Notification.DEFAULT_VIBRATE;
                             }
                             notificationBuilder.setDefaults(defaults);
@@ -243,7 +243,7 @@ public class HistoryDispatcher {
 
         private void onNotificationCancel() {
             long notificationRemain = getNotificationRemain();
-            if(notificationRemain > 0) {
+            if (notificationRemain > 0) {
                 try {
                     // Take some time to read this message and notification to be shown
                     Thread.sleep(notificationRemain);

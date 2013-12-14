@@ -30,7 +30,7 @@ public class IcqStatusCatalogue extends StatusCatalogue {
             Log.d(Settings.LOG_TAG, "status value: " + status.getValue());
             indexMap.put(statusValues[index], index);
             statusList.add(index, status);
-            if(index < statusConnect.length) {
+            if (index < statusConnect.length) {
                 connectStatuses.add(statusConnect[index]);
             }
         }

@@ -54,7 +54,7 @@ public class BuddyInfoRequest extends WimRequest {
             JSONArray infoArray = data.getJSONArray("infoArray");
             if (infoArray.length() > 0) {
                 Context context = getAccountRoot().getContext();
-
+                // Only first profile we need.
                 JSONObject firstProfile = infoArray.getJSONObject(0);
                 JSONObject profile = firstProfile.getJSONObject("profile");
                 // Obtain buddy info from profile.

@@ -123,7 +123,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         // Status text.
         String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
         String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
-        if(statusIndex == StatusUtil.STATUS_OFFLINE
+        if (statusIndex == StatusUtil.STATUS_OFFLINE
                 || TextUtils.equals(statusTitle, statusMessage)) {
             // Buddy status is offline now or status message is only status title.
             // No status message could be displayed.
@@ -137,7 +137,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
         ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
-        if(unreadCount > 0) {
+        if (unreadCount > 0) {
             view.findViewById(R.id.counter_layout).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
         } else {
@@ -181,7 +181,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
             case FILTER_ALL_BUDDIES:
             default:
         }
-        if(!isShowTemp) {
+        if (!isShowTemp) {
             queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         }
         queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);

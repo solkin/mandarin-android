@@ -22,12 +22,17 @@ import java.util.regex.Pattern;
 public class SmileyParser {
     // Singleton stuff
     private static SmileyParser sInstance = null;
-    public static SmileyParser getInstance() { return sInstance; }
+
+    public static SmileyParser getInstance() {
+        return sInstance;
+    }
+
     public static void init(Context context) {
         //GH - added a null check so instances will get reused
         if (sInstance == null)
             sInstance = new SmileyParser(context);
     }
+
     public static void destroyInstance() {
         if (sInstance != null) {
             sInstance = null;
@@ -98,7 +103,7 @@ public class SmileyParser {
      *
      * @param text A CharSequence possibly containing emoticons
      * @return A CharSequence annotated with ImageSpans covering any
-     *         recognized emoticons.
+     * recognized emoticons.
      */
     public CharSequence addSmileySpans(CharSequence text) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);

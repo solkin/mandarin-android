@@ -181,7 +181,7 @@ public abstract class ChiefActivity extends Activity {
      * Checks for core service state is changed and if it really changed, invokes inCoreServiceReady.
      */
     private void coreServiceReady() {
-        if(!isCoreServiceReady) {
+        if (!isCoreServiceReady) {
             onCoreServiceReady();
             isCoreServiceReady = true;
         }
@@ -191,7 +191,7 @@ public abstract class ChiefActivity extends Activity {
      * Checks for core service state is changed and if it really changed, invokes onCoreServiceDown.
      */
     private void coreServiceDown() {
-        if(isCoreServiceReady) {
+        if (isCoreServiceReady) {
             onCoreServiceDown();
             isCoreServiceReady = false;
         }

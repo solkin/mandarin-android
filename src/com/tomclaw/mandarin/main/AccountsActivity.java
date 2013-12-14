@@ -225,7 +225,7 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void executeBackground() throws AccountNotFoundException, RemoteException {
             // Iterating for all selected positions.
-            for(int accountDbId : selectedAccounts) {
+            for (int accountDbId : selectedAccounts) {
                 // Trying to remove account.
                 getServiceInteraction().removeAccount(accountDbId);
             }
@@ -234,7 +234,7 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void onFailMain() {
             Context context = getWeakContext().get();
-            if(context != null) {
+            if (context != null) {
                 // Show error.
                 Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();
             }

@@ -65,7 +65,7 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
 
     @Override
     protected final int parseResponse(HttpResponse httpResponse) throws Throwable {
-        if(parseBitmap(httpResponse.getEntity().getContent())) {
+        if (parseBitmap(httpResponse.getEntity().getContent())) {
             onBitmapSaved(hash);
         }
         // Remove request in any case, except Network errors.
@@ -78,7 +78,7 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
     private boolean parseBitmap(InputStream inputStream) {
         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
         // Checking for bitmap can be decoded. McDonald's etc.
-        if(bitmap != null) {
+        if (bitmap != null) {
             // Yeah, avatar is good.
             Log.d(Settings.LOG_TAG, "Ready to save bitmap for URL: " + url);
             return saveBitmap(bitmap);

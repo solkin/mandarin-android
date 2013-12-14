@@ -39,7 +39,7 @@ public class PreferenceHelper {
         String uriValue = getStringPreference(context, R.string.pref_notification_sound,
                 R.string.pref_notification_sound_default);
         // Checking for default value found.
-        if(TextUtils.equals(uriValue, context.getString(R.string.pref_notification_sound_default))) {
+        if (TextUtils.equals(uriValue, context.getString(R.string.pref_notification_sound_default))) {
             return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         }
         return Uri.parse(uriValue);

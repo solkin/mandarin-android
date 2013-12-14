@@ -18,7 +18,7 @@ public class StatusUtil {
 
     public static void include(String accountType, StatusCatalogue statusCatalogue) {
         // Checking for no such status catalogue included yet.
-        if(!catalogues.containsKey(accountType)) {
+        if (!catalogues.containsKey(accountType)) {
             catalogues.put(accountType, statusCatalogue);
         }
     }

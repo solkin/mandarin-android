@@ -207,7 +207,7 @@ public class ChatActivity extends ChiefActivity {
         Log.d(Settings.LOG_TAG, "Reading visible messages ["
                 + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
-        if(lastVisiblePosition >= firstVisiblePosition) {
+        if (lastVisiblePosition >= firstVisiblePosition) {
             final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             try {
                 final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
@@ -313,7 +313,7 @@ public class ChatActivity extends ChiefActivity {
                     // Scroll ended.
                     int firstPosition;
                     int lastPosition;
-                    if(firstVisiblePosition > startFirstVisiblePosition) {
+                    if (firstVisiblePosition > startFirstVisiblePosition) {
                         // Scroll to bottom.
                         firstPosition = startFirstVisiblePosition;
                         lastPosition = lastVisiblePosition;
@@ -359,7 +359,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeBackground() throws MessageNotFoundException {
             ContentResolver contentResolver = weakContentResolver.get();
-            if(contentResolver != null) {
+            if (contentResolver != null) {
                 QueryHelper.readMessages(contentResolver,
                         buddyDbId, firstMessageDbId, lastMessageDbId);
             }
@@ -380,7 +380,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeBackground() {
             ContentResolver contentResolver = weakContentResolver.get();
-            if(contentResolver != null) {
+            if (contentResolver != null) {
                 QueryHelper.clearHistory(contentResolver, buddyDbId);
             }
         }
@@ -388,7 +388,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onFailMain() {
             Context context = getWeakContext().get();
-            if(context != null) {
+            if (context != null) {
                 // Show error.
                 Toast.makeText(context, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
             }
@@ -442,7 +442,7 @@ public class ChatActivity extends ChiefActivity {
         public void onFailMain() {
             // Get context from weak reference.
             Context context = weakContext.get();
-            if(context != null) {
+            if (context != null) {
                 Toast.makeText(context, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
             }
         }
@@ -465,7 +465,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeBackground() throws Throwable {
             ChiefActivity activity = weakActivity.get();
-            if(activity != null) {
+            if (activity != null) {
                 String appSession = activity.getServiceInteraction().getAppSession();
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
@@ -486,7 +486,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onFailMain() {
             ChiefActivity activity = weakActivity.get();
-            if(activity != null) {
+            if (activity != null) {
                 // Show error.
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
@@ -497,6 +497,7 @@ public class ChatActivity extends ChiefActivity {
     public abstract class MessageCallback {
 
         public abstract void onSuccess();
+
         public abstract void onFailed();
     }
 }

@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -21,8 +20,6 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
-
-import java.text.NumberFormat;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,17 +40,7 @@ public class BuddyInfoActivity extends ChiefActivity {
 
     public static final String NO_INFO_CASE = "no_info_case";
 
-    public static final String FRIENDLY_NAME = "friendly_name";
-    public static final String FIRST_NAME = "first_name";
-    public static final String LAST_NAME = "last_name";
-    public static final String GENDER = "gender";
-    public static final String SEXUAL_ORIENTATION = "sexual_orientation";
-    public static final String CHILDREN = "children";
-    public static final String RELIGION = "religion";
-    public static final String SMOKING = "smoking";
-    public static final String HAIR_COLOR = "hair_color";
-    public static final String BIRTH_DATE = "birth_date";
-    public static final String ABOUT_ME = "about_me";
+    private static final String NUMERIC_REGEXP = "^[0-9]*$";
 
     private int accountDbId;
     private String buddyId;
@@ -80,6 +67,7 @@ public class BuddyInfoActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
         Log.d(Settings.LOG_TAG, "BuddyInfoActivity onCreate");
 
+        // Obtain and check basic info about interested buddy.
         Intent intent = getIntent();
         accountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
         String accountType = intent.getStringExtra(ACCOUNT_TYPE);
@@ -89,19 +77,24 @@ public class BuddyInfoActivity extends ChiefActivity {
         int buddyStatus = intent.getIntExtra(BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
         String buddyStatusTitle = intent.getStringExtra(BUDDY_STATUS_TITLE);
         String buddyStatusMessage = intent.getStringExtra(BUDDY_STATUS_MESSAGE);
-        if(TextUtils.isEmpty(buddyId) || accountDbId == GlobalProvider.ROW_INVALID) {
+        // Check for required fields are correct.
+        if (TextUtils.isEmpty(buddyId) || accountDbId == GlobalProvider.ROW_INVALID) {
+            //Nothing we can do in this case. Only show toast and close activity.
             Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        // Preparing for action bar.
         ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        bar.setTitle(R.string.buddy_info);
+        if (bar != null) {
+            bar.setDisplayShowTitleEnabled(true);
+            bar.setDisplayHomeAsUpEnabled(true);
+            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            bar.setTitle(R.string.buddy_info);
+        }
 
-        // Initialize accounts list
+        // Initialize info activity layout.
         setContentView(R.layout.buddy_info_activity);
 
         TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
@@ -110,13 +103,12 @@ public class BuddyInfoActivity extends ChiefActivity {
         TextView buddyNickView = (TextView) findViewById(R.id.buddy_nick);
         buddyNickView.setText(buddyNick);
 
-        if(TextUtils.isEmpty(accountType)) {
-        } else {
+        if (!TextUtils.isEmpty(accountType) && buddyStatusTitle != null) {
             // Status image.
             int statusImageResource = StatusUtil.getStatusDrawable(accountType, buddyStatus);
 
             // Status text.
-            if(buddyStatus == StatusUtil.STATUS_OFFLINE
+            if (buddyStatus == StatusUtil.STATUS_OFFLINE
                     || TextUtils.equals(buddyStatusTitle, buddyStatusMessage)) {
                 // Buddy status is offline now or status message is only status title.
                 // No status message could be displayed.
@@ -125,10 +117,15 @@ public class BuddyInfoActivity extends ChiefActivity {
             SpannableString statusString = new SpannableString(buddyStatusTitle + " " + buddyStatusMessage);
             statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, buddyStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            // Yeah, we have status info - so we might show status info.
+            findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
+            findViewById(R.id.info_status_content).setVisibility(View.VISIBLE);
+
             ((ImageView) findViewById(R.id.status_icon)).setImageResource(statusImageResource);
             ((TextView) findViewById(R.id.status_text)).setText(statusString);
         }
 
+        // Buddy avatar.
         QuickContactBadge contactBadge = (QuickContactBadge) findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
@@ -151,37 +148,44 @@ public class BuddyInfoActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
+        // Hide the progress bar.
         findViewById(R.id.progress_bar).setVisibility(View.GONE);
+        // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
-        if(isInfoPresent) {
+        Bundle bundle = intent.getExtras();
+        if (isInfoPresent && bundle != null) {
             String buddyId = intent.getStringExtra(BUDDY_ID);
             Log.d(Settings.LOG_TAG, "buddy id: " + buddyId);
-        } else {
-            Log.d(Settings.LOG_TAG, "No info case :(");
-        }
 
-        int requestAccountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-        String requestBuddyId = intent.getStringExtra(BUDDY_ID);
+            int requestAccountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+            String requestBuddyId = intent.getStringExtra(BUDDY_ID);
 
-        // Checking for this is info we need.
-        if(requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
-            findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
-            findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
+            // Checking for this is info we need.
+            if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
+                findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
+                findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
 
-            String regexStr = "^[0-9]*$";
-            for(String key : intent.getExtras().keySet()) {
-                if(key.matches(regexStr)) {
-                    String[] extra = intent.getStringArrayExtra(key);
-
-                    String title = getString(Integer.parseInt(extra[0]));
-                    String value = extra[1];
-
-                    View buddyInfoItem = findViewById(Integer.valueOf(key));
-                    ((TextView) buddyInfoItem.findViewById(R.id.info_title)).setText(title);
-                    ((TextView) buddyInfoItem.findViewById(R.id.info_value)).setText(value);
-                    buddyInfoItem.setVisibility(View.VISIBLE);
+                // Iterate by info keys.
+                for (String key : bundle.keySet()) {
+                    if (key.matches(NUMERIC_REGEXP)) {
+                        String[] extra = intent.getStringArrayExtra(key);
+                        // Strange, but... Let's check extra is not empty.
+                        if (extra != null && extra.length >= 1) {
+                            String title = getString(Integer.parseInt(extra[0]));
+                            String value = extra[1];
+                            // Prepare buddy info item.
+                            View buddyInfoItem = findViewById(Integer.valueOf(key));
+                            if (buddyInfoItem != null) {
+                                ((TextView) buddyInfoItem.findViewById(R.id.info_title)).setText(title);
+                                ((TextView) buddyInfoItem.findViewById(R.id.info_value)).setText(value);
+                                buddyInfoItem.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
                 }
             }
+        } else {
+            Log.d(Settings.LOG_TAG, "No info case :(");
         }
     }
 }

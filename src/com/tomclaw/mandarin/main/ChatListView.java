@@ -34,7 +34,7 @@ public class ChatListView extends ListView {
         }
         // This will check for the messages on the
         // screen and read them if they are visible.
-        if(dataChangedListener != null) {
+        if (dataChangedListener != null) {
             dataChangedListener.onDataChanged();
         }
     }

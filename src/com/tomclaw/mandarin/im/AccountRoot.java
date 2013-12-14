@@ -146,7 +146,7 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * Setup status index and connecting flag and updates account in database.
      *
-     * @param statusIndex - non-protocol status index.
+     * @param statusIndex  - non-protocol status index.
      * @param isConnecting - connecting flag.
      */
     protected void updateAccountState(int statusIndex, boolean isConnecting) {

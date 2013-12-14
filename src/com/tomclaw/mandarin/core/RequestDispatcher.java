@@ -72,7 +72,7 @@ public class RequestDispatcher {
                  * If status changed to any online - check queue and send associated requests.
                  */
                 contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null)
-                    .registerContentObserver(requestObserver);
+                        .registerContentObserver(requestObserver);
             } while (dispatch(cursor));
         }
 
@@ -149,7 +149,7 @@ public class RequestDispatcher {
                                 Log.d(Settings.LOG_TAG, "Another session and not persistent request.");
                             }
                             // Checking for content was changed.
-                            if(isBreak) {
+                            if (isBreak) {
                                 // We'll receive change event from observer soon.
                                 break;
                             }
@@ -162,8 +162,8 @@ public class RequestDispatcher {
                         }
 
                         String requestClass = cursor.getString(classColumnIndex);
-                        int requestAccountDbId =  cursor.getInt(accountColumnIndex);
-                        String requestBundle =  cursor.getString(bundleColumnIndex);
+                        int requestAccountDbId = cursor.getInt(accountColumnIndex);
+                        String requestBundle = cursor.getString(bundleColumnIndex);
 
                         Log.d(Settings.LOG_TAG, "Request received: "
                                 + "class = " + requestClass + "; "
@@ -178,7 +178,7 @@ public class RequestDispatcher {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
                             // Checking for account online.
-                            if(accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
                                 // Account is offline now. Let's send this request later.
                                 continue;
                             }
@@ -199,7 +199,7 @@ public class RequestDispatcher {
                             Log.d(Settings.LOG_TAG, "Result is delete-type");
                             contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                        } else if(requestResult == Request.REQUEST_PENDING) {
+                        } else if (requestResult == Request.REQUEST_PENDING) {
                             // Request wasn't completed. We'll retry request a little bit later.
                             Log.d(Settings.LOG_TAG, "Request wasn't completed. We'll retry request a little bit later.");
                             continue;

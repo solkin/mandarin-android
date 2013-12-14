@@ -91,7 +91,7 @@
     <string name="info_extended">Дополнительно</string>
     <string name="buddy_info_share">Поделиться</string>
 
-    <string name="friendly_name">Прозвище</string>
+    <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>
     <string name="gender">Пол</string>

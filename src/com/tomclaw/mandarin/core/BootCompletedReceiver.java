@@ -17,7 +17,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         Log.d(Settings.LOG_TAG, "BootCompletedReceiver onReceive " + intent.getAction());
         // Checking for autorun preference.
-        if(PreferenceHelper.isAutorun(context)) {
+        if (PreferenceHelper.isAutorun(context)) {
             Log.d(Settings.LOG_TAG, "BootCompletedReceiver will now start service");
             // Starting service.
             Intent serviceIntent = new Intent(context, CoreService.class);

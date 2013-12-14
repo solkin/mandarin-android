@@ -415,18 +415,36 @@ public class ChatActivity extends ChiefActivity {
             // Cursor may have more than only one entry.
             if (cursor.moveToFirst()) {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+                String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 String buddyNick = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
                 String avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
+                int buddyStatus = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS));
+                String buddyStatusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE));
+                String buddyStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE));
                 // Now we ready to start buddy info activity.
                 startActivity(new Intent(context, BuddyInfoActivity.class)
                         .putExtra(BuddyInfoActivity.ACCOUNT_DB_ID, accountDbId)
                         .putExtra(BuddyInfoActivity.BUDDY_ID, buddyId)
                         .putExtra(BuddyInfoActivity.BUDDY_NICK, buddyNick)
                         .putExtra(BuddyInfoActivity.BUDDY_AVATAR_HASH, avatarHash)
+
+                        .putExtra(BuddyInfoActivity.ACCOUNT_TYPE, accountType)
+                        .putExtra(BuddyInfoActivity.BUDDY_STATUS, buddyStatus)
+                        .putExtra(BuddyInfoActivity.BUDDY_STATUS_TITLE, buddyStatusTitle)
+                        .putExtra(BuddyInfoActivity.BUDDY_STATUS_MESSAGE, buddyStatusMessage)
                 );
             }
             cursor.close();
+        }
+
+        @Override
+        public void onFailMain() {
+            // Get context from weak reference.
+            Context context = weakContext.get();
+            if(context != null) {
+                Toast.makeText(context, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

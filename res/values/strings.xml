@@ -90,6 +90,9 @@
     <string name="info_base">Основное</string>
     <string name="info_extended">Дополнительно</string>
     <string name="buddy_info_share">Поделиться</string>
+    <string name="buddy_info_copy">Копировать</string>
+    <string name="share_buddy_info_via">Поделиться контактом через</string>
+    <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
 
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>

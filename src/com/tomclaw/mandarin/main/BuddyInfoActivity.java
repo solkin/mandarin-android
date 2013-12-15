@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -20,6 +22,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,10 +43,11 @@ public class BuddyInfoActivity extends ChiefActivity {
 
     public static final String NO_INFO_CASE = "no_info_case";
 
-    private static final String NUMERIC_REGEXP = "^[0-9]*$";
-
     private int accountDbId;
     private String buddyId;
+    private String buddyNick;
+    private String firstName;
+    private String lastName;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,6 +60,14 @@ public class BuddyInfoActivity extends ChiefActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.buddy_info_share:
+                startActivity(createShareIntent());
+                return true;
+            case R.id.buddy_info_copy:
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                clipboardManager.setPrimaryClip(ClipData.newPlainText("", getShareString()));
+                Toast.makeText(this, R.string.buddy_info_copied, Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -72,7 +84,7 @@ public class BuddyInfoActivity extends ChiefActivity {
         accountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
         String accountType = intent.getStringExtra(ACCOUNT_TYPE);
         buddyId = intent.getStringExtra(BUDDY_ID);
-        String buddyNick = intent.getStringExtra(BUDDY_NICK);
+        buddyNick = intent.getStringExtra(BUDDY_NICK);
         String avatarHash = intent.getStringExtra(BUDDY_AVATAR_HASH);
         int buddyStatus = intent.getIntExtra(BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
         String buddyStatusTitle = intent.getStringExtra(BUDDY_STATUS_TITLE);
@@ -155,20 +167,16 @@ public class BuddyInfoActivity extends ChiefActivity {
         boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
         Bundle bundle = intent.getExtras();
         if (isInfoPresent && bundle != null) {
-
             int requestAccountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
             String requestBuddyId = intent.getStringExtra(BUDDY_ID);
-
             Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
-
             // Checking for this is info we need.
             if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
                 findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
-
                 // Iterate by info keys.
                 for (String key : bundle.keySet()) {
-                    if (key.matches(NUMERIC_REGEXP)) {
+                    if (StringUtil.isNumeric(key)) {
                         String[] extra = intent.getStringArrayExtra(key);
                         // Strange, but... Let's check extra is not empty.
                         if (extra != null && extra.length >= 1) {
@@ -180,6 +188,14 @@ public class BuddyInfoActivity extends ChiefActivity {
                                 ((TextView) buddyInfoItem.findViewById(R.id.info_title)).setText(title);
                                 ((TextView) buddyInfoItem.findViewById(R.id.info_value)).setText(value);
                                 buddyInfoItem.setVisibility(View.VISIBLE);
+                            }
+                            // Correct user-defined values for sharing.
+                            if(Integer.valueOf(key) == R.id.friendly_name) {
+                                buddyNick = value;
+                            } else if(Integer.valueOf(key) == R.id.first_name) {
+                                firstName = value;
+                            } else if(Integer.valueOf(key) == R.id.last_name) {
+                                lastName = value;
                             }
                         }
                     }
@@ -195,5 +211,37 @@ public class BuddyInfoActivity extends ChiefActivity {
 
     private void onBuddyInfoRequestError() {
         Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getShareString() {
+        String shareString = "";
+        // Checking and attaching first and last name.
+        if(!TextUtils.isEmpty(firstName)) {
+            shareString += firstName + " ";
+        }
+        if(!TextUtils.isEmpty(lastName)) {
+            shareString += lastName + " ";
+        }
+        // Strong checking for buddy nick.
+        if(!(TextUtils.isEmpty(buddyNick) || TextUtils.equals(buddyNick, buddyId))) {
+            if(TextUtils.isEmpty(shareString)) {
+                shareString = buddyNick + " ";
+            } else {
+                shareString += "(" + buddyNick + ") ";
+            }
+        }
+        // Something appended? Appending dash.
+        if(!TextUtils.isEmpty(shareString)) {
+            shareString += "- ";
+        }
+        shareString += buddyId;
+        return shareString;
+    }
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getShareString());
+        return Intent.createChooser(shareIntent, getString(R.string.share_buddy_info_via));
     }
 }

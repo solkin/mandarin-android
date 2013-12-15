@@ -2,7 +2,13 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:id="@+id/share_buddy_info"
+            android:id="@+id/buddy_info_copy"
+            android:icon="@drawable/content_copy"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/buddy_info_copy">
+    </item>
+    <item
+            android:id="@+id/buddy_info_share"
             android:icon="@drawable/social_share"
             android:showAsAction="ifRoom|withText"
             android:title="@string/buddy_info_share">

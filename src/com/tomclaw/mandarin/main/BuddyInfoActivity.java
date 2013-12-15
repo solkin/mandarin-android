@@ -138,7 +138,7 @@ public class BuddyInfoActivity extends ChiefActivity {
         }
 
         // Buddy avatar.
-        QuickContactBadge contactBadge = (QuickContactBadge) findViewById(R.id.buddy_badge);
+        ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
 

@@ -12,6 +12,8 @@ import com.tomclaw.mandarin.core.ExceptionHandler;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -167,10 +169,13 @@ public abstract class ChiefActivity extends Activity {
      */
     protected boolean checkCoreService() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
-                Log.d(Settings.LOG_TAG, "checkCoreService: exist");
-                return true;
+        List<ActivityManager.RunningServiceInfo> runningServiceInfoList = manager.getRunningServices(Integer.MAX_VALUE);
+        if(runningServiceInfoList != null) {
+            for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
+                if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
+                    Log.d(Settings.LOG_TAG, "checkCoreService: exist");
+                    return true;
+                }
             }
         }
         Log.d(Settings.LOG_TAG, "checkCoreService: none");
@@ -181,7 +186,7 @@ public abstract class ChiefActivity extends Activity {
      * Checks for core service state is changed and if it really changed, invokes inCoreServiceReady.
      */
     private void coreServiceReady() {
-        if(!isCoreServiceReady) {
+        if (!isCoreServiceReady) {
             onCoreServiceReady();
             isCoreServiceReady = true;
         }
@@ -191,7 +196,7 @@ public abstract class ChiefActivity extends Activity {
      * Checks for core service state is changed and if it really changed, invokes onCoreServiceDown.
      */
     private void coreServiceDown() {
-        if(isCoreServiceReady) {
+        if (isCoreServiceReady) {
             onCoreServiceDown();
             isCoreServiceReady = false;
         }
@@ -210,7 +215,7 @@ public abstract class ChiefActivity extends Activity {
     /**
      * Any message from service for this activity
      *
-     * @param intent
+     * @param intent from service to activity.
      */
     public abstract void onCoreServiceIntent(Intent intent);
 

@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.core;
 
+import android.util.Log;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin
@@ -20,8 +22,8 @@ public abstract class Task implements Runnable {
                     onSuccessMain();
                 }
             });
-        } catch(Throwable ex) {
-            ex.printStackTrace();
+        } catch (Throwable ex) {
+            Log.d(Settings.LOG_TAG, "Exception while background task execution", ex);
             onFailBackground();
             MainExecutor.execute(new Runnable() {
                 @Override
@@ -35,12 +37,25 @@ public abstract class Task implements Runnable {
 
     public boolean isPreExecuteRequired() {
         return false;
-    };
-    public void onPreExecuteMain() {}
+    }
+
+    public void onPreExecuteMain() {
+    }
+
     public abstract void executeBackground() throws Throwable;
-    public void onPostExecuteMain() {}
-    public void onSuccessBackground() {}
-    public void onFailBackground() {}
-    public void onSuccessMain() {};
-    public void onFailMain() {}
+
+    public void onPostExecuteMain() {
+    }
+
+    public void onSuccessBackground() {
+    }
+
+    public void onFailBackground() {
+    }
+
+    public void onSuccessMain() {
+    }
+
+    public void onFailMain() {
+    }
 }

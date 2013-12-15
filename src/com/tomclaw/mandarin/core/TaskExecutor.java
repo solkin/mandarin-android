@@ -31,7 +31,7 @@ public class TaskExecutor {
     }
 
     public void execute(final Task task) {
-        if(task.isPreExecuteRequired()) {
+        if (task.isPreExecuteRequired()) {
             MainExecutor.execute(new Runnable() {
                 @Override
                 public void run() {

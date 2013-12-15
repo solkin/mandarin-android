@@ -142,7 +142,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "report sent response: ".concat(responseString));
             JSONObject json = new JSONObject(responseString);
-            if(json.get("status").equals("ok")) {
+            if (json.get("status").equals("ok")) {
                 report.delete();
                 return true;
             }

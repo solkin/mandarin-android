@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
-            if(true)return;
+            if (true) return;
             ContentValues cv0 = new ContentValues();
             ContentValues cv1 = new ContentValues();
             ContentValues cv2 = new ContentValues();
@@ -116,8 +116,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
                     + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
                     + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
-                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_MESSAGE_READ + "=0"
-                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE+"."+GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE+"." + GlobalProvider.ROW_AUTO_ID + ");";
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_MESSAGE_READ + "=0"
+                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
             Log.d(Settings.LOG_TAG, "query: " + query);
             db.execSQL(query);
 

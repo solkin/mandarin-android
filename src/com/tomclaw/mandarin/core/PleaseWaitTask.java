@@ -30,7 +30,7 @@ public abstract class PleaseWaitTask extends Task {
     @Override
     public void onPreExecuteMain() {
         Context context = weakContext.get();
-        if(context != null) {
+        if (context != null) {
             ProgressDialog progressDialog = ProgressDialog.show(context, null, context.getString(waitStringId));
             weakProgressDialog = new WeakReference<ProgressDialog>(progressDialog);
         }
@@ -39,7 +39,7 @@ public abstract class PleaseWaitTask extends Task {
     @Override
     public void onPostExecuteMain() {
         ProgressDialog progressDialog = weakProgressDialog.get();
-        if(progressDialog != null) {
+        if (progressDialog != null) {
             progressDialog.hide();
         }
     }

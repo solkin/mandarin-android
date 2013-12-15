@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,6 +24,7 @@ public class RequestDispatcher {
     /**
      * Variables
      */
+    private Service service;
     private final SessionHolder sessionHolder;
     private final ContentResolver contentResolver;
     private final ContentObserver requestObserver;
@@ -31,13 +33,14 @@ public class RequestDispatcher {
     private Gson gson;
     private int requestType;
 
-    public RequestDispatcher(Context context, SessionHolder sessionHolder, int requestType) {
+    public RequestDispatcher(Service service, SessionHolder sessionHolder, int requestType) {
+        this.service = service;
         // Session holder.
         this.sessionHolder = sessionHolder;
         // Request type.
         this.requestType = requestType;
         // Variables.
-        contentResolver = context.getContentResolver();
+        contentResolver = service.getContentResolver();
         // Creating observers.
         requestObserver = new RequestObserver();
         // Initializing thread.
@@ -69,7 +72,7 @@ public class RequestDispatcher {
                  * If status changed to any online - check queue and send associated requests.
                  */
                 contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null)
-                    .registerContentObserver(requestObserver);
+                        .registerContentObserver(requestObserver);
             } while (dispatch(cursor));
         }
 
@@ -146,7 +149,7 @@ public class RequestDispatcher {
                                 Log.d(Settings.LOG_TAG, "Another session and not persistent request.");
                             }
                             // Checking for content was changed.
-                            if(isBreak) {
+                            if (isBreak) {
                                 // We'll receive change event from observer soon.
                                 break;
                             }
@@ -159,8 +162,8 @@ public class RequestDispatcher {
                         }
 
                         String requestClass = cursor.getString(classColumnIndex);
-                        int requestAccountDbId =  cursor.getInt(accountColumnIndex);
-                        String requestBundle =  cursor.getString(bundleColumnIndex);
+                        int requestAccountDbId = cursor.getInt(accountColumnIndex);
+                        String requestBundle = cursor.getString(bundleColumnIndex);
 
                         Log.d(Settings.LOG_TAG, "Request received: "
                                 + "class = " + requestClass + "; "
@@ -175,14 +178,14 @@ public class RequestDispatcher {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
                             // Checking for account online.
-                            if(accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
                                 // Account is offline now. Let's send this request later.
                                 continue;
                             }
                             // Preparing request.
                             Request request = (Request) gson.fromJson(
                                     requestBundle, Class.forName(requestClass));
-                            requestResult = request.onRequest(accountRoot);
+                            requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
                             Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
                                     "Cancelling.");
@@ -196,7 +199,7 @@ public class RequestDispatcher {
                             Log.d(Settings.LOG_TAG, "Result is delete-type");
                             contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                        } else if(requestResult == Request.REQUEST_PENDING) {
+                        } else if (requestResult == Request.REQUEST_PENDING) {
                             // Request wasn't completed. We'll retry request a little bit later.
                             Log.d(Settings.LOG_TAG, "Request wasn't completed. We'll retry request a little bit later.");
                             continue;

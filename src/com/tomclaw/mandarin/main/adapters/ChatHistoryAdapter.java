@@ -83,7 +83,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     private void setBuddyDbId(int buddyDbId) {
-        if(buddyDbId >= 0) {
+        if (buddyDbId >= 0) {
             // Destroy current loader.
             loaderManager.destroyLoader(buddyDbId);
         }
@@ -161,7 +161,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      * Inflates view(s) from the specified XML file.
      *
      * @see android.widget.CursorAdapter#newView(android.content.Context,
-     *      android.database.Cursor, ViewGroup)
+     * android.database.Cursor, ViewGroup)
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {

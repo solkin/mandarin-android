@@ -45,6 +45,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
     /**
      * Returns request-specific request base: HttpGet or HttpPost.
+     *
      * @param url
      * @return HttpRequestBase, that will be executed.
      */
@@ -52,6 +53,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
     /**
      * This method parses HttpResponse from server and returns request status.
+     *
      * @param httpResponse
      * @return int - request status.
      * @throws Throwable
@@ -60,18 +62,21 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
     /**
      * Returns request-specific base Url (most of all from WellKnownUrls).
+     *
      * @return Request-specific base Url.
      */
     protected abstract String getUrl();
 
     /**
      * Returns parameters, must be appended to the Get request.
+     *
      * @return List of Get parameters.
      */
     protected abstract List<Pair<String, String>> getParams();
 
     /**
      * Returns url with prepared parameters to perform Get request.
+     *
      * @return String - prepared Url.
      * @throws UnsupportedEncodingException
      */
@@ -81,7 +86,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
         String parameters = HttpUtil.prepareParameters(getParams());
         Log.d(Settings.LOG_TAG, "try to send request to ".concat(url).concat(" with parameters: ")
                 .concat(WimConstants.QUE).concat(parameters));
-        if(!TextUtils.isEmpty(parameters)) {
+        if (!TextUtils.isEmpty(parameters)) {
             url = url.concat(WimConstants.QUE).concat(parameters);
         }
         return url;

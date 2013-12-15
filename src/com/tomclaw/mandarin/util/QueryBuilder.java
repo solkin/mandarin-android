@@ -58,14 +58,14 @@ public class QueryBuilder {
     }
 
     public QueryBuilder and() {
-        if(!TextUtils.isEmpty(select)) {
+        if (!TextUtils.isEmpty(select)) {
             select.append(" AND ");
         }
         return this;
     }
 
     public QueryBuilder or() {
-        if(!TextUtils.isEmpty(select)) {
+        if (!TextUtils.isEmpty(select)) {
             select.append(" OR ");
         }
         return this;

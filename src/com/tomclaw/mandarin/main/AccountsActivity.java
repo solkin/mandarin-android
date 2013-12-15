@@ -95,7 +95,7 @@ public class AccountsActivity extends ChiefActivity {
         accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
+                // startActivity(new Intent(AccountsActivity.this, BuddyInfoActivity.class));
                 Cursor cursor = accountsAdapter.getCursor();
                 if (cursor.moveToPosition(position)) {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
@@ -225,7 +225,7 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void executeBackground() throws AccountNotFoundException, RemoteException {
             // Iterating for all selected positions.
-            for(int accountDbId : selectedAccounts) {
+            for (int accountDbId : selectedAccounts) {
                 // Trying to remove account.
                 getServiceInteraction().removeAccount(accountDbId);
             }
@@ -234,7 +234,7 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void onFailMain() {
             Context context = getWeakContext().get();
-            if(context != null) {
+            if (context != null) {
                 // Show error.
                 Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();
             }

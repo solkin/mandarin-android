@@ -49,14 +49,15 @@ public class BitmapCache {
     }
 
     public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
-        if(BitmapTask.isResetRequired(imageView, hash)) {
+        Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+        // Checking for there is no cached bitmap and reset is really required.
+        if (bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
             imageView.setImageResource(defaultResource);
         }
         imageView.setTag(hash);
-        if(!TextUtils.isEmpty(hash)) {
-            Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+        if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
-            if(bitmap == null) {
+            if (bitmap == null) {
                 TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
             } else {
                 imageView.setImageBitmap(bitmap);
@@ -72,24 +73,24 @@ public class BitmapCache {
     public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional) {
         String cacheKey = getCacheKey(hash, width, height);
         Bitmap bitmap = bitmapLruCache.get(cacheKey);
-        if(bitmap == null) {
+        if (bitmap == null) {
             File file = getBitmapFile(hash);
             try {
                 FileInputStream inputStream = new FileInputStream(file);
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 // Check and set original size.
-                if(width == BITMAP_SIZE_ORIGINAL) {
+                if (width == BITMAP_SIZE_ORIGINAL) {
                     width = bitmap.getWidth();
                 }
-                if(height == BITMAP_SIZE_ORIGINAL) {
+                if (height == BITMAP_SIZE_ORIGINAL) {
                     height = bitmap.getHeight();
                 }
                 // Resize bitmap for the largest size.
-                if(isProportional) {
-                    if(width > height) {
+                if (isProportional) {
+                    if (width > height) {
                         height = bitmap.getHeight() * width / height;
                         width = bitmap.getWidth();
-                    } else if(height > width) {
+                    } else if (height > width) {
                         width = bitmap.getWidth() * height / width;
                         height = bitmap.getHeight();
                     } else {
@@ -98,12 +99,14 @@ public class BitmapCache {
                     }
                 }
                 // Check for bitmap needs to be resized.
-                if(bitmap.getWidth() != width || bitmap.getHeight() != height) {
+                if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
                     bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
                 }
                 bitmapLruCache.put(cacheKey, bitmap);
-            } catch (FileNotFoundException ex) {
-                Log.d(Settings.LOG_TAG, "Error while reading file for bitmap hash: " + hash, ex);
+            } catch (FileNotFoundException ignored) {
+                Log.d(Settings.LOG_TAG, "Bitmap '" + hash + "' not found!");
+            } catch (Throwable ex) {
+                Log.d(Settings.LOG_TAG, "Couldn't cache '" + hash + "' bitmap!", ex);
             }
         }
         return bitmap;

@@ -19,6 +19,7 @@ public class MainExecutor {
 
     /**
      * Performs a task on the main thread. If the current thread is main, execution immediately.
+     *
      * @param runnable to execute
      */
     public static void execute(Runnable runnable) {

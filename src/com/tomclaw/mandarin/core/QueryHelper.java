@@ -114,7 +114,7 @@ public class QueryHelper {
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
             queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            if(accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
                 // Update status for account buddies to unknown.
                 contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
@@ -225,7 +225,7 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have no more than only one entry. But we will check one and more.
         if (cursor.moveToFirst()) {
-             dialogFlag = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG)) != 0;
+            dialogFlag = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG)) != 0;
             // Closing cursor.
             cursor.close();
         }
@@ -246,15 +246,15 @@ public class QueryHelper {
                                      String messageText, boolean activateDialog) {
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
         // Checking for dialog activate needed.
-        if(activateDialog && !checkDialog(contentResolver, buddyDbId)) {
+        if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
             modifyDialog(contentResolver, buddyDbId, true);
         }
         // Checking for time specified.
-        if(messageTime == 0) {
+        if (messageTime == 0) {
             messageTime = System.currentTimeMillis();
         }
 
-        if(isCollapseMessages) {
+        if (isCollapseMessages) {
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
             // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
@@ -326,7 +326,7 @@ public class QueryHelper {
                 // Plain message query.
                 insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, cookie,
                         messageTime, messageText, activateDialog);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
         } else {
@@ -358,7 +358,7 @@ public class QueryHelper {
         // Obtain unread messages count.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
         // Checking for unread messages.
-        if(cursor.getCount() > 0) {
+        if (cursor.getCount() > 0) {
             // Plain messages modify by buddy db id and messages db id.
             ContentValues contentValues = new ContentValues();
             contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
@@ -399,7 +399,7 @@ public class QueryHelper {
                     // Avatar changed or removed. No need for previous bitmap in cache.
                     BitmapCache.getInstance().removeBitmap(dbAvatarHash);
                 }*/
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
         } else {
@@ -431,16 +431,16 @@ public class QueryHelper {
                 int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
                 // Checking for no buddy icon now, so, we must reset avatar hash.
-                if(TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
+                if (TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
                     contentValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
                 }
                 modifyBuddy(contentResolver, buddyDbId, contentValues);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
             // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
-            if(!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-                if(!TextUtils.isEmpty(buddyIcon)) {
+            if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+                if (!TextUtils.isEmpty(buddyIcon)) {
                     // Avatar is ready.
                     RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
                 }
@@ -482,7 +482,7 @@ public class QueryHelper {
             // Update dialog and favorite flags.
             buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag);
             // Checking for no buddy icon now, so, we must reset avatar hash.
-            if(TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
+            if (TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
                 buddyValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
             }
             // Update this row.
@@ -495,8 +495,8 @@ public class QueryHelper {
         }
         buddyCursor.close();
 
-        if(!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-            if(!TextUtils.isEmpty(buddyIcon)) {
+        if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+            if (!TextUtils.isEmpty(buddyIcon)) {
                 // Avatar is ready.
                 RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
             }
@@ -530,13 +530,13 @@ public class QueryHelper {
         queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         Cursor removedCursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        if(removedCursor.moveToFirst()) {
+        if (removedCursor.moveToFirst()) {
             // Checking and creating recycle.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM)
                     .and().columnEquals(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
             Cursor recycleCursor = queryBuilder.query(contentResolver, Settings.GROUP_RESOLVER_URI);
-            if(!recycleCursor.moveToFirst()) {
+            if (!recycleCursor.moveToFirst()) {
                 ContentValues recycleValues = new ContentValues();
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_NAME, recycleString);
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM);
@@ -634,10 +634,10 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                if(!cursor.isLast()) {
+                if (!cursor.isLast()) {
                     queryBuilder.or();
                 }
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
             // Query for the most recent message.

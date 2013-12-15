@@ -25,7 +25,7 @@ public abstract class StatusCatalogue {
 
     public int getStatusIndex(String statusValue) throws StatusNotFoundException {
         Integer value = indexMap.get(statusValue);
-        if(value == null) {
+        if (value == null) {
             throw new StatusNotFoundException();
         }
         return value;

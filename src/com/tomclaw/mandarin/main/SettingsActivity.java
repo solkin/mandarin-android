@@ -31,7 +31,7 @@ public class SettingsActivity extends Activity {
             case android.R.id.home:
                 finish();
         }
-        return(true);
+        return true;
     }
 
     public static class SettingsFragment extends PreferenceFragment {

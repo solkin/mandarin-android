@@ -82,7 +82,7 @@ public class WimConstants {
     public static final String SEND_REQ_ID = "sendReqId";
     public static final String IM_STATES_ARRAY = "imStates";
     public static final String REQUEST_ID = "requestId";
-    public static final String[] IM_STATES = new String[] {
+    public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",
             "sending",

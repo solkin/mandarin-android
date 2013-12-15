@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -24,7 +25,10 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.BuddyInfoActivity;
+import com.tomclaw.mandarin.main.BuddyInfoTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,6 +47,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     /**
      * Columns
      */
+    private static int COLUMN_ROW_AUTO_ID;
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
@@ -77,6 +82,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
@@ -124,7 +130,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // Status image.
         String accountType = cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE);
         int statusIndex = cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS);
@@ -132,7 +138,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         // Status text.
         String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
         String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
-        if(statusIndex == StatusUtil.STATUS_OFFLINE
+        if (statusIndex == StatusUtil.STATUS_OFFLINE
                 || TextUtils.equals(statusTitle, statusMessage)) {
             // Buddy status is offline now or status message is only status title.
             // No status message could be displayed.
@@ -146,7 +152,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
         ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
-        if(unreadCount > 0) {
+        if (unreadCount > 0) {
             view.findViewById(R.id.counter_layout).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
         } else {
@@ -156,6 +162,15 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
         QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
+        // On-avatar click listener.
+        final int buddyDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
+        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);
+        contactBadge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskExecutor.getInstance().execute(buddyInfoTask);
+            }
+        });
     }
 
     public int getBuddyDbId(int position) {

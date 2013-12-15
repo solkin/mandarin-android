@@ -37,7 +37,7 @@ public class BitmapTask extends Task {
     @Override
     public void executeBackground() throws Throwable {
         ImageView image = imageWeakReference.get();
-        if(image != null) {
+        if (image != null) {
             bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
         }
     }
@@ -46,7 +46,7 @@ public class BitmapTask extends Task {
     public void onSuccessMain() {
         ImageView image = imageWeakReference.get();
         // Hash may be changed in another task.
-        if(image != null && bitmap != null && TextUtils.equals(getImageTag(image), hash)) {
+        if (image != null && bitmap != null && TextUtils.equals(getImageTag(image), hash)) {
             image.setImageBitmap(bitmap);
         }
     }

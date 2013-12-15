@@ -216,7 +216,7 @@ public class IcqSession {
      * Start event fetching in verbal cycle.
      *
      * @return true if we are now in offline mode because of user decision.
-     *         false if our session is not accepted by the server.
+     * false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
@@ -421,7 +421,7 @@ public class IcqSession {
     private String getStatusTitle(String moodTitle, int statusIndex) {
         // Define status title.
         String statusTitle;
-        if(TextUtils.isEmpty(moodTitle)) {
+        if (TextUtils.isEmpty(moodTitle)) {
             // Default title for status index.
             statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
         } else {
@@ -434,7 +434,7 @@ public class IcqSession {
     private int getStatusIndex(String moodIcon, String buddyStatus) {
         int statusIndex;
         // Checking for mood present.
-        if(!TextUtils.isEmpty(moodIcon)) {
+        if (!TextUtils.isEmpty(moodIcon)) {
             try {
                 return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
             } catch (StatusNotFoundException ignored) {

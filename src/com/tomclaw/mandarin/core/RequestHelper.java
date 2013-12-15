@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.icq.AvatarRequest;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.im.icq.EndSessionRequest;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
 
@@ -82,5 +83,20 @@ public class RequestHelper {
             contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
         }
         cursor.close();
+    }
+
+    public static void requestBuddyInfo(ContentResolver contentResolver, String appSession,
+                                        int accountDbId, String buddyId) {
+        BuddyInfoRequest buddyInfoRequest = new BuddyInfoRequest(buddyId);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyInfoRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 }

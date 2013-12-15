@@ -85,6 +85,30 @@
     <string name="pref_title_autorun">Фоновый автозапуск</string>
     <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
 
+    <string name="error_show_buddy_info">Ошибка при попытке открыть информацию о контакте</string>
+    <string name="info_status">Статус</string>
+    <string name="info_base">Основное</string>
+    <string name="info_extended">Дополнительно</string>
+    <string name="buddy_info_share">Поделиться</string>
+    <string name="buddy_info_copy">Копировать</string>
+    <string name="share_buddy_info_via">Поделиться контактом через</string>
+    <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+
+    <string name="friendly_name">Ник</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="gender">Пол</string>
+    <string name="birth_date">День рождения</string>
+    <string name="city">Город</string>
+    <string name="children">Дети</string>
+    <string name="smoking">Курение</string>
+    <string name="website">Сайт</string>
+    <string name="about_me">О себе</string>
+    <string name="info_yes">да</string>
+    <string name="info_no">нет</string>
+    <string name="male">муж.</string>
+    <string name="female">жен.</string>
+
     <string name="status_icq_shop">Магазины</string>
     <string name="status_icq_duck">В ванной</string>
     <string name="status_icq_tired">Устал</string>

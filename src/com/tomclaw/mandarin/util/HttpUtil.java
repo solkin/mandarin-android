@@ -23,6 +23,7 @@ public class HttpUtil {
 
     /**
      * Builds Url request string from specified parameters.
+     *
      * @param pairs
      * @return String - Url request parameters.
      * @throws java.io.UnsupportedEncodingException

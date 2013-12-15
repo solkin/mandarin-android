@@ -122,15 +122,17 @@ public class GlobalProvider extends ContentProvider {
 
     private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD = new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
             .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
-                .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
-                .append(" WHERE ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_READ).append("=").append("0").append(" AND ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_TYPE).append("=").append("1").append(" AND ")
-                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROSTER_BUDDY_DIALOG).append("=").append("1").append(" AND ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_BUDDY_DB_ID)
-                        .append("=")
-                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
+            .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
+            .append(" WHERE ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_READ).append("=").append("0").append(" AND ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_TYPE).append("=").append("1").append(" AND ")
+            .append(ROSTER_BUDDY_TABLE).append(".").append(ROSTER_BUDDY_DIALOG).append("=").append("1").append(" AND ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_BUDDY_DB_ID)
+            .append("=")
+            .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
             .append(");");
+
+    public static final int ROW_INVALID = -1;
 
     // Database helper object
     private DatabaseHelper databaseHelper;
@@ -214,7 +216,7 @@ public class GlobalProvider extends ContentProvider {
         }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         Cursor cursor;
-        if(isDistinct) {
+        if (isDistinct) {
             cursor = sqLiteDatabase.query(true, table, projection, selection, selectionArgs, null, null, sortOrder, null);
         } else {
             cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
@@ -265,7 +267,7 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
-        if(method.equals(METHOD_UPDATE_UNREAD)) {
+        if (method.equals(METHOD_UPDATE_UNREAD)) {
             sqLiteDatabase.beginTransaction();
             try {
                 sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());

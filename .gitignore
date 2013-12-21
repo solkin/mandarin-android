@@ -1,10 +1,13 @@
 *.class
 *.zip
+*.apk
+*.iml
 
 # IDE folders #
 gen/
 bin/
 out/
 local.properties
+.idea/
 .idea/workspace.xml
 .idea/dictionaries/

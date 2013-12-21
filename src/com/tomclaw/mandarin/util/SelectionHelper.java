@@ -10,15 +10,15 @@ import java.util.TreeMap;
  * Date: 04.09.13
  * Time: 0:47
  */
-public class SelectionHelper {
+public class SelectionHelper<K, V> {
 
-    private Map<Integer, Long> selection;
+    private Map<K, V> selection;
 
     public SelectionHelper() {
-        selection = new TreeMap();
+        selection = new TreeMap<K, V>();
     }
 
-    public void onStateChanged(int position, long id, boolean checked) {
+    public void onStateChanged(K position, V id, boolean checked) {
         if (checked) {
             setChecked(position, id);
         } else {
@@ -26,19 +26,19 @@ public class SelectionHelper {
         }
     }
 
-    public void setChecked(int position, long id) {
+    public void setChecked(K position, V id) {
         selection.put(position, id);
     }
 
-    public void setUnchecked(int position) {
+    public void setUnchecked(K position) {
         selection.remove(position);
     }
 
-    public Collection<Long> getSelectedIds() {
+    public Collection<V> getSelectedIds() {
         return selection.values();
     }
 
-    public Collection<Integer> getSelectedPositions() {
+    public Collection<K> getSelectedPositions() {
         return selection.keySet();
     }
 

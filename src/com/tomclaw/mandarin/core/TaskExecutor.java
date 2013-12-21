@@ -30,7 +30,17 @@ public class TaskExecutor {
         return Holder.instance;
     }
 
-    public void execute(Task task) {
-        mThreadPoolExecutor.execute(task);
+    public void execute(final Task task) {
+        if (task.isPreExecuteRequired()) {
+            MainExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    task.onPreExecuteMain();
+                    mThreadPoolExecutor.execute(task);
+                }
+            });
+        } else {
+            mThreadPoolExecutor.execute(task);
+        }
     }
 }

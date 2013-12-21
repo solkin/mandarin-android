@@ -31,16 +31,17 @@ public class HistoryDispatcher {
     private NotificationManager notificationManager;
     private ContentResolver contentResolver;
     private ContentObserver historyObserver;
+    private volatile long notificationCancelTime = 0;
 
     private static final int NOTIFICATION_ID = 0x01;
 
-    private static final String[] unReadProjection = new String[] {
+    private static final String[] unReadProjection = new String[]{
             GlobalProvider.HISTORY_BUDDY_DB_ID,
             GlobalProvider.HISTORY_MESSAGE_TYPE,
             GlobalProvider.HISTORY_MESSAGE_READ
     };
 
-    private static final String[] unShownProjection = new String[] {
+    private static final String[] unShownProjection = new String[]{
             GlobalProvider.HISTORY_BUDDY_DB_ID,
             GlobalProvider.HISTORY_MESSAGE_TYPE,
             GlobalProvider.HISTORY_MESSAGE_READ,
@@ -66,17 +67,28 @@ public class HistoryDispatcher {
 
     private class HistoryObserver extends ContentObserver {
 
+        HistoryDispatcherTask historyDispatcherTask;
+
         /**
          * Creates a content observer.
          */
         public HistoryObserver() {
             super(null);
+            historyDispatcherTask = new HistoryDispatcherTask();
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             Log.d(Settings.LOG_TAG, "HistoryObserver: onChange [selfChange = " + selfChange + "]");
+            TaskExecutor.getInstance().execute(historyDispatcherTask);
+        }
+    }
+
+    private class HistoryDispatcherTask extends Task {
+
+        @Override
+        public void executeBackground() throws Throwable {
             // Obtain unique unread buddies. If exist.
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
@@ -87,11 +99,11 @@ public class HistoryDispatcher {
             if (unReadCursor.moveToFirst()) {
                 queryBuilder.recycle();
                 queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
-                            .startComplexExpression()
-                                .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
-                                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
-                            .finishComplexExpression()
-                            .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
+                        .startComplexExpression()
+                        .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                        .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
+                        .finishComplexExpression()
+                        .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
                         .finishComplexExpression();
                 Cursor unShownCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
                         unShownProjection);
@@ -99,9 +111,9 @@ public class HistoryDispatcher {
                 // If yes - we must update notification with all unread messages. If no - nothing to do now.
                 if (unShownCursor.moveToFirst()) {
                     boolean isAlarmRequired = false;
-                    int HISTORY_NOTICE_SHOWN_COLUMN = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
+                    int historyNoticeShownColumn = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
                     do {
-                        if(unShownCursor.getInt(HISTORY_NOTICE_SHOWN_COLUMN) != -1) {
+                        if (unShownCursor.getInt(historyNoticeShownColumn) != -1) {
                             isAlarmRequired = true;
                             break;
                         }
@@ -119,7 +131,6 @@ public class HistoryDispatcher {
                     int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
                     do {
                         buddyDbId = unReadCursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
-                        Log.d(Settings.LOG_TAG, "HistoryObserver: buddy: " + buddyDbId);
                         QueryBuilder messageQueryBuilder = new QueryBuilder();
                         messageQueryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
@@ -144,7 +155,7 @@ public class HistoryDispatcher {
                             }
                             nickNamesBuilder.append(nickName);
                             // Checking for style type for correct filling.
-                            if(multipleSenders) {
+                            if (multipleSenders) {
                                 inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
                             }
                         }
@@ -156,7 +167,7 @@ public class HistoryDispatcher {
                     int replyIcon;
                     NotificationCompat.Style style;
                     // Checking for required style.
-                    if(multipleSenders) {
+                    if (multipleSenders) {
                         title = context.getString(R.string.count_new_messages, unread);
                         content = nickNamesBuilder.toString();
                         replyIcon = R.drawable.social_reply_all;
@@ -174,22 +185,38 @@ public class HistoryDispatcher {
                     PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
                             new Intent(context, ChatActivity.class)
                                     .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
                     // Simply open chats list.
                     PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
-                            new Intent(context, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                            new Intent(context, MainActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                            PendingIntent.FLAG_CANCEL_CURRENT);
                     // Notification prepare.
-                    Notification notification = new NotificationCompat.Builder(context)
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                             .setContentTitle(title)
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setStyle(style)
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
-                            .setDefaults(isAlarmRequired ? Notification.DEFAULT_ALL : 0)
-                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
-                            .build();
+                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent);
+                    if (isAlarmRequired && isNotificationCompleted()) {
+                        if (PreferenceHelper.isSystemNotifications(context)) {
+                            notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+                        } else {
+                            notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
+                            int defaults = 0;
+                            if (PreferenceHelper.isVibrate(context)) {
+                                defaults |= Notification.DEFAULT_VIBRATE;
+                            }
+                            notificationBuilder.setDefaults(defaults);
+                        }
+                        onNotificationShown();
+                    }
+                    notificationBuilder.setLights(0xffff6600, 1000, 1000);
+
+                    Notification notification = notificationBuilder.build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);
                     // Update shown messages flag.
@@ -202,9 +229,35 @@ public class HistoryDispatcher {
                 unShownCursor.close();
             } else {
                 Log.d(Settings.LOG_TAG, "HistoryObserver: No unread messages found");
+                onNotificationCancel();
                 notificationManager.cancel(NOTIFICATION_ID);
             }
             unReadCursor.close();
+            // Call to update unread count.
+            contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
+        }
+
+        private void onNotificationShown() {
+            notificationCancelTime = System.currentTimeMillis() + Settings.NOTIFICATION_MIN_DELAY;
+        }
+
+        private void onNotificationCancel() {
+            long notificationRemain = getNotificationRemain();
+            if (notificationRemain > 0) {
+                try {
+                    // Take some time to read this message and notification to be shown
+                    Thread.sleep(notificationRemain);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+
+        private boolean isNotificationCompleted() {
+            return getNotificationRemain() <= 0;
+        }
+
+        private long getNotificationRemain() {
+            return notificationCancelTime - System.currentTimeMillis();
         }
     }
 }

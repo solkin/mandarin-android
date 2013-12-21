@@ -32,7 +32,7 @@ public class IcqMessageRequest extends WimRequest {
     }
 
     @Override
-    public int parseResponse(JSONObject response) throws JSONException {
+    protected int parseJson(JSONObject response) throws JSONException {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
@@ -43,15 +43,15 @@ public class IcqMessageRequest extends WimRequest {
             // Checking for message state.
             for (int i = 0; i < IM_STATES.length; i++) {
                 if (state.equals(IM_STATES[i])) {
-                    QueryHelper.updateMessage(getAccountRoot().getContentResolver(), requestId, i);
+                    QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), requestId, i);
                     break;
                 }
             }
             return REQUEST_DELETE;
-        } else if(statusCode == 462 || statusCode >= 600  && statusCode < 700) { // TODO: check this status codes.
+        } else if (statusCode == 462 || statusCode >= 600 && statusCode < 700) { // TODO: check this status codes.
             // Target error.
             String requestId = responseObject.getString(REQUEST_ID);
-            QueryHelper.updateMessage(getAccountRoot().getContentResolver(), requestId, 1);
+            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), requestId, 1);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or McDonald's.
@@ -59,13 +59,13 @@ public class IcqMessageRequest extends WimRequest {
     }
 
     @Override
-    public String getUrl() {
+    protected String getUrl() {
         return getAccountRoot().getWellKnownUrls().getWebApiBase()
                 .concat("im/sendIM");
     }
 
     @Override
-    public List<Pair<String, String>> getParams() {
+    protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("autoResponse", "false"));

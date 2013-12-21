@@ -5,13 +5,14 @@ import android.app.ActivityManager;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.ExceptionHandler;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +26,6 @@ public abstract class ChiefActivity extends Activity {
     private ServiceInteraction serviceInteraction;
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
-    private boolean isActivityInactive;
     private boolean isCoreServiceReady;
 
     /**
@@ -33,7 +33,7 @@ public abstract class ChiefActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(Settings.LOG_TAG, "onCreate");
+        Log.d(Settings.LOG_TAG, "ChiefActivity onCreate");
         // Release all reports.
         ((ExceptionHandler) Thread.getDefaultUncaughtExceptionHandler()).releaseReports();
 
@@ -42,7 +42,6 @@ public abstract class ChiefActivity extends Activity {
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;
-        isActivityInactive = false;
         isCoreServiceReady = false;
 
         startCoreService();
@@ -51,19 +50,16 @@ public abstract class ChiefActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        isActivityInactive = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        isActivityInactive = true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        isActivityInactive = false;
     }
 
     @Override
@@ -77,7 +73,7 @@ public abstract class ChiefActivity extends Activity {
         unbindCoreService();
         /** Destroy **/
         super.onDestroy();
-        Log.d(Settings.LOG_TAG, "ChiefActivity: onDestroy");
+        Log.d(Settings.LOG_TAG, "ChiefActivity onDestroy");
     }
 
     /**
@@ -116,45 +112,36 @@ public abstract class ChiefActivity extends Activity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
-                    /** Checking for activity state isn't stop **/
-                    if (isActivityInactive) {
-                        // TODO: Incorrect service events logic! Inactive activities will lose potential important info.
-                        return;
-                    }
                     /** Checking for special message from service **/
                     if (intent.getBooleanExtra(CoreService.EXTRA_STAFF_PARAM, false)) {
                         /** Obtain service state **/
                         int serviceState = intent.getIntExtra(CoreService.EXTRA_STATE_PARAM, CoreService.STATE_DOWN);
                         /** Checking for service state is up **/
                         if (serviceState == CoreService.STATE_UP) {
-                            isCoreServiceReady = true;
-                            onCoreServiceReady();
+                            coreServiceReady();
                         } else if (serviceState == CoreService.STATE_DOWN) {
-                            isCoreServiceReady = false;
-                            onCoreServiceDown();
+                            coreServiceDown();
                         }
                     } else {
                         /** Redirecting intent **/
-                        ChiefActivity.this.onCoreServiceIntent(intent);
+                        onCoreServiceIntent(intent);
                     }
                 }
             };
             registerReceiver(broadcastReceiver, intentFilter);
             /** Creating connection to service **/
             serviceConnection = new ServiceConnection() {
+
                 public void onServiceDisconnected(ComponentName name) {
                     serviceInteraction = null;
+                    coreServiceDown();
                     Log.d(Settings.LOG_TAG, "onServiceDisconnected");
                 }
 
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     serviceInteraction = ServiceInteraction.Stub.asInterface(service);
+                    coreServiceReady();
                     Log.d(Settings.LOG_TAG, "onServiceConnected");
-                    try {
-                        /** Initialize service **/
-                        serviceInteraction.initService();
-                    } catch (RemoteException ignored) {
-                    }
                 }
             };
             /** Binding service **/
@@ -182,14 +169,37 @@ public abstract class ChiefActivity extends Activity {
      */
     protected boolean checkCoreService() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
-                Log.d(Settings.LOG_TAG, "checkCoreService: exist");
-                return true;
+        List<ActivityManager.RunningServiceInfo> runningServiceInfoList = manager.getRunningServices(Integer.MAX_VALUE);
+        if(runningServiceInfoList != null) {
+            for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
+                if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
+                    Log.d(Settings.LOG_TAG, "checkCoreService: exist");
+                    return true;
+                }
             }
         }
         Log.d(Settings.LOG_TAG, "checkCoreService: none");
         return false;
+    }
+
+    /**
+     * Checks for core service state is changed and if it really changed, invokes inCoreServiceReady.
+     */
+    private void coreServiceReady() {
+        if (!isCoreServiceReady) {
+            onCoreServiceReady();
+            isCoreServiceReady = true;
+        }
+    }
+
+    /**
+     * Checks for core service state is changed and if it really changed, invokes onCoreServiceDown.
+     */
+    private void coreServiceDown() {
+        if (isCoreServiceReady) {
+            onCoreServiceDown();
+            isCoreServiceReady = false;
+        }
     }
 
     /**
@@ -205,7 +215,7 @@ public abstract class ChiefActivity extends Activity {
     /**
      * Any message from service for this activity
      *
-     * @param intent
+     * @param intent from service to activity.
      */
     public abstract void onCoreServiceIntent(Intent intent);
 

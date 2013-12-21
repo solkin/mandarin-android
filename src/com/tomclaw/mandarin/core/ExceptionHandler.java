@@ -95,8 +95,9 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     public void releaseReports() {
         Task task = new Task() {
+
             @Override
-            public void execute() throws Throwable {
+            public void executeBackground() throws Throwable {
                 Log.d(Settings.LOG_TAG, "Checking for unreleased reports...");
                 File[] reports = stacktraceDir.listFiles();
                 int total = reports.length;
@@ -141,7 +142,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             String responseString = EntityUtils.toString(response.getEntity());
             Log.d(Settings.LOG_TAG, "report sent response: ".concat(responseString));
             JSONObject json = new JSONObject(responseString);
-            if(json.get("status").equals("ok")) {
+            if (json.get("status").equals("ok")) {
                 report.delete();
                 return true;
             }

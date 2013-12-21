@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -114,7 +114,7 @@ public class ChatDialogsAdapter extends CursorAdapter implements
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
-                StatusUtil.getStatusResource(
+                StatusUtil.getStatusDrawable(
                         cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
     }
@@ -135,18 +135,19 @@ public class ChatDialogsAdapter extends CursorAdapter implements
 
     /**
      * Returns position of specified buddy db id.
+     *
      * @param buddyDbId buddy database row id.
      * @return position of specified buddy in chat dialogs selection or -1 if there is no such buddy.
      */
     public int getBuddyPosition(int buddyDbId) {
         Cursor cursor = getCursor();
         // Iterate cursor positions to get know buddyDbId position.
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
-                if(cursor.getInt(COLUMN_ROSTER_BUDDY_DB_ID) == buddyDbId) {
+                if (cursor.getInt(COLUMN_ROSTER_BUDDY_DB_ID) == buddyDbId) {
                     return cursor.getPosition();
                 }
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         return -1;
     }

@@ -35,17 +35,17 @@ public class SessionHolder {
 
     public void updateAccountRoot(AccountRoot accountRoot) {
         // Attempting to update account.
-        if (QueryHelper.updateAccount(context, accountRoot)) {
-            // Account was created.
+        if (!QueryHelper.updateAccount(context, accountRoot)) {
+            // Account needs to be created.
+            QueryHelper.insertAccount(context, accountRoot);
             accountRootList.add(accountRoot);
         }
     }
 
-    public boolean removeAccountRoot(String accountType, String userId) {
+    public boolean removeAccountRoot(int accountDbId) {
         for (AccountRoot accountRoot : accountRootList) {
             // Checking for account type and user id.
-            if (accountRoot.getAccountType().equals(accountType)
-                    && accountRoot.getUserId().equals(userId)) {
+            if (accountRoot.getAccountDbId() == accountDbId) {
                 // Disconnect first of all.
                 accountRoot.disconnect();
                 // Now we ready to remove this account.
@@ -54,7 +54,7 @@ public class SessionHolder {
             }
         }
         // Trying to remove all data from database, associated with this account.
-        return QueryHelper.removeAccount(contentResolver, accountType, userId);
+        return QueryHelper.removeAccount(contentResolver, accountDbId);
     }
 
     public void updateAccountStatus(String accountType, String userId, int statusIndex) {

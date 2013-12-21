@@ -1,82 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mandarin</string>
-    <string name="menu_search">Search</string>
-    <string name="accounts">Accounts</string>
-    <string name="add_account">Add account</string>
-    <string name="edit_account">Edit</string>
-    <string name="remove_account">Remove</string>
-    <string name="save_account">Save</string>
-    <string name="user_id_empty">Enter login, please</string>
-    <string name="user_password_empty">Enter password, please</string>
-    <string name="user_id">User ID</string>
-    <string name="user_password">Password</string>
-    <string name="account_add_fail">Failed to add account. Sorry.</string>
-    <string name="add_buddy">Add buddy</string>
-    <string name="display_options">Display options</string>
-    <string name="show_dialogs">Show dialogs</string>
-    <string name="settings">Settings</string>
-    <string name="info">Info</string>
-    <string name="feedback">Feedback</string>
-    <string name="dialogs">Dialogs</string>
-    <string name="close_chat">Close chat</string>
-    <string name="buddy_info">Buddy info</string>
-    <string name="clear_history">Clear history</string>
-    <string name="enter_your_message">Enter your message</string>
-    <string name="error_bubble">Error loading message from database. Reinstall program to let this error left.</string>
+    <string name="menu_search">Поиск</string>
+    <string name="accounts">Профили</string>
+    <string name="add_account">Добавить профиль</string>
+    <string name="edit_account">Редактировать</string>
+    <string name="remove_account">Удалить</string>
+    <string name="save_account">Сохранить</string>
+    <string name="user_id_empty">Пожалуйста, введите логин</string>
+    <string name="user_password_empty">Пожалуйста, введите пароль</string>
+    <string name="user_id">Логин</string>
+    <string name="user_password">Пароль</string>
+    <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
+    <string name="add_buddy">Добавить контакт</string>
+    <string name="create_dialog">Открыть диалог</string>
+    <string name="settings">Настройки</string>
+    <string name="info">Информация</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="dialogs">Диалоги</string>
+    <string name="close_chat">Закрыть диалог</string>
+    <string name="buddy_info">Анкета</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="enter_your_message">Ваше сообщение</string>
+    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет навсегда.</string>
+    <string name="select_buddy">Выберите контакт</string>
 
-    <string name="status_offline">Offline</string>
-    <string name="status_mobile">Mobile</string>
-    <string name="status_online">Online</string>
-    <string name="status_invisible">Invisible</string>
-    <string name="status_chat">Chat</string>
-    <string name="status_away">Away</string>
-    <string name="status_dnd">Do not disturb</string>
-    <string name="status_na">Not available</string>
-    <string name="status_busy">Busy</string>
+    <string name="status_offline">Не в сети</string>
+    <string name="status_mobile">Мобильный</string>
+    <string name="status_online">В сети</string>
+    <string name="status_invisible">Невидимый</string>
+    <string name="status_chat">Рад пообщаться</string>
+    <string name="status_away">Отошёл</string>
+    <string name="status_dnd">Не беспокоить</string>
+    <string name="status_na">Недоступен</string>
+    <string name="status_busy">Занят</string>
 
-    <string name="group_favorite">Favorite</string>
-    <string name="group_dialogs">Dialogs</string>
-    <string name="group_online">Online</string>
-    <string name="group_all">All friends</string>
+    <string name="error_remove_account">Извините, произошла ошибка при удалении профиля</string>
+    <string name="recycle">Корзина</string>
+    <string name="message_copy">Копировать</string>
+    <string name="message_save">Сохранить</string>
+    <string name="message_share">Поделиться</string>
 
-    <string name="error_no_such_account">Error! No such account.</string>
-    <string name="recycle">Recycle</string>
-    <string name="message_copy">Copy</string>
-    <string name="message_save">Save message</string>
-    <string name="message_share">Share</string>
+    <string name="clear_history_title">Очистить историю?</string>
+    <string name="clear_history_text">Сейчас будет очищена вся переписка с этим контактом. Продолжить?</string>
+    <string name="yes_clear">Да</string>
+    <string name="do_not_clear">Отмена</string>
 
-    <string name="clear_history_title">Clear history?</string>
-    <string name="clear_history_text">Do you really want to clear the history with that contact?</string>
-    <string name="yes_clear">Yes, clear</string>
-    <string name="do_not_clear">No!</string>
+    <string name="selected_items">%d выбрано</string>
+    <string name="yes_remove">Удалить</string>
+    <string name="remove_accounts_title">Удалить профили?</string>
+    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="do_not_remove">Нет</string>
+    <string name="please_wait">Пожалуйста, подождите…</string>
+    <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>
+    <string name="error_sending_message">Не удалось отправить сообщение!</string>
+    <string name="filter_show_all_buddies">Все контакты</string>
+    <string name="filter_show_online_only">Только в сети</string>
 
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
-
-    <string name="selected_items">%d selected</string>
-    <string name="yes_remove">Yes, remove</string>
-    <string name="remove_accounts_title">Remove accounts?</string>
-    <string name="remove_accounts_text">Do you really wants to remove accounts information and stored chatting history?
-        This action cannot be undone.
+    <string name="count_new_messages">%d новых сообщений</string>
+    <string name="do_not_remove">Нет</string>
+    <string name="reply_now">Ответить</string>
+    <string name="open_chats">Диалоги</string>
+    <string name="share_messages_via">Поделиться сообщением через</string>
+    <string name="connect_account_message">Этот профиль ещё не подключен. Подключить сейчас?</string>
+    <string name="connect_account_title">Подключить профиль</string>
+    <string name="connect_yes">Подключить</string>
+    <string name="connect_no">Не сейчас</string>
+    <string name="pref_buddy_list_title">Список контактов</string>
+    <string name="pref_summary_show_temp">Показывать временных в списке контактов</string>
+    <string name="pref_title_show_temp">Временные контакты</string>
+    <string name="pref_notifications_title">Уведомления</string>
+    <string name="pref_title_notification_sound">Сигнал уведомления</string>
+    <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
+    <string name="pref_title_system_notifications">Системные уведомления</string>
+    <string name="pref_summary_system_notifications">Использовать системные настройки для уведомлений</string>
+    <string name="pref_title_vibrate">Вибрация</string>
+    <string name="buddy_status">Статус</string>
+    <string name="pref_chat_title">Переписка</string>
+    <string name="pref_title_collapse_messages">Объединение сообщений</string>
+    <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
+        течение двух минут
     </string>
-    <string name="do_not_remove">No</string>
+    <string name="pref_base_title">Основное</string>
+    <string name="pref_title_autorun">Фоновый автозапуск</string>
+    <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
 
-    <string-array name="default_groups">
-        <item>@string/group_favorite</item>
-        <item>@string/group_dialogs</item>
-        <item>@string/group_online</item>
-        <item>@string/group_all</item>
-    </string-array>
+    <string name="error_show_buddy_info">Ошибка при попытке открыть информацию о контакте</string>
+    <string name="info_status">Статус</string>
+    <string name="info_base">Основное</string>
+    <string name="info_extended">Дополнительно</string>
+    <string name="buddy_info_share">Поделиться</string>
+    <string name="buddy_info_copy">Копировать</string>
+    <string name="share_buddy_info_via">Поделиться контактом через</string>
+    <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
 
-    <string name="count_new_messages">%d new messages</string>
-    <string name="do_not_remove">No</string>
-    <string name="do_not_remove">No</string>
-    <string name="reply_now">Reply now</string>
-    <string name="open_chats">Open chats</string>
-    <string name="share_messages_via">Share messages via</string>
-    <string name="connect_account_message">This account is not yet connected. Connect now?</string>
-    <string name="connect_account_title">Connect account</string>
-    <string name="connect_yes">Connect</string>
-    <string name="connect_no">Not now</string>
+    <string name="friendly_name">Ник</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="gender">Пол</string>
+    <string name="birth_date">День рождения</string>
+    <string name="city">Город</string>
+    <string name="children">Дети</string>
+    <string name="smoking">Курение</string>
+    <string name="website">Сайт</string>
+    <string name="about_me">О себе</string>
+    <string name="info_yes">да</string>
+    <string name="info_no">нет</string>
+    <string name="male">муж.</string>
+    <string name="female">жен.</string>
+
+    <string name="status_icq_shop">Магазины</string>
+    <string name="status_icq_duck">В ванной</string>
+    <string name="status_icq_tired">Устал</string>
+    <string name="status_icq_party">Вечеринка</string>
+    <string name="status_icq_beer">Пиво</string>
+    <string name="status_icq_think">Думаю</string>
+    <string name="status_icq_eating">Кушаю</string>
+    <string name="status_icq_tv">Телевизор</string>
+    <string name="status_icq_friends">Друзья</string>
+    <string name="status_icq_coffee">Кофе</string>
+    <string name="status_icq_music">Музыка</string>
+    <string name="status_icq_business">Дела</string>
+    <string name="status_icq_cinema">Кино</string>
+    <string name="status_icq_fun">Развлекаюсь</string>
+    <string name="status_icq_phone">На телефоне</string>
+    <string name="status_icq_game">Играю</string>
+    <string name="status_icq_study">Учусь</string>
+    <string name="status_icq_sick">Болею</string>
+    <string name="status_icq_sleeping">Сплю</string>
+    <string name="status_icq_surfing">Отрываюсь</string>
+    <string name="status_icq_internet">В интернете</string>
+    <string name="status_icq_working">Работаю</string>
+    <string name="status_icq_typing">Пишу</string>
+    <string name="status_icq_angry">Злой</string>
+    <string name="status_icq_weekend">Отдыхаю</string>
+    <string name="status_icq_psp">Приставка</string>
+    <string name="status_icq_on_mobile">На мобильном</string>
+    <string name="status_icq_asleep">Засыпаю</string>
+    <string name="status_icq_wc">В туалете</string>
+    <string name="status_icq_question">Вопрос</string>
+    <string name="status_icq_way">В пути</string>
+    <string name="status_icq_love">Любовь</string>
+    <string name="status_icq_in_love">Влюблён</string>
+    <string name="status_icq_search">Ищу</string>
+    <string name="status_icq_diary">Дневник</string>
 </resources>

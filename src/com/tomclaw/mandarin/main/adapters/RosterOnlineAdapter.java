@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -113,7 +113,7 @@ public class RosterOnlineAdapter extends CursorAdapter implements
         ((TextView) view.findViewById(R.id.buddy_id)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_ID));
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(
-                StatusUtil.getStatusResource(
+                StatusUtil.getStatusDrawable(
                         cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS)));
     }

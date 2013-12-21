@@ -11,9 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.util.StatusUtil;
-
-import java.util.Arrays;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +27,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
     private static final int DROPDOWN_PADDING = 10;
 
     public StatusSpinnerAdapter(Activity context, String accountType) {
-        super(context, R.layout.status_item, Arrays.asList(StatusUtil.getConnectStatuses(accountType)));
+        super(context, R.layout.status_item, StatusUtil.getConnectStatuses(accountType));
 
         inflater = context.getLayoutInflater();
         this.accountType = accountType;
@@ -69,8 +67,8 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
         ImageView statusImage = (ImageView) view.findViewById(R.id.status_icon);
         TextView statusName = (TextView) view.findViewById(R.id.status_name);
 
-        statusImage.setImageResource(StatusUtil.getStatusResource(accountType, statusIndex));
-        statusName.setText(StatusUtil.getStatusTitle(statusIndex));
+        statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
+        statusName.setText(StatusUtil.getStatusTitle(accountType, statusIndex));
     }
 
     public int getStatus(int position) {

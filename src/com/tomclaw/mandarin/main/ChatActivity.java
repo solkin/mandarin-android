@@ -2,28 +2,24 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.database.DataSetObserver;
+import android.content.*;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.adapters.ChatDialogsAdapter;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -34,85 +30,12 @@ import java.util.Collection;
  */
 public class ChatActivity extends ChiefActivity {
 
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
-    private ActionBarDrawerToggle drawerToggle;
-    private CharSequence title;
-
     private ChatListView chatList;
-
-    private ChatDialogsAdapter chatDialogsAdapter;
     private ChatHistoryAdapter chatHistoryAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chat_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                drawerToggle.onOptionsItemSelected(item);
-                return true;
-            }
-            case R.id.close_chat_menu: {
-                try {
-                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
-                return true;
-            }
-            case R.id.clear_history_menu: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.clear_history_title);
-                builder.setMessage(R.string.clear_history_text);
-                builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            QueryHelper.clearHistory(getContentResolver(), chatHistoryAdapter.getBuddyDbId());
-                        } catch (Exception ignored) {
-                            // Nothing to do in this case.
-                        }
-                    }
-                });
-                builder.setNegativeButton(R.string.do_not_clear, null);
-                builder.show();
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.d(Settings.LOG_TAG, "onNewIntent");
-
-        int buddyDbId = getIntentBuddyDbId(intent);
-
-        setTitleByBuddyDbId(buddyDbId);
-
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
-    }
-
-    @Override
-    public void onCoreServiceReady() {
-        Log.d(Settings.LOG_TAG, "onCoreServiceReady");
 
         setContentView(R.layout.chat_activity);
 
@@ -141,97 +64,109 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
-        chatDialogsAdapter = new ChatDialogsAdapter(this, getLoaderManager());
-        chatDialogsAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                // Checking for selection is invalid.
-                if(chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId()) == -1) {
-                    Log.d(Settings.LOG_TAG, "No selected item anymore.");
-                    // Checking for another opened chat.
-                    if(chatDialogsAdapter.getCount() > 0) {
-                        int moreActiveBuddyPosition;
-                        try {
-                            // Trying to obtain more active dialog position.
-                            moreActiveBuddyPosition = chatDialogsAdapter.getBuddyPosition(
-                                    QueryHelper.getMoreActiveDialog(getContentResolver()));
-                        } catch (BuddyNotFoundException ignored) {
-                            // Something really strange. No opened dialogs. So switch to first position.
-                            moreActiveBuddyPosition = 0;
-                        } catch (MessageNotFoundException ignored) {
-                            // No messages in all opened dialogs. So switch to first position.
-                            moreActiveBuddyPosition = 0;
-                        }
-                        selectItem(moreActiveBuddyPosition);
-                    } else {
-                        // No more content on this activity.
-                        finish();
-                    }
-                }
-            }
-        });
-
-        drawerList = (ListView) findViewById(R.id.left_drawer);
-        drawerList.setAdapter(chatDialogsAdapter);
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_dark,
-                R.string.drawer_open, R.string.drawer_close) {
-
-            @Override
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(title);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(R.string.dialogs);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                super.onDrawerStateChanged(newState);
-                if(newState == DrawerLayout.STATE_SETTLING
-                        || newState == DrawerLayout.STATE_DRAGGING) {
-                    int position = chatDialogsAdapter.getBuddyPosition(chatHistoryAdapter.getBuddyDbId());
-                    drawerList.setItemChecked(position, true);
-                }
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
         // Send button and message field initialization.
-        ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
+        final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         final TextView messageText = (TextView) findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = messageText.getText().toString().trim();
+                final String message = messageText.getText().toString().trim();
                 if (!TextUtils.isEmpty(message)) {
-                    try {
-                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                        String cookie = String.valueOf(System.currentTimeMillis());
-                        String appSession = getServiceInteraction().getAppSession();
-                        QueryHelper.insertMessage(getContentResolver(), buddyDbId, 2, // TODO: real message type
-                                cookie, message, false);
-                        // Sending protocol message request.
-                        RequestHelper.requestMessage(getContentResolver(), appSession,
-                                buddyDbId, cookie, message);
-                        // Clearing text view.
-                        messageText.setText("");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // TODO: Couldn't put message into database. This exception must be processed.
-                    }
+                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    MessageCallback callback = new MessageCallback() {
+
+                        @Override
+                        public void onSuccess() {
+                            messageText.setText("");
+                        }
+
+                        @Override
+                        public void onFailed() {
+                        }
+                    };
+                    TaskExecutor.getInstance().execute(
+                            new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+                return true;
+            }
+            case R.id.close_chat_menu: {
+                try {
+                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                    onBackPressed();
+                } catch (Exception ignored) {
+                    // Nothing to do in this case.
+                }
+                return true;
+            }
+            case R.id.buddy_info_menu: {
+                BuddyInfoTask buddyInfoTask = new BuddyInfoTask(this, chatHistoryAdapter.getBuddyDbId());
+                TaskExecutor.getInstance().execute(buddyInfoTask);
+                return true;
+            }
+            case R.id.clear_history_menu: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.clear_history_title);
+                builder.setMessage(R.string.clear_history_text);
+                builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
+                                chatHistoryAdapter.getBuddyDbId());
+                        TaskExecutor.getInstance().execute(clearHistoryTask);
+                    }
+                });
+                builder.setNegativeButton(R.string.do_not_clear, null);
+                builder.show();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(Settings.LOG_TAG, "onNewIntent");
+
+        int buddyDbId = getIntentBuddyDbId(intent);
+
+        setTitleByBuddyDbId(buddyDbId);
+
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatList.setAdapter(chatHistoryAdapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onCoreServiceReady() {
     }
 
     @Override
@@ -260,45 +195,10 @@ public class ChatActivity extends ChiefActivity {
     private void setTitleByBuddyDbId(int buddyDbId) {
         try {
             // This will provide buddy nick by db id.
-            setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+            getActionBar().setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
         } catch (BuddyNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
         }
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        this.title = title;
-        getActionBar().setTitle(title);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (drawerToggle != null) {
-            // Pass any configuration change to the drawer toggles
-            drawerToggle.onConfigurationChanged(newConfig);
-        }
-    }
-
-    /**
-     * This list item click listener implements very simple view switching by
-     * changing the primary content text. The drawer is closed when a selection
-     * is made.
-     */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    private void selectItem(int position) {
-        // Changing chat history adapter loader.
-        int buddyDbId = chatDialogsAdapter.getBuddyDbId(position);
-        chatHistoryAdapter.setBuddyDbId(buddyDbId);
-        setTitle(chatDialogsAdapter.getBuddyNick(position));
-        drawerLayout.closeDrawer(drawerList);
     }
 
     private void readVisibleMessages() {
@@ -307,17 +207,13 @@ public class ChatActivity extends ChiefActivity {
         Log.d(Settings.LOG_TAG, "Reading visible messages ["
                 + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
-        if(lastVisiblePosition >= firstVisiblePosition) {
+        if (lastVisiblePosition >= firstVisiblePosition) {
             final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             try {
                 final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
                 final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
-                TaskExecutor.getInstance().execute(new Task() {
-                    @Override
-                    public void execute() throws MessageNotFoundException {
-                        QueryHelper.readMessages(getContentResolver(), buddyDbId, firstMessageDbId, lastMessageDbId);
-                    }
-                });
+                TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+                        firstMessageDbId, lastMessageDbId));
             } catch (MessageNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
@@ -327,7 +223,7 @@ public class ChatActivity extends ChiefActivity {
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper selectionHelper;
+        private SelectionHelper<Integer, Long> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -338,7 +234,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper();
+            selectionHelper = new SelectionHelper<Integer, Long>();
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
@@ -417,7 +313,7 @@ public class ChatActivity extends ChiefActivity {
                     // Scroll ended.
                     int firstPosition;
                     int lastPosition;
-                    if(firstVisiblePosition > startFirstVisiblePosition) {
+                    if (firstVisiblePosition > startFirstVisiblePosition) {
                         // Scroll to bottom.
                         firstPosition = startFirstVisiblePosition;
                         lastPosition = lastVisiblePosition;
@@ -427,13 +323,13 @@ public class ChatActivity extends ChiefActivity {
                         lastPosition = startLastVisiblePosition;
                     }
                     Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
+                    final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                     try {
-                        QueryHelper.readMessages(getContentResolver(),
-                                chatHistoryAdapter.getBuddyDbId(),
-                                chatHistoryAdapter.getMessageDbId(firstPosition),
-                                chatHistoryAdapter.getMessageDbId(lastPosition));
+                        final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
+                        final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastPosition);
+                        TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+                                firstMessageDbId, lastMessageDbId));
                     } catch (MessageNotFoundException ignored) {
-                        Log.d(Settings.LOG_TAG, "Error while marking messages as read");
                     }
                     break;
                 }
@@ -443,5 +339,112 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         }
+    }
+
+    private class ReadMessagesTask extends Task {
+
+        private final WeakReference<ContentResolver> weakContentResolver;
+        private final int buddyDbId;
+        private final long firstMessageDbId;
+        private final long lastMessageDbId;
+
+        public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
+                                long firstMessageDbId, long lastMessageDbId) {
+            this.weakContentResolver = new WeakReference<ContentResolver>(contentResolver);
+            this.buddyDbId = buddyDbId;
+            this.firstMessageDbId = firstMessageDbId;
+            this.lastMessageDbId = lastMessageDbId;
+        }
+
+        @Override
+        public void executeBackground() throws MessageNotFoundException {
+            ContentResolver contentResolver = weakContentResolver.get();
+            if (contentResolver != null) {
+                QueryHelper.readMessages(contentResolver,
+                        buddyDbId, firstMessageDbId, lastMessageDbId);
+            }
+        }
+    }
+
+    private class ClearHistoryTask extends PleaseWaitTask {
+
+        private final int buddyDbId;
+        private final WeakReference<ContentResolver> weakContentResolver;
+
+        public ClearHistoryTask(Context context, int buddyDbId) {
+            super(context);
+            this.weakContentResolver = new WeakReference<ContentResolver>(context.getContentResolver());
+            this.buddyDbId = buddyDbId;
+        }
+
+        @Override
+        public void executeBackground() {
+            ContentResolver contentResolver = weakContentResolver.get();
+            if (contentResolver != null) {
+                QueryHelper.clearHistory(contentResolver, buddyDbId);
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            Context context = getWeakContext().get();
+            if (context != null) {
+                // Show error.
+                Toast.makeText(context, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class SendMessageTask extends Task {
+
+        private final int buddyDbId;
+        private String message;
+        private final MessageCallback callback;
+        private final WeakReference<ChiefActivity> weakActivity;
+
+        public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+            this.buddyDbId = buddyDbId;
+            this.message = message;
+            this.weakActivity = new WeakReference<ChiefActivity>(activity);
+            this.callback = callback;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            ChiefActivity activity = weakActivity.get();
+            if (activity != null) {
+                String appSession = activity.getServiceInteraction().getAppSession();
+                ContentResolver contentResolver = activity.getContentResolver();
+                String cookie = String.valueOf(System.currentTimeMillis());
+                boolean isCollapseMessages = PreferenceHelper.isCollapseMessages(activity);
+                QueryHelper.insertMessage(contentResolver, isCollapseMessages, buddyDbId, 2, // TODO: real message type
+                        cookie, message, false);
+                // Sending protocol message request.
+                RequestHelper.requestMessage(contentResolver, appSession,
+                        buddyDbId, cookie, message);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            callback.onSuccess();
+        }
+
+        @Override
+        public void onFailMain() {
+            ChiefActivity activity = weakActivity.get();
+            if (activity != null) {
+                // Show error.
+                Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
+            }
+            callback.onFailed();
+        }
+    }
+
+    public abstract class MessageCallback {
+
+        public abstract void onSuccess();
+
+        public abstract void onFailed();
     }
 }

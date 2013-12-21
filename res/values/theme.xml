@@ -7,9 +7,9 @@
     <color name="header_back_color">#99CCCCCC</color>
     <color name="header_font_color">#AA000000</color>
     <color name="header_line_color">#E0CCCCCC</color>
-    <!-- <style name="Theme.Mandarin" parent="android:Theme.Holo.Light"> -->
+    <style name="Theme.Mandarin" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
-    <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
-    <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item> -->
-    <!-- </style>-->
+        <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
+        <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item> -->
+    </style>
 </resources>

@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.RequestDispatcher;
 
 import java.util.List;
 import java.util.Random;
@@ -23,6 +20,7 @@ public class CoreService extends Service {
 
     private SessionHolder sessionHolder;
     private RequestDispatcher requestDispatcher;
+    private RequestDispatcher downloadDispatcher;
     private HistoryDispatcher historyDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
@@ -38,25 +36,9 @@ public class CoreService extends Service {
             .concat(String.valueOf(new Random().nextInt()));
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
-        public boolean initService() throws RemoteException {
-            /** Checking for service state **/
-            switch (serviceState) {
-                case STATE_LOADING: {
-                    return false;
-                }
-                case STATE_DOWN: {
-                    CoreService.this.serviceInit();
-                    return false;
-                }
-                case STATE_UP: {
-                    sendState();
-                    return true;
-                }
-                default: {
-                    /** What the fuck? **/
-                    return false;
-                }
-            }
+
+        public int getServiceState() throws RemoteException {
+            return serviceState;
         }
 
         @Override
@@ -83,8 +65,8 @@ public class CoreService extends Service {
         }
 
         @Override
-        public boolean removeAccount(String accountType, String userId) throws RemoteException {
-            return sessionHolder.removeAccountRoot(accountType, userId);
+        public boolean removeAccount(int accountDbId) throws RemoteException {
+            return sessionHolder.removeAccountRoot(accountDbId);
         }
 
         @Override
@@ -97,22 +79,26 @@ public class CoreService extends Service {
     public void onCreate() {
         Log.d(Settings.LOG_TAG, "CoreService onCreate");
         super.onCreate();
-        updateState(STATE_DOWN);
+        updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
-        requestDispatcher = new RequestDispatcher(this, sessionHolder);
+        requestDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_SHORT);
+        downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         historyDispatcher = new HistoryDispatcher(this);
+        Log.d(Settings.LOG_TAG, "CoreService serviceInit");
+        // Loading all data for this application session.
+        sessionHolder.load();
+        requestDispatcher.startObservation();
+        downloadDispatcher.startObservation();
+        historyDispatcher.startObservation();
+        // Service is now ready.
+        updateState(STATE_UP);
+        Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
-        if (flags == 0) {
-            Log.d(Settings.LOG_TAG, "Normal service start");
-            CoreService.this.serviceInit();
-        } else {
-            Log.d(Settings.LOG_TAG, "Flag other");
-        }
         return START_STICKY;
     }
 
@@ -122,8 +108,6 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         // Reset creation time.
         serviceCreateTime = 0;
-        // Tell the user we stopped.
-        Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
@@ -131,22 +115,6 @@ public class CoreService extends Service {
     public IBinder onBind(Intent intent) {
         Log.d(Settings.LOG_TAG, "CoreService onBind");
         return serviceInteraction;
-    }
-
-    /**
-     * Initialize service
-     */
-    public void serviceInit() {
-        Log.d(Settings.LOG_TAG, "CoreService serviceInit");
-        updateState(STATE_LOADING);
-        // ...
-        // Loading all data for this application session.
-        sessionHolder.load();
-        requestDispatcher.startObservation();
-        historyDispatcher.startObservation();
-        // Service is now ready.
-        updateState(STATE_UP);
-        Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");
     }
 
     /**

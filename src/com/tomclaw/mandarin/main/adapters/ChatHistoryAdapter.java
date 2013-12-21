@@ -7,6 +7,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      * Date and time format helpers
      */
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
-    private static final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm");
+    private static final SimpleDateFormat simpleTimeFormat12 = new SimpleDateFormat("h:mm a");
+    private static final SimpleDateFormat simpleTimeFormat24 = new SimpleDateFormat("HH:mm");
 
     /**
      * Adapter ID
@@ -80,12 +82,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         SmileyParser.init(context);
     }
 
-    public void setBuddyDbId(int buddyDbId) {
-        if(buddyDbId >= 0) {
-            // Checking for there was opened cursor.
-            if(getCursor() != null) {
-                getCursor().close();
-            }
+    private void setBuddyDbId(int buddyDbId) {
+        if (buddyDbId >= 0) {
             // Destroy current loader.
             loaderManager.destroyLoader(buddyDbId);
         }
@@ -163,7 +161,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      * Inflates view(s) from the specified XML file.
      *
      * @see android.widget.CursorAdapter#newView(android.content.Context,
-     *      android.database.Cursor, ViewGroup)
+     * android.database.Cursor, ViewGroup)
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -178,7 +176,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
-        String messageTimeText = simpleTimeFormat.format(messageTime);
+        String messageTimeText = getFormattedTime(messageTime);
         String messageDateText = simpleDateFormat.format(messageTime);
         boolean messageRead = cursor.getInt(COLUMN_MESSAGE_READ) == 1;
         // Select message type.
@@ -241,7 +239,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
             String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
             long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-            String messageTimeText = simpleTimeFormat.format(messageTime);
+            String messageTimeText = getFormattedTime(messageTime);
             String messageDateText = simpleDateFormat.format(messageTime);
             int accountDbId = cursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
             int buddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
@@ -269,5 +267,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             return messageBuilder.toString();
         }
         throw new MessageNotFoundException();
+    }
+
+    private SimpleDateFormat getTimeFormat() {
+        return DateFormat.is24HourFormat(context) ? simpleTimeFormat24 : simpleTimeFormat12;
+    }
+
+    private String getFormattedTime(long timestamp) {
+        return getTimeFormat().format(timestamp);
     }
 }

@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -29,12 +30,14 @@ public class GlobalProvider extends ContentProvider {
     // Fields
     public static final String ROW_AUTO_ID = "_id";
 
+    public static final String REQUEST_TYPE = "request_type";
     public static final String REQUEST_CLASS = "request_class";
     public static final String REQUEST_SESSION = "request_session";
     public static final String REQUEST_PERSISTENT = "request_persistent";
-    public static final String REQUEST_ACCOUNT = "account_db_id";
+    public static final String REQUEST_ACCOUNT_DB_ID = "account_db_id";
     public static final String REQUEST_STATE = "request_state";
     public static final String REQUEST_BUNDLE = "request_bundle";
+    public static final String REQUEST_TAG = "request_tag";
 
     public static final String ACCOUNT_NAME = "account_name";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -52,19 +55,22 @@ public class GlobalProvider extends ContentProvider {
 
     public static final String GROUP_TYPE_SYSTEM = "group_system";
     public static final String GROUP_TYPE_DEFAULT = "group_default";
-    public static final String GROUP_ID_RECYCLE = "0";
+    public static final int GROUP_ID_RECYCLE = -1;
 
     public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_id";
     public static final String ROSTER_BUDDY_ID = "buddy_id";
     public static final String ROSTER_BUDDY_NICK = "buddy_nick";
     public static final String ROSTER_BUDDY_STATUS = "buddy_status";
+    public static final String ROSTER_BUDDY_STATUS_TITLE = "buddy_status_title";
+    public static final String ROSTER_BUDDY_STATUS_MESSAGE = "buddy_status_message";
     public static final String ROSTER_BUDDY_GROUP_ID = "buddy_group_id";
     public static final String ROSTER_BUDDY_GROUP = "buddy_group";
     public static final String ROSTER_BUDDY_DIALOG = "buddy_dialog";
-    public static final String ROSTER_BUDDY_FAVORITE = "buddy_favorite";
     public static final String ROSTER_BUDDY_UPDATE_TIME = "buddy_update_time";
     public static final String ROSTER_BUDDY_ALPHABET_INDEX = "buddy_alphabet_index";
+    public static final String ROSTER_BUDDY_UNREAD_COUNT = "buddy_unread_count";
+    public static final String ROSTER_BUDDY_AVATAR_HASH = "buddy_avatar_hash";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -78,10 +84,10 @@ public class GlobalProvider extends ContentProvider {
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
-            + ROW_AUTO_ID + " integer primary key autoincrement, "
+            + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
-            + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT + " int, "
-            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text" + ");";
+            + REQUEST_PERSISTENT + " int, " + REQUEST_ACCOUNT_DB_ID + " int, "
+            + REQUEST_STATE + " int, " + REQUEST_BUNDLE + " text, " + REQUEST_TAG + " text" + ");";
 
     protected static final String DB_CREATE_ACCOUNT_TABLE_SCRIPT = "create table " + ACCOUNTS_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -100,10 +106,11 @@ public class GlobalProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " int, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
-            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_GROUP_ID + " int, "
+            + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_STATUS_TITLE + " text, "
+            + ROSTER_BUDDY_STATUS_MESSAGE + " text, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
-            + ROSTER_BUDDY_FAVORITE + " int, " + ROSTER_BUDDY_UPDATE_TIME + " int, "
-            + ROSTER_BUDDY_ALPHABET_INDEX + " int" + ");";
+            + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
+            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -113,9 +120,26 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
             + HISTORY_MESSAGE_TEXT + " text" + ");";
 
+    private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD = new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
+            .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
+            .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
+            .append(" WHERE ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_READ).append("=").append("0").append(" AND ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_TYPE).append("=").append("1").append(" AND ")
+            .append(ROSTER_BUDDY_TABLE).append(".").append(ROSTER_BUDDY_DIALOG).append("=").append("1").append(" AND ")
+            .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_BUDDY_DB_ID)
+            .append("=")
+            .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
+            .append(");");
+
+    public static final int ROW_INVALID = -1;
+
     // Database helper object
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
+
+    // Methods.
+    public static String METHOD_UPDATE_UNREAD = "update_unread";
 
     // URI id
     private static final int URI_REQUEST = 1;
@@ -192,7 +216,7 @@ public class GlobalProvider extends ContentProvider {
         }
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         Cursor cursor;
-        if(isDistinct) {
+        if (isDistinct) {
             cursor = sqLiteDatabase.query(true, table, projection, selection, selectionArgs, null, null, sortOrder, null);
         } else {
             cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
@@ -239,6 +263,21 @@ public class GlobalProvider extends ContentProvider {
         // Notify ContentResolver about data changes.
         getContext().getContentResolver().notifyChange(uri, null);
         return rows;
+    }
+
+    @Override
+    public Bundle call(String method, String arg, Bundle extras) {
+        if (method.equals(METHOD_UPDATE_UNREAD)) {
+            sqLiteDatabase.beginTransaction();
+            try {
+                sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());
+                sqLiteDatabase.setTransactionSuccessful();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
+            getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+        }
+        return null;
     }
 
     private static String getTableName(Uri uri) {

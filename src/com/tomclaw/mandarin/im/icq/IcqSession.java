@@ -5,16 +5,19 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.util.StatusUtil;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
+import com.tomclaw.mandarin.im.StatusUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -28,6 +31,10 @@ import org.json.JSONObject;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -44,15 +51,26 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class IcqSession {
 
+    private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered";
+    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType";
+    private static final String CLIENT_NAME_VALUE = "Android%20Agent";
+    private static final String CLIENT_VERSION_VALUE = "3.2";
+    private static final String BUILD_NUMBER_VALUE = "1234";
+    private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000";
+    private static final String DEVICE_ID_VALUE = "deviceid";
+
     public static final int INTERNAL_ERROR = 1000;
     public static final int EXTERNAL_LOGIN_OK = 200;
     public static final int EXTERNAL_LOGIN_ERROR = 330;
     public static final int EXTERNAL_UNKNOWN = 0;
     private static final int EXTERNAL_SESSION_OK = 200;
+    public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
+    private static final int timeoutSocket = 65000;
     private static final int timeoutConnection = 60000;
-    private static final int timeoutSocket = 80000;
+    private static final int timeoutSession = 600000;
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
@@ -70,6 +88,7 @@ public class IcqSession {
         // Set the default socket timeout (SO_TIMEOUT).
         // in milliseconds which is the timeout for waiting for data.
         HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+        HttpConnectionParams.setTcpNoDelay(httpParameters, false);
         this.httpClient = new DefaultHttpClient(httpParameters);
     }
 
@@ -78,10 +97,10 @@ public class IcqSession {
             // Create a new post header.
             HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
             // Specifying login data.
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "3.2"));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID, "ao1mAegmj4_7xQOy"));
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID, DEV_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
             nameValuePairs.add(new BasicNameValuePair(PASSWORD, icqAccountRoot.getUserPassword()));
@@ -129,29 +148,30 @@ public class IcqSession {
             // Create a new HttpClient and Post Header
             HttpPost httpPost = new HttpPost(START_SESSION_URL);
             // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, "094613504C7F11D18222444553540000"));
-            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, "1234"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, "Android%20Agent"));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, "v0.01"));
-            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, "deviceid"));
-            nameValuePairs.add(new BasicNameValuePair(EVENTS, "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered"));
+            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, ASSERT_CAPS_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, BUILD_NUMBER_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, DEVICE_ID_VALUE));
+            nameValuePairs.add(new BasicNameValuePair(EVENTS, EVENTS_VALUE));
             nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
             nameValuePairs.add(new BasicNameValuePair(IMF, "plain"));
-            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType"));
+            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
             nameValuePairs.add(new BasicNameValuePair(INVISIBLE, "false"));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, "ao1mAegmj4_7xQOy"));
+            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, DEV_ID_VALUE));
             nameValuePairs.add(new BasicNameValuePair(LANGUAGE, "ru-ru"));
             nameValuePairs.add(new BasicNameValuePair(MINIMIZE_RESPONSE, "0"));
             nameValuePairs.add(new BasicNameValuePair(MOBILE, "1"));
-            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, "30000"));
+            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
             nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
-            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, "1209600"));
+            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair(VIEW, IcqStatusUtil.getStatusView(icqAccountRoot.getStatusIndex())));
-            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8"))
-                    .concat(AMP).concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
+            nameValuePairs.add(new BasicNameValuePair(VIEW,
+                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
+            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
+                    .concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
                     getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -164,7 +184,7 @@ public class IcqSession {
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {
-                case EXTERNAL_LOGIN_OK: {
+                case EXTERNAL_SESSION_OK: {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
@@ -177,6 +197,9 @@ public class IcqSession {
                     // Update starts session result in database.
                     icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
                     return EXTERNAL_SESSION_OK;
+                }
+                case EXTERNAL_SESSION_RATE_LIMIT: {
+                    return EXTERNAL_SESSION_RATE_LIMIT;
                 }
                 // TODO: may be cases if ts incorrect. Mey be proceed too.
                 default: {
@@ -193,7 +216,7 @@ public class IcqSession {
      * Start event fetching in verbal cycle.
      *
      * @return true if we are now in offline mode because of user decision.
-     *         false if our session is not accepted by the server.
+     * false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
         Log.d(Settings.LOG_TAG, "start events fetching");
@@ -239,8 +262,8 @@ public class IcqSession {
                         return false;
                     }
                 }
-            } catch (Throwable e) {
-                Log.d(Settings.LOG_TAG, "fetch events exception: " + e.getMessage());
+            } catch (Throwable ex) {
+                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
@@ -255,7 +278,7 @@ public class IcqSession {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(icqAccountRoot.getFetchBaseUrl());
         stringBuilder.append(AMP).append(FORMAT).append(EQUAL).append("json");
-        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(60000);
+        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection);
         stringBuilder.append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis());
         stringBuilder.append(AMP).append(PEEK).append(EQUAL).append(0);
         return stringBuilder.toString();
@@ -288,12 +311,21 @@ public class IcqSession {
                         if (TextUtils.isEmpty(buddyNick)) {
                             buddyNick = buddyObject.getString(DISPLAY_ID);
                         }
+
                         String buddyStatus = buddyObject.getString(STATE);
+                        String moodIcon = buddyObject.optString(MOOD_ICON);
+                        String statusMessage = buddyObject.optString(STATUS_MSG);
+                        String moodTitle = buddyObject.optString(MOOD_TITLE);
+
+                        int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                        String statusTitle = getStatusTitle(moodTitle, statusIndex);
+
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                groupName, buddyId, buddyNick, buddyStatus);
+                                groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
+                                buddyIcon);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);
@@ -319,8 +351,9 @@ public class IcqSession {
                 String buddyStatus = sourceObject.getString(STATE);
                 String buddyType = sourceObject.getString(USER_TYPE);
 
-                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, 1, cookie, messageTime * 1000, messageText, true);
+                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+                        PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
+                        icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {
@@ -336,7 +369,7 @@ public class IcqSession {
                     String sendReqId = imState.optString(SEND_REQ_ID);
                     for (int i = 0; i < IM_STATES.length; i++) {
                         if (state.equals(IM_STATES[i])) {
-                            QueryHelper.updateMessage(icqAccountRoot.getContentResolver(), sendReqId, i);
+                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), sendReqId, i);
                             break;
                         }
                     }
@@ -351,12 +384,20 @@ public class IcqSession {
                 if (TextUtils.isEmpty(buddyNick)) {
                     buddyNick = eventData.getString(DISPLAY_ID);
                 }
+
                 String buddyStatus = eventData.getString(STATE);
-                String buddyStatusMessage = eventData.optString(STATUS_MSG);
+                String moodIcon = eventData.optString(MOOD_ICON);
+                String statusMessage = eventData.optString(STATUS_MSG);
+                String moodTitle = eventData.optString(MOOD_TITLE);
+
+                int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                String statusTitle = getStatusTitle(moodTitle, statusIndex);
+
                 String buddyType = eventData.getString(USER_TYPE);
+                String buddyIcon = eventData.optString(BUDDY_ICON);
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, IcqStatusUtil.getStatusIndex(buddyStatus));
+                        buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (BuddyNotFoundException e) {
@@ -375,5 +416,78 @@ public class IcqSession {
         messageAuthenticationCode.update(key.getBytes());
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    private String getStatusTitle(String moodTitle, int statusIndex) {
+        // Define status title.
+        String statusTitle;
+        if (TextUtils.isEmpty(moodTitle)) {
+            // Default title for status index.
+            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
+        } else {
+            // Buddy specified title.
+            statusTitle = moodTitle;
+        }
+        return statusTitle;
+    }
+
+    private int getStatusIndex(String moodIcon, String buddyStatus) {
+        int statusIndex;
+        // Checking for mood present.
+        if (!TextUtils.isEmpty(moodIcon)) {
+            try {
+                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+            } catch (StatusNotFoundException ignored) {
+            }
+        }
+        try {
+            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+        } catch (StatusNotFoundException ex) {
+            statusIndex = StatusUtil.STATUS_OFFLINE;
+        }
+        return statusIndex;
+    }
+
+    /**
+     * Returns "id" parameter value from specified URL
+     */
+    private static String getIdParam(String url) {
+        URI uri = URI.create(url);
+        for (NameValuePair param : URLEncodedUtils.parse(uri, "UTF-8")) {
+            if (param.getName().equals("id")) {
+                return param.getValue();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
+     */
+    public static String parseMood(String moodUrl) {
+        if (moodUrl != null) {
+            final String id = getIdParam(moodUrl);
+
+            InputStream is = new InputStream() {
+                int pos = 0;
+                int length = id.length();
+
+                @Override
+                public int read() throws IOException {
+                    if (pos == length) return -1;
+                    char c1 = id.charAt(pos++);
+                    char c2 = id.charAt(pos++);
+
+                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
+                }
+            };
+            DataInputStream dis = new DataInputStream(is);
+            try {
+                return dis.readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return moodUrl;
     }
 }

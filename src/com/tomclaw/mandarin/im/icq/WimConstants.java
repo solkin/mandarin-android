@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.im.icq;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -76,6 +73,8 @@ public class WimConstants {
     public static final String SOURCE_OBJECT = "source";
     public static final String PRESENCE = "presence";
     public static final String STATUS_MSG = "statusMsg";
+    public static final String MOOD_TITLE = "moodTitle";
+    public static final String MOOD_ICON = "moodIcon";
     public static final String TIMESTAMP = "timestamp";
     public static final String QUE = "?";
     public static final String OFFLINE_IM = "offlineIM";
@@ -83,7 +82,7 @@ public class WimConstants {
     public static final String SEND_REQ_ID = "sendReqId";
     public static final String IM_STATES_ARRAY = "imStates";
     public static final String REQUEST_ID = "requestId";
-    public static final String[] IM_STATES = new String[] {
+    public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",
             "sending",

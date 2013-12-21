@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="pref_show_temp_default">false</bool>
+    <bool name="pref_collapse_messages_default">true</bool>
+    <bool name="pref_system_notifications_default">true</bool>
+    <bool name="pref_vibrate_default">true</bool>
+    <string name="pref_notification_sound_default">default</string>
+    <bool name="pref_autorun_default">true</bool>
+</resources>

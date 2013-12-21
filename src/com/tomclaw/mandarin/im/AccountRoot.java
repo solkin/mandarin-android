@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.os.Parcel;
 import com.tomclaw.mandarin.core.CoreObject;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.util.StatusUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,6 +37,10 @@ public abstract class AccountRoot extends CoreObject {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public ContentResolver getContentResolver() {
@@ -143,7 +146,7 @@ public abstract class AccountRoot extends CoreObject {
     /**
      * Setup status index and connecting flag and updates account in database.
      *
-     * @param statusIndex - non-protocol status index.
+     * @param statusIndex  - non-protocol status index.
      * @param isConnecting - connecting flag.
      */
     protected void updateAccountState(int statusIndex, boolean isConnecting) {

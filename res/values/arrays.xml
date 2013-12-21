@@ -8,4 +8,9 @@
         <item>@drawable/social_group</item>
     </array>
 
+    <string-array name="roster_filter_strings">
+        <item>@string/filter_show_all_buddies</item>
+        <item>@string/filter_show_online_only</item>
+    </string-array>
+
 </resources>

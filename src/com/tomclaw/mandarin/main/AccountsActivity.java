@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,13 +12,17 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
-import com.tomclaw.mandarin.util.StatusUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -30,7 +35,6 @@ public class AccountsActivity extends ChiefActivity {
 
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
     private AccountsAdapter accountsAdapter;
-    private ListView accountsList;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,7 +57,8 @@ public class AccountsActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent mainActivityIntent = new Intent(this, MainActivity.class);
+                Intent mainActivityIntent = new Intent(this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainActivityIntent);
                 return true;
             case R.id.add_account_menu:
@@ -81,7 +86,7 @@ public class AccountsActivity extends ChiefActivity {
     private void initAccountsList() {
         // Set up list as default container.
         setContentView(R.layout.accounts_list);
-        accountsList = (ListView) findViewById(R.id.accounts_list_wiew);
+        ListView accountsList = (ListView) findViewById(R.id.accounts_list_wiew);
         // Creating adapter for accounts list
         accountsAdapter = new AccountsAdapter(this, getLoaderManager());
         // Bind to our new adapter.
@@ -90,7 +95,7 @@ public class AccountsActivity extends ChiefActivity {
         accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // startActivity(new Intent(AccountsActivity.this, SummaryActivity.class));
+                // startActivity(new Intent(AccountsActivity.this, BuddyInfoActivity.class));
                 Cursor cursor = accountsAdapter.getCursor();
                 if (cursor.moveToPosition(position)) {
                     int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
@@ -101,7 +106,7 @@ public class AccountsActivity extends ChiefActivity {
                     final int statusIndex = cursor.getInt(COLUMN_ACCOUNT_STATUS);
 
                     // Checking for account is offline and we need to connect.
-                    if(statusIndex == StatusUtil.STATUS_OFFLINE) {
+                    if (statusIndex == StatusUtil.STATUS_OFFLINE) {
                         View connectDialog = getLayoutInflater().inflate(R.layout.connect_dialog, null);
                         final Spinner statusSpinner = (Spinner) connectDialog.findViewById(R.id.status_spinner);
 
@@ -152,23 +157,19 @@ public class AccountsActivity extends ChiefActivity {
     public void onCoreServiceIntent(Intent intent) {
     }
 
-    private void show(int stringRes) {
-        Toast.makeText(AccountsActivity.this, stringRes, Toast.LENGTH_LONG).show();
-    }
-
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper selectionHelper;
+        private SelectionHelper<Integer, Integer> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged(position, id, checked);
+            selectionHelper.onStateChanged(position, (int) id, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            selectionHelper = new SelectionHelper();
+            selectionHelper = new SelectionHelper<Integer, Integer>();
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
@@ -191,35 +192,9 @@ public class AccountsActivity extends ChiefActivity {
                     builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Cursor cursor = accountsAdapter.getCursor();
-                            // Obtain selected positions.
-                            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
-                            int positionsBeingRemoved = selectedPositions.size();
-                            // Iterating for all selected positions.
-                            for(int position : selectedPositions) {
-                                // Checking for position available.
-                                if (cursor.moveToPosition(position)) {
-                                    // Detecting columns.
-                                    int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-                                    int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
-                                    String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-                                    String userId = cursor.getString(COLUMN_USER_ID);
-                                    try {
-                                        // Trying to remove account.
-                                        if (getServiceInteraction().removeAccount(accountType, userId)) {
-                                            // Position successfully removed.
-                                            positionsBeingRemoved--;
-                                        }
-                                    } catch (RemoteException ignored) {
-                                        // Heh... Nothing to do in this case.
-                                    }
-                                }
-                            }
-                            // Checking for something is not removed.
-                            if(positionsBeingRemoved > 0) {
-                                // Show error.
-                                show(R.string.error_no_such_account);
-                            }
+                            Collection<Integer> selectedAccounts = new ArrayList<Integer>(selectionHelper.getSelectedIds());
+                            AccountsRemoveTask task = new AccountsRemoveTask(AccountsActivity.this, selectedAccounts);
+                            TaskExecutor.getInstance().execute(task);
                             // Action picked, so close the CAB
                             mode.finish();
                         }
@@ -235,6 +210,34 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+    }
+
+    private class AccountsRemoveTask extends PleaseWaitTask {
+
+        private final Collection<Integer> selectedAccounts;
+
+        public AccountsRemoveTask(Context context, Collection<Integer> selectedAccounts) {
+            super(context);
+            this.selectedAccounts = selectedAccounts;
+        }
+
+        @Override
+        public void executeBackground() throws AccountNotFoundException, RemoteException {
+            // Iterating for all selected positions.
+            for (int accountDbId : selectedAccounts) {
+                // Trying to remove account.
+                getServiceInteraction().removeAccount(accountDbId);
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            Context context = getWeakContext().get();
+            if (context != null) {
+                // Show error.
+                Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

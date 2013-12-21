@@ -2,8 +2,11 @@ package com.tomclaw.mandarin.util;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,12 +58,16 @@ public class QueryBuilder {
     }
 
     public QueryBuilder and() {
-        select.append(" AND ");
+        if (!TextUtils.isEmpty(select)) {
+            select.append(" AND ");
+        }
         return this;
     }
 
     public QueryBuilder or() {
-        select.append(" OR ");
+        if (!TextUtils.isEmpty(select)) {
+            select.append(" OR ");
+        }
         return this;
     }
 
@@ -106,6 +113,10 @@ public class QueryBuilder {
 
     public int update(ContentResolver contentResolver, ContentValues contentValues, Uri uri) {
         return contentResolver.update(uri, contentValues, select.toString(), null);
+    }
+
+    public CursorLoader createCursorLoader(Context context, Uri uri) {
+        return new CursorLoader(context, uri, null, select.toString(), null, sort.toString());
     }
 
     public QueryBuilder recycle() {

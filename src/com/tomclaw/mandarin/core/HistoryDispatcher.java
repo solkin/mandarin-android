@@ -111,9 +111,9 @@ public class HistoryDispatcher {
                 // If yes - we must update notification with all unread messages. If no - nothing to do now.
                 if (unShownCursor.moveToFirst()) {
                     boolean isAlarmRequired = false;
-                    int HISTORY_NOTICE_SHOWN_COLUMN = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
+                    int historyNoticeShownColumn = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
                     do {
-                        if (unShownCursor.getInt(HISTORY_NOTICE_SHOWN_COLUMN) != -1) {
+                        if (unShownCursor.getInt(historyNoticeShownColumn) != -1) {
                             isAlarmRequired = true;
                             break;
                         }

@@ -353,7 +353,8 @@ public class QueryHelper {
                 .and().moreOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdFirst)
                 .and().lessOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdLast)
                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
-                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
 
         // Obtain unread messages count.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
@@ -411,8 +412,7 @@ public class QueryHelper {
 
     public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
                                          int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage,
-                                         String buddyIcon)
-            throws BuddyNotFoundException {
+                                         String buddyIcon) throws BuddyNotFoundException {
         // Plain buddy modify.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
@@ -511,7 +511,7 @@ public class QueryHelper {
         groupValues.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
         groupValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
         groupValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, updateTime);
-        // Trying to update group
+        // Trying to update group.
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_ID, groupId).and()
                 .columnEquals(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);

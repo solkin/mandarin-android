@@ -3,9 +3,9 @@ package com.tomclaw.mandarin.core;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
@@ -59,39 +59,42 @@ public class RequestDispatcher {
 
         @Override
         public void run() {
-            Cursor cursor;
+            Cursor requestCursor;
+            Cursor accountCursor;
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType);
             do {
                 // Registering created observers.
-                cursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
-                cursor.registerContentObserver(requestObserver);
+                requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
+                requestCursor.registerContentObserver(requestObserver);
                 /**
                  * Needs to control account set change.
                  * If account was deleted - drop all associated requests.
                  * If status changed to any online - check queue and send associated requests.
                  */
-                contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null)
-                        .registerContentObserver(requestObserver);
-            } while (dispatch(cursor));
+                accountCursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
+                if(accountCursor != null) {
+                    accountCursor.registerContentObserver(requestObserver);
+                }
+            } while (dispatch(requestCursor, accountCursor));
         }
 
         @SuppressWarnings("unchecked")
-        private boolean dispatch(Cursor cursor) {
+        private boolean dispatch(Cursor requestCursor, Cursor accountCursor) {
             synchronized (sync) {
                 Log.d(Settings.LOG_TAG, "Dispatching requests.");
                 // Checking for at least one request in database.
-                if (cursor.moveToFirst()) {
+                if (requestCursor.moveToFirst()) {
                     do {
                         Log.d(Settings.LOG_TAG, "Request...");
                         // Obtain necessary column index.
-                        int rowColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-                        int classColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
-                        int sessionColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_SESSION);
-                        int persistentColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_PERSISTENT);
-                        int accountColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
-                        int stateColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
-                        int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
+                        int rowColumnIndex = requestCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                        int classColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
+                        int sessionColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_SESSION);
+                        int persistentColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_PERSISTENT);
+                        int accountColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
+                        int stateColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
+                        int bundleColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
                         /**
                          * Если сессия совпадает, то постоянство задачи значения не имеет.
                          * Если задача непостоянная, сессия отличается, то задача отклоняется.
@@ -104,12 +107,12 @@ public class RequestDispatcher {
                          *                  не будет и задачу можно удалить.
                          */
                         // Obtain values.
-                        int requestDbId = cursor.getInt(rowColumnIndex);
-                        boolean isPersistent = cursor.getInt(persistentColumnIndex) == 1;
-                        String requestAppSession = cursor.getString(sessionColumnIndex);
-                        int requestState = cursor.getInt(stateColumnIndex);
+                        int requestDbId = requestCursor.getInt(rowColumnIndex);
+                        boolean isPersistent = requestCursor.getInt(persistentColumnIndex) == 1;
+                        String requestAppSession = requestCursor.getString(sessionColumnIndex);
+                        int requestState = requestCursor.getInt(stateColumnIndex);
                         // Checking for session is equals.
-                        if (requestAppSession.equals(CoreService.getAppSession())) {
+                        if (TextUtils.equals(requestAppSession, CoreService.getAppSession())) {
                             if (requestState != Request.REQUEST_PENDING) {
                                 Log.d(Settings.LOG_TAG, "Processed request of current session.");
                                 continue;
@@ -161,9 +164,9 @@ public class RequestDispatcher {
                             }
                         }
 
-                        String requestClass = cursor.getString(classColumnIndex);
-                        int requestAccountDbId = cursor.getInt(accountColumnIndex);
-                        String requestBundle = cursor.getString(bundleColumnIndex);
+                        String requestClass = requestCursor.getString(classColumnIndex);
+                        int requestAccountDbId = requestCursor.getInt(accountColumnIndex);
+                        String requestBundle = requestCursor.getString(bundleColumnIndex);
 
                         Log.d(Settings.LOG_TAG, "Request received: "
                                 + "class = " + requestClass + "; "
@@ -213,7 +216,7 @@ public class RequestDispatcher {
                         }
                         // Breaking. We'll receive change event from observer.
                         break;
-                    } while (cursor.moveToNext());
+                    } while (requestCursor.moveToNext());
                 }
                 try {
                     // Wait until notifying. Try it.
@@ -222,7 +225,8 @@ public class RequestDispatcher {
                     // Notified.
                 }
             }
-            cursor.close();
+            requestCursor.close();
+            accountCursor.close();
             return true;
         }
     }

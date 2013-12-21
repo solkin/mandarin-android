@@ -8,7 +8,9 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -163,10 +165,33 @@ public class IcqAccountRoot extends AccountRoot {
                                       MyInfo myInfo, WellKnownUrls wellKnownUrls) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
-        this.myInfo = myInfo;
+        setMyInfo(myInfo);
         this.wellKnownUrls = wellKnownUrls;
         // Save account data in database.
         updateAccount();
+    }
+
+    protected void setMyInfo(MyInfo myInfo) {
+        this.myInfo = myInfo;
+        if (myInfo != null) {
+            setUserNick(myInfo.getFriendly());
+            try {
+                setStatus(StatusUtil.getStatusIndex(getAccountType(), myInfo.getState()));
+            } catch (StatusNotFoundException ignored) {
+                Log.d(Settings.LOG_TAG, "MyInfo state not found: " + myInfo.getState());
+            }
+            // Avatar checking and requesting.
+            String buddyIcon = myInfo.getBuddyIcon();
+            if (TextUtils.isEmpty(buddyIcon)) {
+                setAvatarHash(null);
+            } else {
+                if (!TextUtils.equals(getAvatarHash(), HttpUtil.getUrlHash(buddyIcon))) {
+                    // Avatar is ready.
+                    RequestHelper.requestAccountAvatar(getContentResolver(), CoreService.getAppSession(),
+                            getAccountDbId(), buddyIcon);
+                }
+            }
+        }
     }
 
     public boolean checkLoginReady() {
@@ -188,7 +213,7 @@ public class IcqAccountRoot extends AccountRoot {
     public void resetSessionData() {
         aimSid = null;
         fetchBaseUrl = null;
-        myInfo = null;
+        setMyInfo(null);
         wellKnownUrls = null;
     }
 

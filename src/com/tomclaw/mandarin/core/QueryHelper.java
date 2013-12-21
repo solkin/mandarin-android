@@ -40,7 +40,7 @@ public class QueryHelper {
         // Obtain specified account. If exist.
         Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
         // Cursor may be null, so we must check it.
-        if(cursor != null) {
+        if (cursor != null) {
             // Cursor may have more than only one entry.
             if (cursor.moveToFirst()) {
                 // Obtain necessary column index.
@@ -111,6 +111,12 @@ public class QueryHelper {
             contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
             contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
             contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            // Checking for no user icon now, so, we must reset avatar hash.
+            if (TextUtils.isEmpty(accountRoot.getAvatarHash())) {
+                contentValues.putNull(GlobalProvider.ACCOUNT_AVATAR_HASH);
+            } else {
+                contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, accountRoot.getAvatarHash());
+            }
             contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
             contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
             // Update query.
@@ -381,8 +387,8 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 
-    public static void modifyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
-                                    String avatarHash) throws BuddyNotFoundException {
+    public static void modifyBuddyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                         String avatarHash) throws BuddyNotFoundException {
         // Obtain buddy db id.
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -441,11 +447,11 @@ public class QueryHelper {
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
-            // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
+            // There are may be a lot of buddies in lots of groups, but this is the same buddy with the save avatar.
             if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
                 if (!TextUtils.isEmpty(buddyIcon)) {
                     // Avatar is ready.
-                    RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+                    RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
                 }
             }
         } else {
@@ -501,7 +507,7 @@ public class QueryHelper {
         if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
             if (!TextUtils.isEmpty(buddyIcon)) {
                 // Avatar is ready.
-                RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
+                RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
             }
         }
     }
@@ -631,11 +637,11 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
-            int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            int buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Creating query to history table, contains all messages from all opened dialogs.
             queryBuilder.recycle();
             do {
-                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                int buddyDbId = cursor.getInt(buddyDbIdColumn);
                 queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                 if (!cursor.isLast()) {
                     queryBuilder.or();
@@ -648,8 +654,8 @@ public class QueryHelper {
             cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
             // Cursor may have more than only one entry. We need only first.
             if (cursor.moveToFirst()) {
-                BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-                int moreActiveBuddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+                int moreActiveBuddyDbId = cursor.getInt(buddyDbIdColumn);
                 // Closing cursor.
                 cursor.close();
                 return moreActiveBuddyDbId;

@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.*;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -153,7 +152,7 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        if(chatHistoryAdapter != null) {
+        if (chatHistoryAdapter != null) {
             chatHistoryAdapter.notifyDataSetInvalidated();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);

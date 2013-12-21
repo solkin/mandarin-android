@@ -46,6 +46,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ACCOUNT_STATUS = "account_status";
     public static final String ACCOUNT_CONNECTING = "account_connecting";
     public static final String ACCOUNT_BUNDLE = "account_bundle";
+    public static final String ACCOUNT_AVATAR_HASH = "account_avatar_hash";
 
     public static final String ROSTER_GROUP_ACCOUNT_DB_ID = "account_db_id";
     public static final String ROSTER_GROUP_NAME = "group_name";
@@ -94,7 +95,7 @@ public class GlobalProvider extends ContentProvider {
             + ACCOUNT_NAME + " text, " + ACCOUNT_TYPE + " text, "
             + ACCOUNT_USER_ID + " text, " + ACCOUNT_USER_PASSWORD + " text, "
             + ACCOUNT_STATUS + " text, " + ACCOUNT_CONNECTING + " int, "
-            + ACCOUNT_BUNDLE + " text" + ");";
+            + ACCOUNT_BUNDLE + " text, " + ACCOUNT_AVATAR_HASH + " text" + ");";
 
     protected static final String DB_CREATE_GROUP_TABLE_SCRIPT = "create table " + ROSTER_GROUP_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

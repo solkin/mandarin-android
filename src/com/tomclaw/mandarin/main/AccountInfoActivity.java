@@ -11,12 +11,12 @@ import com.tomclaw.mandarin.core.Settings;
  * Date: 4/5/13
  * Time: 7:57 PM
  */
-public class StatusActivity extends ChiefActivity {
+public class AccountInfoActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Settings.LOG_TAG, "StatusActivity onCreate");
+        Log.d(Settings.LOG_TAG, "AccountInfoActivity onCreate");
     }
 
     @Override

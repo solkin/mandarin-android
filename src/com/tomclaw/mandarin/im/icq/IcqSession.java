@@ -201,7 +201,7 @@ public class IcqSession {
                 case EXTERNAL_SESSION_RATE_LIMIT: {
                     return EXTERNAL_SESSION_RATE_LIMIT;
                 }
-                // TODO: may be cases if ts incorrect. Mey be proceed too.
+                // TODO: may be cases if ts incorrect. May be proceed too.
                 default: {
                     return EXTERNAL_UNKNOWN;
                 }
@@ -403,6 +403,10 @@ public class IcqSession {
             } catch (BuddyNotFoundException e) {
                 e.printStackTrace();
             }
+        } else if (eventType.equals(MY_INFO)) {
+            MyInfo myInfo = gson.fromJson(eventData.toString(), MyInfo.class);
+            icqAccountRoot.setMyInfo(myInfo);
+            icqAccountRoot.updateAccount();
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }

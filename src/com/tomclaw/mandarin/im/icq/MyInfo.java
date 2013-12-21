@@ -14,6 +14,7 @@ public class MyInfo {
     private String state;
     private String userType;
     private String attachedPhoneNumber;
+    private String buddyIcon;
 
     public String getAimId() {
         return aimId;
@@ -37,5 +38,9 @@ public class MyInfo {
 
     public String getAttachedPhoneNumber() {
         return attachedPhoneNumber;
+    }
+
+    public String getBuddyIcon() {
+        return buddyIcon;
     }
 }

@@ -23,6 +23,7 @@ public abstract class AccountRoot extends CoreObject {
     protected String userPassword;
     protected int statusIndex;
     protected String statusText;
+    protected String avatarHash;
     protected boolean connectingFlag;
     /**
      * Service info
@@ -67,6 +68,10 @@ public abstract class AccountRoot extends CoreObject {
         this.userId = userId;
     }
 
+    public void setAvatarHash(String avatarHash) {
+        this.avatarHash = avatarHash;
+    }
+
     public String getUserNick() {
         return userNick;
     }
@@ -85,6 +90,10 @@ public abstract class AccountRoot extends CoreObject {
 
     public int getStatusIndex() {
         return statusIndex;
+    }
+
+    public String getAvatarHash() {
+        return avatarHash;
     }
 
     public boolean isConnecting() {
@@ -182,6 +191,7 @@ public abstract class AccountRoot extends CoreObject {
         dest.writeString(userPassword);
         dest.writeInt(statusIndex);
         dest.writeString(statusText);
+        dest.writeString(avatarHash);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
         dest.writeInt(connectingFlag ? 1 : 0);
@@ -193,6 +203,7 @@ public abstract class AccountRoot extends CoreObject {
         userPassword = in.readString();
         statusIndex = in.readInt();
         statusText = in.readString();
+        avatarHash = in.readString();
         serviceHost = in.readString();
         servicePort = in.readInt();
         connectingFlag = in.readInt() == 1;

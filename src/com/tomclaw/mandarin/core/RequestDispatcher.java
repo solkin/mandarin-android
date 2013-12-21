@@ -73,7 +73,7 @@ public class RequestDispatcher {
                  * If status changed to any online - check queue and send associated requests.
                  */
                 accountCursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
-                if(accountCursor != null) {
+                if (accountCursor != null) {
                     accountCursor.registerContentObserver(requestObserver);
                 }
             } while (dispatch(requestCursor, accountCursor));

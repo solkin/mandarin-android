@@ -170,7 +170,7 @@ public abstract class ChiefActivity extends Activity {
     protected boolean checkCoreService() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServiceInfoList = manager.getRunningServices(Integer.MAX_VALUE);
-        if(runningServiceInfoList != null) {
+        if (runningServiceInfoList != null) {
             for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
                 if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
                     Log.d(Settings.LOG_TAG, "checkCoreService: exist");

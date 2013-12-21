@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -41,6 +43,7 @@ public class AccountsAdapter extends CursorAdapter implements
     private static int COLUMN_USER_STATUS;
     private static int COLUMN_ACCOUNT_TYPE;
     private static int COLUMN_ACCOUNT_CONNECTING;
+    private static int COLUMN_ACCOUNT_AVATAR_HASH;
 
     /**
      * Variables
@@ -97,6 +100,10 @@ public class AccountsAdapter extends CursorAdapter implements
         } else {
             userStatus.clearColorFilter();
         }
+        // Avatar.
+        final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
+        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
 
     @Override
@@ -112,6 +119,7 @@ public class AccountsAdapter extends CursorAdapter implements
         COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
         COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
         COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
+        COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
         swapCursor(cursor);
     }
 

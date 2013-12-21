@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -190,11 +192,11 @@ public class BuddyInfoActivity extends ChiefActivity {
                                 buddyInfoItem.setVisibility(View.VISIBLE);
                             }
                             // Correct user-defined values for sharing.
-                            if(Integer.valueOf(key) == R.id.friendly_name) {
+                            if (Integer.valueOf(key) == R.id.friendly_name) {
                                 buddyNick = value;
-                            } else if(Integer.valueOf(key) == R.id.first_name) {
+                            } else if (Integer.valueOf(key) == R.id.first_name) {
                                 firstName = value;
-                            } else if(Integer.valueOf(key) == R.id.last_name) {
+                            } else if (Integer.valueOf(key) == R.id.last_name) {
                                 lastName = value;
                             }
                         }
@@ -216,22 +218,22 @@ public class BuddyInfoActivity extends ChiefActivity {
     private String getShareString() {
         String shareString = "";
         // Checking and attaching first and last name.
-        if(!TextUtils.isEmpty(firstName)) {
+        if (!TextUtils.isEmpty(firstName)) {
             shareString += firstName + " ";
         }
-        if(!TextUtils.isEmpty(lastName)) {
+        if (!TextUtils.isEmpty(lastName)) {
             shareString += lastName + " ";
         }
         // Strong checking for buddy nick.
-        if(!(TextUtils.isEmpty(buddyNick) || TextUtils.equals(buddyNick, buddyId))) {
-            if(TextUtils.isEmpty(shareString)) {
+        if (!(TextUtils.isEmpty(buddyNick) || TextUtils.equals(buddyNick, buddyId))) {
+            if (TextUtils.isEmpty(shareString)) {
                 shareString = buddyNick + " ";
             } else {
                 shareString += "(" + buddyNick + ") ";
             }
         }
         // Something appended? Appending dash.
-        if(!TextUtils.isEmpty(shareString)) {
+        if (!TextUtils.isEmpty(shareString)) {
             shareString += "- ";
         }
         shareString += buddyId;

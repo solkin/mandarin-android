@@ -153,6 +153,9 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
+        if(chatHistoryAdapter != null) {
+            chatHistoryAdapter.notifyDataSetInvalidated();
+        }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
         chatList.setAdapter(chatHistoryAdapter);
     }

@@ -39,20 +39,23 @@ public class QueryHelper {
         accountRootList.clear();
         // Obtain specified account. If exist.
         Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
-        // Cursor may have more than only one entry.
-        if (cursor.moveToFirst()) {
-            // Obtain necessary column index.
-            int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
-            int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-            int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-            // Iterate all accounts.
-            do {
-                accountRootList.add(createAccountRoot(context, cursor.getString(typeColumnIndex),
-                        cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex)));
-            } while (cursor.moveToNext()); // Trying to move to position.
+        // Cursor may be null, so we must check it.
+        if(cursor != null) {
+            // Cursor may have more than only one entry.
+            if (cursor.moveToFirst()) {
+                // Obtain necessary column index.
+                int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
+                int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                // Iterate all accounts.
+                do {
+                    accountRootList.add(createAccountRoot(context, cursor.getString(typeColumnIndex),
+                            cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex)));
+                } while (cursor.moveToNext()); // Trying to move to position.
+            }
+            // Closing cursor.
+            cursor.close();
         }
-        // Closing cursor.
-        cursor.close();
         return accountRootList;
     }
 

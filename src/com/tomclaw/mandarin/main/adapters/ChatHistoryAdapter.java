@@ -120,7 +120,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        swapCursor(null);
+        Cursor cursor = swapCursor(null);
+        // Maybe, previous non-closed cursor present?
+        if(cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     /**
@@ -226,7 +230,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     public long getMessageDbId(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
-        if (cursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             return cursor.getLong(COLUMN_ROW_AUTO_ID);
         }
         throw new MessageNotFoundException();
@@ -234,7 +238,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     public String getMessageText(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
-        if (cursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             // Message data.
             int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
             String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);

@@ -50,6 +50,8 @@
     <string name="yes_remove">Удалить</string>
     <string name="remove_accounts_title">Удалить профили?</string>
     <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="remove_account_title">Удалить профиль?</string>
+    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
     <string name="do_not_remove">Нет</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>
@@ -93,6 +95,13 @@
     <string name="buddy_info_copy">Копировать</string>
     <string name="share_buddy_info_via">Поделиться контактом через</string>
     <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+
+    <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
+    <string name="account_info">Профиль</string>
+
+    <string name="account_shutdown">Отключить</string>
+    <string name="account_remove">Удалить</string>
+    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети</string>
 
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>

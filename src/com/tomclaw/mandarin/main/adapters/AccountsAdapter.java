@@ -19,7 +19,10 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.AccountInfoTask;
+import com.tomclaw.mandarin.main.BuddyInfoTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,6 +41,7 @@ public class AccountsAdapter extends CursorAdapter implements
     /**
      * Columns
      */
+    private static int COLUMN_ROW_AUTO_ID;
     private static int COLUMN_USER_ID;
     private static int COLUMN_USER_NICK;
     private static int COLUMN_USER_STATUS;
@@ -104,6 +108,15 @@ public class AccountsAdapter extends CursorAdapter implements
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
         QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
+        // On-avatar click listener.
+        final int accountDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
+        final AccountInfoTask accountInfoTask = new AccountInfoTask(context, accountDbId);
+        contactBadge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskExecutor.getInstance().execute(accountInfoTask);
+            }
+        });
     }
 
     @Override
@@ -114,6 +127,7 @@ public class AccountsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
         COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
         COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);

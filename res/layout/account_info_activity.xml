@@ -16,7 +16,7 @@
             <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:id="@+id/buddy_badge"
+                    android:id="@+id/user_badge"
                     android:layout_gravity="center_horizontal|top"
                     android:src="@drawable/ic_default_avatar"/>
             <LinearLayout
@@ -29,13 +29,13 @@
                         android:layout_height="wrap_content"
                         android:text="Vu Thi Thuy"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/buddy_nick" android:textStyle="bold"/>
+                        android:id="@+id/user_nick" android:textStyle="bold"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="287564321"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/buddy_id"/>
+                        android:id="@+id/user_id"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="vertical"

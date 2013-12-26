@@ -98,12 +98,10 @@ public class AccountsActivity extends ChiefActivity {
                 // startActivity(new Intent(AccountsActivity.this, BuddyInfoActivity.class));
                 Cursor cursor = accountsAdapter.getCursor();
                 if (cursor.moveToPosition(position)) {
-                    int COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-                    int COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
-                    int COLUMN_ACCOUNT_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
-                    final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-                    final String userId = cursor.getString(COLUMN_USER_ID);
-                    final int statusIndex = cursor.getInt(COLUMN_ACCOUNT_STATUS);
+                    final int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                    final String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
+                    final String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
+                    final int statusIndex = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS));
 
                     // Checking for account is offline and we need to connect.
                     if (statusIndex == StatusUtil.STATUS_OFFLINE) {
@@ -135,14 +133,8 @@ public class AccountsActivity extends ChiefActivity {
                         builder.setNegativeButton(R.string.connect_no, null);
                         builder.show();
                     } else {
-                        // Debug purposes only.
-                        try {
-                            // Trying to connect account.
-                            getServiceInteraction().updateAccountStatus(
-                                    accountType, userId, StatusUtil.STATUS_OFFLINE);
-                        } catch (RemoteException e) {
-                            // Heh... Nothing to do in this case.
-                        }
+                        final AccountInfoTask accountInfoTask = new AccountInfoTask(AccountsActivity.this, accountDbId);
+                        TaskExecutor.getInstance().execute(accountInfoTask);
                     }
                 }
             }
@@ -210,34 +202,6 @@ public class AccountsActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
-        }
-    }
-
-    private class AccountsRemoveTask extends PleaseWaitTask {
-
-        private final Collection<Integer> selectedAccounts;
-
-        public AccountsRemoveTask(Context context, Collection<Integer> selectedAccounts) {
-            super(context);
-            this.selectedAccounts = selectedAccounts;
-        }
-
-        @Override
-        public void executeBackground() throws AccountNotFoundException, RemoteException {
-            // Iterating for all selected positions.
-            for (int accountDbId : selectedAccounts) {
-                // Trying to remove account.
-                getServiceInteraction().removeAccount(accountDbId);
-            }
-        }
-
-        @Override
-        public void onFailMain() {
-            Context context = getWeakContext().get();
-            if (context != null) {
-                // Show error.
-                Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();
-            }
         }
     }
 }

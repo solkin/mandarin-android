@@ -40,7 +40,7 @@ public abstract class PleaseWaitTask extends Task {
     public void onPostExecuteMain() {
         ProgressDialog progressDialog = weakProgressDialog.get();
         if (progressDialog != null) {
-            progressDialog.hide();
+            progressDialog.dismiss();
         }
     }
 

@@ -140,7 +140,7 @@ public abstract class AccountRoot extends CoreObject {
         // Checking for connection purpose.
         if (statusIndex != StatusUtil.STATUS_OFFLINE) {
             // Update account state in database.
-            updateAccountState(statusIndex, true);
+            updateAccountState(true);
             // Yeah, connect!
             connect();
         }
@@ -160,7 +160,8 @@ public abstract class AccountRoot extends CoreObject {
      * @param isConnecting - connecting flag.
      */
     protected void updateAccountState(boolean isConnecting) {
-        updateAccountState(statusIndex, isConnecting);
+        this.connectingFlag = isConnecting;
+        updateAccount();
     }
 
     /**

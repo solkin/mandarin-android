@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
@@ -8,11 +7,8 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -143,14 +139,6 @@ public class IcqAccountRoot extends AccountRoot {
         return R.layout.account_add_icq;
     }
 
-    public void writeInstanceData(Parcel dest) {
-        super.writeInstanceData(dest);
-    }
-
-    public void readInstanceData(Parcel in) {
-        super.readInstanceData(in);
-    }
-
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
                                      int expiresIn, long hostTime) {
         // Setup local variables.
@@ -172,7 +160,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     /**
      * Updates account brief and status information. Also, updates account info in database.
-     * @param myInfo
+     * @param myInfo - protocol-based object with basic account info.
      */
     protected void setMyInfo(MyInfo myInfo) {
         this.myInfo = myInfo;

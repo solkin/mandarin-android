@@ -3,8 +3,6 @@ package com.tomclaw.mandarin.im;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Parcel;
-import com.tomclaw.mandarin.core.CoreObject;
 import com.tomclaw.mandarin.core.QueryHelper;
 
 /**
@@ -13,7 +11,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
  * Date: 3/28/13
  * Time: 1:54 AM
  */
-public abstract class AccountRoot extends CoreObject {
+public abstract class AccountRoot {
 
     /**
      * User info
@@ -210,30 +208,4 @@ public abstract class AccountRoot extends CoreObject {
     public abstract String getAccountType();
 
     public abstract int getAccountLayout();
-
-    public void writeInstanceData(Parcel dest) {
-        dest.writeString(userId);
-        dest.writeString(userNick);
-        dest.writeString(userPassword);
-        dest.writeInt(statusIndex);
-        dest.writeString(statusTitle);
-        dest.writeString(statusMessage);
-        dest.writeString(avatarHash);
-        dest.writeString(serviceHost);
-        dest.writeInt(servicePort);
-        dest.writeInt(connectingFlag ? 1 : 0);
-    }
-
-    public void readInstanceData(Parcel in) {
-        userId = in.readString();
-        userNick = in.readString();
-        userPassword = in.readString();
-        statusIndex = in.readInt();
-        statusTitle = in.readString();
-        statusMessage = in.readString();
-        avatarHash = in.readString();
-        serviceHost = in.readString();
-        servicePort = in.readInt();
-        connectingFlag = in.readInt() == 1;
-    }
 }

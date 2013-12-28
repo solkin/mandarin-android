@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -20,11 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created with IntelliJ IDEA.

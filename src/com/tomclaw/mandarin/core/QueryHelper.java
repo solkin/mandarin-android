@@ -101,7 +101,7 @@ public class QueryHelper {
         queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
                 .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
         Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
+        // Cursor may have only one entry.
         if (cursor.moveToFirst()) {
             long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
             // Closing cursor.
@@ -111,6 +111,8 @@ public class QueryHelper {
             contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
             contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
             contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
             // Checking for no user icon now, so, we must reset avatar hash.
             if (TextUtils.isEmpty(accountRoot.getAvatarHash())) {
                 contentValues.putNull(GlobalProvider.ACCOUNT_AVATAR_HASH);
@@ -148,6 +150,8 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
         contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
         contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+        contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+        contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
         contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
@@ -160,32 +164,6 @@ public class QueryHelper {
             // Hey, I'm inserted it 3 lines ago!
             Log.d(Settings.LOG_TAG, "updateAccount method: no accounts after inserting.");
         }
-    }
-
-    public static boolean updateAccountStatus(ContentResolver contentResolver, AccountRoot accountRoot) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
-                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-        // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.moveToFirst()) {
-            long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Closing cursor.
-            cursor.close();
-            // We must update account. Status, connecting flag.
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
-            // Update query.
-            queryBuilder.recycle();
-            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-            queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            return true;
-        }
-        // Closing cursor.
-        cursor.close();
-        return false;
     }
 
     public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {

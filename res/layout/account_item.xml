@@ -11,7 +11,8 @@
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:orientation="horizontal">
-        <QuickContactBadge
+        <ImageView
+                android:contentDescription="@string/account_info"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:id="@+id/user_badge"
@@ -27,7 +28,6 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User Nick"
                     android:id="@+id/user_nick"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
@@ -35,13 +35,13 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="user@id"
                     android:id="@+id/user_id"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"/>
         </LinearLayout>
     </LinearLayout>
     <ImageView
+            android:contentDescription="@string/buddy_status"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/user_status"

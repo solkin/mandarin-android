@@ -40,8 +40,8 @@ public class AccountInfoTask extends Task {
                     String accountNick = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME));
                     String avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH));
                     int accountStatus = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS));
-                    // String buddyStatusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE));
-                    // String buddyStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE));
+                    String accountStatusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_TITLE));
+                    String accountStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE));
                     // Now we ready to start buddy info activity.
                     context.startActivity(new Intent(context, AccountInfoActivity.class)
                             .putExtra(AccountInfoActivity.ACCOUNT_DB_ID, accountDbId)
@@ -51,8 +51,8 @@ public class AccountInfoTask extends Task {
 
                             .putExtra(AccountInfoActivity.ACCOUNT_TYPE, accountType)
                             .putExtra(AccountInfoActivity.BUDDY_STATUS, accountStatus)
-                            // .putExtra(BuddyInfoActivity.BUDDY_STATUS_TITLE, buddyStatusTitle)
-                            // .putExtra(BuddyInfoActivity.BUDDY_STATUS_MESSAGE, buddyStatusMessage)
+                            .putExtra(BuddyInfoActivity.BUDDY_STATUS_TITLE, accountStatusTitle)
+                            .putExtra(BuddyInfoActivity.BUDDY_STATUS_MESSAGE, accountStatusMessage)
                     );
                 }
                 cursor.close();

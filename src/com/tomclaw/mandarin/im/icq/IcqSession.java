@@ -263,7 +263,7 @@ public class IcqSession {
                     }
                 }
             } catch (Throwable ex) {
-                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
+                Log.d(Settings.LOG_TAG, "fetch events exception", ex);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
@@ -354,10 +354,10 @@ public class IcqSession {
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                         PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
                         icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (BuddyNotFoundException e) {
-                e.printStackTrace();
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
+            } catch (BuddyNotFoundException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im - buddy not found");
             }
         } else if (eventType.equals(IM_STATE)) {
             try {
@@ -374,8 +374,8 @@ public class IcqSession {
                         }
                     }
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im state", ex);
             }
         } else if (eventType.equals(PRESENCE)) {
             try {
@@ -398,15 +398,18 @@ public class IcqSession {
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                         buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (BuddyNotFoundException e) {
-                e.printStackTrace();
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing presence - JSON exception", ex);
+            } catch (BuddyNotFoundException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing presence - buddy not found");
             }
         } else if (eventType.equals(MY_INFO)) {
-            MyInfo myInfo = gson.fromJson(eventData.toString(), MyInfo.class);
-            icqAccountRoot.setMyInfo(myInfo);
-            icqAccountRoot.updateAccount();
+            try {
+                MyInfo myInfo = gson.fromJson(eventData.toString(), MyInfo.class);
+                icqAccountRoot.setMyInfo(myInfo);
+            } catch (Throwable ignored) {
+                Log.d(Settings.LOG_TAG, "error while processing my info.");
+            }
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }
@@ -422,7 +425,7 @@ public class IcqSession {
         return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 
-    private String getStatusTitle(String moodTitle, int statusIndex) {
+    protected String getStatusTitle(String moodTitle, int statusIndex) {
         // Define status title.
         String statusTitle;
         if (TextUtils.isEmpty(moodTitle)) {
@@ -435,7 +438,7 @@ public class IcqSession {
         return statusTitle;
     }
 
-    private int getStatusIndex(String moodIcon, String buddyStatus) {
+    protected int getStatusIndex(String moodIcon, String buddyStatus) {
         int statusIndex;
         // Checking for mood present.
         if (!TextUtils.isEmpty(moodIcon)) {

@@ -22,7 +22,8 @@ public abstract class AccountRoot extends CoreObject {
     protected String userNick;
     protected String userPassword;
     protected int statusIndex;
-    protected String statusText;
+    protected String statusTitle;
+    protected String statusMessage;
     protected String avatarHash;
     protected boolean connectingFlag;
     /**
@@ -91,6 +92,12 @@ public abstract class AccountRoot extends CoreObject {
     public int getStatusIndex() {
         return statusIndex;
     }
+    public String getStatusTitle() {
+        return statusTitle;
+    }
+    public String getStatusMessage() {
+        return statusMessage;
+    }
 
     public String getAvatarHash() {
         return avatarHash;
@@ -139,6 +146,10 @@ public abstract class AccountRoot extends CoreObject {
         }
     }
 
+    /**
+     * This will manual disconnect account after network connection stopped.
+     * Invokes after account connection closed.
+     */
     public void carriedOff() {
         updateAccountState(StatusUtil.STATUS_OFFLINE, false);
     }
@@ -153,15 +164,29 @@ public abstract class AccountRoot extends CoreObject {
     }
 
     /**
-     * Setup status index and connecting flag and updates account in database.
-     *
-     * @param statusIndex  - non-protocol status index.
+     * Setup status index with default status title and empty message,
+     * setup connecting flag and update account in database.
+     * @param statusIndex - non-protocol status index.
      * @param isConnecting - connecting flag.
      */
     protected void updateAccountState(int statusIndex, boolean isConnecting) {
+        updateAccountState(statusIndex, StatusUtil.getStatusTitle(getAccountType(), statusIndex), "", isConnecting);
+    }
+
+    /**
+     * Setup status index, title, message and connecting flag and updates account in database.
+     * @param statusIndex - non-protocol status index.
+     * @param statusTitle - status title
+     * @param statusMessage - status description
+     * @param isConnecting - connecting flag.
+     */
+    protected void updateAccountState(int statusIndex, String statusTitle, String statusMessage,
+                                      boolean isConnecting) {
         // Setup local variables.
         this.statusIndex = statusIndex;
-        connectingFlag = isConnecting;
+        this.statusTitle = statusTitle;
+        this.statusMessage = statusMessage;
+        this.connectingFlag = isConnecting;
         // Save account data in database.
         updateAccount();
     }
@@ -175,7 +200,7 @@ public abstract class AccountRoot extends CoreObject {
     }
 
     /**
-     * Update online status.
+     * Update protocol online status.
      *
      * @param statusIndex - non-protocol status index.
      */
@@ -190,7 +215,8 @@ public abstract class AccountRoot extends CoreObject {
         dest.writeString(userNick);
         dest.writeString(userPassword);
         dest.writeInt(statusIndex);
-        dest.writeString(statusText);
+        dest.writeString(statusTitle);
+        dest.writeString(statusMessage);
         dest.writeString(avatarHash);
         dest.writeString(serviceHost);
         dest.writeInt(servicePort);
@@ -202,7 +228,8 @@ public abstract class AccountRoot extends CoreObject {
         userNick = in.readString();
         userPassword = in.readString();
         statusIndex = in.readInt();
-        statusText = in.readString();
+        statusTitle = in.readString();
+        statusMessage = in.readString();
         avatarHash = in.readString();
         serviceHost = in.readString();
         servicePort = in.readInt();

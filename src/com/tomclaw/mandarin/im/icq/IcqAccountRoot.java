@@ -12,6 +12,8 @@ import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: anton
@@ -113,7 +115,6 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public void updateStatus(int statusIndex) {
-
     }
 
     @Override
@@ -165,33 +166,42 @@ public class IcqAccountRoot extends AccountRoot {
                                       MyInfo myInfo, WellKnownUrls wellKnownUrls) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
-        setMyInfo(myInfo);
         this.wellKnownUrls = wellKnownUrls;
-        // Save account data in database.
-        updateAccount();
+        setMyInfo(myInfo);
     }
 
+    /**
+     * Updates account brief and status information. Also, updates account info in database.
+     * @param myInfo
+     */
     protected void setMyInfo(MyInfo myInfo) {
         this.myInfo = myInfo;
-        if (myInfo != null) {
-            setUserNick(myInfo.getFriendly());
-            try {
-                setStatus(StatusUtil.getStatusIndex(getAccountType(), myInfo.getState()));
-            } catch (StatusNotFoundException ignored) {
-                Log.d(Settings.LOG_TAG, "MyInfo state not found: " + myInfo.getState());
-            }
-            // Avatar checking and requesting.
-            String buddyIcon = myInfo.getBuddyIcon();
-            if (TextUtils.isEmpty(buddyIcon)) {
-                setAvatarHash(null);
-            } else {
-                if (!TextUtils.equals(getAvatarHash(), HttpUtil.getUrlHash(buddyIcon))) {
-                    // Avatar is ready.
-                    RequestHelper.requestAccountAvatar(getContentResolver(), CoreService.getAppSession(),
-                            getAccountDbId(), buddyIcon);
-                }
+
+        setUserNick(myInfo.getFriendly());
+
+        // Avatar checking and requesting.
+        String buddyIcon = myInfo.getBuddyIcon();
+        if (TextUtils.isEmpty(buddyIcon)) {
+            setAvatarHash(null);
+        } else {
+            if (!TextUtils.equals(getAvatarHash(), HttpUtil.getUrlHash(buddyIcon))) {
+                // Avatar is ready.
+                RequestHelper.requestAccountAvatar(getContentResolver(), CoreService.getAppSession(),
+                        getAccountDbId(), buddyIcon);
             }
         }
+
+        // Update account status info.
+        String buddyStatus = myInfo.getState();
+        String moodIcon = myInfo.optMoodIcon();
+        String statusMessage = myInfo.optStatusMsg();
+        String moodTitle = myInfo.optMoodTitle();
+
+        int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
+        String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
+
+        // This will update account state and write account into db.
+        updateAccountState(statusIndex, statusTitle, statusMessage, false);
     }
 
     public boolean checkLoginReady() {
@@ -213,7 +223,6 @@ public class IcqAccountRoot extends AccountRoot {
     public void resetSessionData() {
         aimSid = null;
         fetchBaseUrl = null;
-        setMyInfo(null);
         wellKnownUrls = null;
     }
 

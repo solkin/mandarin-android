@@ -33,6 +33,8 @@ import com.tomclaw.mandarin.main.BuddyInfoTask;
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int CONNECTING_STATUS_COLOR_FILTER = 0xaaffffff;
+
     /**
      * Adapter ID
      */
@@ -79,7 +81,7 @@ public class AccountsAdapter extends CursorAdapter implements
             bindView(view, context, cursor);
         } catch (Throwable ex) {
             view = inflater.inflate(R.layout.account_item, parent, false);
-            Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
+            Log.d(Settings.LOG_TAG, "exception in accounts adapter: " + ex.getMessage());
         }
         return view;
     }
@@ -100,13 +102,13 @@ public class AccountsAdapter extends CursorAdapter implements
                         cursor.getString(COLUMN_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_USER_STATUS)));
         if (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1) {
-            userStatus.setColorFilter(0xaaffffff);
+            userStatus.setColorFilter(CONNECTING_STATUS_COLOR_FILTER);
         } else {
             userStatus.clearColorFilter();
         }
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
-        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
+        ImageView contactBadge = ((ImageView) view.findViewById(R.id.user_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
         // On-avatar click listener.
         final int accountDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);

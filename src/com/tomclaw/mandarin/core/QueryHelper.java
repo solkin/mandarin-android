@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
@@ -57,6 +58,30 @@ public class QueryHelper {
             cursor.close();
         }
         return accountRootList;
+    }
+
+    public static AccountRoot getAccount(Context context, int accountDbId) {
+        AccountRoot accountRoot = null;
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
+        // Obtain account db id.
+        Cursor cursor = queryBuilder.query(context.getContentResolver(), Settings.ACCOUNT_RESOLVER_URI);
+        // Cursor may be null, so we must check it.
+        if (cursor != null) {
+            // Cursor may have more than only one entry.
+            if (cursor.moveToFirst()) {
+                // Obtain necessary column index.
+                int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
+                int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                // Iterate all accounts.
+                accountRoot = createAccountRoot(context, cursor.getString(typeColumnIndex),
+                        cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex));
+            }
+            // Closing cursor.
+            cursor.close();
+        }
+        return accountRoot;
     }
 
     public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
@@ -141,7 +166,32 @@ public class QueryHelper {
         return false;
     }
 
-    public static void insertAccount(Context context, AccountRoot accountRoot) {
+    public static boolean checkAccount(ContentResolver contentResolver, String accountType, String userId) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified account. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
+                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        // Cursor may have one entry or nothing.
+        boolean accountExists = cursor.moveToFirst();
+        // Closing cursor.
+        cursor.close();
+        return accountExists;
+    }
+
+    /**
+     * Insert account into database and update it's account db id and context.
+     * @param context - context for account root
+     * @param accountRoot - account root to be inserted into database
+     * @return account db id.
+     * @throws AccountNotFoundException
+     */
+    public static int insertAccount(Context context, AccountRoot accountRoot)
+            throws AccountNotFoundException, AccountAlreadyExistsException {
+        if(checkAccount(context.getContentResolver(),
+                accountRoot.getAccountType(), accountRoot.getUserId())) {
+            throw new AccountAlreadyExistsException();
+        }
         ContentResolver contentResolver = context.getContentResolver();
         // Creating new account.
         ContentValues contentValues = new ContentValues();
@@ -156,14 +206,10 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         // Setting up account db id.
-        try {
-            accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
-                    accountRoot.getUserId()));
-            accountRoot.setContext(context);
-        } catch (AccountNotFoundException e) {
-            // Hey, I'm inserted it 3 lines ago!
-            Log.d(Settings.LOG_TAG, "updateAccount method: no accounts after inserting.");
-        }
+        accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
+                accountRoot.getUserId()));
+        accountRoot.setContext(context);
+        return accountRoot.getAccountDbId();
     }
 
     public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {

@@ -10,7 +10,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.im.AccountRoot;
 
 /**
@@ -76,10 +78,13 @@ public class AccountAddActivity extends ChiefActivity {
                         accountRoot.setUserId(userId);
                         accountRoot.setUserNick(userId);
                         accountRoot.setUserPassword(userPassword);
-                        getServiceInteraction().addAccount(accountRoot);
+                        int accountDbId = QueryHelper.insertAccount(this, accountRoot);
+                        getServiceInteraction().holdAccount(accountDbId);
                         // Creating signal intent.
                         setResult(RESULT_OK);
                         finish();
+                    } catch (AccountAlreadyExistsException ex) {
+                        Toast.makeText(AccountAddActivity.this, R.string.account_already_exists, Toast.LENGTH_LONG).show();
                     } catch (Throwable ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
                     }

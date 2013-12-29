@@ -25,11 +25,6 @@ public abstract class AccountRoot {
     protected String avatarHash;
     protected boolean connectingFlag;
     /**
-     * Service info
-     */
-    protected String serviceHost;
-    protected int servicePort;
-    /**
      * Staff
      */
     protected transient Context context;

@@ -58,10 +58,9 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void addAccount(CoreObject coreObject) throws RemoteException {
-            AccountRoot accountRoot = (AccountRoot) coreObject;
-            Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
-            sessionHolder.updateAccountRoot(accountRoot);
+        public void holdAccount(int accountDbId) throws RemoteException {
+            Log.d(Settings.LOG_TAG, "hold account " + accountDbId);
+            sessionHolder.holdAccountRoot(accountDbId);
         }
 
         @Override

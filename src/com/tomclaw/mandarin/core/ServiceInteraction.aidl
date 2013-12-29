@@ -10,7 +10,7 @@ interface ServiceInteraction
     String getAppSession();
 	// Accounts API
 	List getAccountsList();
-	void addAccount(in CoreObject accountRoot);
+	void holdAccount(int accountDbId);
 	boolean removeAccount(int accountDbId);
 	void updateAccountStatus(String accountType, String userId, int statusIndex);
 }

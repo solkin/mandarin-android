@@ -12,6 +12,7 @@
     <string name="user_id">Логин</string>
     <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
+    <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить контакт</string>
     <string name="create_dialog">Открыть диалог</string>
     <string name="settings">Настройки</string>

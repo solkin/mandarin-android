@@ -181,14 +181,15 @@ public class QueryHelper {
 
     /**
      * Insert account into database and update it's account db id and context.
-     * @param context - context for account root
+     *
+     * @param context     - context for account root
      * @param accountRoot - account root to be inserted into database
      * @return account db id.
      * @throws AccountNotFoundException
      */
     public static int insertAccount(Context context, AccountRoot accountRoot)
             throws AccountNotFoundException, AccountAlreadyExistsException {
-        if(checkAccount(context.getContentResolver(),
+        if (checkAccount(context.getContentResolver(),
                 accountRoot.getAccountType(), accountRoot.getUserId())) {
             throw new AccountAlreadyExistsException();
         }

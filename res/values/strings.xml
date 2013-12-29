@@ -23,7 +23,9 @@
     <string name="buddy_info">Анкета</string>
     <string name="clear_history">Очистить историю</string>
     <string name="enter_your_message">Ваше сообщение</string>
-    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет навсегда.</string>
+    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет
+        навсегда.
+    </string>
     <string name="select_buddy">Выберите контакт</string>
 
     <string name="status_offline">Не в сети</string>
@@ -50,9 +52,13 @@
     <string name="selected_items">%d выбрано</string>
     <string name="yes_remove">Удалить</string>
     <string name="remove_accounts_title">Удалить профили?</string>
-    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие
+        нельзя отменить. Продолжить?
+    </string>
     <string name="remove_account_title">Удалить профиль?</string>
-    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя
+        отменить. Продолжить?
+    </string>
     <string name="do_not_remove">Нет</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>

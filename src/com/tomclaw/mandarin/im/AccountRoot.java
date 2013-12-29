@@ -85,9 +85,11 @@ public abstract class AccountRoot {
     public int getStatusIndex() {
         return statusIndex;
     }
+
     public String getStatusTitle() {
         return statusTitle;
     }
+
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -160,7 +162,8 @@ public abstract class AccountRoot {
     /**
      * Setup status index with default status title and empty message,
      * setup connecting flag and update account in database.
-     * @param statusIndex - non-protocol status index.
+     *
+     * @param statusIndex  - non-protocol status index.
      * @param isConnecting - connecting flag.
      */
     protected void updateAccountState(int statusIndex, boolean isConnecting) {
@@ -169,10 +172,11 @@ public abstract class AccountRoot {
 
     /**
      * Setup status index, title, message and connecting flag and updates account in database.
-     * @param statusIndex - non-protocol status index.
-     * @param statusTitle - status title
+     *
+     * @param statusIndex   - non-protocol status index.
+     * @param statusTitle   - status title
      * @param statusMessage - status description
-     * @param isConnecting - connecting flag.
+     * @param isConnecting  - connecting flag.
      */
     protected void updateAccountState(int statusIndex, String statusTitle, String statusMessage,
                                       boolean isConnecting) {

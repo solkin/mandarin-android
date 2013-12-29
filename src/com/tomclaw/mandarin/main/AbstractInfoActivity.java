@@ -80,8 +80,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-        // Hide the progress bar.
-        findViewById(R.id.progress_bar).setVisibility(View.GONE);
         // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
         Bundle bundle = intent.getExtras();
@@ -91,6 +89,9 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
             Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
             // Checking for this is info we need.
             if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
+                // Hide the progress bar.
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                // Show info blocks.
                 findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
                 // Iterate by info keys.

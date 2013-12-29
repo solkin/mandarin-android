@@ -101,9 +101,9 @@ public class AccountsActivity extends ChiefActivity {
                     final int accountConnecting = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING));
 
                     // Checking for account is connecting now and we must wait for some time.
-                    if(accountConnecting == 1) {
+                    if (accountConnecting == 1) {
                         int toastMessage;
-                        if(statusIndex == StatusUtil.STATUS_OFFLINE) {
+                        if (statusIndex == StatusUtil.STATUS_OFFLINE) {
                             toastMessage = R.string.account_shutdown;
                         } else {
                             toastMessage = R.string.account_connecting;
@@ -141,7 +141,8 @@ public class AccountsActivity extends ChiefActivity {
                             builder.show();
                         } else {
                             // Account is online and we can show it's brief info.
-                            final AccountInfoTask accountInfoTask = new AccountInfoTask(AccountsActivity.this, accountDbId);
+                            final AccountInfoTask accountInfoTask =
+                                    new AccountInfoTask(AccountsActivity.this, accountDbId);
                             TaskExecutor.getInstance().execute(accountInfoTask);
                         }
                     }

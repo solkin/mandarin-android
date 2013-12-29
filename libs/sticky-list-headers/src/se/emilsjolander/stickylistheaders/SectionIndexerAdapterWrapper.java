@@ -4,29 +4,29 @@ import android.content.Context;
 import android.widget.SectionIndexer;
 
 class SectionIndexerAdapterWrapper extends
-		AdapterWrapper implements SectionIndexer {
-	
-	final SectionIndexer mSectionIndexerDelegate;
+        AdapterWrapper implements SectionIndexer {
 
-	SectionIndexerAdapterWrapper(Context context,
-			StickyListHeadersAdapter delegate) {
-		super(context, delegate);
-		mSectionIndexerDelegate = (SectionIndexer) delegate;
-	}
+    final SectionIndexer mSectionIndexerDelegate;
 
-	@Override
-	public int getPositionForSection(int section) {
-		return mSectionIndexerDelegate.getPositionForSection(section);
-	}
+    SectionIndexerAdapterWrapper(Context context,
+                                 StickyListHeadersAdapter delegate) {
+        super(context, delegate);
+        mSectionIndexerDelegate = (SectionIndexer) delegate;
+    }
 
-	@Override
-	public int getSectionForPosition(int position) {
-		return mSectionIndexerDelegate.getSectionForPosition(position);
-	}
+    @Override
+    public int getPositionForSection(int section) {
+        return mSectionIndexerDelegate.getPositionForSection(section);
+    }
 
-	@Override
-	public Object[] getSections() {
-		return mSectionIndexerDelegate.getSections();
-	}
+    @Override
+    public int getSectionForPosition(int position) {
+        return mSectionIndexerDelegate.getSectionForPosition(position);
+    }
+
+    @Override
+    public Object[] getSections() {
+        return mSectionIndexerDelegate.getSections();
+    }
 
 }

@@ -28,7 +28,7 @@ public class AccountsRemoveTask extends PleaseWaitTask {
     @Override
     public void executeBackground() throws AccountNotFoundException, RemoteException {
         ChiefActivity chiefActivity = weakChiefActivity.get();
-        if(chiefActivity != null) {
+        if (chiefActivity != null) {
             ServiceInteraction serviceInteraction = chiefActivity.getServiceInteraction();
             // Iterating for all selected positions.
             for (int accountDbId : selectedAccounts) {

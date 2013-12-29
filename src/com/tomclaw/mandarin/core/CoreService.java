@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import com.tomclaw.mandarin.im.AccountRoot;
 
 import java.util.List;
 import java.util.Random;

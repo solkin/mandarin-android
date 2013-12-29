@@ -160,6 +160,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     /**
      * Updates account brief and status information. Also, updates account info in database.
+     *
      * @param myInfo - protocol-based object with basic account info.
      */
     protected void setMyInfo(MyInfo myInfo) {

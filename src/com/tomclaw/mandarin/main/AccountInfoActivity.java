@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -25,7 +24,6 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -76,7 +74,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                             @Override
                             public void onSuccessMain() {
                                 ChiefActivity chiefActivity = weakChiefActivity.get();
-                                if(chiefActivity != null) {
+                                if (chiefActivity != null) {
                                     chiefActivity.finish();
                                 }
                             }

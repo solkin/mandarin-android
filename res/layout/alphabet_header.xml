@@ -8,7 +8,7 @@
     <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/header_head_color" />
+            android:background="@color/header_head_color"/>
 
     <TextView
             android:id="@+id/header_text"
@@ -23,6 +23,6 @@
     <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/header_line_color" />
+            android:background="@color/header_line_color"/>
 
 </LinearLayout>

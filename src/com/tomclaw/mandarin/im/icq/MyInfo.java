@@ -38,21 +38,21 @@ public class MyInfo {
     }
 
     public String optMoodIcon() {
-        if(TextUtils.isEmpty(moodIcon)) {
+        if (TextUtils.isEmpty(moodIcon)) {
             return "";
         }
         return moodIcon;
     }
 
     public String optMoodTitle() {
-        if(TextUtils.isEmpty(moodTitle)) {
+        if (TextUtils.isEmpty(moodTitle)) {
             return "";
         }
         return moodTitle;
     }
 
     public String optStatusMsg() {
-        if(TextUtils.isEmpty(statusMsg)) {
+        if (TextUtils.isEmpty(statusMsg)) {
             return "";
         }
         return statusMsg;

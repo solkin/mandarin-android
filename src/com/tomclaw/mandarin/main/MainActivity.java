@@ -29,47 +29,6 @@ public class MainActivity extends ChiefActivity {
         bar.setDisplayShowTitleEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setTitle(R.string.dialogs);
-
-        // Dialogs list.
-        final ListView dialogsList = (ListView) findViewById(R.id.chats_list_view);
-        final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
-        dialogsList.setAdapter(dialogsAdapter);
-        dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = dialogsAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
-                Intent intent = new Intent(MainActivity.this, ChatActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                startActivity(intent);
-            }
-        });
-        dialogsList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
     }
 
     @Override
@@ -80,41 +39,6 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
-        // SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        // Configure the search info and add any event listeners
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                return true;
-            }
-            case R.id.accounts: {
-                Intent intent = new Intent(this, AccountsActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.create_dialog: {
-                Intent intent = new Intent(this, RosterActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.settings: {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

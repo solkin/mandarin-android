@@ -121,7 +121,8 @@ public class ChatFragment extends Fragment {
             case R.id.close_chat_menu: {
                 try {
                     QueryHelper.modifyDialog(getActivity().getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
-                    getActivity().onBackPressed();
+                    if (!isDualPane())
+                        getActivity().onBackPressed();
                 } catch (Exception ignored) {
                     // Nothing to do in this case.
                 }
@@ -192,6 +193,10 @@ public class ChatFragment extends Fragment {
 
     public int getBuddyDbId() {
         return chatHistoryAdapter.getBuddyDbId();
+    }
+
+    private boolean isDualPane() {
+        return (getActivity().findViewById(R.id.dialogs) != null);
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {

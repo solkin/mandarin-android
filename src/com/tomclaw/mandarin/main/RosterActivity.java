@@ -16,6 +16,9 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.main.fragments.ChatDialogsFragment;
+import com.tomclaw.mandarin.main.fragments.ChatFragment;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
@@ -48,11 +51,19 @@ public class RosterActivity extends ChiefActivity {
                 try {
                     // Trying to open dialog with this buddy.
                     QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                    startActivity(intent);
+
+                    if (isDualPane()) {
+                        Intent intent = new Intent(RosterActivity.this, MainActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                        startActivity(intent);
+                    } else {
+                        // Open chat dialog for this buddy.
+                        Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                        startActivity(intent);
+                    }
                     finish();
                 } catch (Exception e) {
                     // Nothing to do in this case.
@@ -127,5 +138,9 @@ public class RosterActivity extends ChiefActivity {
     private void setFilterValue(int filterValue) {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
                 .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
+    }
+
+    private boolean isDualPane() {
+        return (findViewById(R.id.signal_frame) != null);
     }
 }

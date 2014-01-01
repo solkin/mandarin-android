@@ -145,4 +145,8 @@ public class ChatDialogsFragment extends Fragment {
             startActivity(intent);
         }
     }
+
+    public boolean isDualPane() {
+        return isDualPane;
+    }
 }

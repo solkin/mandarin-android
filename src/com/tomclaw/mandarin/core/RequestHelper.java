@@ -118,4 +118,38 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
+
+    public static void requestSetState(ContentResolver contentResolver, String appSession,
+                                        int accountDbId, int statusIndex) {
+        SetStateRequest setStateRequest = new SetStateRequest(statusIndex);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, SetStateRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setStateRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+    }
+
+    public static void requestResetMood(ContentResolver contentResolver, String appSession, int accountDbId) {
+        requestSetMood(contentResolver, appSession, accountDbId, SetMoodRequest.STATUS_MOOD_RESET);
+    }
+
+    public static void requestSetMood(ContentResolver contentResolver, String appSession,
+                                       int accountDbId, int statusIndex) {
+        SetMoodRequest setMoodRequest = new SetMoodRequest(statusIndex);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, SetMoodRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setMoodRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+    }
 }

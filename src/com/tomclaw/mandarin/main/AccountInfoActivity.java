@@ -15,14 +15,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +37,9 @@ public class AccountInfoActivity extends AbstractInfoActivity {
 
     public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
     public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
+    public static final String STATE_REQUESTED = "state_requested";
+    public static final String STATE_APPLIED = "state_applied";
+    public static final String SET_STATE_SUCCESS = "set_state_success";
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,6 +121,29 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         TextView buddyNickView = (TextView) findViewById(R.id.user_nick);
         buddyNickView.setText(getBuddyNick());
 
+        Spinner statusSpinner = (Spinner) findViewById(R.id.status_spinner);
+
+        final StatusSpinnerAdapter spinnerAdapter =
+                new StatusSpinnerAdapter(this, getAccountType(), StatusUtil.getSetupStatuses(getAccountType()));
+        statusSpinner.setAdapter(spinnerAdapter);
+        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(Settings.LOG_TAG, "Status selected: [position: " + position + "], [id: " + id + "]");
+                try {
+                    getServiceInteraction().updateAccountStatus(getAccountType(), getBuddyId(),
+                            spinnerAdapter.getStatus(position));
+                } catch (RemoteException ignored) {
+                    Log.d(Settings.LOG_TAG, "Unable to setup status due to remote exception");
+                    Toast.makeText(AccountInfoActivity.this, R.string.unable_to_setup_status, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
             // Status image.
             int statusImageResource = StatusUtil.getStatusDrawable(getAccountType(), getBuddyStatus());
@@ -132,12 +158,19 @@ public class AccountInfoActivity extends AbstractInfoActivity {
             SpannableString statusString = new SpannableString(buddyStatusTitle + " " + buddyStatusMessage);
             statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, buddyStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            // Setup selected status in spinner.
+            try {
+                statusSpinner.setSelection(spinnerAdapter.getStatusPosition(getBuddyStatus()));
+            } catch (StatusNotFoundException ignored) {
+                // Nothing to do in this case. This may ne produced by incorrect setup status collection.
+                Log.d(Settings.LOG_TAG, "Status not found in account info: " + getBuddyStatus());
+            }
             // Yeah, we have status info - so we might show status info.
-            findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
+            /*findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
             findViewById(R.id.info_status_content).setVisibility(View.VISIBLE);
 
             ((ImageView) findViewById(R.id.status_icon)).setImageResource(statusImageResource);
-            ((TextView) findViewById(R.id.status_text)).setText(statusString);
+            ((TextView) findViewById(R.id.status_text)).setText(statusString);*/
         }
 
         // Buddy avatar.
@@ -145,7 +178,8 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
     }
 
+    @Override
     public void onBuddyInfoRequestError() {
-        Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.error_show_account_info, Toast.LENGTH_SHORT).show();
     }
 }

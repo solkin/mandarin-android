@@ -111,6 +111,14 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public void updateStatus(int statusIndex) {
+        int moodOffset = getContext().getResources().getInteger(R.integer.mood_offset);
+        // Checking for status type - base or mood.
+        if(statusIndex < moodOffset) {
+            RequestHelper.requestSetState(getContentResolver(), CoreService.getAppSession(), getAccountDbId(), statusIndex);
+            RequestHelper.requestResetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId());
+        } else {
+            RequestHelper.requestSetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId(), statusIndex);
+        }
     }
 
     @Override
@@ -132,6 +140,10 @@ public class IcqAccountRoot extends AccountRoot {
 
     public static int getStatusConnectResource() {
         return R.array.status_connect_icq;
+    }
+
+    public static int getStatusSetupResource() {
+        return R.array.status_setup_icq;
     }
 
     @Override

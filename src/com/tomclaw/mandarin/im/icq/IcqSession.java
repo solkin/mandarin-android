@@ -233,6 +233,7 @@ public class IcqSession {
                 switch (statusCode) {
                     case EXTERNAL_FETCH_OK: {
                         JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                        // TODO: end session have no ts.
                         long hostTime = dataObject.getLong(TS);
                         String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                         // Update time and fetch base url.

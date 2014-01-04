@@ -115,8 +115,8 @@ public class AccountsActivity extends ChiefActivity {
                             View connectDialog = getLayoutInflater().inflate(R.layout.connect_dialog, null);
                             final Spinner statusSpinner = (Spinner) connectDialog.findViewById(R.id.status_spinner);
 
-                            final StatusSpinnerAdapter spinnerAdapter =
-                                    new StatusSpinnerAdapter(AccountsActivity.this, accountType);
+                            final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
+                                    AccountsActivity.this, accountType, StatusUtil.getConnectStatuses(accountType));
                             statusSpinner.setAdapter(spinnerAdapter);
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(AccountsActivity.this);
@@ -134,6 +134,8 @@ public class AccountsActivity extends ChiefActivity {
                                                 accountType, userId, selectedStatusIndex);
                                     } catch (RemoteException e) {
                                         // Heh... Nothing to do in this case.
+                                        Toast.makeText(AccountsActivity.this, R.string.unable_to_connect_account,
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });

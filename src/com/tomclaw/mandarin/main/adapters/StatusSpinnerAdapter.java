@@ -11,7 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,14 +27,16 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     private final LayoutInflater inflater;
     private final String accountType;
+    private final List<Integer> statusList;
 
     private static final int DROPDOWN_PADDING = 10;
 
-    public StatusSpinnerAdapter(Activity context, String accountType) {
-        super(context, R.layout.status_item, StatusUtil.getConnectStatuses(accountType));
+    public StatusSpinnerAdapter(Activity context, String accountType, List<Integer> statusList) {
+        super(context, R.layout.status_item, statusList);
 
         inflater = context.getLayoutInflater();
         this.accountType = accountType;
+        this.statusList = statusList;
     }
 
     @Override
@@ -73,5 +79,13 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     public int getStatus(int position) {
         return getItem(position);
+    }
+
+    public int getStatusPosition(int statusValue) throws StatusNotFoundException {
+        int statusPosition = Collections.binarySearch(statusList, statusValue);
+        if(statusPosition < 0) {
+            throw new StatusNotFoundException();
+        }
+        return statusPosition;
     }
 }

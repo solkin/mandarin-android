@@ -113,6 +113,9 @@
     <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>
     <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
     <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
+    <string name="status_message">Подробнее…</string>
+    <string name="apply">Применить</string>
+    <string name="not_now">Не сейчас</string>
 
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>

@@ -68,8 +68,15 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
+        public void updateAccountStatusIndex(String accountType, String userId,
+                                             int statusIndex) throws RemoteException {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
+        }
+
+        @Override
+        public void updateAccountStatus(String accountType, String userId, int statusIndex,
+                                        String statusTitle, String statusMessage) throws RemoteException {
+            sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
     };
 

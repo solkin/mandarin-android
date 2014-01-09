@@ -64,11 +64,11 @@ public class IcqSession {
     public static final int EXTERNAL_LOGIN_OK = 200;
     public static final int EXTERNAL_LOGIN_ERROR = 330;
     public static final int EXTERNAL_UNKNOWN = 0;
-    private static final int EXTERNAL_SESSION_OK = 200;
+    public static final int EXTERNAL_SESSION_OK = 200;
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
-    private static final int timeoutSocket = 65000;
+    private static final int timeoutSocket = 70000;
     private static final int timeoutConnection = 60000;
     private static final int timeoutSession = 600000;
 
@@ -169,7 +169,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
             nameValuePairs.add(new BasicNameValuePair(VIEW,
-                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
+                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()))));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
                     .concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
@@ -185,6 +185,9 @@ public class IcqSession {
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {
                 case EXTERNAL_SESSION_OK: {
+                    // Request for status update before my info parsing to prevent status reset.
+                    icqAccountRoot.updateStatus();
+
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
@@ -206,8 +209,8 @@ public class IcqSession {
                     return EXTERNAL_UNKNOWN;
                 }
             }
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "start session exception: " + e.getMessage());
+        } catch (Throwable ex) {
+            Log.d(Settings.LOG_TAG, "start session exception", ex);
             return INTERNAL_ERROR;
         }
     }
@@ -354,7 +357,7 @@ public class IcqSession {
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                         PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                        icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
+                        icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
             } catch (JSONException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
             } catch (BuddyNotFoundException ex) {

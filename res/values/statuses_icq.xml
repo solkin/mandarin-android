@@ -153,6 +153,8 @@
 
     <integer name="mood_offset">11</integer>
 
+    <integer name="default_base_status">1</integer>
+
     <integer-array name="status_connect_icq">
         <item>1</item>
         <item>9</item>

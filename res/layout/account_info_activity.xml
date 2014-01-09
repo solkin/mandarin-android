@@ -50,15 +50,17 @@
                 android:text="@string/info_status"
                 style="?android:attr/listSeparatorTextViewStyle"/>
 
-        <LinearLayout
-                android:id="@+id/info_status_content"
+        <Spinner
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:gravity="center_vertical">
-            <Spinner
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/status_spinner" android:layout_weight="1"/>
-        </LinearLayout>
+                android:layout_height="0dp"
+                android:id="@+id/status_spinner" android:layout_weight="1"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/status_text" style="@android:style/Widget.EditText"
+                android:focusable="false"
+                android:hint="@string/status_message"/>
 
         <include layout="@layout/info_block"/>
     </LinearLayout>

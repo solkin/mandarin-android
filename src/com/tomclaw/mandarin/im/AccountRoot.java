@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
 import com.tomclaw.mandarin.core.QueryHelper;
 
 /**
@@ -113,17 +114,31 @@ public abstract class AccountRoot {
      * @param statusIndex - non-protocol status index.
      */
     public void setStatus(int statusIndex) {
-        if (this.statusIndex != statusIndex) {
+        setStatus(statusIndex, StatusUtil.getStatusTitle(getAccountType(), statusIndex), "");
+    }
+
+    /**
+     * Set up logic and network status for account. Some online status will connect account
+     * in case of account was offline. Offline status will disconnect account.
+     *
+     * @param statusIndex - non-protocol status index.
+     * @param statusTitle - status title.
+     * @param statusMessage - status description.
+     */
+    public void setStatus(int statusIndex, String statusTitle, String statusMessage) {
+        if (this.statusIndex != statusIndex
+                || !TextUtils.equals(getStatusTitle(), statusTitle)
+                || !TextUtils.equals(getStatusMessage(), statusMessage)) {
             if (this.statusIndex == StatusUtil.STATUS_OFFLINE) {
-                updateAccountState(statusIndex, true);
+                updateAccountState(statusIndex, statusTitle, statusMessage, true);
                 connect();
             } else if (statusIndex == StatusUtil.STATUS_OFFLINE) {
                 updateAccountState(true);
                 disconnect();
             } else {
-                updateAccountState(statusIndex, false);
+                updateAccountState(statusIndex, statusTitle, statusMessage, false);
                 // This will create request in database.
-                updateStatus(statusIndex);
+                updateStatus();
             }
         }
     }
@@ -199,10 +214,8 @@ public abstract class AccountRoot {
 
     /**
      * Update protocol online status.
-     *
-     * @param statusIndex - non-protocol status index.
      */
-    public abstract void updateStatus(int statusIndex);
+    public abstract void updateStatus();
 
     public abstract String getAccountType();
 

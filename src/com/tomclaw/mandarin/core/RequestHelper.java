@@ -134,13 +134,9 @@ public class RequestHelper {
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
-    public static void requestResetMood(ContentResolver contentResolver, String appSession, int accountDbId) {
-        requestSetMood(contentResolver, appSession, accountDbId, SetMoodRequest.STATUS_MOOD_RESET);
-    }
-
     public static void requestSetMood(ContentResolver contentResolver, String appSession,
-                                       int accountDbId, int statusIndex) {
-        SetMoodRequest setMoodRequest = new SetMoodRequest(statusIndex);
+                                       int accountDbId, int statusIndex, String statusTitle, String statusMessage) {
+        SetMoodRequest setMoodRequest = new SetMoodRequest(statusIndex, statusTitle, statusMessage);
         // Writing to requests database.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);

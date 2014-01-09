@@ -130,7 +130,7 @@ public class AccountsActivity extends ChiefActivity {
                                         int selectedStatusIndex = spinnerAdapter.getStatus(
                                                 statusSpinner.getSelectedItemPosition());
                                         // Trying to connect account.
-                                        getServiceInteraction().updateAccountStatus(
+                                        getServiceInteraction().updateAccountStatusIndex(
                                                 accountType, userId, selectedStatusIndex);
                                     } catch (RemoteException e) {
                                         // Heh... Nothing to do in this case.

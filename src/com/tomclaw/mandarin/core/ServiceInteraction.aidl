@@ -12,5 +12,6 @@ interface ServiceInteraction
 	List getAccountsList();
 	void holdAccount(int accountDbId);
 	boolean removeAccount(int accountDbId);
-	void updateAccountStatus(String accountType, String userId, int statusIndex);
+	void updateAccountStatusIndex(String accountType, String userId, int statusIndex);
+	void updateAccountStatus(String accountType, String userId, int statusIndex, String statusTitle, String statusMessage);
 }

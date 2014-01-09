@@ -272,12 +272,12 @@ public class QueryHelper {
                                      int messageType, String cookie, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         insertMessage(contentResolver, isCollapseMessages, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                messageType, cookie, 0, messageText, activateDialog);
+                messageType, 2, cookie, 0, messageText, activateDialog);
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                     int accountDbId, int buddyDbId, int messageType, String cookie, long messageTime,
-                                     String messageText, boolean activateDialog) {
+                                     int accountDbId, int buddyDbId, int messageType, int messageState, String cookie,
+                                     long messageTime, String messageText, boolean activateDialog) {
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
         // Checking for dialog activate needed.
         if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
@@ -312,7 +312,7 @@ public class QueryHelper {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
-                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
                     // Update query.
@@ -333,7 +333,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
@@ -342,8 +342,8 @@ public class QueryHelper {
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                     int accountDbId, String userId, int messageType, String cookie, long messageTime,
-                                     String messageText, boolean activateDialog)
+                                     int accountDbId, String userId, int messageType, int messageState,
+                                     String cookie, long messageTime, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -358,8 +358,8 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 // Plain message query.
-                insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, cookie,
-                        messageTime, messageText, activateDialog);
+                insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
+                        cookie, messageTime, messageText, activateDialog);
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
@@ -473,11 +473,10 @@ public class QueryHelper {
             // Closing cursor.
             cursor.close();
             // There are may be a lot of buddies in lots of groups, but this is the same buddy with the save avatar.
-            if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-                if (!TextUtils.isEmpty(buddyIcon)) {
-                    // Avatar is ready.
-                    RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
-                }
+            if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+                // Avatar is ready.
+                RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
+                        accountDbId, buddyId, buddyIcon);
             }
         } else {
             // Closing cursor.
@@ -529,11 +528,10 @@ public class QueryHelper {
         }
         buddyCursor.close();
 
-        if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-            if (!TextUtils.isEmpty(buddyIcon)) {
-                // Avatar is ready.
-                RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
-            }
+        if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+            // Avatar is ready.
+            RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
+                    accountDbId, buddyId, buddyIcon);
         }
     }
 

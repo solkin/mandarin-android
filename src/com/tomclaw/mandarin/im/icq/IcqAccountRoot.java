@@ -77,6 +77,9 @@ public class IcqAccountRoot extends AccountRoot {
                         }
                         // Attempt to start session.
                         switch (icqSession.startSession()) {
+                            case IcqSession.EXTERNAL_SESSION_OK: {
+                                break;
+                            }
                             case IcqSession.EXTERNAL_SESSION_RATE_LIMIT: {
                                 // Show notification.
                                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
@@ -110,15 +113,29 @@ public class IcqAccountRoot extends AccountRoot {
         RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
     }
 
-    public void updateStatus(int statusIndex) {
+    public void updateStatus() {
+        RequestHelper.requestSetState(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+                getBaseStatusValue(statusIndex));
+        RequestHelper.requestSetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+                getMoodStatusValue(statusIndex), statusTitle, statusMessage);
+    }
+
+    protected int getBaseStatusValue(int statusIndex) {
+        int moodOffset = getContext().getResources().getInteger(R.integer.mood_offset);
+        // Checking for status type - base or mood.
+        if(statusIndex >= moodOffset) {
+            statusIndex = getContext().getResources().getInteger(R.integer.default_base_status);
+        }
+        return statusIndex;
+    }
+
+    protected int getMoodStatusValue(int statusIndex) {
         int moodOffset = getContext().getResources().getInteger(R.integer.mood_offset);
         // Checking for status type - base or mood.
         if(statusIndex < moodOffset) {
-            RequestHelper.requestSetState(getContentResolver(), CoreService.getAppSession(), getAccountDbId(), statusIndex);
-            RequestHelper.requestResetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId());
-        } else {
-            RequestHelper.requestSetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId(), statusIndex);
+            statusIndex = SetMoodRequest.STATUS_MOOD_RESET;
         }
+        return statusIndex;
     }
 
     @Override

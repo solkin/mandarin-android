@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Pair;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -22,11 +23,16 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 public class SetMoodRequest extends WimRequest {
 
     public static final transient int STATUS_MOOD_RESET = -1;
+    public static final transient String STATUS_TEXT_EMPTY = "";
 
     private int statusIndex;
+    private String statusTitle;
+    private String statusMessage;
 
-    public SetMoodRequest(int statusIndex) {
+    public SetMoodRequest(int statusIndex, String statusTitle, String statusMessage) {
         this.statusIndex = statusIndex;
+        this.statusTitle = statusTitle;
+        this.statusMessage = statusMessage;
     }
 
     @Override
@@ -64,13 +70,24 @@ public class SetMoodRequest extends WimRequest {
         } else {
             statusValue = StatusUtil.getStatusValue(getAccountRoot().getAccountType(), statusIndex);
         }
+        // Validating status texts.
+        statusTitle = validateString(statusTitle);
+        statusMessage = validateString(statusMessage);
 
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", "json"));
         params.add(new Pair<String, String>("mood", statusValue));
-        params.add(new Pair<String, String>("title", ""));
-        params.add(new Pair<String, String>("statusMsg", ""));
+        params.add(new Pair<String, String>("title", statusTitle));
+        params.add(new Pair<String, String>("statusMsg", statusMessage));
         return params;
+    }
+
+    private String validateString(String string) {
+        if(TextUtils.isEmpty(string)) {
+            return STATUS_TEXT_EMPTY;
+        } else {
+            return string;
+        }
     }
 }

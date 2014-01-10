@@ -349,14 +349,19 @@ public class IcqSession {
                 long messageTime = eventData.getLong(TIMESTAMP);
                 String imf = eventData.getString(IMF);
                 String autoResponse = eventData.getString(AUTORESPONSE);
-                JSONObject sourceObject = eventData.getJSONObject(SOURCE_OBJECT);
-                String buddyId = sourceObject.getString(AIM_ID);
-                String buddyNick = sourceObject.optString(FRIENDLY);
-                if (TextUtils.isEmpty(buddyNick)) {
-                    buddyNick = sourceObject.getString(DISPLAY_ID);
+                JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
+                String buddyId;
+                if(sourceObject != null) {
+                    buddyId = sourceObject.getString(AIM_ID);
+                    String buddyNick = sourceObject.optString(FRIENDLY);
+                    if (TextUtils.isEmpty(buddyNick)) {
+                        buddyNick = sourceObject.getString(DISPLAY_ID);
+                    }
+                    String buddyStatus = sourceObject.getString(STATE);
+                    String buddyType = sourceObject.getString(USER_TYPE);
+                } else {
+                    buddyId = eventData.getString(AIM_ID);
                 }
-                String buddyStatus = sourceObject.getString(STATE);
-                String buddyType = sourceObject.getString(USER_TYPE);
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                         PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),

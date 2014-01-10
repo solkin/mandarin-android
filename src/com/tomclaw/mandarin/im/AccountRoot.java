@@ -148,11 +148,14 @@ public abstract class AccountRoot {
      */
     public void actualizeStatus() {
         // Checking for connection purpose.
-        if (statusIndex != StatusUtil.STATUS_OFFLINE) {
+        if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) {
             // Update account state in database.
             updateAccountState(true);
             // Yeah, connect!
             connect();
+        } else if(isConnecting()) {
+            // Disconnection process is not completed. Let's became offline.
+            updateAccountState(StatusUtil.STATUS_OFFLINE, false);
         }
     }
 

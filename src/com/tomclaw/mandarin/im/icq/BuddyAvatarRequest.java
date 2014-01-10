@@ -12,14 +12,14 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
  * Date: 12/4/13
  * Time: 8:37 PM
  */
-public class AvatarRequest extends BitmapRequest<IcqAccountRoot> {
+public class BuddyAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     private String buddyId;
 
-    public AvatarRequest() {
+    public BuddyAvatarRequest() {
     }
 
-    public AvatarRequest(String buddyId, String url) {
+    public BuddyAvatarRequest(String buddyId, String url) {
         super(url);
         this.buddyId = buddyId;
     }
@@ -28,7 +28,7 @@ public class AvatarRequest extends BitmapRequest<IcqAccountRoot> {
     protected void onBitmapSaved(String hash) {
         Log.d(Settings.LOG_TAG, "Update destination buddy " + buddyId + " avatar hash to " + hash);
         try {
-            QueryHelper.modifyAvatar(getAccountRoot().getContentResolver(),
+            QueryHelper.modifyBuddyAvatar(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId, hash);
             Log.d(Settings.LOG_TAG, "Avatar complex operations succeeded!");
         } catch (BuddyNotFoundException ignored) {

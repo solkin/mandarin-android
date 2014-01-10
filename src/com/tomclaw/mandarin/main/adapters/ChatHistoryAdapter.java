@@ -122,7 +122,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         Cursor cursor = swapCursor(null);
         // Maybe, previous non-closed cursor present?
-        if(cursor != null && !cursor.isClosed()) {
+        if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
     }

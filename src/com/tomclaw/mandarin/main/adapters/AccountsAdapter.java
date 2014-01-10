@@ -15,6 +15,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -28,6 +29,8 @@ import com.tomclaw.mandarin.im.StatusUtil;
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int CONNECTING_STATUS_COLOR_FILTER = 0xaaffffff;
+
     /**
      * Adapter ID
      */
@@ -36,11 +39,13 @@ public class AccountsAdapter extends CursorAdapter implements
     /**
      * Columns
      */
+    private static int COLUMN_ROW_AUTO_ID;
     private static int COLUMN_USER_ID;
     private static int COLUMN_USER_NICK;
     private static int COLUMN_USER_STATUS;
     private static int COLUMN_ACCOUNT_TYPE;
     private static int COLUMN_ACCOUNT_CONNECTING;
+    private static int COLUMN_ACCOUNT_AVATAR_HASH;
 
     /**
      * Variables
@@ -72,7 +77,7 @@ public class AccountsAdapter extends CursorAdapter implements
             bindView(view, context, cursor);
         } catch (Throwable ex) {
             view = inflater.inflate(R.layout.account_item, parent, false);
-            Log.d(Settings.LOG_TAG, "exception in roster general adapter: " + ex.getMessage());
+            Log.d(Settings.LOG_TAG, "exception in accounts adapter: " + ex.getMessage());
         }
         return view;
     }
@@ -93,10 +98,14 @@ public class AccountsAdapter extends CursorAdapter implements
                         cursor.getString(COLUMN_ACCOUNT_TYPE),
                         cursor.getInt(COLUMN_USER_STATUS)));
         if (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1) {
-            userStatus.setColorFilter(0xaaffffff);
+            userStatus.setColorFilter(CONNECTING_STATUS_COLOR_FILTER);
         } else {
             userStatus.clearColorFilter();
         }
+        // Avatar.
+        final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
+        ImageView contactBadge = ((ImageView) view.findViewById(R.id.user_badge));
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
     }
 
     @Override
@@ -107,11 +116,13 @@ public class AccountsAdapter extends CursorAdapter implements
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         // Detecting columns.
+        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
         COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
         COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
         COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
         COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
         COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
+        COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
         swapCursor(cursor);
     }
 

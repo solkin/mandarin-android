@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
@@ -40,7 +41,7 @@ public class QueryHelper {
         // Obtain specified account. If exist.
         Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
         // Cursor may be null, so we must check it.
-        if(cursor != null) {
+        if (cursor != null) {
             // Cursor may have more than only one entry.
             if (cursor.moveToFirst()) {
                 // Obtain necessary column index.
@@ -57,6 +58,30 @@ public class QueryHelper {
             cursor.close();
         }
         return accountRootList;
+    }
+
+    public static AccountRoot getAccount(Context context, int accountDbId) {
+        AccountRoot accountRoot = null;
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
+        // Obtain account db id.
+        Cursor cursor = queryBuilder.query(context.getContentResolver(), Settings.ACCOUNT_RESOLVER_URI);
+        // Cursor may be null, so we must check it.
+        if (cursor != null) {
+            // Cursor may have more than only one entry.
+            if (cursor.moveToFirst()) {
+                // Obtain necessary column index.
+                int bundleColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_BUNDLE);
+                int typeColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+                int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                // Iterate all accounts.
+                accountRoot = createAccountRoot(context, cursor.getString(typeColumnIndex),
+                        cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex));
+            }
+            // Closing cursor.
+            cursor.close();
+        }
+        return accountRoot;
     }
 
     public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
@@ -101,7 +126,7 @@ public class QueryHelper {
         queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
                 .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
         Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
+        // Cursor may have only one entry.
         if (cursor.moveToFirst()) {
             long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
             // Closing cursor.
@@ -111,13 +136,21 @@ public class QueryHelper {
             contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
             contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
             contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
+            // Checking for no user icon now, so, we must reset avatar hash.
+            if (TextUtils.isEmpty(accountRoot.getAvatarHash())) {
+                contentValues.putNull(GlobalProvider.ACCOUNT_AVATAR_HASH);
+            } else {
+                contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, accountRoot.getAvatarHash());
+            }
             contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
             contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
             // Update query.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
             queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+            if (accountRoot.isOffline()) {
                 // Update status for account buddies to unknown.
                 contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
@@ -133,7 +166,33 @@ public class QueryHelper {
         return false;
     }
 
-    public static void insertAccount(Context context, AccountRoot accountRoot) {
+    public static boolean checkAccount(ContentResolver contentResolver, String accountType, String userId) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified account. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
+                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        // Cursor may have one entry or nothing.
+        boolean accountExists = cursor.moveToFirst();
+        // Closing cursor.
+        cursor.close();
+        return accountExists;
+    }
+
+    /**
+     * Insert account into database and update it's account db id and context.
+     *
+     * @param context     - context for account root
+     * @param accountRoot - account root to be inserted into database
+     * @return account db id.
+     * @throws AccountNotFoundException
+     */
+    public static int insertAccount(Context context, AccountRoot accountRoot)
+            throws AccountNotFoundException, AccountAlreadyExistsException {
+        if (checkAccount(context.getContentResolver(),
+                accountRoot.getAccountType(), accountRoot.getUserId())) {
+            throw new AccountAlreadyExistsException();
+        }
         ContentResolver contentResolver = context.getContentResolver();
         // Creating new account.
         ContentValues contentValues = new ContentValues();
@@ -142,44 +201,16 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
         contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
         contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+        contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+        contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
         contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         // Setting up account db id.
-        try {
-            accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
-                    accountRoot.getUserId()));
-            accountRoot.setContext(context);
-        } catch (AccountNotFoundException e) {
-            // Hey, I'm inserted it 3 lines ago!
-            Log.d(Settings.LOG_TAG, "updateAccount method: no accounts after inserting.");
-        }
-    }
-
-    public static boolean updateAccountStatus(ContentResolver contentResolver, AccountRoot accountRoot) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
-                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-        // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.moveToFirst()) {
-            long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Closing cursor.
-            cursor.close();
-            // We must update account. Status, connecting flag.
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
-            // Update query.
-            queryBuilder.recycle();
-            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-            queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            return true;
-        }
-        // Closing cursor.
-        cursor.close();
-        return false;
+        accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
+                accountRoot.getUserId()));
+        accountRoot.setContext(context);
+        return accountRoot.getAccountDbId();
     }
 
     public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {
@@ -241,12 +272,12 @@ public class QueryHelper {
                                      int messageType, String cookie, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         insertMessage(contentResolver, isCollapseMessages, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                messageType, cookie, 0, messageText, activateDialog);
+                messageType, 2, cookie, 0, messageText, activateDialog);
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                     int accountDbId, int buddyDbId, int messageType, String cookie, long messageTime,
-                                     String messageText, boolean activateDialog) {
+                                     int accountDbId, int buddyDbId, int messageType, int messageState, String cookie,
+                                     long messageTime, String messageText, boolean activateDialog) {
         Log.d(Settings.LOG_TAG, "insertMessage: type: " + messageType + " message = " + messageText);
         // Checking for dialog activate needed.
         if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
@@ -281,7 +312,7 @@ public class QueryHelper {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messagesText);
-                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+                    contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
                     // Update query.
@@ -302,7 +333,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, 2);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
@@ -311,8 +342,8 @@ public class QueryHelper {
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                     int accountDbId, String userId, int messageType, String cookie, long messageTime,
-                                     String messageText, boolean activateDialog)
+                                     int accountDbId, String userId, int messageType, int messageState,
+                                     String cookie, long messageTime, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -327,8 +358,8 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
                 // Plain message query.
-                insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, cookie,
-                        messageTime, messageText, activateDialog);
+                insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
+                        cookie, messageTime, messageText, activateDialog);
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
@@ -381,8 +412,8 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 
-    public static void modifyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
-                                    String avatarHash) throws BuddyNotFoundException {
+    public static void modifyBuddyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                         String avatarHash) throws BuddyNotFoundException {
         // Obtain buddy db id.
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
@@ -441,12 +472,11 @@ public class QueryHelper {
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
-            // There are may bea lot of buddies in lots of groups, but this is the same buddy with the save avatar.
-            if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-                if (!TextUtils.isEmpty(buddyIcon)) {
-                    // Avatar is ready.
-                    RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
-                }
+            // There are may be a lot of buddies in lots of groups, but this is the same buddy with the save avatar.
+            if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+                // Avatar is ready.
+                RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
+                        accountDbId, buddyId, buddyIcon);
             }
         } else {
             // Closing cursor.
@@ -498,11 +528,10 @@ public class QueryHelper {
         }
         buddyCursor.close();
 
-        if (!TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
-            if (!TextUtils.isEmpty(buddyIcon)) {
-                // Avatar is ready.
-                RequestHelper.requestAvatar(contentResolver, CoreService.getAppSession(), accountDbId, buddyId, buddyIcon);
-            }
+        if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
+            // Avatar is ready.
+            RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
+                    accountDbId, buddyId, buddyIcon);
         }
     }
 
@@ -631,11 +660,11 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
-            int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            int buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Creating query to history table, contains all messages from all opened dialogs.
             queryBuilder.recycle();
             do {
-                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                int buddyDbId = cursor.getInt(buddyDbIdColumn);
                 queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                 if (!cursor.isLast()) {
                     queryBuilder.or();
@@ -648,8 +677,8 @@ public class QueryHelper {
             cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
             // Cursor may have more than only one entry. We need only first.
             if (cursor.moveToFirst()) {
-                BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-                int moreActiveBuddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+                int moreActiveBuddyDbId = cursor.getInt(buddyDbIdColumn);
                 // Closing cursor.
                 cursor.close();
                 return moreActiveBuddyDbId;

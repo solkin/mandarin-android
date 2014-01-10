@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import com.tomclaw.mandarin.im.AccountRoot;
 
 import java.util.List;
 import java.util.Random;
@@ -58,10 +57,9 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void addAccount(CoreObject coreObject) throws RemoteException {
-            AccountRoot accountRoot = (AccountRoot) coreObject;
-            Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
-            sessionHolder.updateAccountRoot(accountRoot);
+        public void holdAccount(int accountDbId) throws RemoteException {
+            Log.d(Settings.LOG_TAG, "hold account " + accountDbId);
+            sessionHolder.holdAccountRoot(accountDbId);
         }
 
         @Override
@@ -70,8 +68,15 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
+        public void updateAccountStatusIndex(String accountType, String userId,
+                                             int statusIndex) throws RemoteException {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
+        }
+
+        @Override
+        public void updateAccountStatus(String accountType, String userId, int statusIndex,
+                                        String statusTitle, String statusMessage) throws RemoteException {
+            sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
     };
 

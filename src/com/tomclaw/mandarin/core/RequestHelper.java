@@ -4,10 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.im.icq.AvatarRequest;
-import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
-import com.tomclaw.mandarin.im.icq.EndSessionRequest;
-import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
+import com.tomclaw.mandarin.im.icq.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,23 +60,45 @@ public class RequestHelper {
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
-    public static void requestAvatar(ContentResolver contentResolver, String appSession,
-                                     int accountDbId, String buddyId, String url) {
+    public static void requestBuddyAvatar(ContentResolver contentResolver, String appSession,
+                                          int accountDbId, String buddyId, String url) {
         // Obtain existing request.
         Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
                 GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
         // Checking for at least one such download request exist.
         if (!cursor.moveToFirst()) {
-            AvatarRequest avatarRequest = new AvatarRequest(buddyId, url);
+            BuddyAvatarRequest buddyAvatarRequest = new BuddyAvatarRequest(buddyId, url);
             // Writing to requests database.
             ContentValues contentValues = new ContentValues();
             contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_DOWNLOAD);
-            contentValues.put(GlobalProvider.REQUEST_CLASS, AvatarRequest.class.getName());
+            contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyAvatarRequest.class.getName());
             contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
             contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
             contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-            contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(avatarRequest));
+            contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyAvatarRequest));
+            contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        }
+        cursor.close();
+    }
+
+    public static void requestAccountAvatar(ContentResolver contentResolver, String appSession,
+                                            int accountDbId, String url) {
+        // Obtain existing request.
+        Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
+                GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
+        // Checking for at least one such download request exist.
+        if (!cursor.moveToFirst()) {
+            AccountAvatarRequest accountAvatarRequest = new AccountAvatarRequest(url);
+            // Writing to requests database.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_DOWNLOAD);
+            contentValues.put(GlobalProvider.REQUEST_CLASS, AccountAvatarRequest.class.getName());
+            contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+            contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+            contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+            contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+            contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(accountAvatarRequest));
             contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
         }
         cursor.close();
@@ -97,6 +116,36 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+    }
+
+    public static void requestSetState(ContentResolver contentResolver, String appSession,
+                                        int accountDbId, int statusIndex) {
+        SetStateRequest setStateRequest = new SetStateRequest(statusIndex);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, SetStateRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setStateRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+    }
+
+    public static void requestSetMood(ContentResolver contentResolver, String appSession,
+                                       int accountDbId, int statusIndex, String statusTitle, String statusMessage) {
+        SetMoodRequest setMoodRequest = new SetMoodRequest(statusIndex, statusTitle, statusMessage);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, SetMoodRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setMoodRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 }

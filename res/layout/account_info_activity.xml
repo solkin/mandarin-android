@@ -3,20 +3,17 @@
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:orientation="vertical"
+    <LinearLayout android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent" android:padding="14dp">
-
+                  android:layout_height="wrap_content" android:padding="14dp">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="14dp"
-                >
+                android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginBottom="14dp">
             <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:id="@+id/buddy_badge"
+                    android:id="@+id/user_badge"
                     android:layout_gravity="center_horizontal|top"
                     android:src="@drawable/ic_default_avatar"/>
             <LinearLayout
@@ -29,13 +26,13 @@
                         android:layout_height="wrap_content"
                         android:text="Vu Thi Thuy"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/buddy_nick" android:textStyle="bold"/>
+                        android:id="@+id/user_nick" android:textStyle="bold"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="287564321"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/buddy_id"/>
+                        android:id="@+id/user_id"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="vertical"
@@ -51,24 +48,19 @@
         <TextView
                 android:id="@+id/info_status_title"
                 android:text="@string/info_status"
-                style="?android:attr/listSeparatorTextViewStyle"
-                android:visibility="gone"/>
+                style="?android:attr/listSeparatorTextViewStyle"/>
 
-        <LinearLayout
-                android:id="@+id/info_status_content"
+        <Spinner
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:gravity="center_vertical"
-                android:visibility="gone">
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/status_icon" android:padding="8dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/status_text" android:paddingTop="5dp" android:paddingRight="5dp"
-                    android:paddingBottom="5dp"/>
-        </LinearLayout>
+                android:layout_height="0dp"
+                android:id="@+id/status_spinner" android:layout_weight="1"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/status_text" style="@android:style/Widget.EditText"
+                android:focusable="false"
+                android:hint="@string/status_message"/>
 
         <include layout="@layout/info_block"/>
     </LinearLayout>

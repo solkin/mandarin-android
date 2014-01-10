@@ -73,7 +73,7 @@ public class RequestDispatcher {
                  * If status changed to any online - check queue and send associated requests.
                  */
                 accountCursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
-                if(accountCursor != null) {
+                if (accountCursor != null) {
                     accountCursor.registerContentObserver(requestObserver);
                 }
             } while (dispatch(requestCursor, accountCursor));
@@ -181,7 +181,7 @@ public class RequestDispatcher {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
                             // Checking for account online.
-                            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                            if (accountRoot.isOffline()) {
                                 // Account is offline now. Let's send this request later.
                                 continue;
                             }

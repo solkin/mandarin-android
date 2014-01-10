@@ -57,6 +57,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
                 cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
                 cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
                 cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
                 cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);

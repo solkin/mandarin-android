@@ -64,11 +64,11 @@ public class IcqSession {
     public static final int EXTERNAL_LOGIN_OK = 200;
     public static final int EXTERNAL_LOGIN_ERROR = 330;
     public static final int EXTERNAL_UNKNOWN = 0;
-    private static final int EXTERNAL_SESSION_OK = 200;
+    public static final int EXTERNAL_SESSION_OK = 200;
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
-    private static final int timeoutSocket = 65000;
+    private static final int timeoutSocket = 70000;
     private static final int timeoutConnection = 60000;
     private static final int timeoutSession = 600000;
 
@@ -169,7 +169,7 @@ public class IcqSession {
             nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
             nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
             nameValuePairs.add(new BasicNameValuePair(VIEW,
-                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getStatusIndex())));
+                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()))));
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
                     .concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
             nameValuePairs.add(new BasicNameValuePair("sig_sha256",
@@ -185,6 +185,9 @@ public class IcqSession {
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {
                 case EXTERNAL_SESSION_OK: {
+                    // Request for status update before my info parsing to prevent status reset.
+                    icqAccountRoot.updateStatus();
+
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
@@ -201,13 +204,13 @@ public class IcqSession {
                 case EXTERNAL_SESSION_RATE_LIMIT: {
                     return EXTERNAL_SESSION_RATE_LIMIT;
                 }
-                // TODO: may be cases if ts incorrect. Mey be proceed too.
+                // TODO: may be cases if ts incorrect. May be proceed too.
                 default: {
                     return EXTERNAL_UNKNOWN;
                 }
             }
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "start session exception: " + e.getMessage());
+        } catch (Throwable ex) {
+            Log.d(Settings.LOG_TAG, "start session exception", ex);
             return INTERNAL_ERROR;
         }
     }
@@ -233,11 +236,15 @@ public class IcqSession {
                 switch (statusCode) {
                     case EXTERNAL_FETCH_OK: {
                         JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                        long hostTime = dataObject.getLong(TS);
-                        String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
-                        // Update time and fetch base url.
-                        icqAccountRoot.setHostTime(hostTime);
-                        icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        long hostTime = dataObject.optLong(TS);
+                        if(hostTime != 0) {
+                            // Update time and fetch base url.
+                            icqAccountRoot.setHostTime(hostTime);
+                        }
+                        String fetchBaseUrl = dataObject.optString(FETCH_BASE_URL);
+                        if(!TextUtils.isEmpty(fetchBaseUrl)) {
+                            icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        }
                         // Store account state.
                         icqAccountRoot.updateAccount();
                         // Process events.
@@ -254,23 +261,23 @@ public class IcqSession {
                         break;
                     }
                     default: {
-                        // Something wend wrong. Let's reconnect.
+                        // Something wend wrong. Let's reconnect if status is not offline.
                         // Reset login and session data.
                         icqAccountRoot.resetLoginData();
                         icqAccountRoot.resetSessionData();
                         icqAccountRoot.updateAccount();
-                        return false;
+                        return icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE;
                     }
                 }
             } catch (Throwable ex) {
-                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
+                Log.d(Settings.LOG_TAG, "fetch events exception", ex);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
                     // We'll sleep while there is no network connection.
                 }
             }
-        } while (icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
+        } while (!icqAccountRoot.isOffline()); // Fetching until online.
         return true;
     }
 
@@ -342,22 +349,27 @@ public class IcqSession {
                 long messageTime = eventData.getLong(TIMESTAMP);
                 String imf = eventData.getString(IMF);
                 String autoResponse = eventData.getString(AUTORESPONSE);
-                JSONObject sourceObject = eventData.getJSONObject(SOURCE_OBJECT);
-                String buddyId = sourceObject.getString(AIM_ID);
-                String buddyNick = sourceObject.optString(FRIENDLY);
-                if (TextUtils.isEmpty(buddyNick)) {
-                    buddyNick = sourceObject.getString(DISPLAY_ID);
+                JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
+                String buddyId;
+                if(sourceObject != null) {
+                    buddyId = sourceObject.getString(AIM_ID);
+                    String buddyNick = sourceObject.optString(FRIENDLY);
+                    if (TextUtils.isEmpty(buddyNick)) {
+                        buddyNick = sourceObject.getString(DISPLAY_ID);
+                    }
+                    String buddyStatus = sourceObject.getString(STATE);
+                    String buddyType = sourceObject.getString(USER_TYPE);
+                } else {
+                    buddyId = eventData.getString(AIM_ID);
                 }
-                String buddyStatus = sourceObject.getString(STATE);
-                String buddyType = sourceObject.getString(USER_TYPE);
 
                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                         PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                        icqAccountRoot.getAccountDbId(), buddyId, 1, cookie, messageTime * 1000, messageText, true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (BuddyNotFoundException e) {
-                e.printStackTrace();
+                        icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
+            } catch (BuddyNotFoundException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im - buddy not found");
             }
         } else if (eventType.equals(IM_STATE)) {
             try {
@@ -374,8 +386,8 @@ public class IcqSession {
                         }
                     }
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing im state", ex);
             }
         } else if (eventType.equals(PRESENCE)) {
             try {
@@ -398,11 +410,22 @@ public class IcqSession {
 
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                         buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (BuddyNotFoundException e) {
-                e.printStackTrace();
+            } catch (JSONException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing presence - JSON exception", ex);
+            } catch (BuddyNotFoundException ex) {
+                Log.d(Settings.LOG_TAG, "error while processing presence - buddy not found");
             }
+        } else if (eventType.equals(MY_INFO)) {
+            try {
+                MyInfo myInfo = gson.fromJson(eventData.toString(), MyInfo.class);
+                icqAccountRoot.setMyInfo(myInfo);
+            } catch (Throwable ignored) {
+                Log.d(Settings.LOG_TAG, "error while processing my info.");
+            }
+        } else if(eventType.equals(SESSION_ENDED)) {
+            icqAccountRoot.resetLoginData();
+            icqAccountRoot.resetSessionData();
+            icqAccountRoot.carriedOff();
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }
@@ -418,7 +441,7 @@ public class IcqSession {
         return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 
-    private String getStatusTitle(String moodTitle, int statusIndex) {
+    protected String getStatusTitle(String moodTitle, int statusIndex) {
         // Define status title.
         String statusTitle;
         if (TextUtils.isEmpty(moodTitle)) {
@@ -431,7 +454,7 @@ public class IcqSession {
         return statusTitle;
     }
 
-    private int getStatusIndex(String moodIcon, String buddyStatus) {
+    protected int getStatusIndex(String moodIcon, String buddyStatus) {
         int statusIndex;
         // Checking for mood present.
         if (!TextUtils.isEmpty(moodIcon)) {

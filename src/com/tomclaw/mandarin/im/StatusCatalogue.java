@@ -16,11 +16,13 @@ public abstract class StatusCatalogue {
     protected Map<String, Integer> indexMap;
     protected List<Status> statusList;
     protected List<Integer> connectStatuses;
+    protected List<Integer> setupStatuses;
 
     public StatusCatalogue() {
         indexMap = new HashMap<String, Integer>();
         statusList = new ArrayList<Status>();
         connectStatuses = new ArrayList<Integer>();
+        setupStatuses = new ArrayList<Integer>();
     }
 
     public int getStatusIndex(String statusValue) throws StatusNotFoundException {
@@ -37,5 +39,9 @@ public abstract class StatusCatalogue {
 
     public List<Integer> getConnectStatuses() {
         return connectStatuses;
+    }
+
+    public List<Integer> getSetupStatuses() {
+        return setupStatuses;
     }
 }

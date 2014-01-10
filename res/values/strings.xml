@@ -12,6 +12,7 @@
     <string name="user_id">Логин</string>
     <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
+    <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить контакт</string>
     <string name="create_dialog">Открыть диалог</string>
     <string name="settings">Настройки</string>
@@ -22,7 +23,9 @@
     <string name="buddy_info">Анкета</string>
     <string name="clear_history">Очистить историю</string>
     <string name="enter_your_message">Ваше сообщение</string>
-    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет навсегда.</string>
+    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет
+        навсегда.
+    </string>
     <string name="select_buddy">Выберите контакт</string>
 
     <string name="status_offline">Не в сети</string>
@@ -49,13 +52,21 @@
     <string name="selected_items">%d выбрано</string>
     <string name="yes_remove">Удалить</string>
     <string name="remove_accounts_title">Удалить профили?</string>
-    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие
+        нельзя отменить. Продолжить?
+    </string>
+    <string name="remove_account_title">Удалить профиль?</string>
+    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя
+        отменить. Продолжить?
+    </string>
     <string name="do_not_remove">Нет</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>
     <string name="error_sending_message">Не удалось отправить сообщение!</string>
     <string name="filter_show_all_buddies">Все контакты</string>
     <string name="filter_show_online_only">Только в сети</string>
+    <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
+    <string name="account_shutdown">Пожалуйста, подождите немного. Идёт отключение.</string>
 
     <string name="count_new_messages">%d новых сообщений</string>
     <string name="do_not_remove">Нет</string>
@@ -93,6 +104,19 @@
     <string name="buddy_info_copy">Копировать</string>
     <string name="share_buddy_info_via">Поделиться контактом через</string>
     <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+
+    <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
+    <string name="account_info">Профиль</string>
+
+    <string name="account_shutdown">Отключить</string>
+    <string name="account_remove">Удалить</string>
+    <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>
+    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
+    <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
+    <string name="status_message">Подробнее…</string>
+    <string name="apply">Применить</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="clear">Очистить</string>
 
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>

@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 
@@ -33,13 +34,17 @@ public class SessionHolder {
         QueryHelper.getAccounts(context, accountRootList);
     }
 
-    public void updateAccountRoot(AccountRoot accountRoot) {
-        // Attempting to update account.
-        if (!QueryHelper.updateAccount(context, accountRoot)) {
-            // Account needs to be created.
-            QueryHelper.insertAccount(context, accountRoot);
+    public AccountRoot holdAccountRoot(int accountDbId) {
+        AccountRoot accountRoot;
+        try {
+            // Checking for account root already in list.
+            accountRoot = getAccount(accountDbId);
+        } catch (AccountNotFoundException ignored) {
+            // Obtain account root from database.
+            accountRoot = QueryHelper.getAccount(context, accountDbId);
             accountRootList.add(accountRoot);
         }
+        return accountRoot;
     }
 
     public boolean removeAccountRoot(int accountDbId) {
@@ -47,6 +52,7 @@ public class SessionHolder {
             // Checking for account type and user id.
             if (accountRoot.getAccountDbId() == accountDbId) {
                 // Disconnect first of all.
+                // TODO: we must wait until disconnect completed!
                 accountRoot.disconnect();
                 // Now we ready to remove this account.
                 accountRootList.remove(accountRoot);
@@ -58,15 +64,31 @@ public class SessionHolder {
     }
 
     public void updateAccountStatus(String accountType, String userId, int statusIndex) {
+        try {
+            getAccountRoot(accountType, userId).setStatus(statusIndex);
+        } catch (AccountNotFoundException ignored) {
+            Log.d(Settings.LOG_TAG, "Account not found while attempting to change status!");
+        }
+    }
+
+    public void updateAccountStatus(String accountType, String userId, int statusIndex,
+                                    String statusTitle, String statusMessage) {
+        try {
+            getAccountRoot(accountType, userId).setStatus(statusIndex, statusTitle, statusMessage);
+        } catch (AccountNotFoundException ignored) {
+            Log.d(Settings.LOG_TAG, "Account not found while attempting to change status!");
+        }
+    }
+
+    private AccountRoot getAccountRoot(String accountType, String userId) throws AccountNotFoundException {
         for (AccountRoot accountRoot : accountRootList) {
             // Checking for account type and user id.
             if (accountRoot.getAccountType().equals(accountType)
                     && accountRoot.getUserId().equals(userId)) {
-                // Changing status.
-                accountRoot.setStatus(statusIndex);
-                return;
+                return accountRoot;
             }
         }
+        throw new AccountNotFoundException();
     }
 
     public List<AccountRoot> getAccountsList() {

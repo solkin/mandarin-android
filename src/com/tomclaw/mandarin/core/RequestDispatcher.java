@@ -181,7 +181,7 @@ public class RequestDispatcher {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
                             // Checking for account online.
-                            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                            if (accountRoot.isOffline()) {
                                 // Account is offline now. Let's send this request later.
                                 continue;
                             }

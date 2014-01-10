@@ -52,6 +52,7 @@ public class SessionHolder {
             // Checking for account type and user id.
             if (accountRoot.getAccountDbId() == accountDbId) {
                 // Disconnect first of all.
+                // TODO: we must wait until disconnect completed!
                 accountRoot.disconnect();
                 // Now we ready to remove this account.
                 accountRootList.remove(accountRoot);

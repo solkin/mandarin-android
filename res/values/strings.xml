@@ -116,6 +116,7 @@
     <string name="status_message">Подробнее…</string>
     <string name="apply">Применить</string>
     <string name="not_now">Не сейчас</string>
+    <string name="clear">Очистить</string>
 
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>

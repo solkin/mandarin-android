@@ -188,10 +188,18 @@ public class AccountInfoActivity extends AbstractInfoActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 CharSequence statusMessageAfter = input.getText();
                 // Checking for status message is not empty and was changed.
-                if (statusMessageAfter != null && !TextUtils.isEmpty(statusMessageAfter)
+                if (statusMessageAfter != null
                         && !TextUtils.equals(statusMessageAfter, statusMessageBefore)) {
                     onStatusMessageChanged(statusMessageAfter.toString());
                 }
+                // Closing dialog.
+                dialog.dismiss();
+            }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                getString(R.string.clear), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                onStatusMessageChanged("");
                 // Closing dialog.
                 dialog.dismiss();
             }

@@ -236,12 +236,15 @@ public class IcqSession {
                 switch (statusCode) {
                     case EXTERNAL_FETCH_OK: {
                         JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                        // TODO: end session have no ts.
-                        long hostTime = dataObject.getLong(TS);
-                        String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
-                        // Update time and fetch base url.
-                        icqAccountRoot.setHostTime(hostTime);
-                        icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        long hostTime = dataObject.optLong(TS);
+                        if(hostTime != 0) {
+                            // Update time and fetch base url.
+                            icqAccountRoot.setHostTime(hostTime);
+                        }
+                        String fetchBaseUrl = dataObject.optString(FETCH_BASE_URL);
+                        if(!TextUtils.isEmpty(fetchBaseUrl)) {
+                            icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        }
                         // Store account state.
                         icqAccountRoot.updateAccount();
                         // Process events.
@@ -258,12 +261,12 @@ public class IcqSession {
                         break;
                     }
                     default: {
-                        // Something wend wrong. Let's reconnect.
+                        // Something wend wrong. Let's reconnect if status is not offline.
                         // Reset login and session data.
                         icqAccountRoot.resetLoginData();
                         icqAccountRoot.resetSessionData();
                         icqAccountRoot.updateAccount();
-                        return false;
+                        return icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE;
                     }
                 }
             } catch (Throwable ex) {
@@ -274,7 +277,7 @@ public class IcqSession {
                     // We'll sleep while there is no network connection.
                 }
             }
-        } while (icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE); // Fetching until online.
+        } while (!icqAccountRoot.isOffline()); // Fetching until online.
         return true;
     }
 
@@ -414,6 +417,10 @@ public class IcqSession {
             } catch (Throwable ignored) {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");
             }
+        } else if(eventType.equals(SESSION_ENDED)) {
+            icqAccountRoot.resetLoginData();
+            icqAccountRoot.resetSessionData();
+            icqAccountRoot.carriedOff();
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }

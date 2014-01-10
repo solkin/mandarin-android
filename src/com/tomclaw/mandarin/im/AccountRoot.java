@@ -126,14 +126,14 @@ public abstract class AccountRoot {
      * @param statusMessage - status description.
      */
     public void setStatus(int statusIndex, String statusTitle, String statusMessage) {
-        if (this.statusIndex != statusIndex
+        if (getStatusIndex() != statusIndex
                 || !TextUtils.equals(getStatusTitle(), statusTitle)
                 || !TextUtils.equals(getStatusMessage(), statusMessage)) {
-            if (this.statusIndex == StatusUtil.STATUS_OFFLINE) {
+            if (getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
                 updateAccountState(statusIndex, statusTitle, statusMessage, true);
                 connect();
             } else if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                updateAccountState(true);
+                updateAccountState(statusIndex, true);
                 disconnect();
             } else {
                 updateAccountState(statusIndex, statusTitle, statusMessage, false);
@@ -162,6 +162,10 @@ public abstract class AccountRoot {
      */
     public void carriedOff() {
         updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+    }
+
+    public boolean isOffline() {
+        return getStatusIndex() == StatusUtil.STATUS_OFFLINE && !isConnecting();
     }
 
     /**

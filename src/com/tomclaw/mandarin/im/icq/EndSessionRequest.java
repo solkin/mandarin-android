@@ -28,9 +28,6 @@ public class EndSessionRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK || statusCode == WIM_AUTH_REQUIRED) { // TODO: check for other status codes.
             // Session now ended or already ended.
-            getAccountRoot().resetLoginData();
-            getAccountRoot().resetSessionData();
-            getAccountRoot().carriedOff();
             return REQUEST_DELETE;
         }
         // Maybe server is busy or McDonald's.

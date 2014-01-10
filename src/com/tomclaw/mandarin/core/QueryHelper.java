@@ -150,7 +150,7 @@ public class QueryHelper {
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
             queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+            if (accountRoot.isOffline()) {
                 // Update status for account buddies to unknown.
                 contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);

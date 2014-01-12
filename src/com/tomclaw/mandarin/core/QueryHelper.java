@@ -19,6 +19,8 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -246,9 +248,13 @@ public class QueryHelper {
     }
 
     public static void modifyDialog(ContentResolver contentResolver, int buddyDbId, boolean isOpened) {
+        modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened);
+    }
+
+    public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
-        modifyBuddy(contentResolver, buddyDbId, contentValues);
+        modifyBuddies(contentResolver, buddyDbIds, contentValues);
     }
 
     public static boolean checkDialog(ContentResolver contentResolver, int buddyDbId) {
@@ -407,8 +413,20 @@ public class QueryHelper {
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
+        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+    }
+
+    private static void modifyBuddies(ContentResolver contentResolver, Collection<Integer> buddyDbIds, ContentValues contentValues) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+        boolean isFirst = true;
+        for(int buddyDbId : buddyDbIds) {
+            if(isFirst) {
+                isFirst = false;
+            } else {
+                queryBuilder.or();
+            }
+            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+        }
         queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 

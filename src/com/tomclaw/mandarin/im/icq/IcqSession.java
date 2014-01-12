@@ -263,10 +263,11 @@ public class IcqSession {
                     default: {
                         // Something wend wrong. Let's reconnect if status is not offline.
                         // Reset login and session data.
+                        Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
                         icqAccountRoot.resetLoginData();
                         icqAccountRoot.resetSessionData();
                         icqAccountRoot.updateAccount();
-                        return icqAccountRoot.getStatusIndex() != StatusUtil.STATUS_OFFLINE;
+                        return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
                     }
                 }
             } catch (Throwable ex) {

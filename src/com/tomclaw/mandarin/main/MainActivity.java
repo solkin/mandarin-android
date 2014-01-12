@@ -4,19 +4,23 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
+
+import java.util.Collection;
 
 public class MainActivity extends ChiefActivity {
+
+    private RosterDialogsAdapter dialogsAdapter;
+    private ListView dialogsList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,8 +35,8 @@ public class MainActivity extends ChiefActivity {
         bar.setTitle(R.string.dialogs);
 
         // Dialogs list.
-        final ListView dialogsList = (ListView) findViewById(R.id.chats_list_view);
-        final RosterDialogsAdapter dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
+        dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
+        dialogsList = (ListView) findViewById(R.id.chats_list_view);
         dialogsList.setAdapter(dialogsAdapter);
         dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -46,30 +50,7 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
             }
         });
-        dialogsList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
+        dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
     }
 
     @Override
@@ -133,5 +114,62 @@ public class MainActivity extends ChiefActivity {
 
     public void onCoreServiceIntent(Intent intent) {
         Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
+    }
+
+    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper<Integer, Integer> selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, (int) id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create selection helper to store selected messages.
+            selectionHelper = new SelectionHelper<Integer, Integer>();
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.chat_list_edit_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;  // Return false if nothing is done.
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.close_chat_menu: {
+                    try {
+                        QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);
+                    } catch (Exception ignored) {
+                        // Nothing to do in this case.
+                    }
+                    break;
+                }
+                case R.id.select_all_chats_menu: {
+                    for(int c = 0; c < dialogsAdapter.getCount(); c++) {
+                        dialogsList.setItemChecked(c, true);
+                    }
+                    return false;
+                }
+                default: {
+                    return false;
+                }
+            }
+            mode.finish();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mandarin</string>
+    <string name="core_service">Mandarin Core Service</string>
     <string name="menu_search">Поиск</string>
     <string name="accounts">Профили</string>
     <string name="add_account">Добавить профиль</string>
@@ -20,7 +21,9 @@
     <string name="feedback">Обратная связь</string>
     <string name="dialogs">Диалоги</string>
     <string name="close_chat">Закрыть диалог</string>
+    <string name="close_chat_short">Закрыть</string>
     <string name="buddy_info">Анкета</string>
+    <string name="select_all">Выбрать все</string>
     <string name="clear_history">Очистить историю</string>
     <string name="enter_your_message">Ваше сообщение</string>
     <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет

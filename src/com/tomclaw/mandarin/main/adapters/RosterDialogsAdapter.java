@@ -172,7 +172,8 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     public int getBuddyDbId(int position) {
-        if (!getCursor().moveToPosition(position)) {
+        Cursor cursor = getCursor();
+        if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));

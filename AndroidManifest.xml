@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>
-        <service android:name=".core.CoreService" android:process=":remote"/>
+        <service android:name=".core.CoreService" android:process=":remote"
+                 android:label="@string/core_service"/>
         <activity android:name=".main.MainActivity"
                   android:label="@string/app_name"
                   android:launchMode="singleTop"

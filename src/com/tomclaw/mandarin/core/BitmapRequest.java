@@ -24,13 +24,6 @@ import java.util.List;
  */
 public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A> {
 
-    // One http client for all Http requests, cause they invokes coherently.
-    protected static final transient HttpClient httpClient;
-
-    static {
-        httpClient = new DefaultHttpClient();
-    }
-
     private String url;
 
     private transient String hash;
@@ -40,11 +33,6 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
 
     public BitmapRequest(String url) {
         this.url = url;
-    }
-
-    @Override
-    public HttpClient getHttpClient() {
-        return httpClient;
     }
 
     @Override
@@ -58,14 +46,14 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
     }
 
     @Override
-    protected final HttpRequestBase getHttpRequestBase(String url) {
+    protected final String getHttpRequestType() {
         hash = HttpUtil.getUrlHash(url);
-        return new HttpGet(url);
+        return "GET";
     }
 
     @Override
-    protected final int parseResponse(HttpResponse httpResponse) throws Throwable {
-        if (parseBitmap(httpResponse.getEntity().getContent())) {
+    protected final int parseResponse(InputStream httpResponseStream) throws Throwable {
+        if (parseBitmap(httpResponseStream)) {
             onBitmapSaved(hash);
         }
         // Remove request in any case, except Network errors.

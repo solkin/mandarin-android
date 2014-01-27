@@ -1,9 +1,11 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.os.RemoteException;
+import android.os.*;
 import android.util.Log;
 
 import java.util.List;
@@ -105,6 +107,22 @@ public class CoreService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
         return START_STICKY;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Intent restartServiceIntent = new Intent(this, CoreService.class);
+
+            PendingIntent restartServicePendingIntent = PendingIntent.getService(
+                    this, 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
+            AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmService.set(
+                    AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + 5000,
+                    restartServicePendingIntent);
+        }
+        super.onTaskRemoved(rootIntent);
     }
 
     @Override

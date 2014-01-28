@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
+
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -11,6 +13,9 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.StringUtil;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -31,10 +36,16 @@ import org.json.JSONObject;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -74,140 +85,143 @@ public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
     private Gson gson;
-    // Connection and fetch events client.
-    private HttpClient httpClient;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
         this.gson = new Gson();
-        // Creating Http params.
-        HttpParams httpParameters = new BasicHttpParams();
-        // Set the timeout in milliseconds until a connection is established.
-        // The default value is zero, that means the timeout is not used.
-        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
-        // Set the default socket timeout (SO_TIMEOUT).
-        // in milliseconds which is the timeout for waiting for data.
-        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
-        HttpConnectionParams.setTcpNoDelay(httpParameters, false);
-        this.httpClient = new DefaultHttpClient(httpParameters);
     }
 
     public int clientLogin() {
         try {
-            // Create a new post header.
-            HttpPost httpPost = new HttpPost(CLIENT_LOGIN_URL);
+            // Create and config connection
+            URL url = new URL(CLIENT_LOGIN_URL);
+            HttpURLConnection loginConnection = (HttpURLConnection) url.openConnection();
+            loginConnection.setConnectTimeout(timeoutConnection);
+            loginConnection.setReadTimeout(timeoutSocket);
+
             // Specifying login data.
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID, DEV_ID_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
-            nameValuePairs.add(new BasicNameValuePair(ID_TYPE, "ICQ"));
-            nameValuePairs.add(new BasicNameValuePair(PASSWORD, icqAccountRoot.getUserPassword()));
-            nameValuePairs.add(new BasicNameValuePair(LOGIN, icqAccountRoot.getUserId()));
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            // Execute request.
-            HttpResponse response = httpClient.execute(httpPost);
-            String responseString = EntityUtils.toString(response.getEntity());
-            Log.d(Settings.LOG_TAG, "client login = " + responseString);
-            JSONObject jsonObject = new JSONObject(responseString);
-            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
-            int statusCode = responseObject.getInt(STATUS_CODE);
-            switch (statusCode) {
-                case EXTERNAL_LOGIN_OK: {
-                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                    String login = dataObject.getString(LOGIN_ID);
-                    long hostTime = dataObject.getLong(HOST_TIME);
-                    String sessionSecret = dataObject.getString(SESSION_SECRET);
-                    JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
-                    int expiresIn = tokenObject.getInt(EXPIRES_IN);
-                    String tokenA = tokenObject.getString(TOKEN_A);
-                    Log.d(Settings.LOG_TAG, "token a = " + tokenA);
-                    Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
-                    String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
-                    Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
-                    // Update client login result in database.
-                    icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
-                    return EXTERNAL_LOGIN_OK;
+            List<Pair<String, String>> nameValuePairs = new ArrayList<Pair<String, String>>();
+            nameValuePairs.add(new Pair<String, String>(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
+            nameValuePairs.add(new Pair<String, String>(DEV_ID, DEV_ID_VALUE));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(ID_TYPE, "ICQ"));
+            nameValuePairs.add(new Pair<String, String>(PASSWORD, icqAccountRoot.getUserPassword()));
+            nameValuePairs.add(new Pair<String, String>(LOGIN, icqAccountRoot.getUserId()));
+
+            try {
+                // Execute request.
+                String responseString = HttpUtil.executePOST(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
+                Log.d(Settings.LOG_TAG, "client login = " + responseString);
+
+                JSONObject jsonObject = new JSONObject(responseString);
+                JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+                int statusCode = responseObject.getInt(STATUS_CODE);
+                switch (statusCode) {
+                    case EXTERNAL_LOGIN_OK: {
+                        JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                        String login = dataObject.getString(LOGIN_ID);
+                        long hostTime = dataObject.getLong(HOST_TIME);
+                        String sessionSecret = dataObject.getString(SESSION_SECRET);
+                        JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
+                        int expiresIn = tokenObject.getInt(EXPIRES_IN);
+                        String tokenA = tokenObject.getString(TOKEN_A);
+                        Log.d(Settings.LOG_TAG, "token a = " + tokenA);
+                        Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
+                        String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
+                        Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
+                        // Update client login result in database.
+                        icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
+                        return EXTERNAL_LOGIN_OK;
+                    }
+                    case EXTERNAL_LOGIN_ERROR: {
+                        return EXTERNAL_LOGIN_ERROR;
+                    }
+                    default: {
+                        return EXTERNAL_UNKNOWN;
+                    }
                 }
-                case EXTERNAL_LOGIN_ERROR: {
-                    return EXTERNAL_LOGIN_ERROR;
-                }
-                default: {
-                    return EXTERNAL_UNKNOWN;
-                }
+            } finally {
+                loginConnection.disconnect();
             }
         } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "client login exception: " + e.getMessage());
+            Log.d(Settings.LOG_TAG, "client login: " + e.getMessage());
             return INTERNAL_ERROR;
         }
     }
 
     public int startSession() {
         try {
-            // Create a new HttpClient and Post Header
-            HttpPost httpPost = new HttpPost(START_SESSION_URL);
+            URL url = new URL(START_SESSION_URL);
+            HttpURLConnection startSessionConnection = (HttpURLConnection) url.openConnection();
+            startSessionConnection.setConnectTimeout(timeoutConnection);
+            startSessionConnection.setReadTimeout(timeoutSocket);
             // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            nameValuePairs.add(new BasicNameValuePair(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new BasicNameValuePair(ASSERT_CAPS, ASSERT_CAPS_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(BUILD_NUMBER, BUILD_NUMBER_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_NAME, CLIENT_NAME_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(CLIENT_VERSION, CLIENT_VERSION_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(DEVICE_ID, DEVICE_ID_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(EVENTS, EVENTS_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(FORMAT, "json"));
-            nameValuePairs.add(new BasicNameValuePair(IMF, "plain"));
-            nameValuePairs.add(new BasicNameValuePair(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(INVISIBLE, "false"));
-            nameValuePairs.add(new BasicNameValuePair(DEV_ID_K, DEV_ID_VALUE));
-            nameValuePairs.add(new BasicNameValuePair(LANGUAGE, "ru-ru"));
-            nameValuePairs.add(new BasicNameValuePair(MINIMIZE_RESPONSE, "0"));
-            nameValuePairs.add(new BasicNameValuePair(MOBILE, "1"));
-            nameValuePairs.add(new BasicNameValuePair(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
-            nameValuePairs.add(new BasicNameValuePair(RAW_MSG, "0"));
-            nameValuePairs.add(new BasicNameValuePair(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
-            nameValuePairs.add(new BasicNameValuePair(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new BasicNameValuePair(VIEW,
+            List<Pair<String, String>> nameValuePairs = new ArrayList<Pair<String, String>>();
+            nameValuePairs.add(new Pair<String, String>(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
+            nameValuePairs.add(new Pair<String, String>(ASSERT_CAPS, ASSERT_CAPS_VALUE));
+            nameValuePairs.add(new Pair<String, String>(BUILD_NUMBER, BUILD_NUMBER_VALUE));
+            nameValuePairs.add(new Pair<String, String>(CLIENT_NAME, CLIENT_NAME_VALUE));
+            nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
+            nameValuePairs.add(new Pair<String, String>(DEVICE_ID, DEVICE_ID_VALUE));
+            nameValuePairs.add(new Pair<String, String>(EVENTS, EVENTS_VALUE));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(IMF, "plain"));
+            nameValuePairs.add(new Pair<String, String>(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
+            nameValuePairs.add(new Pair<String, String>(INVISIBLE, "false"));
+            nameValuePairs.add(new Pair<String, String>(DEV_ID_K, DEV_ID_VALUE));
+            nameValuePairs.add(new Pair<String, String>(LANGUAGE, "ru-ru"));
+            nameValuePairs.add(new Pair<String, String>(MINIMIZE_RESPONSE, "0"));
+            nameValuePairs.add(new Pair<String, String>(MOBILE, "1"));
+            nameValuePairs.add(new Pair<String, String>(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
+            nameValuePairs.add(new Pair<String, String>(RAW_MSG, "0"));
+            nameValuePairs.add(new Pair<String, String>(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
+            nameValuePairs.add(new Pair<String, String>(TS, String.valueOf(icqAccountRoot.getHostTime())));
+            nameValuePairs.add(new Pair<String, String>(VIEW,
                     StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()))));
+
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
-                    .concat(URLEncoder.encode(EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)), "UTF-8"));
-            nameValuePairs.add(new BasicNameValuePair("sig_sha256",
+                    .concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs)));
+
+            nameValuePairs.add(new Pair<String, String>("sig_sha256",
                     getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            Log.d(Settings.LOG_TAG, EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairs)));
-            // Execute HTTP Post Request
-            HttpResponse response = httpClient.execute(httpPost);
-            String responseString = EntityUtils.toString(response.getEntity());
-            Log.d(Settings.LOG_TAG, "start session = " + responseString);
-            JSONObject jsonObject = new JSONObject(responseString);
-            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
-            int statusCode = responseObject.getInt(STATUS_CODE);
-            switch (statusCode) {
-                case EXTERNAL_SESSION_OK: {
-                    // Request for status update before my info parsing to prevent status reset.
-                    icqAccountRoot.updateStatus();
+            Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
+            try {
+                // Execute HTTP Post Request
+                String responseString = HttpUtil.executePOST(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
+                Log.d(Settings.LOG_TAG, "start session = " + responseString);
 
-                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                    String aimSid = dataObject.getString(AIM_SID);
-                    String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
+                JSONObject jsonObject = new JSONObject(responseString);
+                JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+                int statusCode = responseObject.getInt(STATUS_CODE);
+                switch (statusCode) {
+                    case EXTERNAL_SESSION_OK: {
+                        // Request for status update before my info parsing to prevent status reset.
+                        icqAccountRoot.updateStatus();
 
-                    MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
-                            MyInfo.class);
-                    WellKnownUrls wellKnownUrls = gson.fromJson(
-                            dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
+                        JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                        String aimSid = dataObject.getString(AIM_SID);
+                        String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
 
-                    // Update starts session result in database.
-                    icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
-                    return EXTERNAL_SESSION_OK;
+                        MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
+                                MyInfo.class);
+                        WellKnownUrls wellKnownUrls = gson.fromJson(
+                                dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
+
+                        // Update starts session result in database.
+                        icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
+                        return EXTERNAL_SESSION_OK;
+                    }
+                    case EXTERNAL_SESSION_RATE_LIMIT: {
+                        return EXTERNAL_SESSION_RATE_LIMIT;
+                    }
+                    // TODO: may be cases if ts incorrect. May be proceed too.
+                    default: {
+                        return EXTERNAL_UNKNOWN;
+                    }
                 }
-                case EXTERNAL_SESSION_RATE_LIMIT: {
-                    return EXTERNAL_SESSION_RATE_LIMIT;
-                }
-                // TODO: may be cases if ts incorrect. May be proceed too.
-                default: {
-                    return EXTERNAL_UNKNOWN;
-                }
+            } finally {
+                startSessionConnection.disconnect();
             }
         } catch (Throwable ex) {
             Log.d(Settings.LOG_TAG, "start session exception", ex);
@@ -225,50 +239,56 @@ public class IcqSession {
         Log.d(Settings.LOG_TAG, "start events fetching");
         do {
             try {
-                HttpGet httpGet = new HttpGet(getFetchUrl());
-                // Execute HTTP Post Request
-                HttpResponse response = httpClient.execute(httpGet);
-                String responseString = EntityUtils.toString(response.getEntity());
-                Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
-                JSONObject jsonObject = new JSONObject(responseString);
-                JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
-                int statusCode = responseObject.getInt(STATUS_CODE);
-                switch (statusCode) {
-                    case EXTERNAL_FETCH_OK: {
-                        JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-                        long hostTime = dataObject.optLong(TS);
-                        if(hostTime != 0) {
-                            // Update time and fetch base url.
-                            icqAccountRoot.setHostTime(hostTime);
+                URL url = new URL(getFetchUrl());
+                HttpURLConnection fetchEventConnection = (HttpURLConnection) url.openConnection();
+                fetchEventConnection.setConnectTimeout(timeoutConnection);
+                fetchEventConnection.setReadTimeout(timeoutSocket);
+                try {
+                    String responseString = HttpUtil.executeGET(fetchEventConnection);
+                    Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
+
+                    JSONObject jsonObject = new JSONObject(responseString);
+                    JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+                    int statusCode = responseObject.getInt(STATUS_CODE);
+                    switch (statusCode) {
+                        case EXTERNAL_FETCH_OK: {
+                            JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                            long hostTime = dataObject.optLong(TS);
+                            if(hostTime != 0) {
+                                // Update time and fetch base url.
+                                icqAccountRoot.setHostTime(hostTime);
+                            }
+                            String fetchBaseUrl = dataObject.optString(FETCH_BASE_URL);
+                            if(!TextUtils.isEmpty(fetchBaseUrl)) {
+                                icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                            }
+                            // Store account state.
+                            icqAccountRoot.updateAccount();
+                            // Process events.
+                            JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
+                            // Cycling all events.
+                            Log.d(Settings.LOG_TAG, "Cycling all events.");
+                            for (int c = 0; c < eventsArray.length(); c++) {
+                                JSONObject eventObject = eventsArray.getJSONObject(c);
+                                String eventType = eventObject.getString(TYPE);
+                                JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
+                                // Process event.
+                                processEvent(eventType, eventData);
+                            }
+                            break;
                         }
-                        String fetchBaseUrl = dataObject.optString(FETCH_BASE_URL);
-                        if(!TextUtils.isEmpty(fetchBaseUrl)) {
-                            icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
+                        default: {
+                            // Something wend wrong. Let's reconnect if status is not offline.
+                            // Reset login and session data.
+                            Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
+                            icqAccountRoot.resetLoginData();
+                            icqAccountRoot.resetSessionData();
+                            icqAccountRoot.updateAccount();
+                            return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
                         }
-                        // Store account state.
-                        icqAccountRoot.updateAccount();
-                        // Process events.
-                        JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
-                        // Cycling all events.
-                        Log.d(Settings.LOG_TAG, "Cycling all events.");
-                        for (int c = 0; c < eventsArray.length(); c++) {
-                            JSONObject eventObject = eventsArray.getJSONObject(c);
-                            String eventType = eventObject.getString(TYPE);
-                            JSONObject eventData = eventObject.getJSONObject(EVENT_DATA_OBJECT);
-                            // Process event.
-                            processEvent(eventType, eventData);
-                        }
-                        break;
                     }
-                    default: {
-                        // Something wend wrong. Let's reconnect if status is not offline.
-                        // Reset login and session data.
-                        Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
-                        icqAccountRoot.resetLoginData();
-                        icqAccountRoot.resetSessionData();
-                        icqAccountRoot.updateAccount();
-                        return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
-                    }
+                } finally {
+                    fetchEventConnection.disconnect();
                 }
             } catch (Throwable ex) {
                 Log.d(Settings.LOG_TAG, "fetch events exception", ex);

@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.util.Log;
 import com.tomclaw.mandarin.core.HttpRequest;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import org.apache.http.HttpResponse;
@@ -29,7 +30,7 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
 
     @Override
     protected String getHttpRequestType() {
-        return "GET";
+        return HttpUtil.GET;
     }
 
     @Override

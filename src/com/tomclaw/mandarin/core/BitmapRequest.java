@@ -48,7 +48,7 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
     @Override
     protected final String getHttpRequestType() {
         hash = HttpUtil.getUrlHash(url);
-        return "GET";
+        return HttpUtil.GET;
     }
 
     @Override

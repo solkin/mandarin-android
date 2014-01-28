@@ -111,7 +111,9 @@ public class IcqSession {
 
             try {
                 // Execute request.
-                String responseString = HttpUtil.executePOST(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
+                InputStream responseStream = HttpUtil.executePOST(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
+                String responseString = StringUtil.streamToString(responseStream);
+                responseStream.close();
                 Log.d(Settings.LOG_TAG, "client login = " + responseString);
 
                 JSONObject jsonObject = new JSONObject(responseString);
@@ -188,7 +190,9 @@ public class IcqSession {
             Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
             try {
                 // Execute HTTP Post Request
-                String responseString = HttpUtil.executePOST(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
+                InputStream responseStream = HttpUtil.executePOST(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
+                String responseString = StringUtil.streamToString(responseStream);
+                responseStream.close();
                 Log.d(Settings.LOG_TAG, "start session = " + responseString);
 
                 JSONObject jsonObject = new JSONObject(responseString);
@@ -244,7 +248,9 @@ public class IcqSession {
                 fetchEventConnection.setConnectTimeout(timeoutConnection);
                 fetchEventConnection.setReadTimeout(timeoutSocket);
                 try {
-                    String responseString = HttpUtil.executeGET(fetchEventConnection);
+                    InputStream responseStream = HttpUtil.executeGET(fetchEventConnection);
+                    String responseString = StringUtil.streamToString(responseStream);
+                    responseStream.close();
                     Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
 
                     JSONObject jsonObject = new JSONObject(responseString);

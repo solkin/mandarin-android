@@ -30,25 +30,30 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
     @Override
     public int executeRequest() {
         try {
-            if (getHttpRequestType().equals("GET")) {
+            if (getHttpRequestType().equals(HttpUtil.GET)) {
                 URL url = new URL(getUrlWithParameters());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod(getHttpRequestType());
 
                 try {
-                    InputStream in = urlConnection.getInputStream();
+                    InputStream in = HttpUtil.executeGET(urlConnection);
                     int result = parseResponse(in);
                     in.close();
                     return result;
-                } catch (Throwable e) {
-                    Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);
-                    return REQUEST_PENDING;
                 } finally {
                     urlConnection.disconnect();
                 }
             } else {
-                // Here will be POST
-                return 0;
+                URL url = new URL(getUrl());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                try {
+                    InputStream in = HttpUtil.executePOST(urlConnection, HttpUtil.prepareParameters(getParams()));
+                    int result = parseResponse(in);
+                    in.close();
+                    return result;
+                } finally {
+                    urlConnection.disconnect();
+                }
             }
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);

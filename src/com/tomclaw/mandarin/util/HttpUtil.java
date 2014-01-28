@@ -27,6 +27,9 @@ import java.util.List;
  */
 public class HttpUtil {
 
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+
     private static final String HASH_ALGORITHM = "MD5";
     private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
@@ -85,8 +88,8 @@ public class HttpUtil {
         return response;
     }
 
-    public static String executePOST(HttpURLConnection connection, String data) throws IOException {
-        connection.setRequestMethod("POST");
+    public static InputStream executePOST(HttpURLConnection connection, String data) throws IOException {
+        connection.setRequestMethod(POST);
         connection.setDoOutput(true);
         connection.setDoInput(true);
 
@@ -94,14 +97,14 @@ public class HttpUtil {
         // Open connection to response
         connection.connect();
         // Read response
-        return HttpUtil.readStringFromConnection(connection);
+        return connection.getInputStream();
     }
 
-    public static String executeGET(HttpURLConnection connection) throws IOException {
-        connection.setRequestMethod("GET");
+    public static InputStream executeGET(HttpURLConnection connection) throws IOException {
+        connection.setRequestMethod(GET);
         connection.setDoInput(true);
         connection.setDoOutput(false);
 
-        return readStringFromConnection(connection);
+        return connection.getInputStream();
     }
 }

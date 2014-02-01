@@ -183,12 +183,10 @@ public class IcqAccountRoot extends AccountRoot {
         updateAccount();
     }
 
-    public void setStartSessionResult(String aimSid, String fetchBaseUrl,
-                                      MyInfo myInfo, WellKnownUrls wellKnownUrls) {
+    public void setStartSessionResult(String aimSid, String fetchBaseUrl, WellKnownUrls wellKnownUrls) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
         this.wellKnownUrls = wellKnownUrls;
-        setMyInfo(myInfo);
     }
 
     /**

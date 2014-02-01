@@ -185,9 +185,6 @@ public class IcqSession {
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {
                 case EXTERNAL_SESSION_OK: {
-                    // Request for status update before my info parsing to prevent status reset.
-                    icqAccountRoot.updateStatus();
-
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String aimSid = dataObject.getString(AIM_SID);
                     String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
@@ -198,7 +195,26 @@ public class IcqSession {
                             dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
 
                     // Update starts session result in database.
-                    icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, myInfo, wellKnownUrls);
+                    icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, wellKnownUrls);
+
+                    // Request for status update before my info parsing to prevent status reset.
+                    icqAccountRoot.updateStatus();
+
+                    // Update status info in my info to prevent status blinking.
+                    myInfo.setState(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
+                            icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex())));
+                    int moodStatusValue = icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex());
+                    if(moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
+                        myInfo.setMoodIcon(null);
+                    } else {
+                        myInfo.setMoodIcon(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
+                                icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex())));
+                    }
+                    myInfo.setMoodTitle(icqAccountRoot.getStatusTitle());
+                    myInfo.setStatusMsg(icqAccountRoot.getStatusMessage());
+
+                    // Now we can update info.
+                    icqAccountRoot.setMyInfo(myInfo);
                     return EXTERNAL_SESSION_OK;
                 }
                 case EXTERNAL_SESSION_RATE_LIMIT: {

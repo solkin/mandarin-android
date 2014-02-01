@@ -69,4 +69,20 @@ public class MyInfo {
     public String getBuddyIcon() {
         return buddyIcon;
     }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setMoodIcon(String moodIcon) {
+        this.moodIcon = moodIcon;
+    }
+
+    public void setMoodTitle(String moodTitle) {
+        this.moodTitle = moodTitle;
+    }
+
+    public void setStatusMsg(String statusMsg) {
+        this.statusMsg = statusMsg;
+    }
 }

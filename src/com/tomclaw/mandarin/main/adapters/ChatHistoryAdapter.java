@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -22,6 +23,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 
 import java.text.SimpleDateFormat;
@@ -78,6 +80,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.loaderManager = loaderManager;
         setBuddyDbId(buddyBdId);
+        setFilterQueryProvider(new ChatFilterQueryProvider());
         // Initialize smileys.
         SmileyParser.init(context);
     }
@@ -98,9 +101,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
-                GlobalProvider.ROW_AUTO_ID + " ASC");
+        return getDefaultQueryBuilder().createCursorLoader(context, Settings.HISTORY_RESOLVER_URI);
     }
 
     @Override
@@ -279,5 +280,22 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private String getFormattedTime(long timestamp) {
         return getTimeFormat().format(timestamp);
+    }
+
+    private QueryBuilder getDefaultQueryBuilder() {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID);
+        return queryBuilder;
+    }
+
+    private class ChatFilterQueryProvider implements FilterQueryProvider {
+
+        @Override
+        public Cursor runQuery(CharSequence constraint) {
+            QueryBuilder queryBuilder = getDefaultQueryBuilder();
+            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_MESSAGE_TEXT, constraint);
+            return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
+        }
     }
 }

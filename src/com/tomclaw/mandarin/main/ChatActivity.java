@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.AbsListView;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -97,7 +94,23 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Menu inflating.
         getMenuInflater().inflate(R.menu.chat_menu, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        // Configure the search info and add any event listeners
+        SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                chatHistoryAdapter.getFilter().filter(newText);
+                return false;
+            }
+        };
+        searchView.setOnQueryTextListener(onQueryTextListener);
         return true;
     }
 

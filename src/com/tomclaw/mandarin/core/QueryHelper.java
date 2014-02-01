@@ -619,9 +619,7 @@ public class QueryHelper {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Checking for there is at least one buddy and switching to it.
         if (cursor.moveToFirst()) {
-            // Obtain necessary column index.
-            int nickColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-            int accountDbId = cursor.getInt(nickColumnIndex);
+            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
             // Closing cursor.
             cursor.close();
             return accountDbId;

@@ -412,6 +412,21 @@ public class QueryHelper {
         cursor.close();
     }
 
+    public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        boolean isMultiple = false;
+        for(long messageId : messageIds) {
+            if(isMultiple) {
+                queryBuilder.or();
+            } else {
+                isMultiple = true;
+            }
+            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, messageId);
+        }
+        // Remove specified messages.
+        queryBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+    }
+
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
         modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
     }

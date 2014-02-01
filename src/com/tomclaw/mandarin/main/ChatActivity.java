@@ -259,7 +259,8 @@ public class ChatActivity extends ChiefActivity {
                 case R.id.message_share:
                     startActivity(createShareIntent());
                     break;
-                case R.id.message_create_note:
+                case R.id.message_remove:
+                    removeSelectedMessages();
                     break;
                 default:
                     return false;
@@ -293,6 +294,11 @@ public class ChatActivity extends ChiefActivity {
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
             return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
+        }
+
+        private void removeSelectedMessages() {
+            selectionHelper.getSelectedIds();
+            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelectedIds());
         }
     }
 

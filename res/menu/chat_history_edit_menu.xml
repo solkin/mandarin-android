@@ -14,9 +14,9 @@
             android:title="@string/message_share">
     </item>
     <item
-            android:id="@+id/message_create_note"
-            android:icon="@drawable/content_save"
+            android:id="@+id/message_remove"
+            android:icon="@drawable/content_clear"
             android:showAsAction="ifRoom|withText"
-            android:title="@string/message_save">
+            android:title="@string/message_remove">
     </item>
 </menu>

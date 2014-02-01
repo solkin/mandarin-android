@@ -15,10 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.ImageView;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -77,6 +74,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         this.filter = filter;
         this.isShowTemp = PreferenceHelper.isShowTemp(context);
         initLoader();
+        setFilterQueryProvider(new RosterFilterQueryProvider());
     }
 
     public void initLoader() {
@@ -180,20 +178,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        switch (filter) {
-            case FILTER_ONLINE_ONLY: {
-                queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
-                break;
-            }
-            case FILTER_ALL_BUDDIES:
-            default:
-        }
-        if (!isShowTemp) {
-            queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
-        }
-        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
-        return queryBuilder.createCursorLoader(context, Settings.BUDDY_RESOLVER_URI);
+        return getDefaultQueryBuilder().createCursorLoader(context, Settings.BUDDY_RESOLVER_URI);
     }
 
     @Override
@@ -231,5 +216,33 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     public int getRosterFilter() {
         return filter;
+    }
+
+    private QueryBuilder getDefaultQueryBuilder() {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        switch (filter) {
+            case FILTER_ONLINE_ONLY: {
+                queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+                break;
+            }
+            case FILTER_ALL_BUDDIES:
+            default:
+        }
+        if (!isShowTemp) {
+            queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+        }
+        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
+        return queryBuilder;
+    }
+
+    private class RosterFilterQueryProvider implements FilterQueryProvider {
+
+        @Override
+        public Cursor runQuery(CharSequence constraint) {
+            QueryBuilder queryBuilder = getDefaultQueryBuilder();
+            queryBuilder.and().startComplexExpression().likeIgnoreCase(GlobalProvider.ROSTER_BUDDY_NICK, constraint)
+                    .or().like(GlobalProvider.ROSTER_BUDDY_ID, constraint).finishComplexExpression();
+            return queryBuilder.query(context.getContentResolver(), Settings.BUDDY_RESOLVER_URI);
+        }
     }
 }

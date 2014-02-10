@@ -6,13 +6,7 @@ import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
-
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -35,7 +29,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
                 try {
-                    InputStream in = HttpUtil.executeGET(urlConnection);
+                    InputStream in = HttpUtil.executeGet(urlConnection);
                     int result = parseResponse(in);
                     in.close();
                     return result;
@@ -47,7 +41,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
                 try {
-                    InputStream in = HttpUtil.executePOST(urlConnection, HttpUtil.prepareParameters(getParams()));
+                    InputStream in = HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(getParams()));
                     int result = parseResponse(in);
                     in.close();
                     return result;
@@ -71,7 +65,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
     /**
      * This method parses String response from server and returns request status.
      *
-     * @param httpResponseStream
+     * @param httpResponseStream - stream to be parsed.
      * @return int - request status.
      * @throws Throwable
      */

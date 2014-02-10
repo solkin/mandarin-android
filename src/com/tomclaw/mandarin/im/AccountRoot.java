@@ -121,8 +121,8 @@ public abstract class AccountRoot {
      * Set up logic and network status for account. Some online status will connect account
      * in case of account was offline. Offline status will disconnect account.
      *
-     * @param statusIndex - non-protocol status index.
-     * @param statusTitle - status title.
+     * @param statusIndex   - non-protocol status index.
+     * @param statusTitle   - status title.
      * @param statusMessage - status description.
      */
     public void setStatus(int statusIndex, String statusTitle, String statusMessage) {
@@ -153,7 +153,7 @@ public abstract class AccountRoot {
             updateAccountState(true);
             // Yeah, connect!
             connect();
-        } else if(isConnecting()) {
+        } else if (isConnecting()) {
             // Disconnection process is not completed. Let's became offline.
             updateAccountState(StatusUtil.STATUS_OFFLINE, false);
         }

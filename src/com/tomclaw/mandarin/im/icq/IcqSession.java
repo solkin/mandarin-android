@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
-
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -14,21 +13,8 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
-
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,13 +22,9 @@ import org.json.JSONObject;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -111,8 +93,8 @@ public class IcqSession {
 
             try {
                 // Execute request.
-                InputStream responseStream = HttpUtil.executePOST(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
-                String responseString = StringUtil.streamToString(responseStream);
+                InputStream responseStream = HttpUtil.executePost(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
+                String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
                 Log.d(Settings.LOG_TAG, "client login = " + responseString);
 
@@ -182,16 +164,16 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(VIEW,
                     StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()))));
 
-            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, "UTF-8")).concat(AMP)
-                    .concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs)));
+            String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, HttpUtil.UTF8_ENCODING))
+                    .concat(AMP).concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs), HttpUtil.UTF8_ENCODING));
 
             nameValuePairs.add(new Pair<String, String>("sig_sha256",
                     getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
             try {
                 // Execute HTTP Post Request
-                InputStream responseStream = HttpUtil.executePOST(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
-                String responseString = StringUtil.streamToString(responseStream);
+                InputStream responseStream = HttpUtil.executePost(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
+                String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
                 Log.d(Settings.LOG_TAG, "start session = " + responseString);
 
@@ -248,8 +230,8 @@ public class IcqSession {
                 fetchEventConnection.setConnectTimeout(timeoutConnection);
                 fetchEventConnection.setReadTimeout(timeoutSocket);
                 try {
-                    InputStream responseStream = HttpUtil.executeGET(fetchEventConnection);
-                    String responseString = StringUtil.streamToString(responseStream);
+                    InputStream responseStream = HttpUtil.executeGet(fetchEventConnection);
+                    String responseString = HttpUtil.streamToString(responseStream);
                     responseStream.close();
                     Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
 
@@ -260,12 +242,12 @@ public class IcqSession {
                         case EXTERNAL_FETCH_OK: {
                             JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                             long hostTime = dataObject.optLong(TS);
-                            if(hostTime != 0) {
+                            if (hostTime != 0) {
                                 // Update time and fetch base url.
                                 icqAccountRoot.setHostTime(hostTime);
                             }
                             String fetchBaseUrl = dataObject.optString(FETCH_BASE_URL);
-                            if(!TextUtils.isEmpty(fetchBaseUrl)) {
+                            if (!TextUtils.isEmpty(fetchBaseUrl)) {
                                 icqAccountRoot.setFetchBaseUrl(fetchBaseUrl);
                             }
                             // Store account state.
@@ -309,13 +291,12 @@ public class IcqSession {
     }
 
     public String getFetchUrl() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(icqAccountRoot.getFetchBaseUrl());
-        stringBuilder.append(AMP).append(FORMAT).append(EQUAL).append("json");
-        stringBuilder.append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection);
-        stringBuilder.append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis());
-        stringBuilder.append(AMP).append(PEEK).append(EQUAL).append(0);
-        return stringBuilder.toString();
+        return new StringBuilder()
+                .append(icqAccountRoot.getFetchBaseUrl())
+                .append(AMP).append(FORMAT).append(EQUAL).append("json")
+                .append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection)
+                .append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis())
+                .append(AMP).append(PEEK).append(EQUAL).append(0).toString();
     }
 
     private void processEvent(String eventType, JSONObject eventData) {
@@ -378,7 +359,7 @@ public class IcqSession {
                 String autoResponse = eventData.getString(AUTORESPONSE);
                 JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
                 String buddyId;
-                if(sourceObject != null) {
+                if (sourceObject != null) {
                     buddyId = sourceObject.getString(AIM_ID);
                     String buddyNick = sourceObject.optString(FRIENDLY);
                     if (TextUtils.isEmpty(buddyNick)) {
@@ -449,7 +430,7 @@ public class IcqSession {
             } catch (Throwable ignored) {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");
             }
-        } else if(eventType.equals(SESSION_ENDED)) {
+        } else if (eventType.equals(SESSION_ENDED)) {
             icqAccountRoot.resetLoginData();
             icqAccountRoot.resetSessionData();
             icqAccountRoot.carriedOff();

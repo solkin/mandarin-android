@@ -4,14 +4,6 @@ import android.util.Log;
 import com.tomclaw.mandarin.core.HttpRequest;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,7 +27,7 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
 
     @Override
     protected final int parseResponse(InputStream httpResponseStream) throws Throwable {
-        String responseString = StringUtil.streamToString(httpResponseStream);
+        String responseString = HttpUtil.streamToString(httpResponseStream);
         Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
         return parseJson(new JSONObject(responseString));
     }

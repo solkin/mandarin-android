@@ -47,7 +47,7 @@ public class SetStateRequest extends WimRequest {
             try {
                 int statusIndexApplied = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
                 // Check for status setup was fully correct and state successfully applied.
-                if(statusIndexApplied == statusIndex) {
+                if (statusIndexApplied == statusIndex) {
                     isSetStateSuccess = true;
                 } else {
                     intent.putExtra(AccountInfoActivity.STATE_APPLIED, statusIndexApplied);

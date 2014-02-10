@@ -419,8 +419,8 @@ public class QueryHelper {
     private static void modifyBuddies(ContentResolver contentResolver, Collection<Integer> buddyDbIds, ContentValues contentValues) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isFirst = true;
-        for(int buddyDbId : buddyDbIds) {
-            if(isFirst) {
+        for (int buddyDbId : buddyDbIds) {
+            if (isFirst) {
                 isFirst = false;
             } else {
                 queryBuilder.or();

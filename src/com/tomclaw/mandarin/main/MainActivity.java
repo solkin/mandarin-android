@@ -15,8 +15,6 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
-import java.util.Collection;
-
 public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
@@ -154,7 +152,7 @@ public class MainActivity extends ChiefActivity {
                     break;
                 }
                 case R.id.select_all_chats_menu: {
-                    for(int c = 0; c < dialogsAdapter.getCount(); c++) {
+                    for (int c = 0; c < dialogsAdapter.getCount(); c++) {
                         dialogsList.setItemChecked(c, true);
                     }
                     return false;

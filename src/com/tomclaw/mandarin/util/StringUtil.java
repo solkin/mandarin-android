@@ -1,10 +1,5 @@
 package com.tomclaw.mandarin.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin
@@ -29,15 +24,5 @@ public class StringUtil {
 
     public static boolean isNumeric(String value) {
         return value.matches(NUMERIC_REGEXP);
-    }
-
-    public static String streamToString(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuilder total = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            total.append(line + "\n");
-        }
-        return total.toString();
     }
 }

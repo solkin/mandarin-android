@@ -6,11 +6,6 @@ import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.HttpUtil;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -76,7 +71,7 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
         return false;
     }
 
-    private final boolean saveBitmap(Bitmap bitmap) {
+    private boolean saveBitmap(Bitmap bitmap) {
         return BitmapCache.getInstance().saveBitmapSync(hash, bitmap);
     }
 

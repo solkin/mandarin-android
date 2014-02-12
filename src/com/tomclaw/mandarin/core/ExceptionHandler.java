@@ -5,17 +5,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-import org.apache.http.HttpResponse;
+import android.util.Pair;
+import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,11 +34,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
     private int versionCode = 0;
     private final File stacktraceDir;
     private final Thread.UncaughtExceptionHandler previousHandler;
-    private static final HttpClient httpClient;
-
-    static {
-        httpClient = new DefaultHttpClient();
-    }
 
     public ExceptionHandler(Context context, boolean chained) {
         PackageManager mPackManager = context.getPackageManager();
@@ -115,6 +107,8 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
     }
 
     private boolean releaseReport(File report) {
+        URL url;
+        HttpURLConnection urlConnection = null;
         try {
             // Read report file fully.
             FileInputStream inputStream = new FileInputStream(report);
@@ -125,21 +119,25 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
                 stacktrace.append(line).append('\n');
             }
             // Creating outgoing HTTP POST parameters.
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("manufacturer", Build.MANUFACTURER));
-            params.add(new BasicNameValuePair("model", Build.MODEL));
-            params.add(new BasicNameValuePair("brand", Build.BRAND));
-            params.add(new BasicNameValuePair("product", Build.PRODUCT));
-            params.add(new BasicNameValuePair("device", Build.DEVICE));
-            params.add(new BasicNameValuePair("version_name", versionName));
-            params.add(new BasicNameValuePair("version_code", String.valueOf(versionCode)));
-            params.add(new BasicNameValuePair("type", "stacktrace"));
-            params.add(new BasicNameValuePair("stacktrace", stacktrace.toString()));
-            // Sending report.
-            HttpPost httpPost = new HttpPost(REPORT_URL);
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-            HttpResponse response = httpClient.execute(httpPost);
-            String responseString = EntityUtils.toString(response.getEntity());
+            List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
+            params.add(new Pair<String, String>("manufacturer", Build.MANUFACTURER));
+            params.add(new Pair<String, String>("model", Build.MODEL));
+            params.add(new Pair<String, String>("brand", Build.BRAND));
+            params.add(new Pair<String, String>("product", Build.PRODUCT));
+            params.add(new Pair<String, String>("device", Build.DEVICE));
+            params.add(new Pair<String, String>("version_name", versionName));
+            params.add(new Pair<String, String>("version_code", String.valueOf(versionCode)));
+            params.add(new Pair<String, String>("type", "stacktrace"));
+            params.add(new Pair<String, String>("stacktrace", stacktrace.toString()));
+            // Preparing to execute request.
+            url = new URL(REPORT_URL);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            // Executing request.
+            InputStream in = HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(params));
+            String responseString = HttpUtil.streamToString(in);
+            // Almost done. Close stream.
+            in.close();
+            // Request successfully processed.
             Log.d(Settings.LOG_TAG, "report sent response: ".concat(responseString));
             JSONObject json = new JSONObject(responseString);
             if (json.get("status").equals("ok")) {
@@ -148,6 +146,11 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             }
         } catch (Throwable e) {
             e.printStackTrace();
+        } finally {
+            // Trying to disconnect in any case.
+            if(urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return false;
     }

@@ -23,35 +23,28 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
     @Override
     public int executeRequest() {
+        URL url;
+        HttpURLConnection urlConnection = null;
         try {
-            if (getHttpRequestType().equals(HttpUtil.GET)) {
-                URL url = new URL(getUrlWithParameters());
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                try {
-                    InputStream in = HttpUtil.executeGet(urlConnection);
-                    int result = parseResponse(in);
-                    in.close();
-                    return result;
-                } finally {
-                    urlConnection.disconnect();
-                }
-            } else {
-                URL url = new URL(getUrl());
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                try {
-                    InputStream in = HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(getParams()));
-                    int result = parseResponse(in);
-                    in.close();
-                    return result;
-                } finally {
-                    urlConnection.disconnect();
-                }
-            }
+            boolean isGetRequest = getHttpRequestType().equals(HttpUtil.GET);
+            url = new URL(isGetRequest ? getUrlWithParameters() : getUrl());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            // Executing request.
+            InputStream in = isGetRequest ?
+                    HttpUtil.executeGet(urlConnection) :
+                    HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(getParams()));
+            int result = parseResponse(in);
+            // Almost done. Close stream.
+            in.close();
+            return result;
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);
             return REQUEST_PENDING;
+        } finally {
+            // Trying to disconnect in any case.
+            if(urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
     }
 

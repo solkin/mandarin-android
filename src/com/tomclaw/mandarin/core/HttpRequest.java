@@ -6,11 +6,11 @@ import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 import com.tomclaw.mandarin.util.HttpUtil;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -23,42 +23,46 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
 
     @Override
     public int executeRequest() {
+        URL url;
+        HttpURLConnection urlConnection = null;
         try {
-            HttpClient httpClient = getHttpClient();
-            HttpResponse response = httpClient.execute(getHttpRequestBase(getUrlWithParameters()));
-            // Process response.
-            int result = parseResponse(response);
-            try {
-                // Release connection.
-                response.getEntity().consumeContent();
-            } catch (Throwable ignored) {
-                Log.d(Settings.LOG_TAG, "Unable to consume content in http request.");
-            }
+            boolean isGetRequest = getHttpRequestType().equals(HttpUtil.GET);
+            url = new URL(isGetRequest ? getUrlWithParameters() : getUrl());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            // Executing request.
+            InputStream in = isGetRequest ?
+                    HttpUtil.executeGet(urlConnection) :
+                    HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(getParams()));
+            int result = parseResponse(in);
+            // Almost done. Close stream.
+            in.close();
             return result;
         } catch (Throwable e) {
             Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);
             return REQUEST_PENDING;
+        } finally {
+            // Trying to disconnect in any case.
+            if(urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
     }
 
-    public abstract HttpClient getHttpClient();
-
     /**
-     * Returns request-specific request base: HttpGet or HttpPost.
+     * Returns HTTP request method: GET or POST.
      *
-     * @param url
-     * @return HttpRequestBase, that will be executed.
+     * @return request method.
      */
-    protected abstract HttpRequestBase getHttpRequestBase(String url);
+    protected abstract String getHttpRequestType();
 
     /**
-     * This method parses HttpResponse from server and returns request status.
+     * This method parses String response from server and returns request status.
      *
-     * @param httpResponse
+     * @param httpResponseStream - stream to be parsed.
      * @return int - request status.
      * @throws Throwable
      */
-    protected abstract int parseResponse(HttpResponse httpResponse) throws Throwable;
+    protected abstract int parseResponse(InputStream httpResponseStream) throws Throwable;
 
     /**
      * Returns request-specific base Url (most of all from WellKnownUrls).

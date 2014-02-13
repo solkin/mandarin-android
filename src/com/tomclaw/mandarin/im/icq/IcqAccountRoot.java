@@ -123,7 +123,7 @@ public class IcqAccountRoot extends AccountRoot {
     protected int getBaseStatusValue(int statusIndex) {
         int moodOffset = getStatusIndex(R.integer.mood_offset);
         // Checking for status type - base or mood.
-        if(statusIndex >= moodOffset) {
+        if (statusIndex >= moodOffset) {
             statusIndex = getStatusIndex(R.integer.default_base_status);
         }
         return statusIndex;
@@ -132,7 +132,7 @@ public class IcqAccountRoot extends AccountRoot {
     protected int getMoodStatusValue(int statusIndex) {
         int moodOffset = getStatusIndex(R.integer.mood_offset);
         // Checking for status type - base or mood.
-        if(statusIndex < moodOffset) {
+        if (statusIndex < moodOffset) {
             statusIndex = SetMoodRequest.STATUS_MOOD_RESET;
         }
         return statusIndex;
@@ -221,11 +221,11 @@ public class IcqAccountRoot extends AccountRoot {
         String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
 
         // Heuristic check for invisible state.
-        if(getStatusIndex() == getStatusIndex(R.integer.invisible_status)
+        if (getStatusIndex() == getStatusIndex(R.integer.invisible_status)
                 && statusIndex == getStatusIndex(R.integer.default_base_status)
                 && TextUtils.equals(statusTitle, StatusUtil.getStatusTitle(getAccountType(), getStatusIndex(R.integer.invisible_status)))) {
             Log.d(Settings.LOG_TAG, "Invisible state detected!");
-        } else if(getStatusIndex() != StatusUtil.STATUS_OFFLINE) { // Checking for we are disconnecting now.
+        } else if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) { // Checking for we are disconnecting now.
             // This will update account state and write account into db.
             updateAccountState(statusIndex, statusTitle, statusMessage, false);
         }

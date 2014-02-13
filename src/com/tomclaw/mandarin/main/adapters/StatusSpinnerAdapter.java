@@ -83,7 +83,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     public int getStatusPosition(int statusValue) throws StatusNotFoundException {
         int statusPosition = Collections.binarySearch(statusList, statusValue);
-        if(statusPosition < 0) {
+        if (statusPosition < 0) {
             throw new StatusNotFoundException();
         }
         return statusPosition;

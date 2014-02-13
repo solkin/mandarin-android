@@ -12,7 +12,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,7 +66,7 @@ public class SetMoodRequest extends WimRequest {
     protected List<Pair<String, String>> getParams() {
         String statusValue;
         // Checking for this is mood reset.
-        if(statusIndex == STATUS_MOOD_RESET) {
+        if (statusIndex == STATUS_MOOD_RESET) {
             statusValue = "";
         } else {
             statusValue = StatusUtil.getStatusValue(getAccountRoot().getAccountType(), statusIndex);
@@ -84,7 +85,7 @@ public class SetMoodRequest extends WimRequest {
     }
 
     private String validateString(String string) {
-        if(TextUtils.isEmpty(string)) {
+        if (TextUtils.isEmpty(string)) {
             return STATUS_TEXT_EMPTY;
         } else {
             return string;

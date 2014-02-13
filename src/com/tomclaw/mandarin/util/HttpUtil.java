@@ -3,8 +3,9 @@ package com.tomclaw.mandarin.util;
 import android.util.Pair;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,6 +18,11 @@ import java.util.List;
  * Time: 14:40
  */
 public class HttpUtil {
+
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+
+    public static final String UTF8_ENCODING = "UTF-8";
 
     private static final String HASH_ALGORITHM = "MD5";
     private static final int RADIX = 10 + 26; // 10 digits + 26 letters
@@ -38,7 +44,7 @@ public class HttpUtil {
             }
             builder.append(pair.first)
                     .append(WimConstants.EQUAL)
-                    .append(URLEncoder.encode(pair.second, "UTF-8")
+                    .append(URLEncoder.encode(pair.second, UTF8_ENCODING)
                             .replace("+", "%20"));
         }
         return builder.toString();
@@ -59,5 +65,54 @@ public class HttpUtil {
         } catch (NoSuchAlgorithmException ignored) {
         }
         return hash;
+    }
+
+    public static void writeStringToConnection(HttpURLConnection connection, String data) throws IOException {
+        OutputStream outputStream = connection.getOutputStream();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        writer.write(data);
+        writer.flush();
+        writer.close();
+    }
+
+    public static String readStringFromConnection(HttpURLConnection connection) throws IOException {
+        InputStream in = connection.getInputStream();
+        String response = streamToString(in);
+        in.close();
+        return response;
+    }
+
+    public static InputStream executePost(HttpURLConnection connection, String data) throws IOException {
+        connection.setRequestMethod(POST);
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+
+        HttpUtil.writeStringToConnection(connection, data);
+        // Open connection to response.
+        connection.connect();
+        // Read response.
+        return connection.getInputStream();
+    }
+
+    public static InputStream executeGet(HttpURLConnection connection) throws IOException {
+        connection.setRequestMethod(GET);
+        connection.setDoInput(true);
+        connection.setDoOutput(false);
+
+        return connection.getInputStream();
+    }
+
+    public static String streamToString(InputStream inputStream) throws IOException {
+        return new String(streamToArray(inputStream), HttpUtil.UTF8_ENCODING);
+    }
+
+    public static byte[] streamToArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int read;
+        while ((read = inputStream.read(buffer)) != -1) {
+            byteArrayOutputStream.write(buffer, 0, read);
+        }
+        return byteArrayOutputStream.toByteArray();
     }
 }

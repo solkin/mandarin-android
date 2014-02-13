@@ -34,7 +34,7 @@ public class IcqStatusCatalogue extends StatusCatalogue {
             if (index < statusConnect.length) {
                 connectStatuses.add(statusConnect[index]);
             }
-            if(index < statusSetup.length) {
+            if (index < statusSetup.length) {
                 setupStatuses.add(statusSetup[index]);
             }
         }

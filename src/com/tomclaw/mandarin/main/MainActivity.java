@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
@@ -23,6 +24,14 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isAccountsExists()) {
+            Intent intent = new Intent(this, AccountAddActivity.class);
+            intent.putExtra(AccountAddActivity.EXTRA_RUN_WITHOUT_ACCOUNT, true);
+            intent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+            startActivity(intent);
+            finish();
+        }
 
         setContentView(R.layout.main_activity);
 
@@ -169,5 +178,9 @@ public class MainActivity extends ChiefActivity {
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
         }
+    }
+
+    private boolean isAccountsExists() {
+        return QueryHelper.isAccountsExists(this);
     }
 }

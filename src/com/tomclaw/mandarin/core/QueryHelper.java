@@ -37,6 +37,11 @@ public class QueryHelper {
         gson = new Gson();
     }
 
+    public static boolean isAccountsExists(Context context) {
+        Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
+        return (cursor != null && cursor.getCount() == 0);
+    }
+
     public static List<AccountRoot> getAccounts(Context context, List<AccountRoot> accountRootList) {
         // Clearing input list.
         accountRootList.clear();

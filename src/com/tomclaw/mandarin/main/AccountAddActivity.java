@@ -24,11 +24,15 @@ import com.tomclaw.mandarin.im.AccountRoot;
 public class AccountAddActivity extends ChiefActivity {
 
     public static final String EXTRA_CLASS_NAME = "class_name";
+    public static final String EXTRA_RUN_WITHOUT_ACCOUNT = "without_account";
     private AccountRoot accountRoot;
+
+    private boolean isStartWithoutAccount = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isStartWithoutAccount = getIntent().getBooleanExtra(EXTRA_RUN_WITHOUT_ACCOUNT, false);
         // Obtain class name extra to setup AccountRoot type.
         String className = getIntent().getStringExtra(EXTRA_CLASS_NAME);
         Log.d(Settings.LOG_TAG, "AccountAddActivity start for " + className);
@@ -50,7 +54,9 @@ public class AccountAddActivity extends ChiefActivity {
     public void onCoreServiceReady() {
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
+        if (!isStartWithoutAccount) {
+            bar.setDisplayHomeAsUpEnabled(true);
+        }
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setTitle(R.string.accounts);
         // Initialize accounts list
@@ -80,8 +86,13 @@ public class AccountAddActivity extends ChiefActivity {
                         accountRoot.setUserPassword(userPassword);
                         int accountDbId = QueryHelper.insertAccount(this, accountRoot);
                         getServiceInteraction().holdAccount(accountDbId);
-                        // Creating signal intent.
-                        setResult(RESULT_OK);
+                        if (isStartWithoutAccount) {
+                            Intent intent = new Intent(this, AccountsActivity.class);
+                            startActivity(intent);
+                        } else {
+                            // Creating signal intent.
+                            setResult(RESULT_OK);
+                        }
                         finish();
                     } catch (AccountAlreadyExistsException ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_already_exists, Toast.LENGTH_LONG).show();

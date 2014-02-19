@@ -4,7 +4,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/chat_root">
     <com.tomclaw.mandarin.main.ChatListView
             android:layout_width="match_parent"
             android:layout_height="0dip"
@@ -17,6 +18,13 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_gravity="center">
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/smileys_button"
+                android:layout_gravity="center_horizontal|bottom"
+                android:src="@drawable/icon_smiley"
+                style="?android:attr/borderlessButtonStyle"/>
         <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -34,4 +42,12 @@
                 android:src="@drawable/social_send_now"
                 style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/smileys_footer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_height"
+            android:background="@android:color/transparent"
+            android:visibility="gone" />
 </LinearLayout>

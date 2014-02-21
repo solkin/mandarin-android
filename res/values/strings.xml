@@ -136,6 +136,8 @@
     <string name="male">муж.</string>
     <string name="female">жен.</string>
 
+    <string name="smiley_item">Смайлик</string>
+
     <string name="status_icq_shop">Магазины</string>
     <string name="status_icq_duck">В ванной</string>
     <string name="status_icq_tired">Устал</string>

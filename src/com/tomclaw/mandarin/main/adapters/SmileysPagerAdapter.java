@@ -31,7 +31,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         // TODO: maybe use dimensions xml?
-        smileysSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, displayMetrics);
+        smileysSize = (int) context.getResources().getDimension(R.dimen.smiley_size);// (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, displayMetrics);
         setPagerSize(width, height);
     }
 
@@ -43,7 +43,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
         gridView.setColumnWidth(smileysSize);
         gridView.setNumColumns(columnCount);
         // Create special smileys adapter to show on the grid.
-        SmileysGridAdapter gridAdapter = new SmileysGridAdapter(context, position, smileysPerPage);
+        SmileysGridAdapter gridAdapter = new SmileysGridAdapter(context, inflater, position, smileysPerPage);
         gridView.setAdapter(gridAdapter);
         container.addView(view);
         return view;
@@ -57,7 +57,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         if(smileysPerPage == 0) {
-            return 1;
+            return 0;
         }
         return 1 + smileyParser.getSmileysCount() / smileysPerPage;
     }

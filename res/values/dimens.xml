@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="keyboard_height">275dp</dimen>
-    <dimen name="smiley_size">60dp</dimen>
+    <dimen name="indicator_height">20dp</dimen>
+    <dimen name="smiley_size">50dp</dimen>
 </resources>

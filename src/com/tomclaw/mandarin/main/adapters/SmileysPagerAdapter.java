@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+import android.widget.GridLayout;
+import android.widget.ImageView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.SmileyParser;
 
@@ -21,30 +21,41 @@ public class SmileysPagerAdapter extends PagerAdapter {
     private LayoutInflater inflater;
     private SmileyParser smileyParser;
     private int smileysPerPage;
-    private int smileysSize;
+    private int smileySize;
     private int columnCount;
+    private int rowCount;
 
     public SmileysPagerAdapter(Activity context, int width, int height) {
         this.context = context;
         this.inflater = context.getLayoutInflater();
         smileyParser = SmileyParser.getInstance();
-
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        // TODO: maybe use dimensions xml?
-        smileysSize = (int) context.getResources().getDimension(R.dimen.smiley_size);// (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, displayMetrics);
-        setPagerSize(width, height);
+        smileySize = (int) context.getResources().getDimension(R.dimen.smiley_size);
+        int indicator_height = (int) context.getResources().getDimension(R.dimen.indicator_height);
+        setPagerSize(width, height - indicator_height);
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = inflater.inflate(R.layout.smileys_grid, null);
-        GridView gridView = (GridView) view.findViewById(R.id.smileys_grid);
-        // This will determine horizontal smileys count.
-        gridView.setColumnWidth(smileysSize);
-        gridView.setNumColumns(columnCount);
-        // Create special smileys adapter to show on the grid.
-        SmileysGridAdapter gridAdapter = new SmileysGridAdapter(context, inflater, position, smileysPerPage);
-        gridView.setAdapter(gridAdapter);
+        GridLayout gridLayout = (GridLayout) view.findViewById(R.id.smileys_grid);
+        gridLayout.setColumnCount(columnCount);
+        gridLayout.setRowCount(rowCount);
+        for (int row = 0; row < rowCount; row++) {
+            int pageColumnCount = columnCount;
+            int smilesAdded = position * smileysPerPage + row * columnCount;
+            if (smilesAdded + columnCount > smileyParser.getSmileysCount()) {
+                pageColumnCount = smileyParser.getSmileysCount() - smilesAdded;
+            }
+            for (int column = 0; column < pageColumnCount; column++) {
+                View itemView = inflater.inflate(R.layout.smiley_item, null);
+                ImageView imageView = (ImageView) itemView.findViewById(R.id.smiley_image);
+                imageView.setImageResource(smileyParser.getSmiley(smilesAdded + column));
+                GridLayout.LayoutParams itemLayoutParams = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(column));
+                itemLayoutParams.width = smileySize;
+                itemLayoutParams.height = smileySize;
+                gridLayout.addView(itemView, itemLayoutParams);
+            }
+        }
         container.addView(view);
         return view;
     }
@@ -56,7 +67,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        if(smileysPerPage == 0) {
+        if (smileysPerPage == 0) {
             return 0;
         }
         return 1 + smileyParser.getSmileysCount() / smileysPerPage;
@@ -68,7 +79,8 @@ public class SmileysPagerAdapter extends PagerAdapter {
     }
 
     private void setPagerSize(int width, int height) {
-        smileysPerPage = (width * height) / (smileysSize * smileysSize);
-        columnCount = width / smileysSize;
+        columnCount = width / smileySize;
+        rowCount = height / smileySize;
+        smileysPerPage = columnCount * rowCount;
     }
 }

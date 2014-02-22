@@ -291,7 +291,7 @@ public class IcqSession {
                     fetchEventConnection.disconnect();
                 }
             } catch (Throwable ex) {
-                Log.d(Settings.LOG_TAG, "fetch events exception", ex);
+                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {

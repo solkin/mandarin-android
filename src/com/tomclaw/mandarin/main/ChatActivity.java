@@ -2,13 +2,16 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.*;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
@@ -33,20 +36,21 @@ public class ChatActivity extends ChiefActivity {
     private LinearLayout chatRoot;
     private ChatListView chatList;
     private ChatHistoryAdapter chatHistoryAdapter;
+    private TextView messageText;
 
     private View popupView;
     private LinearLayout smileysFooter;
     private PopupWindow popupWindow;
+    private int initKeyboardHeight;
+    private int minKeyboardHeight;
+    private int diffKeyboardHeight;
+    private int previousHeightDifference;
     private int keyboardWidth;
     private int keyboardHeight;
     private boolean isKeyboardVisible;
     private SmileysPagerAdapter smileysAdapter;
     private ViewPager smileysPager;
-
-    /**
-     * Checking keyboard height and keyboard visibility
-     */
-    int previousHeightDifference = 0;
+    private boolean isConfigurationChanging = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +85,7 @@ public class ChatActivity extends ChiefActivity {
 
         // Send button and message field initialization.
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
-        final TextView messageText = (TextView) findViewById(R.id.message_text);
+        messageText = (TextView) findViewById(R.id.message_text);
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -116,11 +120,13 @@ public class ChatActivity extends ChiefActivity {
         popupView = getLayoutInflater().inflate(R.layout.smileys_popup, null);
         smileysFooter = (LinearLayout) findViewById(R.id.smileys_footer);
 
-        // Defining default height of keyboard which is equal to 230 dip
-        int popupHeight = (int) getResources().getDimension(R.dimen.keyboard_height);
-        changeKeyboardHeight(popupHeight);
+        // Defining default height of keyboard.
+        initKeyboardHeight = (int) getResources().getDimension(R.dimen.init_keyboard_height);
+        minKeyboardHeight = (int) getResources().getDimension(R.dimen.min_keyboard_height);
+        diffKeyboardHeight = (int) getResources().getDimension(R.dimen.diff_keyboard_height);
+        updateKeyboardHeight(initKeyboardHeight);
 
-        // Showing and Dismissing pop up on clicking emoticons button
+        // Showing and Dismissing pop up on clicking smileys button.
         ImageView smileysButton = (ImageView) findViewById(R.id.smileys_button);
         smileysButton.setOnClickListener(new View.OnClickListener() {
 
@@ -129,8 +135,9 @@ public class ChatActivity extends ChiefActivity {
                 if (popupWindow.isShowing()) {
                     popupWindow.dismiss();
                 } else {
-                    // TODO: this may be incorrect.
-                    smileysAdapter = new SmileysPagerAdapter(ChatActivity.this, keyboardWidth, keyboardHeight);
+                    // This must be refactored.
+                    smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                            keyboardWidth, keyboardHeight);
                     smileysPager.setAdapter(smileysAdapter);
 
                     popupWindow.setHeight(keyboardHeight);
@@ -144,34 +151,22 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
-        enablePopupView();
-        checkKeyboardHeight(chatRoot);
-    }
+        initPopupView();
 
-    private void checkKeyboardHeight(final View parentLayout) {
-        ViewTreeObserver treeObserver = parentLayout.getViewTreeObserver();
+        ViewTreeObserver treeObserver = chatRoot.getViewTreeObserver();
         if(treeObserver != null) {
             treeObserver.addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
 
                     @Override
                     public void onGlobalLayout() {
-                        Rect r = new Rect();
-                        parentLayout.getWindowVisibleDisplayFrame(r);
-                        if(parentLayout.getRootView() != null) {
-                            keyboardWidth = parentLayout.getRootView().getWidth();
-                            int screenHeight = parentLayout.getRootView().getHeight();
-                            int heightDifference = screenHeight - (r.bottom);
-                            if (previousHeightDifference - heightDifference > 50) {
-                                popupWindow.dismiss();
-                            }
-                            previousHeightDifference = heightDifference;
-                            if (heightDifference > 100) {
-                                isKeyboardVisible = true;
-                                changeKeyboardHeight(heightDifference);
-                            } else {
-                                isKeyboardVisible = false;
-                            }
+                        // This must be refactored.
+                        onGlobalLayoutUpdated();
+                        if(isConfigurationChanging) {
+                            isConfigurationChanging = false;
+                            updateKeyboardHeight(initKeyboardHeight);
+                            smileysAdapter = new SmileysPagerAdapter(ChatActivity.this, keyboardWidth, keyboardHeight);
+                            smileysPager.setAdapter(smileysAdapter);
                         }
                     }
                 }
@@ -179,15 +174,29 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    /**
-     * change height of emoticons keyboard according to height of actual
-     * keyboard
-     *
-     * @param height minimum height by which we can make sure actual keyboard is
-     *               open or not
-     */
-    private void changeKeyboardHeight(int height) {
-        if (height > 100) {
+    private void onGlobalLayoutUpdated() {
+        // Thins must be refactored.
+        Rect rect = new Rect();
+        chatRoot.getWindowVisibleDisplayFrame(rect);
+        if(chatRoot.getRootView() != null) {
+            keyboardWidth = chatRoot.getRootView().getWidth();
+            int screenHeight = chatRoot.getRootView().getHeight();
+            int heightDifference = screenHeight - (rect.bottom);
+            if (previousHeightDifference - heightDifference > diffKeyboardHeight) {
+                popupWindow.dismiss();
+            }
+            previousHeightDifference = heightDifference;
+            if (heightDifference > minKeyboardHeight) {
+                isKeyboardVisible = true;
+                updateKeyboardHeight(heightDifference);
+            } else {
+                isKeyboardVisible = false;
+            }
+        }
+    }
+
+    private void updateKeyboardHeight(int height) {
+        if (height > minKeyboardHeight && height != keyboardHeight) {
             keyboardHeight = height;
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT, keyboardHeight);
@@ -198,7 +207,7 @@ public class ChatActivity extends ChiefActivity {
     /**
      * Defining all components of smileys keyboard
      */
-    private void enablePopupView() {
+    private void initPopupView() {
         smileysPager = (ViewPager) popupView.findViewById(R.id.smileys_pager);
         smileysPager.setOffscreenPageLimit(3);
 
@@ -208,7 +217,7 @@ public class ChatActivity extends ChiefActivity {
         CirclePageIndicator pageIndicator = (CirclePageIndicator) popupView.findViewById(R.id.circle_pager);
         pageIndicator.setViewPager(smileysPager);
 
-        // Creating a pop window for emoticons keyboard
+        // Creating a pop window for smileys keyboard.
         popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT,
                 keyboardHeight, false);
 
@@ -225,6 +234,17 @@ public class ChatActivity extends ChiefActivity {
         if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Think about this.
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Service.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
+        isConfigurationChanging = true;
+        hidePopup();
+
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override

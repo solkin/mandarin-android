@@ -9,7 +9,8 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application android:name=".main.Mandarin" android:label="@string/app_name"
-                 android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin">
+                 android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin"
+                 android:allowBackup="true">
         <receiver android:name=".core.BootCompletedReceiver" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

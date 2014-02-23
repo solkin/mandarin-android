@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.main.OnSmileyClickCallback;
 import com.tomclaw.mandarin.util.SmileyParser;
 
 /**
@@ -24,14 +25,16 @@ public class SmileysPagerAdapter extends PagerAdapter {
     private int smileySize;
     private int columnCount;
     private int rowCount;
+    private OnSmileyClickCallback callback;
 
-    public SmileysPagerAdapter(Activity context, int width, int height) {
+    public SmileysPagerAdapter(Activity context, int width, int height, OnSmileyClickCallback callback) {
         this.context = context;
         this.inflater = context.getLayoutInflater();
         smileyParser = SmileyParser.getInstance();
         smileySize = (int) context.getResources().getDimension(R.dimen.smiley_size);
         int indicator_height = (int) context.getResources().getDimension(R.dimen.indicator_height);
         setPagerSize(width, height - indicator_height);
+        this.callback = callback;
     }
 
     @Override
@@ -50,6 +53,13 @@ public class SmileysPagerAdapter extends PagerAdapter {
                 View itemView = inflater.inflate(R.layout.smiley_item, null);
                 ImageView imageView = (ImageView) itemView.findViewById(R.id.smiley_image);
                 imageView.setImageResource(smileyParser.getSmiley(smilesAdded + column));
+                final String smileyText = smileyParser.getSmileyText(smilesAdded + column);
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        callback.onSmileyClick(smileyText);
+                    }
+                });
                 GridLayout.LayoutParams itemLayoutParams = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(column));
                 itemLayoutParams.width = smileySize;
                 itemLayoutParams.height = smileySize;

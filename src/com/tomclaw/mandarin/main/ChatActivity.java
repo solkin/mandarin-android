@@ -36,7 +36,7 @@ public class ChatActivity extends ChiefActivity {
     private LinearLayout chatRoot;
     private ChatListView chatList;
     private ChatHistoryAdapter chatHistoryAdapter;
-    private TextView messageText;
+    private EditText messageText;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -51,6 +51,7 @@ public class ChatActivity extends ChiefActivity {
     private SmileysPagerAdapter smileysAdapter;
     private ViewPager smileysPager;
     private boolean isConfigurationChanging = false;
+    private OnSmileyClickCallback callback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class ChatActivity extends ChiefActivity {
 
         // Send button and message field initialization.
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
-        messageText = (TextView) findViewById(R.id.message_text);
+        messageText = (EditText) findViewById(R.id.message_text);
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -126,6 +127,15 @@ public class ChatActivity extends ChiefActivity {
         diffKeyboardHeight = (int) getResources().getDimension(R.dimen.diff_keyboard_height);
         updateKeyboardHeight(initKeyboardHeight);
 
+        callback = new OnSmileyClickCallback() {
+
+            @Override
+            public void onSmileyClick(String smileyText) {
+                messageText.setText(messageText.getText() + smileyText);
+                messageText.setSelection(messageText.getText().length());
+            }
+        };
+
         // Showing and Dismissing pop up on clicking smileys button.
         ImageView smileysButton = (ImageView) findViewById(R.id.smileys_button);
         smileysButton.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +147,7 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     // This must be refactored.
                     smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
-                            keyboardWidth, keyboardHeight);
+                            keyboardWidth, keyboardHeight, callback);
                     smileysPager.setAdapter(smileysAdapter);
 
                     popupWindow.setHeight(keyboardHeight);
@@ -165,7 +175,8 @@ public class ChatActivity extends ChiefActivity {
                         if(isConfigurationChanging) {
                             isConfigurationChanging = false;
                             updateKeyboardHeight(initKeyboardHeight);
-                            smileysAdapter = new SmileysPagerAdapter(ChatActivity.this, keyboardWidth, keyboardHeight);
+                            smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                                    keyboardWidth, keyboardHeight, callback);
                             smileysPager.setAdapter(smileysAdapter);
                         }
                     }
@@ -211,7 +222,8 @@ public class ChatActivity extends ChiefActivity {
         smileysPager = (ViewPager) popupView.findViewById(R.id.smileys_pager);
         smileysPager.setOffscreenPageLimit(3);
 
-        smileysAdapter = new SmileysPagerAdapter(ChatActivity.this, keyboardWidth, keyboardHeight);
+        smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                keyboardWidth, keyboardHeight, callback);
         smileysPager.setAdapter(smileysAdapter);
 
         CirclePageIndicator pageIndicator = (CirclePageIndicator) popupView.findViewById(R.id.circle_pager);

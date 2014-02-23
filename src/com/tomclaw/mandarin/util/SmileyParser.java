@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.util.SparseArray;
 import com.tomclaw.mandarin.R;
@@ -72,8 +73,11 @@ public class SmileyParser {
         }
 
         for (int i = 0; i < mSmileyTexts.length; i++) {
-            mSmileyToRes.put(mSmileyTexts[i], mSmileyDrawables.getResourceId(i, 0));
-            mResToSmileys.put(mSmileyDrawables.getResourceId(i, 0), mSmileyTexts[i]);
+            int resourceId = mSmileyDrawables.getResourceId(i, 0);
+            mSmileyToRes.put(mSmileyTexts[i], resourceId);
+            if(TextUtils.isEmpty(mResToSmileys.get(resourceId))) {
+                mResToSmileys.put(resourceId, mSmileyTexts[i]);
+            }
         }
     }
 
@@ -127,5 +131,9 @@ public class SmileyParser {
 
     public int getSmiley(int index) {
         return mResToSmileys.keyAt(index);
+    }
+
+    public String getSmileyText(int index) {
+        return mResToSmileys.valueAt(index);
     }
 }

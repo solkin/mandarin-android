@@ -31,7 +31,5 @@
         <attr name="strokeColor" format="color" />
         <!-- Width of the stroke used to draw the circles. -->
         <attr name="strokeWidth" format="dimension" />
-        <!-- View background -->
-        <attr name="android:background"/>
     </declare-styleable>
 </resources>

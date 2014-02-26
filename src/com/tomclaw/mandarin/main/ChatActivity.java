@@ -50,8 +50,9 @@ public class ChatActivity extends ChiefActivity {
     private boolean isKeyboardVisible;
     private SmileysPagerAdapter smileysAdapter;
     private ViewPager smileysPager;
-    private boolean isConfigurationChanging = false;
     private OnSmileyClickCallback callback;
+    private boolean isConfigurationChanging = false;
+    private boolean isPaused = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -255,7 +256,6 @@ public class ChatActivity extends ChiefActivity {
         imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
         isConfigurationChanging = true;
         hidePopup();
-
         super.onConfigurationChanged(newConfig);
     }
 
@@ -357,6 +357,19 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        isPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isPaused = false;
+        readVisibleMessages();
+    }
+
+    @Override
     public void onCoreServiceReady() {
     }
 
@@ -372,14 +385,12 @@ public class ChatActivity extends ChiefActivity {
 
     private int getIntentBuddyDbId(Intent intent) {
         Bundle bundle = intent.getExtras();
-
         int buddyDbId = -1;
         // Checking for bundle condition.
         if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
             // Setup active page.
             buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
         }
-
         return buddyDbId;
     }
 
@@ -389,6 +400,15 @@ public class ChatActivity extends ChiefActivity {
             getActionBar().setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
         } catch (BuddyNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
+        }
+    }
+
+    private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
+        // This can be executed while activity became invisible to user,
+        // so we must check it here. After activity restored, messages will be read automatically.
+        if(!isPaused) {
+            TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+                    firstMessageDbId, lastMessageDbId));
         }
     }
 
@@ -403,8 +423,7 @@ public class ChatActivity extends ChiefActivity {
             try {
                 final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
                 final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
-                TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
-                        firstMessageDbId, lastMessageDbId));
+                readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
             } catch (MessageNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
@@ -435,7 +454,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;  // Return false if nothing is done.
+            return false;  // Return false because nothing is done.
         }
 
         @Override
@@ -524,8 +543,7 @@ public class ChatActivity extends ChiefActivity {
                     try {
                         final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
                         final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastPosition);
-                        TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
-                                firstMessageDbId, lastMessageDbId));
+                        readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
                     } catch (MessageNotFoundException ignored) {
                     }
                     break;

@@ -90,11 +90,6 @@ public class CirclePageIndicator extends View implements PageIndicator {
         mInactiveRadius = a.getDimension(R.styleable.CirclePageIndicator_radius, defaultInactiveRadius);
         mSnap = a.getBoolean(R.styleable.CirclePageIndicator_snap, defaultSnap);
 
-        Drawable background = a.getDrawable(R.styleable.CirclePageIndicator_android_background);
-        if (background != null) {
-            setBackgroundDrawable(background);
-        }
-
         a.recycle();
 
         final ViewConfiguration configuration = ViewConfiguration.get(context);

@@ -239,8 +239,9 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
         @Override
         public Cursor runQuery(CharSequence constraint) {
+            String searchField = constraint.toString().toUpperCase();
             QueryBuilder queryBuilder = getDefaultQueryBuilder();
-            queryBuilder.and().startComplexExpression().likeIgnoreCase(GlobalProvider.ROSTER_BUDDY_NICK, constraint)
+            queryBuilder.and().startComplexExpression().like(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, searchField)
                     .or().like(GlobalProvider.ROSTER_BUDDY_ID, constraint).finishComplexExpression();
             return queryBuilder.query(context.getContentResolver(), Settings.BUDDY_RESOLVER_URI);
         }

@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -293,8 +292,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
         @Override
         public Cursor runQuery(CharSequence constraint) {
+            String searchField = constraint.toString().toUpperCase();
             QueryBuilder queryBuilder = getDefaultQueryBuilder();
-            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_MESSAGE_TEXT, constraint);
+            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
             return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
         }
     }

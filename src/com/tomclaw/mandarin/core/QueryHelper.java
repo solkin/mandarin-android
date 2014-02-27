@@ -321,6 +321,7 @@ public class QueryHelper {
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
                     contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
                     contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
+                    contentValues.put(GlobalProvider.HISTORY_SEARCH_FIELD, messagesText.toUpperCase());
                     // Update query.
                     queryBuilder.recycle();
                     queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, messageDbId);
@@ -344,6 +345,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+        contentValues.put(GlobalProvider.HISTORY_SEARCH_FIELD, messageText.toUpperCase());
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
     }
 
@@ -535,6 +537,7 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         String avatarHash;
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId).and()

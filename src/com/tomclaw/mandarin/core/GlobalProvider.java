@@ -74,6 +74,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_ALPHABET_INDEX = "buddy_alphabet_index";
     public static final String ROSTER_BUDDY_UNREAD_COUNT = "buddy_unread_count";
     public static final String ROSTER_BUDDY_AVATAR_HASH = "buddy_avatar_hash";
+    public static final String ROSTER_BUDDY_SEARCH_FIELD = "buddy_search_field";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -84,6 +85,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
     public static final String HISTORY_MESSAGE_READ = "message_read";
     public static final String HISTORY_NOTICE_SHOWN = "notice_shown";
+    public static final String HISTORY_SEARCH_FIELD = "search_field";
 
     // Database create scripts
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
@@ -114,7 +116,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_STATUS_MESSAGE + " text, " + ROSTER_BUDDY_GROUP_ID + " int, "
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
-            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text" + ");";
+            + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text, "
+            + ROSTER_BUDDY_SEARCH_FIELD + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -122,7 +125,7 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
-            + HISTORY_MESSAGE_TEXT + " text" + ");";
+            + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text" + ");";
 
     private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD = new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
             .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")

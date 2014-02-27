@@ -88,6 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, 0);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, nick.toUpperCase());
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         int unreadCount = 0;
                         if (isDialog) {
@@ -104,7 +105,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         24 * 60 * 60 * 1000 - 10);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, isRead ? 1 : 0);
                                 cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                                String message = generateRandomText(random);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
+                                cv3.put(GlobalProvider.HISTORY_SEARCH_FIELD, message.toUpperCase());
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }

@@ -6,6 +6,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import com.google.gson.Gson;
+import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -371,25 +373,47 @@ public class IcqSession {
                 String autoResponse = eventData.getString(AUTORESPONSE);
                 JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
                 String buddyId;
+                String buddyNick;
+                int statusIndex;
+                String statusTitle;
+                String statusMessage = "";
+                String buddyIcon;
                 if (sourceObject != null) {
                     buddyId = sourceObject.getString(AIM_ID);
-                    String buddyNick = sourceObject.optString(FRIENDLY);
-                    if (TextUtils.isEmpty(buddyNick)) {
-                        buddyNick = sourceObject.getString(DISPLAY_ID);
-                    }
+                    buddyNick = sourceObject.optString(FRIENDLY);
                     String buddyStatus = sourceObject.getString(STATE);
                     String buddyType = sourceObject.getString(USER_TYPE);
+                    buddyIcon = sourceObject.optString(BUDDY_ICON);
+                    statusIndex = getStatusIndex(null, buddyStatus);
                 } else {
                     buddyId = eventData.getString(AIM_ID);
+                    buddyNick = eventData.optString(FRIENDLY);
+                    buddyIcon = null;
+                    statusIndex = StatusUtil.STATUS_OFFLINE;
                 }
+                if (TextUtils.isEmpty(buddyNick)) {
+                    buddyNick = buddyId;
+                }
+                statusTitle = getStatusTitle(null, statusIndex);
 
-                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                        PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                        icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+                boolean isProcessed = false;
+                do {
+                    try {
+                        QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+                                PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
+                                icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+                        isProcessed = true;
+                    } catch (BuddyNotFoundException ignored) {
+                        String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                        QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                                icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
+                                recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon);
+                    }
+                    // This will try to create buddy if such is not present
+                    // in roster and then retry message insertion.
+                } while(!isProcessed);
             } catch (JSONException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
-            } catch (BuddyNotFoundException ex) {
-                Log.d(Settings.LOG_TAG, "error while processing im - buddy not found");
             }
         } else if (eventType.equals(IM_STATE)) {
             try {

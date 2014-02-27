@@ -350,21 +350,19 @@ public class QueryHelper {
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                     int accountDbId, String userId, int messageType, int messageState,
+                                     int accountDbId, String buddyId, int messageType, int messageState,
                                      String cookie, long messageTime, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, userId);
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         // Obtain account db id.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
-        // TODO: check for at least one buddy present.
         if (cursor.moveToFirst()) {
-            final int BUDDY_DB_ID_COLUMN = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             // Cycling all the identical buddies in different groups.
             do {
-                int buddyDbId = cursor.getInt(BUDDY_DB_ID_COLUMN);
+                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 // Plain message query.
                 insertMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
                         cookie, messageTime, messageText, activateDialog);

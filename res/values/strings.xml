@@ -173,4 +173,5 @@
     <string name="status_icq_in_love">Влюблён</string>
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
+    <string name="no_dialogs_opened">Нажмите на эту кнопочку сверху, чтобы начать общаться!</string>
 </resources>

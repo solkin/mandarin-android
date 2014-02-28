@@ -49,6 +49,8 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+
+        dialogsList.setEmptyView(findViewById(android.R.id.empty));
     }
 
     @Override

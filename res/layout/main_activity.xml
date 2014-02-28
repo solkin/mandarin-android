@@ -11,4 +11,28 @@
             android:layout_height="match_parent"
             android:id="@+id/chats_list_view"
             android:choiceMode="multipleChoiceModal"/>
+
+    <LinearLayout
+            android:id="@android:id/empty"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dialogs_empty_view"
+                android:contentDescription="@string/no_dialogs_opened"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_dialogs_opened"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:paddingTop="12dp"/>
+    </LinearLayout>
 </LinearLayout>

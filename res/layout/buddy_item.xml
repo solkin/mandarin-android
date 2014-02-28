@@ -41,7 +41,8 @@
                     android:textSize="14sp"
                     android:scrollHorizontally="true"
                     android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"/>
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout

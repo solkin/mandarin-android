@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +13,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
  * Date: 3/28/13
  * Time: 1:54 AM
  */
-public abstract class AccountRoot {
+public abstract class AccountRoot implements Unobfuscatable {
 
     /**
      * User info

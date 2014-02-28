@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
+import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,7 +9,7 @@ import android.text.TextUtils;
  * Date: 6/17/13
  * Time: 11:34 PM
  */
-public class MyInfo {
+public class MyInfo implements Unobfuscatable {
 
     private String aimId;
     private String displayId;

@@ -1,12 +1,14 @@
 package com.tomclaw.mandarin.im.icq;
 
+import com.tomclaw.mandarin.util.Unobfuscatable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
  * Date: 6/17/13
  * Time: 11:42 PM
  */
-public class WellKnownUrls {
+public class WellKnownUrls implements Unobfuscatable {
 
     private String lifestreamApiBase;
     private String lifestreamClientFull;

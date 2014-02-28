@@ -51,8 +51,8 @@ public class ChatActivity extends ChiefActivity {
     private SmileysPagerAdapter smileysAdapter;
     private ViewPager smileysPager;
     private OnSmileyClickCallback callback;
-    private boolean isConfigurationChanging = false;
-    private boolean isPaused = false;
+    private boolean isConfigurationChanging;
+    private boolean isPaused;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

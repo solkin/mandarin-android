@@ -104,15 +104,16 @@ public class ChatActivity extends ChiefActivity {
                 final String message = messageText.getText().toString().trim();
                 if (!TextUtils.isEmpty(message)) {
                     int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    messageText.setText("");
                     MessageCallback callback = new MessageCallback() {
 
                         @Override
                         public void onSuccess() {
-                            messageText.setText("");
                         }
 
                         @Override
                         public void onFailed() {
+                            messageText.setText(message);
                         }
                     };
                     TaskExecutor.getInstance().execute(

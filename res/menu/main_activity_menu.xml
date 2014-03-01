@@ -22,8 +22,8 @@
             android:showAsAction="never"
             android:title="@string/info"/>
     <item
-            android:id="@+id/feedback"
+            android:id="@+id/rate_application"
             android:icon="@drawable/content_email"
             android:showAsAction="never"
-            android:title="@string/feedback"/>
+            android:title="@string/rate_application"/>
 </menu>

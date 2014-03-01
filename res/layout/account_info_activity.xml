@@ -32,7 +32,8 @@
                         android:layout_height="wrap_content"
                         android:text="287564321"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/user_id"/>
+                        android:id="@+id/user_id"
+                        android:fontFamily="sans-serif-light"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="vertical"

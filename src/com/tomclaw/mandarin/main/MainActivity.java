@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -16,6 +17,9 @@ import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 public class MainActivity extends ChiefActivity {
+
+    private static String MARKET_URI = "market://details?id=";
+    private static String GOOGLE_PLAY_URI = "http://play.google.com/store/apps/details?id=";
 
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
@@ -91,6 +95,10 @@ public class MainActivity extends ChiefActivity {
             case R.id.settings: {
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
+                return true;
+            }
+            case R.id.rate_application: {
+                rateApplication();
                 return true;
             }
             default:
@@ -170,6 +178,17 @@ public class MainActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+        }
+    }
+
+    private void rateApplication() {
+        final String appPackageName = getPackageName();
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(MARKET_URI + appPackageName)));
+        } catch (android.content.ActivityNotFoundException ignored) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(GOOGLE_PLAY_URI + appPackageName)));
         }
     }
 }

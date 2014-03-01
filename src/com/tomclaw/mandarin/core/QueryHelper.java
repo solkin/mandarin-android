@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
-import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;

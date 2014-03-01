@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
 

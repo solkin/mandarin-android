@@ -5,7 +5,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.*;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.List;

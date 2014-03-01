@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.util;
 
 import com.google.gson.Gson;
-import com.tomclaw.mandarin.im.icq.SetMoodRequest;
 
 /**
  * Created by solkin on 01/03/14.

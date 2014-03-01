@@ -56,9 +56,22 @@ public class PreferenceHelper {
         return backgroundRes;
     }
 
+    public static boolean isShowStartHelper(Context context) {
+        return getBooleanPreference(context, R.string.pref_show_start_helper, R.bool.pref_show_start_helper_default);
+    }
+
+    public static void setShowStartHelper(Context context, boolean value) {
+        setBooleanPreference(context, R.string.pref_show_start_helper, value);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));
+    }
+
+    private static void setBooleanPreference(Context context, int preferenceKey, boolean value) {
+        getSharedPreferences(context).edit().putBoolean(context.getResources().getString(preferenceKey),
+                value).commit();
     }
 
     private static String getStringPreference(Context context, int preferenceKey, int defaultValueKey) {

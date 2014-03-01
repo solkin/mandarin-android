@@ -3,6 +3,7 @@
     <string name="app_name">Mandarin</string>
     <string name="core_service">Mandarin Core Service</string>
     <string name="menu_search">Поиск</string>
+    <string name="account">Профиль</string>
     <string name="accounts">Профили</string>
     <string name="add_account">Добавить профиль</string>
     <string name="edit_account">Редактировать</string>

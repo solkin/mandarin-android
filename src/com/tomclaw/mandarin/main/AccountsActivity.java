@@ -54,9 +54,7 @@ public class AccountsActivity extends ChiefActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent mainActivityIntent = new Intent(this, MainActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(mainActivityIntent);
+                onBackPressed();
                 return true;
             case R.id.add_account_menu:
                 Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
@@ -66,6 +64,14 @@ public class AccountsActivity extends ChiefActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent mainActivityIntent = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainActivityIntent);
+        finish();
     }
 
     @Override

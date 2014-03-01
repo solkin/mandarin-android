@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
@@ -24,6 +25,7 @@ import com.tomclaw.mandarin.im.AccountRoot;
 public class AccountAddActivity extends ChiefActivity {
 
     public static final String EXTRA_CLASS_NAME = "class_name";
+    public static final String EXTRA_START_HELPER = "start_helper";
     private AccountRoot accountRoot;
 
     @Override
@@ -50,9 +52,9 @@ public class AccountAddActivity extends ChiefActivity {
     public void onCoreServiceReady() {
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        bar.setTitle(R.string.accounts);
+        bar.setTitle(R.string.account);
+        bar.setDisplayHomeAsUpEnabled(!isStartHelper());
         // Initialize accounts list
         setContentView(accountRoot.getAccountLayout());
     }
@@ -80,8 +82,17 @@ public class AccountAddActivity extends ChiefActivity {
                         accountRoot.setUserPassword(userPassword);
                         int accountDbId = QueryHelper.insertAccount(this, accountRoot);
                         getServiceInteraction().holdAccount(accountDbId);
-                        // Creating signal intent.
-                        setResult(RESULT_OK);
+                        if(isStartHelper()) {
+                            // We are started as start helper and now
+                            // mission is complete, switch off the flag...
+                            PreferenceHelper.setShowStartHelper(this, false);
+                            // ... and now will go to the accounts activity.
+                            Intent intent = new Intent(this, AccountsActivity.class);
+                            startActivity(intent);
+                        } else {
+                            // Creating signal intent.
+                            setResult(RESULT_OK);
+                        }
                         finish();
                     } catch (AccountAlreadyExistsException ex) {
                         Toast.makeText(AccountAddActivity.this, R.string.account_already_exists, Toast.LENGTH_LONG).show();
@@ -103,5 +114,9 @@ public class AccountAddActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
+    }
+
+    private boolean isStartHelper() {
+        return getIntent().getBooleanExtra(EXTRA_START_HELPER, false);
     }
 }

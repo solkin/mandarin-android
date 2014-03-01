@@ -11,8 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
@@ -27,6 +29,18 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check for start helper needs to be shown.
+        if(PreferenceHelper.isShowStartHelper(this)) {
+            // This will start
+            Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
+            accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+            accountAddIntent.putExtra(AccountAddActivity.EXTRA_START_HELPER, true);
+            overridePendingTransition(0, 0);
+            startActivity(accountAddIntent);
+            finish();
+            return;
+        }
 
         setContentView(R.layout.main_activity);
 

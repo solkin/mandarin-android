@@ -40,7 +40,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
-                android:maxLines="3"/>
+                android:maxLines="3"
+                android:imeOptions="actionSend"/>
         <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="match_parent"

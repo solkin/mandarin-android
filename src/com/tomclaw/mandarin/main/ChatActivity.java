@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -98,27 +99,24 @@ public class ChatActivity extends ChiefActivity {
                 hidePopup();
             }
         });
+        messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    performSendMessageClick();
+                    // hide keyboard
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String message = messageText.getText().toString().trim();
-                if (!TextUtils.isEmpty(message)) {
-                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    messageText.setText("");
-                    MessageCallback callback = new MessageCallback() {
-
-                        @Override
-                        public void onSuccess() {
-                        }
-
-                        @Override
-                        public void onFailed() {
-                            messageText.setText(message);
-                        }
-                    };
-                    TaskExecutor.getInstance().execute(
-                            new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
-                }
+                performSendMessageClick();
             }
         });
 
@@ -187,6 +185,28 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
             );
+        }
+    }
+
+    private void performSendMessageClick() {
+        final String message = messageText.getText().toString().trim();
+        Log.d(Settings.LOG_TAG, "Message = " + message);
+        if (!TextUtils.isEmpty(message)) {
+            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            messageText.setText("");
+            MessageCallback callback = new MessageCallback() {
+
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onFailed() {
+                    messageText.setText(message);
+                }
+            };
+            TaskExecutor.getInstance().execute(
+                    new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
         }
     }
 

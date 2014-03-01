@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Service;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -103,11 +102,8 @@ public class ChatActivity extends ChiefActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    performSendMessageClick();
-                    // hide keyboard
-                    InputMethodManager imm = (InputMethodManager)getSystemService(
-                            Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
+                    sendMessage();
+                    hideKeyboard();
                     return true;
                 }
                 return false;
@@ -116,7 +112,7 @@ public class ChatActivity extends ChiefActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                performSendMessageClick();
+                sendMessage();
             }
         });
 
@@ -188,7 +184,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private void performSendMessageClick() {
+    private void sendMessage() {
         final String message = messageText.getText().toString().trim();
         Log.d(Settings.LOG_TAG, "Message = " + message);
         if (!TextUtils.isEmpty(message)) {
@@ -211,7 +207,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void onGlobalLayoutUpdated() {
-        // Thins must be refactored.
+        // This must be refactored.
         Rect rect = new Rect();
         chatRoot.getWindowVisibleDisplayFrame(rect);
         if(chatRoot.getRootView() != null) {
@@ -273,12 +269,17 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // Think about this.
-        InputMethodManager imm = (InputMethodManager)this.getSystemService(Service.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
         isConfigurationChanging = true;
+        hideKeyboard();
         hidePopup();
         super.onConfigurationChanged(newConfig);
     }
@@ -293,7 +294,7 @@ public class ChatActivity extends ChiefActivity {
         // Menu inflating.
         getMenuInflater().inflate(R.menu.chat_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        // Configure the search info and add any event listeners
+        // Configure the search info and add any event listeners.
         SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

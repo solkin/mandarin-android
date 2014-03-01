@@ -15,7 +15,7 @@
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
     <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить контакт</string>
-    <string name="create_dialog">Открыть диалог</string>
+    <string name="create_dialog">Создать диалог</string>
     <string name="settings">Настройки</string>
     <string name="info">Информация</string>
     <string name="rate_application">Оценить</string>
@@ -173,6 +173,7 @@
     <string name="status_icq_in_love">Влюблён</string>
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
-    <string name="no_dialogs_opened">Нажмите на эту кнопочку сверху, чтобы начать общаться!</string>
+    <string name="no_dialogs_opened">Нажмите на кнопку создания диалога сверху, чтобы начать общаться!</string>
     <string name="pref_title_chat_background">Фоновая заставка</string>
+    <string name="add_icq_account">Введите, пожалуйста, ваши логин (UIN) и пароль для входа в ICQ и нажмите \"Сохранить\"</string>
 </resources>

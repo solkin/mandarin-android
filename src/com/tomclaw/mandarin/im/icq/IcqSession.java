@@ -14,6 +14,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -47,8 +48,8 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 public class IcqSession {
 
     private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
-    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,webrtcMsg,buddyRegistered";
-    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
+    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Android%20Agent";
     private static final String CLIENT_VERSION_VALUE = "3.2";
     private static final String BUILD_NUMBER_VALUE = "1234";
@@ -68,11 +69,9 @@ public class IcqSession {
     private static final int timeoutSession = 600000;
 
     private IcqAccountRoot icqAccountRoot;
-    private Gson gson;
 
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
-        this.gson = new Gson();
     }
 
     public int clientLogin() {
@@ -188,9 +187,9 @@ public class IcqSession {
                         String aimSid = dataObject.getString(AIM_SID);
                         String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                         // Parsing my info and well-known URL's to send requests.
-                        MyInfo myInfo = gson.fromJson(dataObject.getJSONObject(MY_INFO).toString(),
-                                MyInfo.class);
-                        WellKnownUrls wellKnownUrls = gson.fromJson(
+                        MyInfo myInfo = GsonSingleton.getInstance().fromJson(
+                                dataObject.getJSONObject(MY_INFO).toString(), MyInfo.class);
+                        WellKnownUrls wellKnownUrls = GsonSingleton.getInstance().fromJson(
                                 dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
                         // Update starts session result in database.
                         icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, wellKnownUrls);
@@ -461,7 +460,7 @@ public class IcqSession {
             }
         } else if (eventType.equals(MY_INFO)) {
             try {
-                MyInfo myInfo = gson.fromJson(eventData.toString(), MyInfo.class);
+                MyInfo myInfo = GsonSingleton.getInstance().fromJson(eventData.toString(), MyInfo.class);
                 icqAccountRoot.setMyInfo(myInfo);
             } catch (Throwable ignored) {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");

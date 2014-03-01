@@ -31,8 +31,9 @@ public class SmileyParser {
 
     public static void init(Context context) {
         // GH - added a null check so instances will get reused
-        if (sInstance == null)
+        if (sInstance == null) {
             sInstance = new SmileyParser(context);
+        }
     }
 
     public static void destroyInstance() {

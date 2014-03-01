@@ -15,6 +15,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -30,12 +31,6 @@ import java.util.List;
  * Time: 2:13 PM
  */
 public class QueryHelper {
-
-    private static Gson gson;
-
-    static {
-        gson = new Gson();
-    }
 
     public static List<AccountRoot> getAccounts(Context context, List<AccountRoot> accountRootList) {
         // Clearing input list.
@@ -109,7 +104,7 @@ public class QueryHelper {
                                                  String accountRootJson, int accountDbId) {
         try {
             // Creating account root from bundle.
-            AccountRoot accountRoot = (AccountRoot) gson.fromJson(accountRootJson,
+            AccountRoot accountRoot = (AccountRoot) GsonSingleton.getInstance().fromJson(accountRootJson,
                     Class.forName(className));
             accountRoot.setContext(context);
             accountRoot.setAccountDbId(accountDbId);
@@ -147,7 +142,7 @@ public class QueryHelper {
                 contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, accountRoot.getAvatarHash());
             }
             contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
             // Update query.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
@@ -206,7 +201,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
         contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
         contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-        contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+        contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
         contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         // Setting up account db id.
         accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),

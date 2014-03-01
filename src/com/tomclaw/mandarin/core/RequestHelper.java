@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.im.icq.*;
+import com.tomclaw.mandarin.util.GsonSingleton;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,12 +14,6 @@ import com.tomclaw.mandarin.im.icq.*;
  * Time: 1:30 PM
  */
 public class RequestHelper {
-
-    private static Gson gson;
-
-    static {
-        gson = new Gson();
-    }
 
     public static void requestMessage(ContentResolver contentResolver, String appSession,
                                       int buddyDbId, String cookie, String message) {
@@ -42,7 +37,7 @@ public class RequestHelper {
                 contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
                 contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
                 contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(messageRequest));
+                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(messageRequest));
                 contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
             }
             cursor.close();
@@ -59,7 +54,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(endSessionRequest));
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(endSessionRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
@@ -81,7 +76,7 @@ public class RequestHelper {
                 contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
                 contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
                 contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyAvatarRequest));
+                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(buddyAvatarRequest));
                 contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
             }
             cursor.close();
@@ -106,7 +101,7 @@ public class RequestHelper {
                 contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
                 contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
                 contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(accountAvatarRequest));
+                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(accountAvatarRequest));
                 contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
             }
             cursor.close();
@@ -124,7 +119,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(buddyInfoRequest));
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(buddyInfoRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
@@ -139,7 +134,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setStateRequest));
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setStateRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
@@ -154,7 +149,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, gson.toJson(setMoodRequest));
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setMoodRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 }

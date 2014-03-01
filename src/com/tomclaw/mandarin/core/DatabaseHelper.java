@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
@@ -46,7 +47,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     StatusUtil.STATUS_OFFLINE
             };
             Random random = new Random(System.currentTimeMillis());
-            Gson gson = new Gson();
             for (int a = 0; a < 3 + random.nextInt(5); a++) {
                 IcqAccountRoot accountRoot = new IcqAccountRoot();
                 accountRoot.setUserId(String.valueOf(random.nextInt(999999999)));
@@ -60,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
                 cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
                 cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-                cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+                cv0.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
                 for (int i = 1; i <= 4 + random.nextInt(3); i++) {
                     int groupId = (random.nextInt(10) == 1) ? GlobalProvider.GROUP_ID_RECYCLE : i;

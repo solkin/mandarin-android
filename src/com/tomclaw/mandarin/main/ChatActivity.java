@@ -72,7 +72,7 @@ public class ChatActivity extends ChiefActivity {
 
         setTitleByBuddyDbId(buddyDbId);
 
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId);
 
         chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);

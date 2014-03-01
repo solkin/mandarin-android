@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -29,7 +30,6 @@ public class RequestDispatcher {
     private final ContentObserver requestObserver;
     private Thread dispatcherThread;
     private final Object sync;
-    private Gson gson;
     private int requestType;
 
     public RequestDispatcher(Service service, SessionHolder sessionHolder, int requestType) {
@@ -44,7 +44,6 @@ public class RequestDispatcher {
         requestObserver = new RequestObserver();
         // Initializing thread.
         sync = new Object();
-        gson = new Gson();
         dispatcherThread = new DispatcherThread();
     }
 
@@ -185,7 +184,7 @@ public class RequestDispatcher {
                                 continue;
                             }
                             // Preparing request.
-                            Request request = (Request) gson.fromJson(
+                            Request request = (Request) GsonSingleton.getInstance().fromJson(
                                     requestBundle, Class.forName(requestClass));
                             requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {

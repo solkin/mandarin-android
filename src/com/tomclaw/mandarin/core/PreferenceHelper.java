@@ -45,6 +45,17 @@ public class PreferenceHelper {
         return Uri.parse(uriValue);
     }
 
+    public static int getChatBackground(Context context) {
+        boolean isChatBackground = getBooleanPreference(context, R.string.pref_chat_background, R.bool.pref_chat_background_default);
+        int backgroundRes;
+        if(isChatBackground) {
+            backgroundRes = R.drawable.chat_background;
+        } else {
+            backgroundRes = R.color.chat_background;
+        }
+        return backgroundRes;
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));

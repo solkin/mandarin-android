@@ -27,6 +27,10 @@
                 android:summary="@string/pref_summary_collapse_messages"
                 android:title="@string/pref_title_collapse_messages"
                 android:defaultValue="@bool/pref_collapse_messages_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_chat_background"
+                android:title="@string/pref_title_chat_background"
+                android:defaultValue="@bool/pref_chat_background_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_notifications_title"

@@ -85,6 +85,9 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
+        int chatBackground = PreferenceHelper.getChatBackground(this);
+        chatList.setBackgroundResource(chatBackground);
+
         // Send button and message field initialization.
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);

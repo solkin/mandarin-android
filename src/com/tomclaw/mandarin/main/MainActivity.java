@@ -115,6 +115,11 @@ public class MainActivity extends ChiefActivity {
                 rateApplication();
                 return true;
             }
+            case R.id.info: {
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -183,4 +183,6 @@
         официальным клиентом ICQ, разрабатывается по многочисленным просьбам и просто из личного интереса автора.
     </string>
     <string name="app_year">2014 г.</string>
+    <string name="disconnecting">Отключение...</string>
+    <string name="connecting">Подключение...</string>
 </resources>

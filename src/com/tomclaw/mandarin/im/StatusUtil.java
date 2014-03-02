@@ -54,4 +54,8 @@ public class StatusUtil {
     public static List<Integer> getSetupStatuses(String accountType) {
         return getStatusCatalogue(accountType).getSetupStatuses();
     }
+
+    public static int getDefaultOnlineStatus(String accountType) {
+        return getStatusCatalogue(accountType).getConnectStatuses().get(0);
+    }
 }

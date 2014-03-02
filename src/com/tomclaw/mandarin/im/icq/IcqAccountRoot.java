@@ -7,6 +7,7 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
 
@@ -42,6 +43,7 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void connect() {
         Log.d(Settings.LOG_TAG, "icq connection attempt");
+        // TODO: Such thread working model must be rewritten.
         Thread connectThread = new Thread() {
 
             private void sleep() {
@@ -111,6 +113,40 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void disconnect() {
         RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
+    }
+
+    @Override
+    public void checkCredentials(final CredentialsCheckCallback callback) {
+        // TODO: Such thread working model must be rewritten.
+        Thread credentialsCheckThread = new Thread() {
+
+            private void sleep() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ignored) {
+                    // No need to check.
+                }
+            }
+
+            public void run() {
+                while (!checkLoginReady()) {
+                    switch (icqSession.clientLogin()) {
+                        case IcqSession.EXTERNAL_LOGIN_ERROR:
+                        case IcqSession.EXTERNAL_UNKNOWN: {
+                            callback.onFailed();
+                            return;
+                        }
+                        case IcqSession.INTERNAL_ERROR: {
+                            // Sleep some time.
+                            sleep();
+                            break;
+                        }
+                    }
+                }
+                callback.onPassed();
+            }
+        };
+        credentialsCheckThread.start();
     }
 
     public void updateStatus() {

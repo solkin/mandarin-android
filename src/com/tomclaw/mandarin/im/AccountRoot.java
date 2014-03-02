@@ -160,6 +160,8 @@ public abstract class AccountRoot implements Unobfuscatable {
         }
     }
 
+    public abstract void checkCredentials(CredentialsCheckCallback callback);
+
     /**
      * This will manual disconnect account after network connection stopped.
      * Invokes after account connection closed.

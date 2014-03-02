@@ -49,11 +49,11 @@ public class IcqSession {
     private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
-    private static final String CLIENT_NAME_VALUE = "Android%20Agent";
-    private static final String CLIENT_VERSION_VALUE = "3.2";
-    private static final String BUILD_NUMBER_VALUE = "1234";
+    private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
+    private static final String CLIENT_VERSION_VALUE = "1.0";
+    private static final String BUILD_NUMBER_VALUE = "12";
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000";
-    private static final String DEVICE_ID_VALUE = "deviceid";
+    private static final String DEVICE_ID_VALUE = "mandarin_device_id";
 
     public static final int INTERNAL_ERROR = 1000;
     public static final int EXTERNAL_LOGIN_OK = 200;

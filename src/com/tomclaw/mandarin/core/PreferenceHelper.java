@@ -19,6 +19,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_collapse_messages, R.bool.pref_collapse_messages_default);
     }
 
+    public static boolean isShowKeyboard(Context context) {
+        return getBooleanPreference(context, R.string.pref_chat_show_keyboard, R.bool.pref_chat_show_keyboard_default);
+    }
+
     public static boolean isShowTemp(Context context) {
         return getBooleanPreference(context, R.string.pref_show_temp, R.bool.pref_show_temp_default);
     }

@@ -60,6 +60,11 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
+        // Checking for we must show keyboard automatically.
+        if(PreferenceHelper.isShowKeyboard(this)) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+
         // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);

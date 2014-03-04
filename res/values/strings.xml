@@ -187,4 +187,6 @@
     <string name="connecting">Подключение…</string>
     <string name="invalid_credentials">Извините, Вы введи неверный логин или пароль. Попробуйте ещё разок.</string>
     <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
+    <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
+    <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
 </resources>

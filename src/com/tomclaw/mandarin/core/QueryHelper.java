@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
@@ -255,7 +256,7 @@ public class QueryHelper {
         boolean dialogFlag = false;
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-        // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
+        // Obtaining cursor with such buddy db id.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have no more than only one entry. But we will check one and more.
         if (cursor.moveToFirst()) {
@@ -266,6 +267,29 @@ public class QueryHelper {
         // Closing cursor.
         cursor.close();
         return dialogFlag;
+    }
+
+    public static void modifyBuddyOperation(ContentResolver contentResolver, int buddyDbId, int operation) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION_PENDING, operation);
+        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+    }
+
+    public static int getBuddyOperation(ContentResolver contentResolver, int buddyDbId) {
+        int operation = GlobalProvider.BUDDY_OPERATION_NOOP;
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+        // Obtaining cursor with such buddy db id.
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        // Cursor may have no more than only one entry. But we will check one and more.
+        if (cursor.moveToFirst()) {
+            operation = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_OPERATION_PENDING));
+            // Closing cursor.
+            cursor.close();
+        }
+        // Closing cursor.
+        cursor.close();
+        return operation;
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages, int buddyDbId,

@@ -151,4 +151,19 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setMoodRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
+
+    public static void requestBuddyAdd(ContentResolver contentResolver, String appSession,
+                                      int accountDbId, String buddyId, String groupName, String authMessage) {
+        BuddyAddRequest buddyAddRequest = new BuddyAddRequest(buddyId, groupName, authMessage);
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyAddRequest.class.getName());
+        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(buddyAddRequest));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+    }
 }

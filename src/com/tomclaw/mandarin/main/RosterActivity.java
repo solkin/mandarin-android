@@ -14,9 +14,14 @@ import android.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -108,6 +113,22 @@ public class RosterActivity extends ChiefActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
+                return true;
+            }
+            case R.id.add_account_menu: {
+                // TODO: this must be background thread.
+                // QueryHelper.getBuddyNick()
+                try {
+                    List<AccountRoot> accountRootList = new ArrayList<AccountRoot>();
+                    QueryHelper.getAccounts(this, accountRootList);
+                    if(accountRootList.isEmpty()) {
+                        int accountDbId = accountRootList.get(0).getAccountDbId();
+                        RequestHelper.requestBuddyAdd(getContentResolver(), getServiceInteraction().getAppSession(),
+                                accountDbId, "380349", "Random", "Would you like to add me?");
+                    }
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                }
                 return true;
             }
             default:

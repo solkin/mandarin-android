@@ -43,6 +43,7 @@
                 android:text="@string/app_year"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-light"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:paddingBottom="12dp"/>
     </LinearLayout>
 </ScrollView>

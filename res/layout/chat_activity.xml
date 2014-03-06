@@ -25,11 +25,11 @@
             android:layout_gravity="center"
             android:background="@android:color/background_light">
         <ImageButton
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:id="@+id/smileys_button"
                 android:layout_gravity="center_horizontal|bottom"
-                android:layout_marginLeft="5dp"
+                android:paddingLeft="7dp"
                 android:src="@drawable/icon_smiley"
                 style="?android:attr/borderlessButtonStyle"/>
         <EditText
@@ -43,11 +43,11 @@
                 android:maxLines="3"
                 android:imeOptions="actionSend"/>
         <ImageButton
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:id="@+id/send_button"
                 android:layout_gravity="center_horizontal|bottom"
-                android:layout_marginRight="5dp"
+                android:paddingRight="7dp"
                 android:src="@drawable/social_send_now"
                 style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>

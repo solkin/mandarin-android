@@ -39,7 +39,7 @@ public class SettingsActivity extends Activity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
+            // Load the preferences from an XML resource.
             addPreferencesFromResource(R.xml.preferences);
         }
     }

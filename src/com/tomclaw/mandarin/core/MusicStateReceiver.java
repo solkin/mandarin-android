@@ -29,7 +29,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
                 public void run() {
                     Context context = contextWeakReference.get();
                     if (context != null) {
-                        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                        boolean isMusicActive = isMusicActive(context);
                         String action = intent.getAction();
                         String cmd = intent.getStringExtra("command");
                         String artist = intent.getStringExtra("artist");
@@ -37,9 +37,9 @@ public class MusicStateReceiver extends BroadcastReceiver {
                         String track = intent.getStringExtra("track");
                         Log.d(Settings.LOG_TAG, action + " / " + cmd);
                         Log.d(Settings.LOG_TAG, artist + ":" + album + ":" + track);
-                        Log.d(Settings.LOG_TAG, "music active: " + audioManager.isMusicActive());
+                        Log.d(Settings.LOG_TAG, "music active: " + isMusicActive);
                         Intent serviceIntent = new Intent(context, CoreService.class);
-                        if (!TextUtils.isEmpty(track) && audioManager.isMusicActive()) {
+                        if (!TextUtils.isEmpty(track) && isMusicActive) {
                             String statusMessage;
                             if(TextUtils.isEmpty(artist)) {
                                 statusMessage = "";
@@ -61,5 +61,10 @@ public class MusicStateReceiver extends BroadcastReceiver {
                 }
             }, PROCESS_EVENT_DELAY);
         }
+    }
+
+    public static boolean isMusicActive(Context context) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        return audioManager.isMusicActive();
     }
 }

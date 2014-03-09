@@ -121,7 +121,9 @@ public class CoreService extends Service {
     private void onIntentReceived(Intent intent) {
         // Parse music event info.
         boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
-        if(musicEvent) {
+        // Checking for this is music event and we must process fresh data or
+        // music is not longer playing and we must reset auto status.
+        if(musicEvent || !MusicStateReceiver.isMusicActive(this)) {
             String statusMessage = intent.getStringExtra(MusicStateReceiver.EXTRA_MUSIC_STATUS_MESSAGE);
             if(!TextUtils.isEmpty(statusMessage)) {
                 sessionHolder.setAutoStatus(statusMessage);

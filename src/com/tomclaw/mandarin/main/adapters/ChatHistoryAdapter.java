@@ -70,13 +70,13 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_ROW_AUTO_ID;
 
     private Context context;
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
     private LoaderManager loaderManager;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflater = LayoutInflater.from(context);
         this.loaderManager = loaderManager;
         setBuddyDbId(buddyBdId);
         setFilterQueryProvider(new ChatFilterQueryProvider());
@@ -132,20 +132,21 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Cursor cursor = getCursor();
         View view;
         try {
-            if (!getCursor().moveToPosition(position)) {
+            if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                view = newView(context, getCursor(), parent);
+                view = newView(context, cursor, parent);
             } else {
                 view = convertView;
             }
-            bindView(view, context, getCursor());
+            bindView(view, context, cursor);
         } catch (Throwable ex) {
             if (convertView == null) {
-                view = mInflater.inflate(R.layout.chat_item, parent, false);
+                view = inflater.inflate(R.layout.chat_item, parent, false);
                 Log.d(Settings.LOG_TAG, "create new error view");
             } else {
                 view = convertView;
@@ -169,7 +170,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.chat_item, parent, false);
+        return inflater.inflate(R.layout.chat_item, parent, false);
     }
 
     @Override
@@ -230,10 +231,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     public long getMessageDbId(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
-        if (cursor != null && cursor.moveToPosition(position)) {
-            return cursor.getLong(COLUMN_ROW_AUTO_ID);
+        if (cursor == null || !cursor.moveToPosition(position)) {
+            throw new MessageNotFoundException();
         }
-        throw new MessageNotFoundException();
+        return cursor.getLong(COLUMN_ROW_AUTO_ID);
     }
 
     public String getMessageText(int position) throws MessageNotFoundException {

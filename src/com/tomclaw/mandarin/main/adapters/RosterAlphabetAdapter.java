@@ -63,7 +63,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private Context context;
     private LayoutInflater inflater;
     private int filter;
-    private boolean isShowTemp = false;
+    private boolean isShowTemp;
     private LoaderManager loaderManager;
 
     public RosterAlphabetAdapter(Activity context, LoaderManager loaderManager, int filter) {
@@ -87,23 +87,23 @@ public class RosterAlphabetAdapter extends CursorAdapter
      */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View v;
+        Cursor cursor = getCursor();
+        View view;
         try {
-            if (!getCursor().moveToPosition(position)) {
+            if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                v = newView(context, getCursor(), parent);
+                view = newView(context, cursor, parent);
             } else {
-                v = convertView;
+                view = convertView;
             }
-            bindView(v, context, getCursor());
+            bindView(view, context, cursor);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = mInflater.inflate(R.layout.buddy_item, parent, false);
+            view = inflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
-        return v;
+        return view;
     }
 
     @Override
@@ -157,23 +157,25 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        Cursor cursor = getCursor();
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.alphabet_header, parent, false);
         }
-        if (!getCursor().moveToPosition(position)) {
-            throw new IllegalStateException("couldn't move mergeCursor to position " + position);
+        if (cursor == null || !cursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        ((TextView) convertView.findViewById(R.id.header_text)).
-                setText(String.valueOf(Character.toUpperCase((char) getCursor().getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX))));
+        ((TextView) convertView.findViewById(R.id.header_text)).setText(String.valueOf(
+                Character.toUpperCase((char) cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX))));
         return convertView;
     }
 
     @Override
     public long getHeaderId(int position) {
-        if (!getCursor().moveToPosition(position)) {
+        Cursor cursor = getCursor();
+        if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return getCursor().getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
     }
 
     @Override
@@ -204,10 +206,11 @@ public class RosterAlphabetAdapter extends CursorAdapter
     }
 
     public int getBuddyDbId(int position) {
-        if (!getCursor().moveToPosition(position)) {
+        Cursor cursor = getCursor();
+        if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return cursor.getInt(COLUMN_ROW_AUTO_ID);
     }
 
     public void setRosterFilter(int filter) {

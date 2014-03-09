@@ -64,7 +64,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
-        this.inflater = context.getLayoutInflater();
+        this.inflater = LayoutInflater.from(context);
         // Initialize loader for dialogs Id.
         loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -102,24 +102,23 @@ public class RosterDialogsAdapter extends CursorAdapter implements
      */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View v;
+        Cursor cursor = getCursor();
+        View view;
         try {
-            if (!getCursor().moveToPosition(position)) {
+            if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                v = newView(context, getCursor(), parent);
+                view = newView(context, cursor, parent);
             } else {
-                v = convertView;
+                view = convertView;
             }
-            bindView(v, context, getCursor());
+            bindView(view, context, cursor);
         } catch (Throwable ex) {
-            ex.printStackTrace();
-            LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = mInflater.inflate(R.layout.buddy_item, parent, false);
+            view = inflater.inflate(R.layout.buddy_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
-        return v;
+        return view;
     }
 
     @Override
@@ -176,6 +175,6 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return getCursor().getInt(getCursor().getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        return cursor.getInt(COLUMN_ROW_AUTO_ID);
     }
 }

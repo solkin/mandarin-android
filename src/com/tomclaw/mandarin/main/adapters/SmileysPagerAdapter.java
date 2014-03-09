@@ -28,7 +28,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
 
     public SmileysPagerAdapter(Activity context, int width, int height, OnSmileyClickCallback callback) {
         this.context = context;
-        this.inflater = context.getLayoutInflater();
+        this.inflater = LayoutInflater.from(context);
         smileyParser = SmileyParser.getInstance();
         smileySize = (int) context.getResources().getDimension(R.dimen.smiley_size);
         int indicator_height = (int) context.getResources().getDimension(R.dimen.indicator_height);

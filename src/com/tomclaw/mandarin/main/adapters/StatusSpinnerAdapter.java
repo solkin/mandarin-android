@@ -33,8 +33,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     public StatusSpinnerAdapter(Activity context, String accountType, List<Integer> statusList) {
         super(context, R.layout.status_item, statusList);
-
-        inflater = context.getLayoutInflater();
+        inflater = LayoutInflater.from(context);
         this.accountType = accountType;
         this.statusList = statusList;
     }
@@ -51,8 +50,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
             }
             bindView(view, statusIndex);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = mInflater.inflate(R.layout.status_item, parent, false);
+            view = inflater.inflate(R.layout.status_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return view;

@@ -63,7 +63,7 @@ public class AccountsAdapter extends CursorAdapter implements
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
-        inflater = ((Activity) context).getLayoutInflater();
+        inflater = LayoutInflater.from(context);
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
     }

@@ -202,7 +202,11 @@ public class RosterAlphabetAdapter extends CursorAdapter
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        swapCursor(null);
+        Cursor cursor = swapCursor(null);
+        // Maybe, previous non-closed cursor present?
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     public int getBuddyDbId(int position) {

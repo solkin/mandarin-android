@@ -94,7 +94,11 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        swapCursor(null);
+        Cursor cursor = swapCursor(null);
+        // Maybe, previous non-closed cursor present?
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     /**

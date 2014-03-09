@@ -72,6 +72,14 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_send_by_enter, R.bool.pref_send_by_enter_default);
     }
 
+    public static String getEnteredMessage(Context context) {
+        return getStringPreference(context, R.string.pref_entered_message, R.string.pref_entered_message_default);
+    }
+
+    public static void setEnteredMessage(Context context, String value) {
+        setStringPreference(context, R.string.pref_entered_message, value);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));
@@ -85,6 +93,11 @@ public class PreferenceHelper {
     private static String getStringPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getString(context.getResources().getString(preferenceKey),
                 context.getResources().getString(defaultValueKey));
+    }
+
+    private static void setStringPreference(Context context, int preferenceKey, String value) {
+        getSharedPreferences(context).edit().putString(context.getResources().getString(preferenceKey),
+                value).commit();
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {

@@ -7,7 +7,9 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -94,8 +96,25 @@ public class ChatActivity extends ChiefActivity {
         chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
+        String enteredText = PreferenceHelper.getEnteredMessage(this);
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
+        messageText.setText(enteredText);
+        messageText.setSelection(enteredText.length());
+        messageText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                PreferenceHelper.setEnteredMessage(ChatActivity.this, s.toString());
+            }
+        });
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override

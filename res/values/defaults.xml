@@ -11,4 +11,5 @@
     <bool name="pref_send_by_enter_default">false</bool>
 
     <bool name="pref_show_start_helper_default">true</bool>
+    <string name="pref_entered_message_default"/>
 </resources>

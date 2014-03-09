@@ -192,4 +192,8 @@
     <string name="pref_title_send_by_enter">Отправка по Enter</string>
     <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
     <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
+    <string name="pref_title_music_auto_status">Музыкальный статус</string>
+    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
+        при включении музыки в системном плеере
+    </string>
 </resources>

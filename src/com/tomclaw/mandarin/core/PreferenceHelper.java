@@ -80,6 +80,10 @@ public class PreferenceHelper {
         setStringPreference(context, R.string.pref_entered_message, value);
     }
 
+    public static boolean isMusicAutoStatus(Context context) {
+        return getBooleanPreference(context, R.string.pref_music_auto_status, R.bool.pref_music_auto_status_default);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));

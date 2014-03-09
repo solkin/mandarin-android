@@ -9,6 +9,11 @@
                 android:summary="@string/pref_summary_autorun"
                 android:title="@string/pref_title_autorun"
                 android:defaultValue="@bool/pref_autorun_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_music_auto_status"
+                android:summary="@string/pref_summary_music_auto_status"
+                android:title="@string/pref_title_music_auto_status"
+                android:defaultValue="@bool/pref_music_auto_status_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_buddy_list_title"

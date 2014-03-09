@@ -68,6 +68,10 @@ public class PreferenceHelper {
         setBooleanPreference(context, R.string.pref_show_start_helper, value);
     }
 
+    public static boolean isSendByEnter(Context context) {
+        return getBooleanPreference(context, R.string.pref_send_by_enter, R.bool.pref_send_by_enter_default);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));

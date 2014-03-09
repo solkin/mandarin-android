@@ -189,4 +189,6 @@
     <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
     <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
     <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
+    <string name="pref_title_send_by_enter">Отправка по Enter</string>
+    <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
 </resources>

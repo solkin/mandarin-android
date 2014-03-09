@@ -114,6 +114,22 @@ public class ChatActivity extends ChiefActivity {
                 return false;
             }
         });
+        messageText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                switch(keyCode) {
+                    case KeyEvent.KEYCODE_ENTER: {
+                        if(PreferenceHelper.isSendByEnter(ChatActivity.this)) {
+                            sendMessage();
+                            return true;
+                        }
+                    }
+                    default: {
+                        return false;
+                    }
+                }
+            }
+        });
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

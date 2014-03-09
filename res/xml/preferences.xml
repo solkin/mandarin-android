@@ -36,6 +36,11 @@
                 android:summary="@string/pref_summary_chat_show_keyboard"
                 android:title="@string/pref_title_chat_show_keyboard"
                 android:defaultValue="@bool/pref_chat_show_keyboard_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_send_by_enter"
+                android:summary="@string/pref_summary_send_by_enter"
+                android:title="@string/pref_title_send_by_enter"
+                android:defaultValue="@bool/pref_send_by_enter_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_notifications_title"

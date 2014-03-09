@@ -13,4 +13,10 @@
         <item>@string/filter_show_online_only</item>
     </string-array>
 
+    <string-array name="search_sex_array">
+        <item>@string/any</item>
+        <item>@string/female</item>
+        <item>@string/male</item>
+    </string-array>
+
 </resources>

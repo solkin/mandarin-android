@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:padding="12dp">
+
+    <TextView
+            android:text="@string/search_base"
+            style="?android:attr/listSeparatorTextViewStyle"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_keyword"
+            android:hint="@string/enter_keyword"/>
+    <TextView
+            android:text="@string/age_and_sex"
+            style="?android:attr/listSeparatorTextViewStyle"/>
+    <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sex_select_spinner"
+            android:padding="12dp"/>
+    <TextView
+            android:text="@string/additional"
+            style="?android:attr/listSeparatorTextViewStyle"/>
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/online_only"
+            android:id="@+id/check_online"
+            android:checked="true"
+            android:padding="12dp"/>
+</LinearLayout>

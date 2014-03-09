@@ -31,6 +31,7 @@
         навсегда.
     </string>
     <string name="select_buddy">Выберите контакт</string>
+    <string name="search_buddy">Поиск контактов</string>
 
     <string name="status_offline">Не в сети</string>
     <string name="status_mobile">Мобильный</string>
@@ -190,4 +191,14 @@
     <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
     <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
     <string name="menu_buddy_add">Добавить контакт</string>
+
+    <string name="age_and_sex">Возраст и пол</string>
+    <string name="male">Муж.</string>
+    <string name="female">Жен.</string>
+    <string name="any">Любой</string>
+    <string name="search_keyword">Поиск по слову</string>
+    <string name="enter_keyword">Введите слово</string>
+    <string name="online_only">В сети</string>
+    <string name="search_base">Основное</string>
+    <string name="additional">Дополнительно</string>
 </resources>

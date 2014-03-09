@@ -9,7 +9,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
+import com.tomclaw.mandarin.R;
 
 import java.util.List;
 import java.util.Random;
@@ -109,7 +111,24 @@ public class CoreService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
+        // Check for intent is really cool.
+        if(intent != null) {
+            onIntentReceived(intent);
+        }
         return START_STICKY;
+    }
+
+    private void onIntentReceived(Intent intent) {
+        // Parse music event info.
+        boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
+        if(musicEvent) {
+            String statusMessage = intent.getStringExtra(MusicStateReceiver.EXTRA_MUSIC_STATUS_MESSAGE);
+            if(!TextUtils.isEmpty(statusMessage)) {
+                sessionHolder.setAutoStatus(statusMessage);
+            } else {
+                sessionHolder.resetAutoStatus();
+            }
+        }
     }
 
     @Override

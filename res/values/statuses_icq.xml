@@ -155,6 +155,7 @@
 
     <integer name="default_base_status">1</integer>
     <integer name="invisible_status">3</integer>
+    <integer name="music_status">21</integer>
 
     <integer-array name="status_connect_icq">
         <item>1</item>

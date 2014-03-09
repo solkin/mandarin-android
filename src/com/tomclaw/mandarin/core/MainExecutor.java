@@ -29,4 +29,14 @@ public class MainExecutor {
             mainHandler.post(runnable);
         }
     }
+
+    /**
+     * Executes runnable on the main thread after specified delay.
+     *
+     * @param runnable to execute
+     * @param delay delay in milliseconds until the code will be executed
+     */
+    public static void executeLater(Runnable runnable, long delay) {
+        mainHandler.postDelayed(runnable, delay);
+    }
 }

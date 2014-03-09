@@ -203,6 +203,10 @@ public class IcqAccountRoot extends AccountRoot {
         return R.array.status_setup_icq;
     }
 
+    public static int getStatusMusicResource() {
+        return R.integer.music_status;
+    }
+
     @Override
     public int getAccountLayout() {
         return R.layout.account_add_icq;

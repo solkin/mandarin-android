@@ -133,6 +133,7 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentValues.put(GlobalProvider.REQUEST_TAG, accountDbId + SetStateRequest.class.getName());
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setStateRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }

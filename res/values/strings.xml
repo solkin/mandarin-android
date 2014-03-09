@@ -191,4 +191,5 @@
     <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
     <string name="pref_title_send_by_enter">Отправка по Enter</string>
     <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
+    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
 </resources>

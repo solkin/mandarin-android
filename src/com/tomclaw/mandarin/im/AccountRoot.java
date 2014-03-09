@@ -26,6 +26,11 @@ public abstract class AccountRoot implements Unobfuscatable {
     protected String statusMessage;
     protected String avatarHash;
     protected boolean connectingFlag;
+
+    protected boolean isAutoStatus;
+    protected int backupStatusIndex;
+    protected String backupStatusTitle;
+    protected String backupStatusMessage;
     /**
      * Staff
      */
@@ -158,6 +163,46 @@ public abstract class AccountRoot implements Unobfuscatable {
             // Disconnection process is not completed. Let's became offline.
             updateAccountState(StatusUtil.STATUS_OFFLINE, false);
         }
+    }
+
+    public void setAutoStatus(int statusIndex, String statusTitle, String statusMessage) {
+        // Checking for we are here right now.
+        if(!isOffline()) {
+            // Backup manual user status.
+            backupStatus();
+            // Update current status.
+            setStatus(statusIndex, statusTitle, statusMessage);
+        }
+    }
+
+    public void resetAutoStatus() {
+        // Trying to restore status.
+        if(restoreStatus()) {
+            // Status was restored.
+            updateStatus();
+        }
+    }
+
+    private void backupStatus() {
+        // Checking for this is not already auto-status.
+        // In case of auto-status we ready to replace it, but save original.
+        if(!isAutoStatus) {
+            backupStatusIndex = statusIndex;
+            backupStatusTitle = statusTitle;
+            backupStatusMessage = statusMessage;
+            isAutoStatus = true;
+        }
+    }
+
+    private boolean restoreStatus() {
+        if(isAutoStatus) {
+            statusIndex = backupStatusIndex;
+            statusTitle = backupStatusTitle;
+            statusMessage = backupStatusMessage;
+            isAutoStatus = false;
+            return true;
+        }
+        return false;
     }
 
     public abstract void checkCredentials(CredentialsCheckCallback callback);

@@ -58,4 +58,8 @@ public class StatusUtil {
     public static int getDefaultOnlineStatus(String accountType) {
         return getStatusCatalogue(accountType).getConnectStatuses().get(0);
     }
+
+    public static int getMusicStatus(String accountType) throws StatusNotFoundException {
+        return getStatusCatalogue(accountType).getMusicStatus();
+    }
 }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
+import com.tomclaw.mandarin.im.StatusUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +79,24 @@ public class SessionHolder {
             getAccountRoot(accountType, userId).setStatus(statusIndex, statusTitle, statusMessage);
         } catch (AccountNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "Account not found while attempting to change status!");
+        }
+    }
+
+    public void setAutoStatus(String statusMessage) {
+        for (AccountRoot accountRoot : accountRootList) {
+            try {
+                int musicStatusIndex = StatusUtil.getMusicStatus(accountRoot.getAccountType());
+                String statusTitle = StatusUtil.getStatusTitle(accountRoot.getAccountType(), musicStatusIndex);
+                accountRoot.setAutoStatus(musicStatusIndex, statusTitle, statusMessage);
+            } catch (StatusNotFoundException ignored) {
+                // Hm. This account doesn't support music status. Sadly :'(
+            }
+        }
+    }
+
+    public void resetAutoStatus() {
+        for (AccountRoot accountRoot : accountRootList) {
+            accountRoot.resetAutoStatus();
         }
     }
 

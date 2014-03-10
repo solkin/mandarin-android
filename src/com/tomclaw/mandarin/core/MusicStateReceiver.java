@@ -38,9 +38,8 @@ public class MusicStateReceiver extends BroadcastReceiver {
                         Log.d(Settings.LOG_TAG, action + " / " + cmd);
                         Log.d(Settings.LOG_TAG, artist + ":" + album + ":" + track);
                         Log.d(Settings.LOG_TAG, "music active: " + isMusicActive);
-                        Intent serviceIntent = new Intent(context, CoreService.class);
+                        String statusMessage = null;
                         if (!TextUtils.isEmpty(track) && isMusicActive) {
-                            String statusMessage;
                             if(TextUtils.isEmpty(artist)) {
                                 statusMessage = "";
                             } else {
@@ -53,14 +52,25 @@ public class MusicStateReceiver extends BroadcastReceiver {
                                     statusMessage = track;
                                 }
                             }
-                            serviceIntent.putExtra(EXTRA_MUSIC_STATUS_MESSAGE, statusMessage);
                         }
-                        serviceIntent.putExtra(EXTRA_MUSIC_EVENT, true);
-                        context.startService(serviceIntent);
+                        sendEventToService(context, statusMessage);
                     }
                 }
             }, PROCESS_EVENT_DELAY);
         }
+    }
+
+    public static void sendEventToService(Context context) {
+        sendEventToService(context, null);
+    }
+
+    public static void sendEventToService(Context context, String statusMessage) {
+        Intent serviceIntent = new Intent(context, CoreService.class);
+        if(!TextUtils.isEmpty(statusMessage)) {
+            serviceIntent.putExtra(EXTRA_MUSIC_STATUS_MESSAGE, statusMessage);
+        }
+        serviceIntent.putExtra(EXTRA_MUSIC_EVENT, true);
+        context.startService(serviceIntent);
     }
 
     public static boolean isMusicActive(Context context) {

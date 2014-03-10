@@ -196,4 +196,5 @@
     <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
         при включении музыки в системном плеере
     </string>
+    <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
 </resources>

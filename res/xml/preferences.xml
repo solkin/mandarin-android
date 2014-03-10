@@ -61,7 +61,8 @@
                 android:summary="@string/pref_summary_notification_sound"
                 android:title="@string/pref_title_notification_sound"
                 android:key="@string/pref_notification_sound"
-                android:defaultValue="@string/pref_notification_sound_default"/>
+                android:defaultValue="@string/pref_notification_sound_default"
+                android:ringtoneType="notification"/>
         <CheckBoxPreference
                 android:dependency="pref_system_notifications"
                 android:key="@string/pref_vibrate"

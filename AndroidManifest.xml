@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tomclaw.mandarin"
-          android:versionCode="13"
+          android:versionCode="14"
           android:versionName="1.1"
           android:installLocation="auto">
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="14"/>
@@ -23,18 +23,41 @@
                 <action android:name="com.android.music.playstatechanged" />
                 <action android:name="com.android.music.playbackcomplete" />
                 <action android:name="com.android.music.queuechanged" />
-                <action android:name="com.htc.music.metachanged" />
-                <action android:name="fm.last.android.metachanged" />
+
                 <action android:name="com.sec.android.app.music.metachanged" />
-                <action android:name="com.nullsoft.winamp.metachanged" />
-                <action android:name="tunein.player.android.metachanged" />
-                <action android:name="com.amazon.mp3.metachanged" />
-                <action android:name="com.miui.player.metachanged" />
-                <action android:name="com.real.IMP.metachanged" />
-                <action android:name="com.sonyericsson.music.metachanged" />
+                <action android:name="com.sec.android.app.music.playstatechanged" />
+                <action android:name="com.sec.android.app.music.playbackcomplete" />
+                <action android:name="com.sec.android.app.music.queuechanged" />
+
                 <action android:name="com.rdio.android.metachanged" />
-                <action android:name="com.samsung.sec.android.MusicPlayer.metachanged" />
+                <action android:name="com.rdio.android.playstatechanged" />
+                <action android:name="com.rdio.android.playbackcomplete" />
+                <action android:name="com.rdio.android.queuechanged" />
+
                 <action android:name="com.andrew.apollo.metachanged" />
+                <action android:name="com.andrew.apollo.playstatechanged" />
+                <action android:name="com.andrew.apollo.playbackcomplete" />
+                <action android:name="com.andrew.apollo.queuechanged" />
+
+                <action android:name="com.htc.music.metachanged" />
+                <action android:name="com.htc.music.playstatechanged" />
+                <action android:name="com.htc.music.playbackcomplete" />
+                <action android:name="com.htc.music.queuechanged" />
+
+                <action android:name="com.miui.player.metachanged" />
+                <action android:name="com.miui.player.playstatechanged" />
+                <action android:name="com.miui.player.playbackcomplete" />
+                <action android:name="com.miui.player.queuechanged" />
+
+                <action android:name="com.sonyericsson.music.metachanged" />
+                <action android:name="com.sonyericsson.music.playstatechanged" />
+                <action android:name="com.sonyericsson.music.playbackcomplete" />
+                <action android:name="com.sonyericsson.music.queuechanged" />
+
+                <action android:name="com.samsung.sec.android.MusicPlayer.metachanged" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.playstatechanged" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.playbackcomplete" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.queuechanged" />
             </intent-filter>
         </receiver>
         <service android:name=".core.CoreService" android:process=":remote"

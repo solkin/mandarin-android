@@ -217,6 +217,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void insertSmileyText(String smileyText) {
+        smileyText += " ";
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
         String message = getMessageText();

@@ -70,7 +70,7 @@
     <string name="filter_show_all_buddies">Все контакты</string>
     <string name="filter_show_online_only">Только в сети</string>
     <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
-    <string name="account_shutdown">Пожалуйста, подождите немного. Идёт отключение.</string>
+    <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
 
     <string name="count_new_messages">%d новых сообщений</string>
     <string name="do_not_remove">Нет</string>

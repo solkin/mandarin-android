@@ -101,20 +101,6 @@ public class ChatActivity extends ChiefActivity {
         messageText = (EditText) findViewById(R.id.message_text);
         messageText.setText(enteredText);
         messageText.setSelection(enteredText.length());
-        messageText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                PreferenceHelper.setEnteredMessage(ChatActivity.this, s.toString());
-            }
-        });
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -326,6 +312,10 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onDestroy() {
+        if(messageText != null) {
+            String message = messageText.getText().toString();
+            PreferenceHelper.setEnteredMessage(ChatActivity.this, message);
+        }
         super.onDestroy();
     }
 

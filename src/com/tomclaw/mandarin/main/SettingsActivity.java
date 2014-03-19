@@ -49,8 +49,9 @@ public class SettingsActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 finish();
+            }
         }
         return true;
     }
@@ -59,7 +60,6 @@ public class SettingsActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
             // Load the preferences from an XML resource.
             addPreferencesFromResource(R.xml.preferences);
         }

@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
@@ -15,15 +14,13 @@ import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,7 +107,7 @@ public class IcqSession {
                         String tokenA = tokenObject.getString(TOKEN_A);
                         Log.d(Settings.LOG_TAG, "token a = " + tokenA);
                         Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
-                        String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
+                        String sessionKey = StringUtil.getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
                         Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
                         // Update client login result in database.
                         icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
@@ -168,7 +163,7 @@ public class IcqSession {
                     .concat(AMP).concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs), HttpUtil.UTF8_ENCODING));
 
             nameValuePairs.add(new Pair<String, String>("sig_sha256",
-                    getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
+                    StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
             try {
                 // Execute HTTP Post Request
@@ -470,17 +465,6 @@ public class IcqSession {
             icqAccountRoot.carriedOff();
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
-    }
-
-    private static String getHmacSha256Base64(String key, String data)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        final String encryptionAlgorithm = "HmacSHA256";
-        SecretKey secretKey = new SecretKeySpec(data.getBytes(), encryptionAlgorithm);
-        Mac messageAuthenticationCode = Mac.getInstance(encryptionAlgorithm);
-        messageAuthenticationCode.init(secretKey);
-        messageAuthenticationCode.update(key.getBytes());
-        byte[] digest = messageAuthenticationCode.doFinal();
-        return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 
     protected String getStatusTitle(String moodTitle, int statusIndex) {

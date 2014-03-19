@@ -451,7 +451,7 @@ public class QueryHelper {
             // Cycling all the identical buddies in different groups.
             do {
                 int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
+                // String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
                 // Plain buddy modify.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -156,8 +155,7 @@ public class ChatActivity extends ChiefActivity {
 
             @Override
             public void onSmileyClick(String smileyText) {
-                messageText.setText(messageText.getText() + smileyText);
-                messageText.setSelection(messageText.getText().length());
+                insertSmileyText(smileyText);
             }
         };
 
@@ -210,9 +208,26 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
+    private String getMessageText() {
+        Editable editable = messageText.getText();
+        if(editable != null) {
+            return editable.toString();
+        }
+        return "";
+    }
+
+    private void insertSmileyText(String smileyText) {
+        int selectionStart = messageText.getSelectionStart();
+        int selectionEnd = messageText.getSelectionEnd();
+        String message = getMessageText();
+        message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
+        messageText.setText(message);
+        messageText.setSelection(selectionStart + smileyText.length());
+    }
+
     private void sendMessage() {
-        final String message = messageText.getText().toString().trim();
-        Log.d(Settings.LOG_TAG, "Message = " + message);
+        final String message = getMessageText().trim();
+        Log.d(Settings.LOG_TAG, "message = " + message);
         if (!TextUtils.isEmpty(message)) {
             int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             messageText.setText("");
@@ -313,8 +328,7 @@ public class ChatActivity extends ChiefActivity {
     @Override
     protected void onDestroy() {
         if(messageText != null) {
-            String message = messageText.getText().toString();
-            PreferenceHelper.setEnteredMessage(ChatActivity.this, message);
+            PreferenceHelper.setEnteredMessage(ChatActivity.this, getMessageText());
         }
         super.onDestroy();
     }
@@ -349,12 +363,8 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                try {
-                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
-                    onBackPressed();
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
+                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                onBackPressed();
                 return true;
             }
             case R.id.buddy_info_menu: {
@@ -378,8 +388,9 @@ public class ChatActivity extends ChiefActivity {
                 builder.show();
                 return true;
             }
-            default:
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 
@@ -500,9 +511,7 @@ public class ChatActivity extends ChiefActivity {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
             selectionHelper = new SelectionHelper<Integer, Long>();
-            // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
             inflater.inflate(R.menu.chat_history_edit_menu, menu);
             return true;
         }

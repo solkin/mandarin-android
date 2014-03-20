@@ -81,7 +81,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(CLIENT_NAME, CLIENT_NAME_VALUE));
             nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
             nameValuePairs.add(new Pair<String, String>(DEV_ID, DEV_ID_VALUE));
-            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, WimConstants.FORMAT_JSON));
             nameValuePairs.add(new Pair<String, String>(ID_TYPE, "ICQ"));
             nameValuePairs.add(new Pair<String, String>(PASSWORD, icqAccountRoot.getUserPassword()));
             nameValuePairs.add(new Pair<String, String>(LOGIN, icqAccountRoot.getUserId()));
@@ -144,7 +144,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
             nameValuePairs.add(new Pair<String, String>(DEVICE_ID, DEVICE_ID_VALUE));
             nameValuePairs.add(new Pair<String, String>(EVENTS, EVENTS_VALUE));
-            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, WimConstants.FORMAT_JSON));
             nameValuePairs.add(new Pair<String, String>(IMF, "plain"));
             nameValuePairs.add(new Pair<String, String>(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
             nameValuePairs.add(new Pair<String, String>(INVISIBLE, "false"));
@@ -300,7 +300,7 @@ public class IcqSession {
     public String getFetchUrl() {
         return new StringBuilder()
                 .append(icqAccountRoot.getFetchBaseUrl())
-                .append(AMP).append(FORMAT).append(EQUAL).append("json")
+                .append(AMP).append(FORMAT).append(EQUAL).append(WimConstants.FORMAT_JSON)
                 .append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection)
                 .append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis())
                 .append(AMP).append(PEEK).append(EQUAL).append(0).toString();

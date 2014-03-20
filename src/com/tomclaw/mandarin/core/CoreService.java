@@ -11,7 +11,6 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
-import com.tomclaw.mandarin.R;
 
 import java.util.List;
 import java.util.Random;
@@ -35,6 +34,8 @@ public class CoreService extends Service {
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
+
+    public static final int RESTART_TIMEOUT = 5000;
 
     private int serviceState;
     private long serviceCreateTime;
@@ -131,6 +132,13 @@ public class CoreService extends Service {
                 sessionHolder.resetAutoStatus();
             }
         }
+        // Maybe, this is network availability event?
+        boolean networkEvent = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_NETWORK_EVENT, false);
+        boolean isConnected = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_CONNECTIVITY_STATUS, false);
+        if(networkEvent && isConnected) {
+            requestDispatcher.notifyQueue();
+            downloadDispatcher.notifyQueue();
+        }
     }
 
     @Override
@@ -143,7 +151,7 @@ public class CoreService extends Service {
             AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmService.set(
                     AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + 5000,
+                    SystemClock.elapsedRealtime() + RESTART_TIMEOUT,
                     restartServicePendingIntent);
         }
         super.onTaskRemoved(rootIntent);

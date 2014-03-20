@@ -247,4 +247,10 @@ public class RequestDispatcher {
             }
         }
     }
+
+    public void notifyQueue() {
+        synchronized (sync) {
+            sync.notify();
+        }
+    }
 }

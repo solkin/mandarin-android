@@ -198,4 +198,6 @@
         при включении музыки в системном плеере
     </string>
     <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
+    <string name="pref_title_lights">Светодиод</string>
+    <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
 </resources>

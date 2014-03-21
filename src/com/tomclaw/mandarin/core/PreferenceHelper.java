@@ -35,6 +35,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_vibrate, R.bool.pref_vibrate_default);
     }
 
+    public static boolean isLights(Context context) {
+        return getBooleanPreference(context, R.string.pref_lights, R.bool.pref_lights_default);
+    }
+
     public static boolean isAutorun(Context context) {
         return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
     }

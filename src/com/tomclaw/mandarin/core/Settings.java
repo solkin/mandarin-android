@@ -15,7 +15,7 @@ public class Settings {
     public static boolean FORCE_RESTART = true;
     public static String LOG_TAG = "Mandarin";
     public static String DB_NAME = "mandarin_db";
-    public static int DB_VERSION = 1;
+    public static int DB_VERSION = 2;
     public static String GLOBAL_AUTHORITY = "com.tomclaw.mandarin.core.GlobalProvider";
     public static Uri REQUEST_RESOLVER_URI = Uri.parse("content://"
             + GLOBAL_AUTHORITY + "/" + GlobalProvider.REQUEST_TABLE);

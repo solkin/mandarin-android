@@ -56,6 +56,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
     private static int COLUMN_ROSTER_BUDDY_ALPHABET_INDEX;
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
     private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
+    private static int COLUMN_ROSTER_BUDDY_DRAFT;
 
     /**
      * Variables
@@ -140,6 +141,10 @@ public class RosterAlphabetAdapter extends CursorAdapter
         } else {
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
+        // Draft message.
+        String buddyDraft = cursor.getString(COLUMN_ROSTER_BUDDY_DRAFT);
+        view.findViewById(R.id.draft_indicator).setVisibility(
+                TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
         QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
@@ -197,6 +202,7 @@ public class RosterAlphabetAdapter extends CursorAdapter
         COLUMN_ROSTER_BUDDY_ALPHABET_INDEX = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
+        COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
         swapCursor(cursor);
     }
 

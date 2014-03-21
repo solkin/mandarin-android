@@ -241,6 +241,12 @@ public class QueryHelper {
         return queryBuilder.delete(contentResolver, Settings.ACCOUNT_RESOLVER_URI) != 0;
     }
 
+    public static void modifyBuddyDraft(ContentResolver contentResolver, int buddyDbId, String buddyDraft) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_DRAFT, buddyDraft);
+        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+    }
+
     public static void modifyDialog(ContentResolver contentResolver, int buddyDbId, boolean isOpened) {
         modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened);
     }
@@ -651,6 +657,24 @@ public class QueryHelper {
             // Closing cursor.
             cursor.close();
             return buddyNick;
+        }
+        throw new BuddyNotFoundException();
+    }
+
+    public static String getBuddyDraft(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+        // Obtain specified buddy. If exist.
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        // Checking for there is at least one buddy and switching to it.
+        if (cursor.moveToFirst()) {
+            // Obtain necessary column index.
+            int draftColumnIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
+            String buddyDraft = cursor.getString(draftColumnIndex);
+            // Closing cursor.
+            cursor.close();
+            return buddyDraft;
         }
         throw new BuddyNotFoundException();
     }

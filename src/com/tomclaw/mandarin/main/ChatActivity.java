@@ -95,11 +95,18 @@ public class ChatActivity extends ChiefActivity {
         chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
-        String enteredText = PreferenceHelper.getEnteredMessage(this);
+        String enteredText;
+        try {
+            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
+        } catch (BuddyNotFoundException ignored) {
+            enteredText = null;
+        }
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        messageText.setText(enteredText);
-        messageText.setSelection(enteredText.length());
+        if(!TextUtils.isEmpty(enteredText)) {
+            messageText.setText(enteredText);
+            messageText.setSelection(enteredText.length());
+        }
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -329,7 +336,7 @@ public class ChatActivity extends ChiefActivity {
     @Override
     protected void onDestroy() {
         if(messageText != null) {
-            PreferenceHelper.setEnteredMessage(ChatActivity.this, getMessageText());
+            QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
         }
         super.onDestroy();
     }

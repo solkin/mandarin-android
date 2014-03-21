@@ -45,11 +45,20 @@
                     android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
-    <ImageView
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/draft_indicator" android:layout_margin="6dp" android:src="@drawable/draft_message"
-            android:visibility="gone"/>
+            android:layout_height="match_parent" android:gravity="center" android:visibility="gone"
+            android:id="@+id/draft_indicator">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:layout_margin="6dp" android:background="@drawable/draft_indicator"
+                android:textColor="#ffffff" android:textStyle="italic"
+                android:gravity="center" android:visibility="visible" android:minWidth="25dp"
+                android:text="@string/draft_indicator_text"/>
+    </LinearLayout>
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
@@ -59,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/counter_text" android:padding="4dp"
-                android:layout_margin="6dp" android:background="@drawable/counter_background"
+                android:layout_margin="6dp" android:background="@drawable/unread_indicator"
                 android:textColor="#ffffff" android:textStyle="bold"
                 android:gravity="center" android:visibility="visible" android:minWidth="25dp"/>
     </LinearLayout>

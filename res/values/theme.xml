@@ -11,6 +11,8 @@
     <color name="chat_gradient_end">#FFEDEDED</color>
     <color name="smiley_selected_background">#aabababa</color>
     <color name="smiley_selected_stroke">#aa888899</color>
+    <color name="draft_indicator_color">#ff6d6d6d</color>
+    <color name="unread_indicator_color">#ff5aa9dd</color>
     <style name="Theme.Mandarin" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
         <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>

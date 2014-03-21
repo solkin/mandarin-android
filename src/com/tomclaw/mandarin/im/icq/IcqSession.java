@@ -436,8 +436,8 @@ public class IcqSession {
 
                 String buddyStatus = eventData.getString(STATE);
                 String moodIcon = eventData.optString(MOOD_ICON);
-                String statusMessage = eventData.optString(STATUS_MSG);
-                String moodTitle = eventData.optString(MOOD_TITLE);
+                String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
+                String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
 
                 int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                 String statusTitle = getStatusTitle(moodTitle, statusIndex);

@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.main.adapters;
 
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;

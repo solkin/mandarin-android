@@ -44,4 +44,8 @@ public class StringUtil {
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
+
+    public static String unescapeXml(String string) {
+        return Entities.XML.unescape(string);
+    }
 }

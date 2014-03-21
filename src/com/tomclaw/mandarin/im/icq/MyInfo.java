@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
+import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
@@ -49,14 +50,14 @@ public class MyInfo implements Unobfuscatable {
         if (TextUtils.isEmpty(moodTitle)) {
             return "";
         }
-        return moodTitle;
+        return StringUtil.unescapeXml(moodTitle);
     }
 
     public String optStatusMsg() {
         if (TextUtils.isEmpty(statusMsg)) {
             return "";
         }
-        return statusMsg;
+        return StringUtil.unescapeXml(statusMsg);
     }
 
     public String getUserType() {

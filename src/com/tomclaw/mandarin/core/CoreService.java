@@ -143,7 +143,7 @@ public class CoreService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Settings.FORCE_RESTART || Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent restartServiceIntent = new Intent(this, CoreService.class);
 
             PendingIntent restartServicePendingIntent = PendingIntent.getService(

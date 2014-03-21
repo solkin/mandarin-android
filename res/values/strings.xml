@@ -108,6 +108,7 @@
     <string name="buddy_info_copy">Копировать</string>
     <string name="share_buddy_info_via">Поделиться контактом через</string>
     <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+    <string name="status_copied">Текст статуса скопирован в буфер обмена</string>
 
     <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
     <string name="account_info">Профиль</string>

@@ -415,8 +415,8 @@ public class QueryHelper {
     public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isMultiple = false;
-        for(long messageId : messageIds) {
-            if(isMultiple) {
+        for (long messageId : messageIds) {
+            if (isMultiple) {
                 queryBuilder.or();
             } else {
                 isMultiple = true;

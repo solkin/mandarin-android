@@ -136,7 +136,7 @@ public class AccountAddActivity extends ChiefActivity {
             int connectStatus = StatusUtil.getDefaultOnlineStatus(accountRoot.getAccountType());
             getServiceInteraction().updateAccountStatusIndex(
                     accountRoot.getAccountType(), accountRoot.getUserId(), connectStatus);
-            if(isStartHelper()) {
+            if (isStartHelper()) {
                 // We are started as start helper and now
                 // mission is complete, switch off the flag...
                 PreferenceHelper.setShowStartHelper(this, false);
@@ -156,7 +156,7 @@ public class AccountAddActivity extends ChiefActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(
+        InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(userIdEditText.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(userPasswordEditText.getWindowToken(), 0);

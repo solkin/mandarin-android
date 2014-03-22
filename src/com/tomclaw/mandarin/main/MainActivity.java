@@ -31,7 +31,7 @@ public class MainActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         // Check for start helper needs to be shown.
-        if(PreferenceHelper.isShowStartHelper(this)) {
+        if (PreferenceHelper.isShowStartHelper(this)) {
             // This will start
             Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
             accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());

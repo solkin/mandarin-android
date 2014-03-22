@@ -42,7 +42,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
             return REQUEST_PENDING;
         } finally {
             // Trying to disconnect in any case.
-            if(urlConnection != null) {
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }

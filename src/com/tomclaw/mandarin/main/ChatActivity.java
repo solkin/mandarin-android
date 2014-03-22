@@ -62,7 +62,7 @@ public class ChatActivity extends ChiefActivity {
         setContentView(R.layout.chat_activity);
 
         // Checking for we must show keyboard automatically.
-        if(PreferenceHelper.isShowKeyboard(this)) {
+        if (PreferenceHelper.isShowKeyboard(this)) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
 
@@ -103,7 +103,7 @@ public class ChatActivity extends ChiefActivity {
         }
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        if(!TextUtils.isEmpty(enteredText)) {
+        if (!TextUtils.isEmpty(enteredText)) {
             messageText.setText(enteredText);
             messageText.setSelection(enteredText.length());
         }
@@ -128,9 +128,9 @@ public class ChatActivity extends ChiefActivity {
         messageText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                switch(keyCode) {
+                switch (keyCode) {
                     case KeyEvent.KEYCODE_ENTER: {
-                        if(PreferenceHelper.isSendByEnter(ChatActivity.this)) {
+                        if (PreferenceHelper.isSendByEnter(ChatActivity.this)) {
                             sendMessage();
                             return true;
                         }
@@ -194,30 +194,30 @@ public class ChatActivity extends ChiefActivity {
         initPopupView();
 
         ViewTreeObserver treeObserver = chatRoot.getViewTreeObserver();
-        if(treeObserver != null) {
+        if (treeObserver != null) {
             treeObserver.addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
 
-                    @Override
-                    public void onGlobalLayout() {
-                        // This must be refactored.
-                        onGlobalLayoutUpdated();
-                        if(isConfigurationChanging) {
-                            isConfigurationChanging = false;
-                            updateKeyboardHeight(initKeyboardHeight);
-                            smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
-                                    keyboardWidth, keyboardHeight, callback);
-                            smileysPager.setAdapter(smileysAdapter);
+                        @Override
+                        public void onGlobalLayout() {
+                            // This must be refactored.
+                            onGlobalLayoutUpdated();
+                            if (isConfigurationChanging) {
+                                isConfigurationChanging = false;
+                                updateKeyboardHeight(initKeyboardHeight);
+                                smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                                        keyboardWidth, keyboardHeight, callback);
+                                smileysPager.setAdapter(smileysAdapter);
+                            }
                         }
                     }
-                }
             );
         }
     }
 
     private String getMessageText() {
         Editable editable = messageText.getText();
-        if(editable != null) {
+        if (editable != null) {
             return editable.toString();
         }
         return "";
@@ -259,7 +259,7 @@ public class ChatActivity extends ChiefActivity {
         // This must be refactored.
         Rect rect = new Rect();
         chatRoot.getWindowVisibleDisplayFrame(rect);
-        if(chatRoot.getRootView() != null) {
+        if (chatRoot.getRootView() != null) {
             keyboardWidth = chatRoot.getRootView().getWidth();
             int screenHeight = chatRoot.getRootView().getHeight();
             int heightDifference = screenHeight - (rect.bottom);
@@ -319,7 +319,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(
+        InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
     }
@@ -335,7 +335,7 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onDestroy() {
-        if(messageText != null) {
+        if (messageText != null) {
             QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
         }
         super.onDestroy();
@@ -420,7 +420,7 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onBackPressed() {
-        if(popupWindow.isShowing()) {
+        if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         } else {
             Intent intent = new Intent(this, MainActivity.class)
@@ -480,7 +480,7 @@ public class ChatActivity extends ChiefActivity {
     private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
         // This can be executed while activity became invisible to user,
         // so we must check it here. After activity restored, messages will be read automatically.
-        if(!isPaused) {
+        if (!isPaused) {
             TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
                     firstMessageDbId, lastMessageDbId));
         }

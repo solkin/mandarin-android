@@ -17,6 +17,7 @@ class Entities {
             {"lt", "60"}, // < - less-than
             {"gt", "62"}, // > - greater-than
             {"apos", "39"}, // XML apostrophe
+            {"nbsp", "160"}, // space
     };
 
     /**

@@ -168,7 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Yo!
-        switch(oldVersion) {
+        switch (oldVersion) {
             case 1: {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
                         + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_DRAFT + " text");

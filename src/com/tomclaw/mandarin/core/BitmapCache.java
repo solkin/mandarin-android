@@ -51,8 +51,9 @@ public class BitmapCache {
     /**
      * Setup required image by hash on specified image view in background thread.
      * While image loading from disk cache and scaling, on image view will be placed default resource.
-     * @param imageView - image view to show image
-     * @param hash - required image hash
+     *
+     * @param imageView       - image view to show image
+     * @param hash            - required image hash
      * @param defaultResource - default resource to show while original image being loaded and scaled
      */
     public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
@@ -81,9 +82,10 @@ public class BitmapCache {
      * Returns bitmap from memory LRU cache or load image
      * from disk first if there is no image in memory cache.
      * Image of every size will be loaded from disk, scaled and cached!
-     * @param hash - required image hash
-     * @param width - required width
-     * @param height - required height
+     *
+     * @param hash           - required image hash
+     * @param width          - required width
+     * @param height         - required height
      * @param isProportional - proportional scale flag
      * @return Bitmap or null if such image not found.
      */

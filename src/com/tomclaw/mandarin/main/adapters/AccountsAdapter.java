@@ -98,7 +98,7 @@ public class AccountsAdapter extends CursorAdapter implements
         // Setup text values.
         String userId = cursor.getString(COLUMN_USER_ID);
         String userNick = cursor.getString(COLUMN_USER_NICK);
-        if(TextUtils.isEmpty(userNick)) {
+        if (TextUtils.isEmpty(userNick)) {
             userNick = userId;
         }
         ((TextView) view.findViewById(R.id.user_nick)).setText(userNick);

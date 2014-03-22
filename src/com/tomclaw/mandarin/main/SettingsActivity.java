@@ -74,7 +74,7 @@ public class SettingsActivity extends Activity {
             if (TextUtils.equals(key, getString(R.string.pref_music_auto_status))) {
                 // If music is already active and setting is became on, we must notify user.
                 if (MusicStateReceiver.isMusicActive(context)) {
-                    if(PreferenceHelper.isMusicAutoStatus(context)) {
+                    if (PreferenceHelper.isMusicAutoStatus(context)) {
                         Toast.makeText(context, R.string.update_after_track_switch, Toast.LENGTH_SHORT).show();
                     } else {
                         MusicStateReceiver.sendEventToService(context);

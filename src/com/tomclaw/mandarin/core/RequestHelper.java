@@ -21,7 +21,7 @@ public class RequestHelper {
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
-        if(cursor != null) {
+        if (cursor != null) {
             // Cursor may have more than only one entry.
             // TODO: check for at least one buddy present.
             if (cursor.moveToFirst()) {

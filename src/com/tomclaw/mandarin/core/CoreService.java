@@ -113,7 +113,7 @@ public class CoreService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
         // Check for intent is really cool.
-        if(intent != null) {
+        if (intent != null) {
             onIntentReceived(intent);
         }
         return START_STICKY;
@@ -124,9 +124,9 @@ public class CoreService extends Service {
         boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
         // Checking for this is music event and we must process fresh data or
         // music is not longer playing and we must reset auto status.
-        if(musicEvent || !MusicStateReceiver.isMusicActive(this)) {
+        if (musicEvent || !MusicStateReceiver.isMusicActive(this)) {
             String statusMessage = intent.getStringExtra(MusicStateReceiver.EXTRA_MUSIC_STATUS_MESSAGE);
-            if(!TextUtils.isEmpty(statusMessage)) {
+            if (!TextUtils.isEmpty(statusMessage)) {
                 sessionHolder.setAutoStatus(statusMessage);
             } else {
                 sessionHolder.resetAutoStatus();
@@ -135,7 +135,7 @@ public class CoreService extends Service {
         // Maybe, this is network availability event?
         boolean networkEvent = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_NETWORK_EVENT, false);
         boolean isConnected = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_CONNECTIVITY_STATUS, false);
-        if(networkEvent && isConnected) {
+        if (networkEvent && isConnected) {
             requestDispatcher.notifyQueue();
             downloadDispatcher.notifyQueue();
         }

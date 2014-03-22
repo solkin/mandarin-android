@@ -212,7 +212,7 @@ public class HistoryDispatcher {
                             }
                             notificationBuilder.setDefaults(defaults);
                         }
-                        if(PreferenceHelper.isSystemNotifications(context)
+                        if (PreferenceHelper.isSystemNotifications(context)
                                 || PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(0xffff6600, 1000, 1000);
                         }

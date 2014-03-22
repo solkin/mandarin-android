@@ -193,7 +193,7 @@ public class IcqSession {
                         myInfo.setState(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
                                 icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex())));
                         int moodStatusValue = icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex());
-                        if(moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
+                        if (moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
                             myInfo.setMoodIcon(null);
                         } else {
                             myInfo.setMoodIcon(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
@@ -404,7 +404,7 @@ public class IcqSession {
                     }
                     // This will try to create buddy if such is not present
                     // in roster and then retry message insertion.
-                } while(!isProcessed);
+                } while (!isProcessed);
             } catch (JSONException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
             }

@@ -76,14 +76,6 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_send_by_enter, R.bool.pref_send_by_enter_default);
     }
 
-    public static String getEnteredMessage(Context context) {
-        return getStringPreference(context, R.string.pref_entered_message, R.string.pref_entered_message_default);
-    }
-
-    public static void setEnteredMessage(Context context, String value) {
-        setStringPreference(context, R.string.pref_entered_message, value);
-    }
-
     public static boolean isMusicAutoStatus(Context context) {
         return getBooleanPreference(context, R.string.pref_music_auto_status, R.bool.pref_music_auto_status_default);
     }

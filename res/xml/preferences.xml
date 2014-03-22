@@ -9,6 +9,11 @@
                 android:summary="@string/pref_summary_autorun"
                 android:title="@string/pref_title_autorun"
                 android:defaultValue="@bool/pref_autorun_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_music_auto_status"
+                android:summary="@string/pref_summary_music_auto_status"
+                android:title="@string/pref_title_music_auto_status"
+                android:defaultValue="@bool/pref_music_auto_status_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_buddy_list_title"
@@ -27,6 +32,20 @@
                 android:summary="@string/pref_summary_collapse_messages"
                 android:title="@string/pref_title_collapse_messages"
                 android:defaultValue="@bool/pref_collapse_messages_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_chat_background"
+                android:title="@string/pref_title_chat_background"
+                android:defaultValue="@bool/pref_chat_background_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_chat_show_keyboard"
+                android:summary="@string/pref_summary_chat_show_keyboard"
+                android:title="@string/pref_title_chat_show_keyboard"
+                android:defaultValue="@bool/pref_chat_show_keyboard_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_send_by_enter"
+                android:summary="@string/pref_summary_send_by_enter"
+                android:title="@string/pref_title_send_by_enter"
+                android:defaultValue="@bool/pref_send_by_enter_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_notifications_title"
@@ -42,7 +61,8 @@
                 android:summary="@string/pref_summary_notification_sound"
                 android:title="@string/pref_title_notification_sound"
                 android:key="@string/pref_notification_sound"
-                android:defaultValue="@string/pref_notification_sound_default"/>
+                android:defaultValue="@string/pref_notification_sound_default"
+                android:ringtoneType="notification"/>
         <CheckBoxPreference
                 android:dependency="pref_system_notifications"
                 android:key="@string/pref_vibrate"

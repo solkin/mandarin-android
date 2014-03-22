@@ -10,9 +10,5 @@
             android:layout_height="match_parent"
             android:id="@+id/roster_list_view"
             android:layout_gravity="center"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:longClickable="true"
             android:choiceMode="multipleChoice"/>
 </LinearLayout>

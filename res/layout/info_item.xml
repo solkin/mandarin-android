@@ -8,10 +8,14 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/info_title" android:textStyle="bold" android:paddingRight="4dp"/>
+            android:id="@+id/info_title"
+            android:paddingRight="4dp"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="all"
-            android:id="@+id/info_value"/>
+            android:id="@+id/info_value"
+            android:textSize="15sp"/>
 </LinearLayout>

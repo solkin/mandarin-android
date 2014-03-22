@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.util.SparseArray;
 import com.tomclaw.mandarin.R;
 
 import java.util.HashMap;
@@ -28,9 +30,10 @@ public class SmileyParser {
     }
 
     public static void init(Context context) {
-        //GH - added a null check so instances will get reused
-        if (sInstance == null)
+        // GH - added a null check so instances will get reused
+        if (sInstance == null) {
             sInstance = new SmileyParser(context);
+        }
     }
 
     public static void destroyInstance() {
@@ -44,12 +47,15 @@ public class SmileyParser {
     private final TypedArray mSmileyDrawables;
     private final Pattern mPattern;
     private final HashMap<String, Integer> mSmileyToRes;
+    private final SparseArray<String> mResToSmileys;
 
     private SmileyParser(Context context) {
         mContext = context;
         mSmileyTexts = mContext.getResources().getStringArray(DEFAULT_SMILEY_TEXTS);
         mSmileyDrawables = mContext.getResources().obtainTypedArray(DEFAULT_SMILEY_IMAGES);
-        mSmileyToRes = buildSmileyToRes();
+        mSmileyToRes = new HashMap<String, Integer>();
+        mResToSmileys = new SparseArray<String>();
+        buildSmileys();
         mPattern = buildPattern();
     }
 
@@ -60,19 +66,20 @@ public class SmileyParser {
      * Builds the hashtable we use for mapping the string version
      * of a smiley (e.g. ":-)") to a resource ID for the icon version.
      */
-    private HashMap<String, Integer> buildSmileyToRes() {
+    private void buildSmileys() {
         if (mSmileyDrawables.length() != mSmileyTexts.length) {
             // Throw an exception if someone updated DEFAULT_SMILEY_RES_IDS
             // and failed to update arrays.xml
             throw new IllegalStateException("Smiley resource ID/text mismatch");
         }
 
-        HashMap<String, Integer> smileyToRes = new HashMap<String, Integer>(mSmileyTexts.length);
         for (int i = 0; i < mSmileyTexts.length; i++) {
-            smileyToRes.put(mSmileyTexts[i], mSmileyDrawables.getResourceId(i, 0));
+            int resourceId = mSmileyDrawables.getResourceId(i, 0);
+            mSmileyToRes.put(mSmileyTexts[i], resourceId);
+            if(TextUtils.isEmpty(mResToSmileys.get(resourceId))) {
+                mResToSmileys.put(resourceId, mSmileyTexts[i]);
+            }
         }
-
-        return smileyToRes;
     }
 
     /**
@@ -117,5 +124,17 @@ public class SmileyParser {
         }
 
         return builder;
+    }
+
+    public int getSmileysCount() {
+        return mResToSmileys.size();
+    }
+
+    public int getSmiley(int index) {
+        return mResToSmileys.keyAt(index);
+    }
+
+    public String getSmileyText(int index) {
+        return mResToSmileys.valueAt(index);
     }
 }

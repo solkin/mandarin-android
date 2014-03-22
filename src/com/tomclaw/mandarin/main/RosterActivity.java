@@ -30,6 +30,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class RosterActivity extends ChiefActivity {
 
     private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
+    private SearchView.OnQueryTextListener onQueryTextListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,19 @@ public class RosterActivity extends ChiefActivity {
             }
         });
         mActionBar.setSelectedNavigationItem(generalAdapter.getRosterFilter());
+
+        onQueryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                generalAdapter.getFilter().filter(newText);
+                return false;
+            }
+        };
     }
 
     @Override
@@ -96,6 +110,7 @@ public class RosterActivity extends ChiefActivity {
         getMenuInflater().inflate(R.menu.roster_activity_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Configure the search info and add any event listeners
+        searchView.setOnQueryTextListener(onQueryTextListener);
         return true;
     }
 

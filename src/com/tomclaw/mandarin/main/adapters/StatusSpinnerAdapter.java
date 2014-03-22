@@ -11,7 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,14 +27,15 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     private final LayoutInflater inflater;
     private final String accountType;
+    private final List<Integer> statusList;
 
     private static final int DROPDOWN_PADDING = 10;
 
-    public StatusSpinnerAdapter(Activity context, String accountType) {
-        super(context, R.layout.status_item, StatusUtil.getConnectStatuses(accountType));
-
-        inflater = context.getLayoutInflater();
+    public StatusSpinnerAdapter(Activity context, String accountType, List<Integer> statusList) {
+        super(context, R.layout.status_item, statusList);
+        inflater = LayoutInflater.from(context);
         this.accountType = accountType;
+        this.statusList = statusList;
     }
 
     @Override
@@ -45,8 +50,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
             }
             bindView(view, statusIndex);
         } catch (Throwable ex) {
-            LayoutInflater mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = mInflater.inflate(R.layout.status_item, parent, false);
+            view = inflater.inflate(R.layout.status_item, parent, false);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return view;
@@ -73,5 +77,13 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
 
     public int getStatus(int position) {
         return getItem(position);
+    }
+
+    public int getStatusPosition(int statusValue) throws StatusNotFoundException {
+        int statusPosition = Collections.binarySearch(statusList, statusValue);
+        if (statusPosition < 0) {
+            throw new StatusNotFoundException();
+        }
+        return statusPosition;
     }
 }

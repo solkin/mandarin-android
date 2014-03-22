@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.google.gson.Gson;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
@@ -46,7 +46,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     StatusUtil.STATUS_OFFLINE
             };
             Random random = new Random(System.currentTimeMillis());
-            Gson gson = new Gson();
             for (int a = 0; a < 3 + random.nextInt(5); a++) {
                 IcqAccountRoot accountRoot = new IcqAccountRoot();
                 accountRoot.setUserId(String.valueOf(random.nextInt(999999999)));
@@ -57,8 +56,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
                 cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
                 cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
                 cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-                cv0.put(GlobalProvider.ACCOUNT_BUNDLE, gson.toJson(accountRoot));
+                cv0.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
                 for (int i = 1; i <= 4 + random.nextInt(3); i++) {
                     int groupId = (random.nextInt(10) == 1) ? GlobalProvider.GROUP_ID_RECYCLE : i;
@@ -86,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, 0);
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, nick.toUpperCase());
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         int unreadCount = 0;
                         if (isDialog) {
@@ -102,7 +104,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         24 * 60 * 60 * 1000 - 10);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, isRead ? 1 : 0);
                                 cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, generateRandomText(random));
+                                String message = generateRandomText(random);
+                                cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
+                                cv3.put(GlobalProvider.HISTORY_SEARCH_FIELD, message.toUpperCase());
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }

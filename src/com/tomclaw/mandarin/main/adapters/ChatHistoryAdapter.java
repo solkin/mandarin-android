@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -22,6 +22,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 
 import java.text.SimpleDateFormat;
@@ -69,15 +70,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_ROW_AUTO_ID;
 
     private Context context;
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
     private LoaderManager loaderManager;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
         super(context, null, 0x00);
         this.context = context;
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflater = LayoutInflater.from(context);
         this.loaderManager = loaderManager;
         setBuddyDbId(buddyBdId);
+        setFilterQueryProvider(new ChatFilterQueryProvider());
         // Initialize smileys.
         SmileyParser.init(context);
     }
@@ -98,9 +100,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        return new CursorLoader(context, Settings.HISTORY_RESOLVER_URI, null,
-                GlobalProvider.HISTORY_BUDDY_DB_ID + "='" + buddyDbId + "'", null,
-                GlobalProvider.ROW_AUTO_ID + " ASC");
+        return getDefaultQueryBuilder().createCursorLoader(context, Settings.HISTORY_RESOLVER_URI);
     }
 
     @Override
@@ -120,7 +120,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        swapCursor(null);
+        Cursor cursor = swapCursor(null);
+        // Maybe, previous non-closed cursor present?
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     /**
@@ -128,20 +132,21 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Cursor cursor = getCursor();
         View view;
         try {
-            if (!getCursor().moveToPosition(position)) {
+            if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             if (convertView == null) {
-                view = newView(context, getCursor(), parent);
+                view = newView(context, cursor, parent);
             } else {
                 view = convertView;
             }
-            bindView(view, context, getCursor());
+            bindView(view, context, cursor);
         } catch (Throwable ex) {
             if (convertView == null) {
-                view = mInflater.inflate(R.layout.chat_item, parent, false);
+                view = inflater.inflate(R.layout.chat_item, parent, false);
                 Log.d(Settings.LOG_TAG, "create new error view");
             } else {
                 view = convertView;
@@ -165,7 +170,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.chat_item, parent, false);
+        return inflater.inflate(R.layout.chat_item, parent, false);
     }
 
     @Override
@@ -226,15 +231,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     public long getMessageDbId(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
-        if (cursor.moveToPosition(position)) {
-            return cursor.getLong(COLUMN_ROW_AUTO_ID);
+        if (cursor == null || !cursor.moveToPosition(position)) {
+            throw new MessageNotFoundException();
         }
-        throw new MessageNotFoundException();
+        return cursor.getLong(COLUMN_ROW_AUTO_ID);
     }
 
     public String getMessageText(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
-        if (cursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             // Message data.
             int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
             String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
@@ -275,5 +280,23 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private String getFormattedTime(long timestamp) {
         return getTimeFormat().format(timestamp);
+    }
+
+    private QueryBuilder getDefaultQueryBuilder() {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID);
+        return queryBuilder;
+    }
+
+    private class ChatFilterQueryProvider implements FilterQueryProvider {
+
+        @Override
+        public Cursor runQuery(CharSequence constraint) {
+            String searchField = constraint.toString().toUpperCase();
+            QueryBuilder queryBuilder = getDefaultQueryBuilder();
+            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
+            return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
+        }
     }
 }

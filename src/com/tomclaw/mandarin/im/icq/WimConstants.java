@@ -48,6 +48,7 @@ public class WimConstants {
     public static final String AIM_SID = "aimsid";
     public static final String FETCH_BASE_URL = "fetchBaseURL";
     public static final String MY_INFO = "myInfo";
+    public static final String SESSION_ENDED = "sessionEnded";
     public static final String WELL_KNOWN_URLS = "wellKnownUrls";
     public static final String EVENTS_ARRAY = "events";
     public static final String TYPE = "type";
@@ -82,6 +83,7 @@ public class WimConstants {
     public static final String SEND_REQ_ID = "sendReqId";
     public static final String IM_STATES_ARRAY = "imStates";
     public static final String REQUEST_ID = "requestId";
+    public static final String FORMAT_JSON = "json";
     public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",

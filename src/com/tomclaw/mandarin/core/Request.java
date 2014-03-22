@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.app.Service;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +10,7 @@ import com.tomclaw.mandarin.im.AccountRoot;
  * Date: 6/9/13
  * Time: 7:25 PM
  */
-public abstract class Request<A extends AccountRoot> {
+public abstract class Request<A extends AccountRoot> implements Unobfuscatable {
 
     /**
      * Request types

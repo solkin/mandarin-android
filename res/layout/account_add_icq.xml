@@ -4,6 +4,14 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_icq_account"
+            android:padding="6dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light"/>
     <EditText
             android:id="@+id/user_id_field"
             android:layout_width="match_parent"

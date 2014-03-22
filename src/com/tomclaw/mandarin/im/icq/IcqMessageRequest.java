@@ -69,7 +69,7 @@ public class IcqMessageRequest extends WimRequest {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("autoResponse", "false"));
-        params.add(new Pair<String, String>("f", "json"));
+        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<String, String>("message", message));
         params.add(new Pair<String, String>("notifyDelivery", "true"));
         params.add(new Pair<String, String>("offlineIM", "true"));

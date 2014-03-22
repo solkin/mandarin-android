@@ -28,9 +28,6 @@ public class EndSessionRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK || statusCode == WIM_AUTH_REQUIRED) { // TODO: check for other status codes.
             // Session now ended or already ended.
-            getAccountRoot().resetLoginData();
-            getAccountRoot().resetSessionData();
-            getAccountRoot().carriedOff();
             return REQUEST_DELETE;
         }
         // Maybe server is busy or McDonald's.
@@ -47,7 +44,7 @@ public class EndSessionRequest extends WimRequest {
     protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", "json"));
+        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         return params;
     }
 }

@@ -19,6 +19,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_collapse_messages, R.bool.pref_collapse_messages_default);
     }
 
+    public static boolean isShowKeyboard(Context context) {
+        return getBooleanPreference(context, R.string.pref_chat_show_keyboard, R.bool.pref_chat_show_keyboard_default);
+    }
+
     public static boolean isShowTemp(Context context) {
         return getBooleanPreference(context, R.string.pref_show_temp, R.bool.pref_show_temp_default);
     }
@@ -45,14 +49,59 @@ public class PreferenceHelper {
         return Uri.parse(uriValue);
     }
 
+    public static int getChatBackground(Context context) {
+        boolean isChatBackground = getBooleanPreference(context, R.string.pref_chat_background, R.bool.pref_chat_background_default);
+        int backgroundRes;
+        if(isChatBackground) {
+            backgroundRes = R.drawable.chat_background_doodle;
+        } else {
+            backgroundRes = R.drawable.chat_background_gradient;
+        }
+        return backgroundRes;
+    }
+
+    public static boolean isShowStartHelper(Context context) {
+        return getBooleanPreference(context, R.string.pref_show_start_helper, R.bool.pref_show_start_helper_default);
+    }
+
+    public static void setShowStartHelper(Context context, boolean value) {
+        setBooleanPreference(context, R.string.pref_show_start_helper, value);
+    }
+
+    public static boolean isSendByEnter(Context context) {
+        return getBooleanPreference(context, R.string.pref_send_by_enter, R.bool.pref_send_by_enter_default);
+    }
+
+    public static String getEnteredMessage(Context context) {
+        return getStringPreference(context, R.string.pref_entered_message, R.string.pref_entered_message_default);
+    }
+
+    public static void setEnteredMessage(Context context, String value) {
+        setStringPreference(context, R.string.pref_entered_message, value);
+    }
+
+    public static boolean isMusicAutoStatus(Context context) {
+        return getBooleanPreference(context, R.string.pref_music_auto_status, R.bool.pref_music_auto_status_default);
+    }
+
     private static boolean getBooleanPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getBoolean(context.getResources().getString(preferenceKey),
                 context.getResources().getBoolean(defaultValueKey));
     }
 
+    private static void setBooleanPreference(Context context, int preferenceKey, boolean value) {
+        getSharedPreferences(context).edit().putBoolean(context.getResources().getString(preferenceKey),
+                value).commit();
+    }
+
     private static String getStringPreference(Context context, int preferenceKey, int defaultValueKey) {
         return getSharedPreferences(context).getString(context.getResources().getString(preferenceKey),
                 context.getResources().getString(defaultValueKey));
+    }
+
+    private static void setStringPreference(Context context, int preferenceKey, String value) {
+        getSharedPreferences(context).edit().putString(context.getResources().getString(preferenceKey),
+                value).commit();
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {

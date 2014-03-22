@@ -1,11 +1,16 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
-import com.tomclaw.mandarin.im.AccountRoot;
 
 import java.util.List;
 import java.util.Random;
@@ -29,6 +34,8 @@ public class CoreService extends Service {
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
+
+    public static final int RESTART_TIMEOUT = 5000;
 
     private int serviceState;
     private long serviceCreateTime;
@@ -58,10 +65,9 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void addAccount(CoreObject coreObject) throws RemoteException {
-            AccountRoot accountRoot = (AccountRoot) coreObject;
-            Log.d(Settings.LOG_TAG, "add " + accountRoot.getUserId() + " account");
-            sessionHolder.updateAccountRoot(accountRoot);
+        public void holdAccount(int accountDbId) throws RemoteException {
+            Log.d(Settings.LOG_TAG, "hold account " + accountDbId);
+            sessionHolder.holdAccountRoot(accountDbId);
         }
 
         @Override
@@ -70,8 +76,15 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void updateAccountStatus(String accountType, String userId, int statusIndex) throws RemoteException {
+        public void updateAccountStatusIndex(String accountType, String userId,
+                                             int statusIndex) throws RemoteException {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
+        }
+
+        @Override
+        public void updateAccountStatus(String accountType, String userId, int statusIndex,
+                                        String statusTitle, String statusMessage) throws RemoteException {
+            sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
     };
 
@@ -99,7 +112,49 @@ public class CoreService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
+        // Check for intent is really cool.
+        if(intent != null) {
+            onIntentReceived(intent);
+        }
         return START_STICKY;
+    }
+
+    private void onIntentReceived(Intent intent) {
+        // Parse music event info.
+        boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
+        // Checking for this is music event and we must process fresh data or
+        // music is not longer playing and we must reset auto status.
+        if(musicEvent || !MusicStateReceiver.isMusicActive(this)) {
+            String statusMessage = intent.getStringExtra(MusicStateReceiver.EXTRA_MUSIC_STATUS_MESSAGE);
+            if(!TextUtils.isEmpty(statusMessage)) {
+                sessionHolder.setAutoStatus(statusMessage);
+            } else {
+                sessionHolder.resetAutoStatus();
+            }
+        }
+        // Maybe, this is network availability event?
+        boolean networkEvent = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_NETWORK_EVENT, false);
+        boolean isConnected = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_CONNECTIVITY_STATUS, false);
+        if(networkEvent && isConnected) {
+            requestDispatcher.notifyQueue();
+            downloadDispatcher.notifyQueue();
+        }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Intent restartServiceIntent = new Intent(this, CoreService.class);
+
+            PendingIntent restartServicePendingIntent = PendingIntent.getService(
+                    this, 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
+            AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmService.set(
+                    AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + RESTART_TIMEOUT,
+                    restartServicePendingIntent);
+        }
+        super.onTaskRemoved(rootIntent);
     }
 
     @Override

@@ -6,9 +6,9 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import com.crashlytics.android.Crashlytics;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.ExceptionHandler;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
@@ -35,7 +35,7 @@ public abstract class ChiefActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "ChiefActivity onCreate");
         // Release all reports.
-        ((ExceptionHandler) Thread.getDefaultUncaughtExceptionHandler()).releaseReports();
+        Crashlytics.start(this);
 
         super.onCreate(savedInstanceState);
 
@@ -170,7 +170,7 @@ public abstract class ChiefActivity extends Activity {
     protected boolean checkCoreService() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServiceInfoList = manager.getRunningServices(Integer.MAX_VALUE);
-        if(runningServiceInfoList != null) {
+        if (runningServiceInfoList != null) {
             for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
                 if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
                     Log.d(Settings.LOG_TAG, "checkCoreService: exist");

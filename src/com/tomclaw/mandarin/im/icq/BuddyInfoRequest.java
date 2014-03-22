@@ -15,7 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -114,7 +115,7 @@ public class BuddyInfoRequest extends WimRequest {
     protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", "json"));
+        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<String, String>("infoLevel", "mid"));
         params.add(new Pair<String, String>("t", buddyId));
         return params;

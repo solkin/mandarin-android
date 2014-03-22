@@ -16,7 +16,6 @@ public abstract class PleaseWaitTask extends Task {
 
     private final WeakReference<Context> weakContext;
     private WeakReference<ProgressDialog> weakProgressDialog;
-    private int waitStringId = R.string.please_wait;
 
     public PleaseWaitTask(Context context) {
         this.weakContext = new WeakReference<Context>(context);
@@ -31,7 +30,7 @@ public abstract class PleaseWaitTask extends Task {
     public void onPreExecuteMain() {
         Context context = weakContext.get();
         if (context != null) {
-            ProgressDialog progressDialog = ProgressDialog.show(context, null, context.getString(waitStringId));
+            ProgressDialog progressDialog = ProgressDialog.show(context, null, context.getString(getWaitStringId()));
             weakProgressDialog = new WeakReference<ProgressDialog>(progressDialog);
         }
     }
@@ -40,11 +39,15 @@ public abstract class PleaseWaitTask extends Task {
     public void onPostExecuteMain() {
         ProgressDialog progressDialog = weakProgressDialog.get();
         if (progressDialog != null) {
-            progressDialog.hide();
+            progressDialog.dismiss();
         }
     }
 
     public WeakReference<Context> getWeakContext() {
         return weakContext;
+    }
+
+    public int getWaitStringId() {
+        return R.string.please_wait;
     }
 }

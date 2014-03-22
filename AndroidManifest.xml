@@ -1,22 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tomclaw.mandarin"
-          android:versionCode="7"
-          android:versionName="1.0"
+          android:versionCode="14"
+          android:versionName="1.1"
           android:installLocation="auto">
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="14"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application android:name=".main.Mandarin" android:label="@string/app_name"
-                 android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin">
+                 android:icon="@drawable/ic_launcher" android:theme="@style/Theme.Mandarin"
+                 android:allowBackup="true">
         <receiver android:name=".core.BootCompletedReceiver" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>
-        <service android:name=".core.CoreService" android:process=":remote"/>
+        <receiver android:name=".core.ConnectivityReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".core.MusicStateReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.android.music.metachanged" />
+                <action android:name="com.android.music.playstatechanged" />
+                <action android:name="com.android.music.playbackcomplete" />
+                <action android:name="com.android.music.queuechanged" />
+
+                <action android:name="com.sec.android.app.music.metachanged" />
+                <action android:name="com.sec.android.app.music.playstatechanged" />
+                <action android:name="com.sec.android.app.music.playbackcomplete" />
+                <action android:name="com.sec.android.app.music.queuechanged" />
+
+                <action android:name="com.rdio.android.metachanged" />
+                <action android:name="com.rdio.android.playstatechanged" />
+                <action android:name="com.rdio.android.playbackcomplete" />
+                <action android:name="com.rdio.android.queuechanged" />
+
+                <action android:name="com.andrew.apollo.metachanged" />
+                <action android:name="com.andrew.apollo.playstatechanged" />
+                <action android:name="com.andrew.apollo.playbackcomplete" />
+                <action android:name="com.andrew.apollo.queuechanged" />
+
+                <action android:name="com.htc.music.metachanged" />
+                <action android:name="com.htc.music.playstatechanged" />
+                <action android:name="com.htc.music.playbackcomplete" />
+                <action android:name="com.htc.music.queuechanged" />
+
+                <action android:name="com.miui.player.metachanged" />
+                <action android:name="com.miui.player.playstatechanged" />
+                <action android:name="com.miui.player.playbackcomplete" />
+                <action android:name="com.miui.player.queuechanged" />
+
+                <action android:name="com.sonyericsson.music.metachanged" />
+                <action android:name="com.sonyericsson.music.playstatechanged" />
+                <action android:name="com.sonyericsson.music.playbackcomplete" />
+                <action android:name="com.sonyericsson.music.queuechanged" />
+
+                <action android:name="com.samsung.sec.android.MusicPlayer.metachanged" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.playstatechanged" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.playbackcomplete" />
+                <action android:name="com.samsung.sec.android.MusicPlayer.queuechanged" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".core.CoreService" android:process=":remote"
+                 android:label="@string/core_service"/>
         <activity android:name=".main.MainActivity"
                   android:label="@string/app_name"
                   android:launchMode="singleTop"
@@ -37,9 +88,10 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name=".main.StatusActivity"
+        <activity android:name=".main.AccountInfoActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
+                  android:windowSoftInputMode="stateAlwaysHidden"
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.BuddyInfoActivity"
@@ -65,9 +117,16 @@
                   android:windowSoftInputMode="adjustResize"
                   android:configChanges="orientation|screenSize">
         </activity>
+        <activity android:name=".main.AboutActivity"
+                  android:label="@string/info"
+                  android:windowActionBarOverlay="true"
+                  android:windowSoftInputMode="adjustResize"
+                  android:configChanges="orientation|screenSize">
+        </activity>
         <provider android:name=".core.GlobalProvider"
                   android:authorities="com.tomclaw.mandarin.core.GlobalProvider"
                   android:exported="false">
         </provider>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="b94d613b9e798ff9e854d315043fd0f9caf32355"/>
     </application>
 </manifest>

@@ -13,7 +13,7 @@
         <item>@drawable/status_icq_busy</item>
         <item>@drawable/status_icq_busy</item>
         <item>@drawable/status_icq_invisible</item>
-        
+
         <item>@drawable/status_icq_shop</item>
         <item>@drawable/status_icq_duck</item>
         <item>@drawable/status_icq_tired</item>
@@ -151,9 +151,56 @@
         <item>0icqmood84</item>
     </string-array>
 
+    <integer name="mood_offset">11</integer>
+
+    <integer name="default_base_status">1</integer>
+    <integer name="invisible_status">3</integer>
+    <integer name="music_status">21</integer>
+
     <integer-array name="status_connect_icq">
         <item>1</item>
         <item>9</item>
         <item>3</item>
+    </integer-array>
+
+    <integer-array name="status_setup_icq">
+        <item>1</item>
+        <item>3</item>
+        <item>9</item>
+
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+        <item>36</item>
+        <item>37</item>
+        <item>38</item>
+        <item>39</item>
+        <item>40</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
     </integer-array>
 </resources>

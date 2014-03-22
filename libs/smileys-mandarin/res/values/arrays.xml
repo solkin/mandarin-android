@@ -215,6 +215,7 @@
         <item>*Sleep*</item>
         <item>&lt;###20###img041&gt;</item>
     </string-array>
+
     <integer-array name="default_smileys_images">
         <item>@drawable/ab</item>
         <item>@drawable/ab</item>

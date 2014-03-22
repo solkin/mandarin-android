@@ -7,10 +7,9 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
-import com.google.gson.Gson;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -30,7 +29,6 @@ public class RequestDispatcher {
     private final ContentObserver requestObserver;
     private Thread dispatcherThread;
     private final Object sync;
-    private Gson gson;
     private int requestType;
 
     public RequestDispatcher(Service service, SessionHolder sessionHolder, int requestType) {
@@ -45,7 +43,6 @@ public class RequestDispatcher {
         requestObserver = new RequestObserver();
         // Initializing thread.
         sync = new Object();
-        gson = new Gson();
         dispatcherThread = new DispatcherThread();
     }
 
@@ -73,7 +70,7 @@ public class RequestDispatcher {
                  * If status changed to any online - check queue and send associated requests.
                  */
                 accountCursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
-                if(accountCursor != null) {
+                if (accountCursor != null) {
                     accountCursor.registerContentObserver(requestObserver);
                 }
             } while (dispatch(requestCursor, accountCursor));
@@ -181,12 +178,12 @@ public class RequestDispatcher {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
                             // Checking for account online.
-                            if (accountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE) {
+                            if (accountRoot.isOffline()) {
                                 // Account is offline now. Let's send this request later.
                                 continue;
                             }
                             // Preparing request.
-                            Request request = (Request) gson.fromJson(
+                            Request request = (Request) GsonSingleton.getInstance().fromJson(
                                     requestBundle, Class.forName(requestClass));
                             requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
@@ -248,6 +245,12 @@ public class RequestDispatcher {
             synchronized (sync) {
                 sync.notify();
             }
+        }
+    }
+
+    public void notifyQueue() {
+        synchronized (sync) {
+            sync.notify();
         }
     }
 }

@@ -57,6 +57,11 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder likeIgnoreCase(String column, Object object) {
+        select.append("UPPER(").append(column).append(")").append(" LIKE ").append("'%").append(object).append("%'");
+        return this;
+    }
+
     public QueryBuilder and() {
         if (!TextUtils.isEmpty(select)) {
             select.append(" AND ");

@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
@@ -8,7 +7,9 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,6 +43,7 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void connect() {
         Log.d(Settings.LOG_TAG, "icq connection attempt");
+        // TODO: Such thread working model must be rewritten.
         Thread connectThread = new Thread() {
 
             private void sleep() {
@@ -77,6 +79,9 @@ public class IcqAccountRoot extends AccountRoot {
                         }
                         // Attempt to start session.
                         switch (icqSession.startSession()) {
+                            case IcqSession.EXTERNAL_SESSION_OK: {
+                                break;
+                            }
                             case IcqSession.EXTERNAL_SESSION_RATE_LIMIT: {
                                 // Show notification.
                                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
@@ -110,8 +115,67 @@ public class IcqAccountRoot extends AccountRoot {
         RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
     }
 
-    public void updateStatus(int statusIndex) {
+    @Override
+    public void checkCredentials(final CredentialsCheckCallback callback) {
+        // TODO: Such thread working model must be rewritten.
+        Thread credentialsCheckThread = new Thread() {
 
+            private void sleep() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ignored) {
+                    // No need to check.
+                }
+            }
+
+            public void run() {
+                while (!checkLoginReady()) {
+                    switch (icqSession.clientLogin()) {
+                        case IcqSession.EXTERNAL_LOGIN_ERROR:
+                        case IcqSession.EXTERNAL_UNKNOWN: {
+                            callback.onFailed();
+                            return;
+                        }
+                        case IcqSession.INTERNAL_ERROR: {
+                            // Sleep some time.
+                            sleep();
+                            break;
+                        }
+                    }
+                }
+                callback.onPassed();
+            }
+        };
+        credentialsCheckThread.start();
+    }
+
+    public void updateStatus() {
+        RequestHelper.requestSetState(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+                getBaseStatusValue(statusIndex));
+        RequestHelper.requestSetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+                getMoodStatusValue(statusIndex), statusTitle, statusMessage);
+    }
+
+    protected int getBaseStatusValue(int statusIndex) {
+        int moodOffset = getStatusIndex(R.integer.mood_offset);
+        // Checking for status type - base or mood.
+        if (statusIndex >= moodOffset) {
+            statusIndex = getStatusIndex(R.integer.default_base_status);
+        }
+        return statusIndex;
+    }
+
+    protected int getMoodStatusValue(int statusIndex) {
+        int moodOffset = getStatusIndex(R.integer.mood_offset);
+        // Checking for status type - base or mood.
+        if (statusIndex < moodOffset) {
+            statusIndex = SetMoodRequest.STATUS_MOOD_RESET;
+        }
+        return statusIndex;
+    }
+
+    private int getStatusIndex(int resourceId) {
+        return getContext().getResources().getInteger(resourceId);
     }
 
     @Override
@@ -135,17 +199,17 @@ public class IcqAccountRoot extends AccountRoot {
         return R.array.status_connect_icq;
     }
 
+    public static int getStatusSetupResource() {
+        return R.array.status_setup_icq;
+    }
+
+    public static int getStatusMusicResource() {
+        return R.integer.music_status;
+    }
+
     @Override
     public int getAccountLayout() {
         return R.layout.account_add_icq;
-    }
-
-    public void writeInstanceData(Parcel dest) {
-        super.writeInstanceData(dest);
-    }
-
-    public void readInstanceData(Parcel in) {
-        super.readInstanceData(in);
     }
 
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
@@ -159,14 +223,52 @@ public class IcqAccountRoot extends AccountRoot {
         updateAccount();
     }
 
-    public void setStartSessionResult(String aimSid, String fetchBaseUrl,
-                                      MyInfo myInfo, WellKnownUrls wellKnownUrls) {
+    public void setStartSessionResult(String aimSid, String fetchBaseUrl, WellKnownUrls wellKnownUrls) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
-        this.myInfo = myInfo;
         this.wellKnownUrls = wellKnownUrls;
-        // Save account data in database.
-        updateAccount();
+    }
+
+    /**
+     * Updates account brief and status information. Also, updates account info in database.
+     *
+     * @param myInfo - protocol-based object with basic account info.
+     */
+    protected void setMyInfo(MyInfo myInfo) {
+        this.myInfo = myInfo;
+
+        setUserNick(myInfo.getFriendly());
+
+        // Avatar checking and requesting.
+        String buddyIcon = myInfo.getBuddyIcon();
+        if (TextUtils.isEmpty(buddyIcon)) {
+            setAvatarHash(null);
+        } else {
+            if (!TextUtils.equals(getAvatarHash(), HttpUtil.getUrlHash(buddyIcon))) {
+                // Avatar is ready.
+                RequestHelper.requestAccountAvatar(getContentResolver(), CoreService.getAppSession(),
+                        getAccountDbId(), buddyIcon);
+            }
+        }
+
+        // Update account status info.
+        String buddyStatus = myInfo.getState();
+        String moodIcon = myInfo.optMoodIcon();
+        String statusMessage = myInfo.optStatusMsg();
+        String moodTitle = myInfo.optMoodTitle();
+
+        int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
+        String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
+
+        // Heuristic check for invisible state.
+        if (getStatusIndex() == getStatusIndex(R.integer.invisible_status)
+                && statusIndex == getStatusIndex(R.integer.default_base_status)
+                && TextUtils.equals(statusTitle, StatusUtil.getStatusTitle(getAccountType(), getStatusIndex(R.integer.invisible_status)))) {
+            Log.d(Settings.LOG_TAG, "Invisible state detected!");
+        } else if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) { // Checking for we are disconnecting now.
+            // This will update account state and write account into db.
+            updateAccountState(statusIndex, statusTitle, statusMessage, false);
+        }
     }
 
     public boolean checkLoginReady() {
@@ -188,7 +290,6 @@ public class IcqAccountRoot extends AccountRoot {
     public void resetSessionData() {
         aimSid = null;
         fetchBaseUrl = null;
-        myInfo = null;
         wellKnownUrls = null;
     }
 

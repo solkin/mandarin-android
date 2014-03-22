@@ -23,6 +23,8 @@ public class IcqStatusCatalogue extends StatusCatalogue {
         String[] statusValues = context.getResources().getStringArray(IcqAccountRoot.getStatusValuesResource());
         TypedArray statusDrawables = context.getResources().obtainTypedArray(IcqAccountRoot.getStatusDrawablesResource());
         int[] statusConnect = context.getResources().getIntArray(IcqAccountRoot.getStatusConnectResource());
+        int[] statusSetup = context.getResources().getIntArray(IcqAccountRoot.getStatusSetupResource());
+        musicStatus = context.getResources().getInteger(IcqAccountRoot.getStatusMusicResource());
 
         for (int index = 0; index < statusValues.length; index++) {
             Status status = new Status(statusDrawables.getResourceId(index, R.drawable.status_icq_offline),
@@ -32,6 +34,9 @@ public class IcqStatusCatalogue extends StatusCatalogue {
             statusList.add(index, status);
             if (index < statusConnect.length) {
                 connectStatuses.add(statusConnect[index]);
+            }
+            if (index < statusSetup.length) {
+                setupStatuses.add(statusSetup[index]);
             }
         }
     }

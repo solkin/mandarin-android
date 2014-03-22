@@ -1,4 +1,4 @@
 Mandarin-Android
 ================
 
-Android mobile IM client for Molecus and its services
+Android mobile IM client for ICQ (and some more protocols in the future).

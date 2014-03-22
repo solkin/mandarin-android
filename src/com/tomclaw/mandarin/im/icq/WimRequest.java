@@ -3,14 +3,11 @@ package com.tomclaw.mandarin.im.icq;
 import android.util.Log;
 import com.tomclaw.mandarin.core.HttpRequest;
 import com.tomclaw.mandarin.core.Settings;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,26 +20,14 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
     protected static final transient int WIM_OK = 200;
     protected static final transient int WIM_AUTH_REQUIRED = 401;
 
-    // One http client for all Http requests, cause they invokes coherently.
-    protected static final transient HttpClient httpClient;
-
-    static {
-        httpClient = new DefaultHttpClient();
+    @Override
+    protected String getHttpRequestType() {
+        return HttpUtil.GET;
     }
 
     @Override
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    @Override
-    protected HttpRequestBase getHttpRequestBase(String url) {
-        return new HttpGet(url);
-    }
-
-    @Override
-    protected final int parseResponse(HttpResponse httpResponse) throws Throwable {
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
+    protected final int parseResponse(InputStream httpResponseStream) throws Throwable {
+        String responseString = HttpUtil.streamToString(httpResponseStream);
         Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
         return parseJson(new JSONObject(responseString));
     }

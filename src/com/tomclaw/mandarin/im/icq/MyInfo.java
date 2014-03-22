@@ -1,19 +1,26 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.text.TextUtils;
+import com.tomclaw.mandarin.util.Unobfuscatable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
  * Date: 6/17/13
  * Time: 11:34 PM
  */
-public class MyInfo {
+public class MyInfo implements Unobfuscatable {
 
     private String aimId;
     private String displayId;
     private String friendly;
     private String state;
+    private String moodIcon;
+    private String moodTitle;
+    private String statusMsg;
     private String userType;
     private String attachedPhoneNumber;
+    private String buddyIcon;
 
     public String getAimId() {
         return aimId;
@@ -31,11 +38,52 @@ public class MyInfo {
         return state;
     }
 
+    public String optMoodIcon() {
+        if (TextUtils.isEmpty(moodIcon)) {
+            return "";
+        }
+        return moodIcon;
+    }
+
+    public String optMoodTitle() {
+        if (TextUtils.isEmpty(moodTitle)) {
+            return "";
+        }
+        return moodTitle;
+    }
+
+    public String optStatusMsg() {
+        if (TextUtils.isEmpty(statusMsg)) {
+            return "";
+        }
+        return statusMsg;
+    }
+
     public String getUserType() {
         return userType;
     }
 
     public String getAttachedPhoneNumber() {
         return attachedPhoneNumber;
+    }
+
+    public String getBuddyIcon() {
+        return buddyIcon;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setMoodIcon(String moodIcon) {
+        this.moodIcon = moodIcon;
+    }
+
+    public void setMoodTitle(String moodTitle) {
+        this.moodTitle = moodTitle;
+    }
+
+    public void setStatusMsg(String statusMsg) {
+        this.statusMsg = statusMsg;
     }
 }

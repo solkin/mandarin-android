@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mandarin</string>
+    <string name="core_service">Mandarin Core Service</string>
     <string name="menu_search">Поиск</string>
+    <string name="account">Профиль</string>
     <string name="accounts">Профили</string>
     <string name="add_account">Добавить профиль</string>
     <string name="edit_account">Редактировать</string>
@@ -12,17 +14,22 @@
     <string name="user_id">Логин</string>
     <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
+    <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить контакт</string>
-    <string name="create_dialog">Открыть диалог</string>
+    <string name="create_dialog">Создать диалог</string>
     <string name="settings">Настройки</string>
     <string name="info">Информация</string>
-    <string name="feedback">Обратная связь</string>
+    <string name="rate_application">Оценить</string>
     <string name="dialogs">Диалоги</string>
     <string name="close_chat">Закрыть диалог</string>
+    <string name="close_chat_short">Закрыть</string>
     <string name="buddy_info">Анкета</string>
+    <string name="select_all">Выбрать все</string>
     <string name="clear_history">Очистить историю</string>
     <string name="enter_your_message">Ваше сообщение</string>
-    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет навсегда.</string>
+    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет
+        навсегда.
+    </string>
     <string name="select_buddy">Выберите контакт</string>
 
     <string name="status_offline">Не в сети</string>
@@ -38,7 +45,7 @@
     <string name="error_remove_account">Извините, произошла ошибка при удалении профиля</string>
     <string name="recycle">Корзина</string>
     <string name="message_copy">Копировать</string>
-    <string name="message_save">Сохранить</string>
+    <string name="message_remove">Удалить</string>
     <string name="message_share">Поделиться</string>
 
     <string name="clear_history_title">Очистить историю?</string>
@@ -49,13 +56,21 @@
     <string name="selected_items">%d выбрано</string>
     <string name="yes_remove">Удалить</string>
     <string name="remove_accounts_title">Удалить профили?</string>
-    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие нельзя отменить. Продолжить?</string>
+    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие
+        нельзя отменить. Продолжить?
+    </string>
+    <string name="remove_account_title">Удалить профиль?</string>
+    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя
+        отменить. Продолжить?
+    </string>
     <string name="do_not_remove">Нет</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>
     <string name="error_sending_message">Не удалось отправить сообщение!</string>
     <string name="filter_show_all_buddies">Все контакты</string>
     <string name="filter_show_online_only">Только в сети</string>
+    <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
+    <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
 
     <string name="count_new_messages">%d новых сообщений</string>
     <string name="do_not_remove">Нет</string>
@@ -94,6 +109,19 @@
     <string name="share_buddy_info_via">Поделиться контактом через</string>
     <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
 
+    <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
+    <string name="account_info">Профиль</string>
+
+    <string name="account_shutdown">Отключить</string>
+    <string name="account_remove">Удалить</string>
+    <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>
+    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
+    <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
+    <string name="status_message">Подробнее…</string>
+    <string name="apply">Применить</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="clear">Очистить</string>
+
     <string name="friendly_name">Ник</string>
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>
@@ -108,6 +136,8 @@
     <string name="info_no">нет</string>
     <string name="male">муж.</string>
     <string name="female">жен.</string>
+
+    <string name="smiley_item">Смайлик</string>
 
     <string name="status_icq_shop">Магазины</string>
     <string name="status_icq_duck">В ванной</string>
@@ -144,4 +174,27 @@
     <string name="status_icq_in_love">Влюблён</string>
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
+    <string name="no_dialogs_opened">Нажмите на кнопку создания диалога сверху, чтобы начать общаться!</string>
+    <string name="pref_title_chat_background">Фоновая заставка</string>
+    <string name="add_icq_account">Введите, пожалуйста, ваши логин (UIN) и пароль для входа в ICQ и нажмите \"Сохранить\"</string>
+    <string name="app_title">Mandarin IM</string>
+    <string name="tomclaw_software">TomClaw Software</string>
+    <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
+        официальным клиентом ICQ, разрабатывается по многочисленным просьбам и просто из личного интереса автора.
+    </string>
+    <string name="app_year">2014 г.</string>
+    <string name="disconnecting">Отключение…</string>
+    <string name="connecting">Подключение…</string>
+    <string name="invalid_credentials">Извините, Вы ввели неверный логин или пароль. Попробуйте ещё разок.</string>
+    <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
+    <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
+    <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
+    <string name="pref_title_send_by_enter">Отправка по Enter</string>
+    <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
+    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
+    <string name="pref_title_music_auto_status">Музыкальный статус</string>
+    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
+        при включении музыки в системном плеере
+    </string>
+    <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
 </resources>

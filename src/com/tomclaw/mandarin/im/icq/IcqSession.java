@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
@@ -15,15 +14,13 @@ import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +60,7 @@ public class IcqSession {
 
     private static final int timeoutSocket = 70000;
     private static final int timeoutConnection = 60000;
-    private static final int timeoutSession = 600000;
+    private static final int timeoutSession = 900000;
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -86,7 +81,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(CLIENT_NAME, CLIENT_NAME_VALUE));
             nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
             nameValuePairs.add(new Pair<String, String>(DEV_ID, DEV_ID_VALUE));
-            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, WimConstants.FORMAT_JSON));
             nameValuePairs.add(new Pair<String, String>(ID_TYPE, "ICQ"));
             nameValuePairs.add(new Pair<String, String>(PASSWORD, icqAccountRoot.getUserPassword()));
             nameValuePairs.add(new Pair<String, String>(LOGIN, icqAccountRoot.getUserId()));
@@ -112,7 +107,7 @@ public class IcqSession {
                         String tokenA = tokenObject.getString(TOKEN_A);
                         Log.d(Settings.LOG_TAG, "token a = " + tokenA);
                         Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
-                        String sessionKey = getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
+                        String sessionKey = StringUtil.getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
                         Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
                         // Update client login result in database.
                         icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
@@ -149,7 +144,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
             nameValuePairs.add(new Pair<String, String>(DEVICE_ID, DEVICE_ID_VALUE));
             nameValuePairs.add(new Pair<String, String>(EVENTS, EVENTS_VALUE));
-            nameValuePairs.add(new Pair<String, String>(FORMAT, "json"));
+            nameValuePairs.add(new Pair<String, String>(FORMAT, WimConstants.FORMAT_JSON));
             nameValuePairs.add(new Pair<String, String>(IMF, "plain"));
             nameValuePairs.add(new Pair<String, String>(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
             nameValuePairs.add(new Pair<String, String>(INVISIBLE, "false"));
@@ -168,7 +163,7 @@ public class IcqSession {
                     .concat(AMP).concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs), HttpUtil.UTF8_ENCODING));
 
             nameValuePairs.add(new Pair<String, String>("sig_sha256",
-                    getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
+                    StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
             try {
                 // Execute HTTP Post Request
@@ -198,7 +193,7 @@ public class IcqSession {
                         myInfo.setState(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
                                 icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex())));
                         int moodStatusValue = icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex());
-                        if(moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
+                        if (moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
                             myInfo.setMoodIcon(null);
                         } else {
                             myInfo.setMoodIcon(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
@@ -305,7 +300,7 @@ public class IcqSession {
     public String getFetchUrl() {
         return new StringBuilder()
                 .append(icqAccountRoot.getFetchBaseUrl())
-                .append(AMP).append(FORMAT).append(EQUAL).append("json")
+                .append(AMP).append(FORMAT).append(EQUAL).append(WimConstants.FORMAT_JSON)
                 .append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection)
                 .append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis())
                 .append(AMP).append(PEEK).append(EQUAL).append(0).toString();
@@ -409,7 +404,7 @@ public class IcqSession {
                     }
                     // This will try to create buddy if such is not present
                     // in roster and then retry message insertion.
-                } while(!isProcessed);
+                } while (!isProcessed);
             } catch (JSONException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
             }
@@ -441,8 +436,8 @@ public class IcqSession {
 
                 String buddyStatus = eventData.getString(STATE);
                 String moodIcon = eventData.optString(MOOD_ICON);
-                String statusMessage = eventData.optString(STATUS_MSG);
-                String moodTitle = eventData.optString(MOOD_TITLE);
+                String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
+                String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
 
                 int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                 String statusTitle = getStatusTitle(moodTitle, statusIndex);
@@ -470,17 +465,6 @@ public class IcqSession {
             icqAccountRoot.carriedOff();
         }
         Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
-    }
-
-    private static String getHmacSha256Base64(String key, String data)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        final String encryptionAlgorithm = "HmacSHA256";
-        SecretKey secretKey = new SecretKeySpec(data.getBytes(), encryptionAlgorithm);
-        Mac messageAuthenticationCode = Mac.getInstance(encryptionAlgorithm);
-        messageAuthenticationCode.init(secretKey);
-        messageAuthenticationCode.update(key.getBytes());
-        byte[] digest = messageAuthenticationCode.doFinal();
-        return Base64.encodeToString(digest, Base64.NO_WRAP);
     }
 
     protected String getStatusTitle(String moodTitle, int statusIndex) {

@@ -49,8 +49,9 @@ public class SettingsActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 finish();
+            }
         }
         return true;
     }
@@ -59,7 +60,6 @@ public class SettingsActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
             // Load the preferences from an XML resource.
             addPreferencesFromResource(R.xml.preferences);
         }
@@ -74,7 +74,7 @@ public class SettingsActivity extends Activity {
             if (TextUtils.equals(key, getString(R.string.pref_music_auto_status))) {
                 // If music is already active and setting is became on, we must notify user.
                 if (MusicStateReceiver.isMusicActive(context)) {
-                    if(PreferenceHelper.isMusicAutoStatus(context)) {
+                    if (PreferenceHelper.isMusicAutoStatus(context)) {
                         Toast.makeText(context, R.string.update_after_track_switch, Toast.LENGTH_SHORT).show();
                     } else {
                         MusicStateReceiver.sendEventToService(context);

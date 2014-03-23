@@ -70,7 +70,7 @@
     <string name="filter_show_all_buddies">Все контакты</string>
     <string name="filter_show_online_only">Только в сети</string>
     <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
-    <string name="account_shutdown">Пожалуйста, подождите немного. Идёт отключение.</string>
+    <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
 
     <string name="count_new_messages">%d новых сообщений</string>
     <string name="do_not_remove">Нет</string>
@@ -87,8 +87,8 @@
     <string name="pref_notifications_title">Уведомления</string>
     <string name="pref_title_notification_sound">Сигнал уведомления</string>
     <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
-    <string name="pref_title_system_notifications">Системные уведомления</string>
-    <string name="pref_summary_system_notifications">Использовать системные настройки для уведомлений</string>
+    <string name="pref_title_system_notifications">Стандартные уведомления</string>
+    <string name="pref_summary_system_notifications">Использовать стандартные настройки для уведомлений</string>
     <string name="pref_title_vibrate">Вибрация</string>
     <string name="buddy_status">Статус</string>
     <string name="pref_chat_title">Переписка</string>
@@ -108,6 +108,7 @@
     <string name="buddy_info_copy">Копировать</string>
     <string name="share_buddy_info_via">Поделиться контактом через</string>
     <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+    <string name="status_copied">Текст статуса скопирован в буфер обмена</string>
 
     <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
     <string name="account_info">Профиль</string>
@@ -197,4 +198,7 @@
         при включении музыки в системном плеере
     </string>
     <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
+    <string name="pref_title_lights">Светодиод</string>
+    <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
+    <string name="draft_indicator_text">Черновик</string>
 </resources>

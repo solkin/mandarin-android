@@ -13,6 +13,7 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -241,6 +242,12 @@ public class QueryHelper {
         return queryBuilder.delete(contentResolver, Settings.ACCOUNT_RESOLVER_URI) != 0;
     }
 
+    public static void modifyBuddyDraft(ContentResolver contentResolver, int buddyDbId, String buddyDraft) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_DRAFT, buddyDraft);
+        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+    }
+
     public static void modifyDialog(ContentResolver contentResolver, int buddyDbId, boolean isOpened) {
         modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened);
     }
@@ -249,23 +256,6 @@ public class QueryHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
         modifyBuddies(contentResolver, buddyDbIds, contentValues);
-    }
-
-    public static boolean checkDialog(ContentResolver contentResolver, int buddyDbId) {
-        boolean dialogFlag = false;
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-        // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But we will check one and more.
-        if (cursor.moveToFirst()) {
-            dialogFlag = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG)) != 0;
-            // Closing cursor.
-            cursor.close();
-        }
-        // Closing cursor.
-        cursor.close();
-        return dialogFlag;
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages, int buddyDbId,
@@ -409,8 +399,8 @@ public class QueryHelper {
     public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isMultiple = false;
-        for(long messageId : messageIds) {
-            if(isMultiple) {
+        for (long messageId : messageIds) {
+            if (isMultiple) {
                 queryBuilder.or();
             } else {
                 isMultiple = true;
@@ -451,7 +441,7 @@ public class QueryHelper {
             // Cycling all the identical buddies in different groups.
             do {
                 int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
+                // String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
                 // Plain buddy modify.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
@@ -621,38 +611,63 @@ public class QueryHelper {
         removedCursor.close();
     }
 
-    public static int getBuddyAccountDbId(ContentResolver contentResolver, int buddyDbId)
+    private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, QueryBuilder queryBuilder)
             throws BuddyNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-        // Obtain specified buddy. If exist.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Checking for there is at least one buddy and switching to it.
-        if (cursor.moveToFirst()) {
-            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-            // Closing cursor.
-            cursor.close();
-            return accountDbId;
+        BuddyCursor buddyCursor = new BuddyCursor(cursor);
+        if(buddyCursor.moveToFirst()) {
+            return buddyCursor;
         }
         throw new BuddyNotFoundException();
     }
 
+    private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        return getBuddyCursor(contentResolver, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
+    }
+
+    public static int getBuddyAccountDbId(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        try {
+            return buddyCursor.getBuddyAccountDbId();
+        } finally {
+            buddyCursor.close();
+        }
+    }
+
     public static String getBuddyNick(ContentResolver contentResolver, int buddyDbId)
             throws BuddyNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-        // Obtain specified buddy. If exist.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Checking for there is at least one buddy and switching to it.
-        if (cursor.moveToFirst()) {
-            // Obtain necessary column index.
-            int nickColumnIndex = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
-            String buddyNick = cursor.getString(nickColumnIndex);
-            // Closing cursor.
-            cursor.close();
-            return buddyNick;
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        try {
+            return buddyCursor.getBuddyNick();
+        } finally {
+            buddyCursor.close();
         }
-        throw new BuddyNotFoundException();
+    }
+
+    public static String getBuddyDraft(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        try {
+            return buddyCursor.getBuddyDraft();
+        } finally {
+            buddyCursor.close();
+        }
+    }
+
+    public static boolean checkDialog(ContentResolver contentResolver, int buddyDbId) {
+        try {
+            BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+            try {
+                return buddyCursor.getBuddyDialog();
+            } finally {
+                buddyCursor.close();
+            }
+        } catch (BuddyNotFoundException ignored) {
+            // No buddy - no dialog.
+            return false;
+        }
     }
 
     public static String getAccountName(ContentResolver contentResolver, int accountDbId)

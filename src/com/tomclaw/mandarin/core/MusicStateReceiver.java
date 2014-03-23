@@ -22,7 +22,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, final Intent intent) {
-        if(PreferenceHelper.isMusicAutoStatus(context)) {
+        if (PreferenceHelper.isMusicAutoStatus(context)) {
             final WeakReference<Context> contextWeakReference = new WeakReference<Context>(context);
             MainExecutor.executeLater(new Runnable() {
                 @Override
@@ -40,13 +40,13 @@ public class MusicStateReceiver extends BroadcastReceiver {
                         Log.d(Settings.LOG_TAG, "music active: " + isMusicActive);
                         String statusMessage = null;
                         if (!TextUtils.isEmpty(track) && isMusicActive) {
-                            if(TextUtils.isEmpty(artist)) {
+                            if (TextUtils.isEmpty(artist)) {
                                 statusMessage = "";
                             } else {
                                 statusMessage = artist;
                             }
-                            if(!TextUtils.isEmpty(track)) {
-                                if(!TextUtils.isEmpty(statusMessage)) {
+                            if (!TextUtils.isEmpty(track)) {
+                                if (!TextUtils.isEmpty(statusMessage)) {
                                     statusMessage = context.getString(R.string.music_status_pattern, artist, track);
                                 } else {
                                     statusMessage = track;
@@ -66,7 +66,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     public static void sendEventToService(Context context, String statusMessage) {
         Intent serviceIntent = new Intent(context, CoreService.class);
-        if(!TextUtils.isEmpty(statusMessage)) {
+        if (!TextUtils.isEmpty(statusMessage)) {
             serviceIntent.putExtra(EXTRA_MUSIC_STATUS_MESSAGE, statusMessage);
         }
         serviceIntent.putExtra(EXTRA_MUSIC_EVENT, true);

@@ -49,9 +49,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 startActivity(createShareIntent());
                 return true;
             case R.id.buddy_info_copy:
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                clipboardManager.setPrimaryClip(ClipData.newPlainText("", getShareString()));
-                Toast.makeText(this, R.string.buddy_info_copied, Toast.LENGTH_SHORT).show();
+                copyStringToClipboard(getShareString(), R.string.buddy_info_copied);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -70,12 +68,10 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
         // Preparing for action bar.
         ActionBar bar = getActionBar();
-        if (bar != null) {
-            bar.setDisplayShowTitleEnabled(true);
-            bar.setDisplayHomeAsUpEnabled(true);
-            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            bar.setTitle(R.string.buddy_info);
-        }
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setTitle(R.string.buddy_info);
 
         // Initialize info activity layout.
         setContentView(R.layout.buddy_info_activity);
@@ -87,22 +83,27 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         buddyNickView.setText(getBuddyNick());
 
         if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
-            // Status image.
             int statusImageResource = StatusUtil.getStatusDrawable(getAccountType(), getBuddyStatus());
 
-            // Status text.
             if (getBuddyStatus() == StatusUtil.STATUS_OFFLINE
                     || TextUtils.equals(buddyStatusTitle, buddyStatusMessage)) {
                 // Buddy status is offline now or status message is only status title.
                 // No status message could be displayed.
                 buddyStatusMessage = "";
             }
-            SpannableString statusString = new SpannableString(buddyStatusTitle + " " + buddyStatusMessage);
+            final SpannableString statusString = new SpannableString(buddyStatusTitle + " " + buddyStatusMessage);
             statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, buddyStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Yeah, we have status info - so we might show status info.
             findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
-            findViewById(R.id.info_status_content).setVisibility(View.VISIBLE);
+            View statusContent = findViewById(R.id.info_status_content);
+            statusContent.setVisibility(View.VISIBLE);
+            statusContent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    copyStringToClipboard(statusString.toString(), R.string.status_copied);
+                }
+            });
 
             ((ImageView) findViewById(R.id.status_icon)).setImageResource(statusImageResource);
             ((TextView) findViewById(R.id.status_text)).setText(statusString);
@@ -147,5 +148,11 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, getShareString());
         return Intent.createChooser(shareIntent, getString(R.string.share_buddy_info_via));
+    }
+
+    private void copyStringToClipboard(String string, int toastText) {
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("", string));
+        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
     }
 }

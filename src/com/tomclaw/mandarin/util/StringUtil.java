@@ -1,5 +1,13 @@
 package com.tomclaw.mandarin.util;
 
+import android.util.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin
@@ -24,5 +32,20 @@ public class StringUtil {
 
     public static boolean isNumeric(String value) {
         return value.matches(NUMERIC_REGEXP);
+    }
+
+    public static String getHmacSha256Base64(String key, String data)
+            throws NoSuchAlgorithmException, InvalidKeyException {
+        final String encryptionAlgorithm = "HmacSHA256";
+        SecretKey secretKey = new SecretKeySpec(data.getBytes(), encryptionAlgorithm);
+        Mac messageAuthenticationCode = Mac.getInstance(encryptionAlgorithm);
+        messageAuthenticationCode.init(secretKey);
+        messageAuthenticationCode.update(key.getBytes());
+        byte[] digest = messageAuthenticationCode.doFinal();
+        return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    public static String unescapeXml(String string) {
+        return Entities.XML.unescape(string);
     }
 }

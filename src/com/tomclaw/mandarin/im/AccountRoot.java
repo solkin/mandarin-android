@@ -167,7 +167,7 @@ public abstract class AccountRoot implements Unobfuscatable {
 
     public void setAutoStatus(int statusIndex, String statusTitle, String statusMessage) {
         // Checking for we are here right now.
-        if(!isOffline()) {
+        if (!isOffline()) {
             // Backup manual user status.
             backupStatus();
             // Update current status.
@@ -177,7 +177,7 @@ public abstract class AccountRoot implements Unobfuscatable {
 
     public void resetAutoStatus() {
         // Trying to restore status.
-        if(restoreStatus()) {
+        if (restoreStatus()) {
             // Status was restored.
             updateStatus();
         }
@@ -186,7 +186,7 @@ public abstract class AccountRoot implements Unobfuscatable {
     private void backupStatus() {
         // Checking for this is not already auto-status.
         // In case of auto-status we ready to replace it, but save original.
-        if(!isAutoStatus) {
+        if (!isAutoStatus) {
             backupStatusIndex = statusIndex;
             backupStatusTitle = statusTitle;
             backupStatusMessage = statusMessage;
@@ -195,7 +195,7 @@ public abstract class AccountRoot implements Unobfuscatable {
     }
 
     private boolean restoreStatus() {
-        if(isAutoStatus) {
+        if (isAutoStatus) {
             statusIndex = backupStatusIndex;
             statusTitle = backupStatusTitle;
             statusMessage = backupStatusMessage;

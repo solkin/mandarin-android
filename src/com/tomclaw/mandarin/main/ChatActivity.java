@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -63,7 +62,7 @@ public class ChatActivity extends ChiefActivity {
         setContentView(R.layout.chat_activity);
 
         // Checking for we must show keyboard automatically.
-        if(PreferenceHelper.isShowKeyboard(this)) {
+        if (PreferenceHelper.isShowKeyboard(this)) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
 
@@ -96,25 +95,18 @@ public class ChatActivity extends ChiefActivity {
         chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
-        String enteredText = PreferenceHelper.getEnteredMessage(this);
+        String enteredText;
+        try {
+            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
+        } catch (BuddyNotFoundException ignored) {
+            enteredText = null;
+        }
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        messageText.setText(enteredText);
-        messageText.setSelection(enteredText.length());
-        messageText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                PreferenceHelper.setEnteredMessage(ChatActivity.this, s.toString());
-            }
-        });
+        if (!TextUtils.isEmpty(enteredText)) {
+            messageText.setText(enteredText);
+            messageText.setSelection(enteredText.length());
+        }
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -136,9 +128,9 @@ public class ChatActivity extends ChiefActivity {
         messageText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                switch(keyCode) {
+                switch (keyCode) {
                     case KeyEvent.KEYCODE_ENTER: {
-                        if(PreferenceHelper.isSendByEnter(ChatActivity.this)) {
+                        if (PreferenceHelper.isSendByEnter(ChatActivity.this)) {
                             sendMessage();
                             return true;
                         }
@@ -170,8 +162,7 @@ public class ChatActivity extends ChiefActivity {
 
             @Override
             public void onSmileyClick(String smileyText) {
-                messageText.setText(messageText.getText() + smileyText);
-                messageText.setSelection(messageText.getText().length());
+                insertSmileyText(smileyText);
             }
         };
 
@@ -203,30 +194,48 @@ public class ChatActivity extends ChiefActivity {
         initPopupView();
 
         ViewTreeObserver treeObserver = chatRoot.getViewTreeObserver();
-        if(treeObserver != null) {
+        if (treeObserver != null) {
             treeObserver.addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
 
-                    @Override
-                    public void onGlobalLayout() {
-                        // This must be refactored.
-                        onGlobalLayoutUpdated();
-                        if(isConfigurationChanging) {
-                            isConfigurationChanging = false;
-                            updateKeyboardHeight(initKeyboardHeight);
-                            smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
-                                    keyboardWidth, keyboardHeight, callback);
-                            smileysPager.setAdapter(smileysAdapter);
+                        @Override
+                        public void onGlobalLayout() {
+                            // This must be refactored.
+                            onGlobalLayoutUpdated();
+                            if (isConfigurationChanging) {
+                                isConfigurationChanging = false;
+                                updateKeyboardHeight(initKeyboardHeight);
+                                smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                                        keyboardWidth, keyboardHeight, callback);
+                                smileysPager.setAdapter(smileysAdapter);
+                            }
                         }
                     }
-                }
             );
         }
     }
 
+    private String getMessageText() {
+        Editable editable = messageText.getText();
+        if (editable != null) {
+            return editable.toString();
+        }
+        return "";
+    }
+
+    private void insertSmileyText(String smileyText) {
+        smileyText += " ";
+        int selectionStart = messageText.getSelectionStart();
+        int selectionEnd = messageText.getSelectionEnd();
+        String message = getMessageText();
+        message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
+        messageText.setText(message);
+        messageText.setSelection(selectionStart + smileyText.length());
+    }
+
     private void sendMessage() {
-        final String message = messageText.getText().toString().trim();
-        Log.d(Settings.LOG_TAG, "Message = " + message);
+        final String message = getMessageText().trim();
+        Log.d(Settings.LOG_TAG, "message = " + message);
         if (!TextUtils.isEmpty(message)) {
             int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             messageText.setText("");
@@ -250,7 +259,7 @@ public class ChatActivity extends ChiefActivity {
         // This must be refactored.
         Rect rect = new Rect();
         chatRoot.getWindowVisibleDisplayFrame(rect);
-        if(chatRoot.getRootView() != null) {
+        if (chatRoot.getRootView() != null) {
             keyboardWidth = chatRoot.getRootView().getWidth();
             int screenHeight = chatRoot.getRootView().getHeight();
             int heightDifference = screenHeight - (rect.bottom);
@@ -310,7 +319,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(
+        InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(messageText.getWindowToken(), 0);
     }
@@ -326,6 +335,9 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onDestroy() {
+        if (messageText != null) {
+            QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
+        }
         super.onDestroy();
     }
 
@@ -359,12 +371,8 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                try {
-                    QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
-                    onBackPressed();
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
+                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                onBackPressed();
                 return true;
             }
             case R.id.buddy_info_menu: {
@@ -388,8 +396,9 @@ public class ChatActivity extends ChiefActivity {
                 builder.show();
                 return true;
             }
-            default:
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 
@@ -411,7 +420,7 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onBackPressed() {
-        if(popupWindow.isShowing()) {
+        if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         } else {
             Intent intent = new Intent(this, MainActivity.class)
@@ -471,7 +480,7 @@ public class ChatActivity extends ChiefActivity {
     private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
         // This can be executed while activity became invisible to user,
         // so we must check it here. After activity restored, messages will be read automatically.
-        if(!isPaused) {
+        if (!isPaused) {
             TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
                     firstMessageDbId, lastMessageDbId));
         }
@@ -510,9 +519,7 @@ public class ChatActivity extends ChiefActivity {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
             selectionHelper = new SelectionHelper<Integer, Long>();
-            // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
             inflater.inflate(R.menu.chat_history_edit_menu, menu);
             return true;
         }

@@ -9,6 +9,10 @@
     <color name="header_line_color">#E0CCCCCC</color>
     <color name="chat_gradient_start">#FFDBDBDB</color>
     <color name="chat_gradient_end">#FFEDEDED</color>
+    <color name="smiley_selected_background">#aabababa</color>
+    <color name="smiley_selected_stroke">#aa888899</color>
+    <color name="draft_indicator_color">#ff989898</color>
+    <color name="unread_indicator_color">#ff5aa9dd</color>
     <color name="profile_panel_background">#EE232323</color>
     <style name="Theme.Mandarin" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->

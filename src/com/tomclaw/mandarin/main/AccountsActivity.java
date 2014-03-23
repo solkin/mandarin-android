@@ -110,7 +110,7 @@ public class AccountsActivity extends ChiefActivity {
                     if (accountConnecting == 1) {
                         int toastMessage;
                         if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                            toastMessage = R.string.account_shutdown;
+                            toastMessage = R.string.account_shutdowning;
                         } else {
                             toastMessage = R.string.account_connecting;
                         }

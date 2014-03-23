@@ -50,7 +50,7 @@ public abstract class StatusCatalogue {
     }
 
     public int getMusicStatus() throws StatusNotFoundException {
-        if(musicStatus == STATUS_INDEX_INVALID) {
+        if (musicStatus == STATUS_INDEX_INVALID) {
             throw new StatusNotFoundException();
         }
         return musicStatus;

@@ -8,6 +8,7 @@
     <string name="pref_system_notifications">pref_system_notifications</string>
     <string name="pref_notification_sound">pref_notification_sound</string>
     <string name="pref_vibrate">pref_vibrate</string>
+    <string name="pref_lights">pref_lights</string>
     <string name="pref_base_settings">pref_base_settings</string>
     <string name="pref_autorun">pref_autorun</string>
     <string name="pref_chat_background">pref_chat_background</string>
@@ -16,5 +17,4 @@
     <string name="pref_music_auto_status">pref_music_auto_status</string>
 
     <string name="pref_show_start_helper">pref_show_start_helper</string>
-    <string name="pref_entered_message">pref_entered_message</string>
 </resources>

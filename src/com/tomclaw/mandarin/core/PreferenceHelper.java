@@ -35,6 +35,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_vibrate, R.bool.pref_vibrate_default);
     }
 
+    public static boolean isLights(Context context) {
+        return getBooleanPreference(context, R.string.pref_lights, R.bool.pref_lights_default);
+    }
+
     public static boolean isAutorun(Context context) {
         return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
     }
@@ -52,7 +56,7 @@ public class PreferenceHelper {
     public static int getChatBackground(Context context) {
         boolean isChatBackground = getBooleanPreference(context, R.string.pref_chat_background, R.bool.pref_chat_background_default);
         int backgroundRes;
-        if(isChatBackground) {
+        if (isChatBackground) {
             backgroundRes = R.drawable.chat_background_doodle;
         } else {
             backgroundRes = R.drawable.chat_background_gradient;
@@ -70,14 +74,6 @@ public class PreferenceHelper {
 
     public static boolean isSendByEnter(Context context) {
         return getBooleanPreference(context, R.string.pref_send_by_enter, R.bool.pref_send_by_enter_default);
-    }
-
-    public static String getEnteredMessage(Context context) {
-        return getStringPreference(context, R.string.pref_entered_message, R.string.pref_entered_message_default);
-    }
-
-    public static void setEnteredMessage(Context context, String value) {
-        setStringPreference(context, R.string.pref_entered_message, value);
     }
 
     public static boolean isMusicAutoStatus(Context context) {

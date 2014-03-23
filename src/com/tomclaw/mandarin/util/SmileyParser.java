@@ -76,7 +76,7 @@ public class SmileyParser {
         for (int i = 0; i < mSmileyTexts.length; i++) {
             int resourceId = mSmileyDrawables.getResourceId(i, 0);
             mSmileyToRes.put(mSmileyTexts[i], resourceId);
-            if(TextUtils.isEmpty(mResToSmileys.get(resourceId))) {
+            if (TextUtils.isEmpty(mResToSmileys.get(resourceId))) {
                 mResToSmileys.put(resourceId, mSmileyTexts[i]);
             }
         }

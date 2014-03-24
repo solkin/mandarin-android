@@ -113,6 +113,7 @@
     <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
     <string name="account_info">Профиль</string>
 
+    <string name="account_connect">Подключить</string>
     <string name="account_shutdown">Отключить</string>
     <string name="account_remove">Удалить</string>
     <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>

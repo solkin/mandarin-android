@@ -50,13 +50,25 @@
                   android:background="@color/profile_panel_background">
         <ListView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:id="@+id/accounts_list_view"
                 android:layout_gravity="center"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:clickable="true"
                 android:longClickable="true"
-                android:choiceMode="multipleChoiceModal"/>
+                android:choiceMode="multipleChoiceModal"
+                android:layout_weight="1"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <Button android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_connect"/>
+            <Button android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_shutdown"/>
+            <Button android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_account"/>
+        </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

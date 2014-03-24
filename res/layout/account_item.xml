@@ -2,55 +2,45 @@
 
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/activatedBackgroundIndicator">
     <LinearLayout android:id="@+id/user_container"
-                  android:layout_height="match_parent"
+                  android:layout_height="wrap_content"
                   android:layout_weight="1"
-                  android:layout_width="0dp"
-                  android:orientation="horizontal">
-        <ImageView
+                  android:layout_width="match_parent"
+                  android:orientation="vertical">
+        <QuickContactBadge
                 android:contentDescription="@string/account_info"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
                 android:id="@+id/user_badge"
                 android:layout_gravity="center_horizontal|top"
-                android:src="@drawable/ic_default_avatar"/>
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
+                android:src="@drawable/ic_default_avatar" android:layout_marginTop="12dp"/>
+        <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dip">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/user_nick"
-                    android:layout_gravity="left|center_vertical"
-                    android:singleLine="true"
-                    android:textStyle="bold"
-                    android:textSize="16sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/user_status_message"
-                    android:layout_gravity="left|center_vertical"
-                    android:singleLine="true"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-light"/>
-        </LinearLayout>
+                android:layout_marginTop="6dp"
+                android:id="@+id/user_nick_id"
+                android:layout_gravity="center_horizontal"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:gravity="center_horizontal"
+                android:textAppearance="?android:attr/textAppearanceMediumInverse"/>
     </LinearLayout>
-    <ImageView
-            android:contentDescription="@string/buddy_status"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/user_status"
-            android:src="@drawable/status_icq_online"
-            android:layout_gravity="center_vertical"
-            android:clickable="true"
+    <Spinner android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:id="@+id/status_spinner"
+             android:layout_weight="1"
+            style="@android:style/Widget.Holo.Spinner"/>
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/status_text"
+            android:background="@drawable/textfield_holo_dark"
+            android:textAppearance="?android:attr/textAppearanceInverse"
             android:focusable="false"
-            android:padding="10dp"/>
+            android:hint="@string/status_message"/>
 </LinearLayout>

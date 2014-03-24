@@ -5,20 +5,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
@@ -117,6 +112,24 @@ public class MainActivity extends ChiefActivity {
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list
         accountsAdapter = new AccountsAdapter(this, getLoaderManager());
+        accountsAdapter.setOnStatusSelectionListener(new AccountsAdapter.OnStatusSelectionListener() {
+            @Override
+            public void onStatusSelected(String accountType, String userId, int statusIndex) {
+                try {
+                    getServiceInteraction().updateAccountStatusIndex(accountType, userId, statusIndex);
+                    // statusTextView.setText("");
+                } catch (RemoteException ignored) {
+                    Log.d(Settings.LOG_TAG, "Unable to setup status due to remote exception");
+                    Toast.makeText(MainActivity.this, R.string.unable_to_setup_status, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        accountsAdapter.setOnAvatarClickListener(new AccountsAdapter.OnAvatarClickListener() {
+            @Override
+            public void onAvatarClicked(int accountDbId) {
+
+            }
+        });
         // Bind to our new adapter.
         accountsList.setAdapter(accountsAdapter);
     }

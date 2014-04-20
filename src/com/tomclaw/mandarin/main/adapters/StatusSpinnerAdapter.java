@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.adapters;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;

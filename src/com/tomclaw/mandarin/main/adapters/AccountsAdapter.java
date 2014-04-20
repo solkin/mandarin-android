@@ -1,17 +1,17 @@
 package com.tomclaw.mandarin.main.adapters;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Typeface;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +20,6 @@ import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -33,8 +32,6 @@ import com.tomclaw.mandarin.im.StatusUtil;
  */
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final int CONNECTING_STATUS_COLOR_FILTER = 0xaaffffff;
 
     /**
      * Adapter ID
@@ -59,12 +56,12 @@ public class AccountsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private int CONNECTING_STATUS_FILTER;
 
     /**
      * Listeners
      */
     private OnAvatarClickListener onAvatarClickListener;
-    private OnStatusSelectionListener onStatusSelectionListener;
 
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -72,6 +69,7 @@ public class AccountsAdapter extends CursorAdapter implements
         inflater = LayoutInflater.from(context);
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
+        CONNECTING_STATUS_FILTER = context.getResources().getColor(R.color.connecting_status_filter);
     }
 
     @Override
@@ -109,82 +107,40 @@ public class AccountsAdapter extends CursorAdapter implements
         if (TextUtils.isEmpty(userNick)) {
             userNick = userId;
         }
-        ((TextView) view.findViewById(R.id.user_nick_id)).setText(userNick);
+        ((TextView) view.findViewById(R.id.user_nick)).setText(userNick);
+        TextView statusTitleView = ((TextView) view.findViewById(R.id.status_title));
+        TextView statusMessageView = ((TextView) view.findViewById(R.id.status_message));
+        ImageView statusImage = ((ImageView) view.findViewById(R.id.status_icon));
         // Statuses.
         int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
         int isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING);
         final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
 
-        final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(context, accountType,
-                StatusUtil.getSetupStatuses(accountType));
-
-        Spinner statusSpinner = (Spinner) view.findViewById(R.id.status_spinner);
-        statusSpinner.setAdapter(spinnerAdapter);
-
-        String statusString;
-        if (isConnecting == 1) {
-            // userStatus.setColorFilter(CONNECTING_STATUS_COLOR_FILTER);
-            /*statusString = new SpannableString(statusIndex == StatusUtil.STATUS_OFFLINE ?
-                    context.getString(R.string.disconnecting) : context.getString(R.string.connecting));*/
-        } else {
-            // userStatus.clearColorFilter();
-            // Stable status string.
-            String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
-            String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
-            /*if (statusIndex == StatusUtil.STATUS_OFFLINE
-                    || TextUtils.equals(statusTitle, statusMessage)) {
-                // Buddy status is offline now or status message is only status title.
-                // No status message could be displayed.
-                statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
-                statusMessage = "";
-            }
-            statusString = new SpannableString(statusTitle + " " + statusMessage);
-            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-*/
-
-
-            if (!TextUtils.isEmpty(accountType)) {
-                // Status text.
-                if (TextUtils.isEmpty(statusMessage)
-                        && !TextUtils.equals(statusTitle, StatusUtil.getStatusTitle(accountType, statusIndex))) {
-                    // Account status message is empty, but status title don't
-                    // and title is not a default title. Let's show status title
-                    // instead empty status message.
-                    statusString = statusTitle;
-                } else {
-                    statusString = statusMessage;
-                }
-                TextView statusTextView = ((TextView) view.findViewById(R.id.status_text));
-                statusTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // onStatusTextEditClick();
-                    }
-                });
-                statusTextView.setText(statusString);
-                // Setup selected status in spinner.
-                try {
-                    statusSpinner.setSelection(spinnerAdapter.getStatusPosition(statusIndex), false);
-                } catch (StatusNotFoundException ignored) {
-                    // Nothing to do in this case. This may ne produced by incorrect setup status collection.
-                    Log.d(Settings.LOG_TAG, "Status not found in account info: " + statusIndex);
-                }
-            }
+        // Stable status string.
+        String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
+        String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
+        if (statusIndex == StatusUtil.STATUS_OFFLINE
+                || TextUtils.equals(statusTitle, statusMessage)) {
+            // User status is offline now or status message is only status title.
+            // No status message could be displayed.
+            statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
+            statusMessage = "";
         }
 
-        // Setup listener after status spinner preparing to prevent extra callbacks.
-        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(onStatusSelectionListener != null) {
-                    onStatusSelectionListener.onStatusSelected(accountType, userId, spinnerAdapter.getStatus(position));
-                }
-            }
+        statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
+        statusTitleView.setText(statusTitle);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        if(isConnecting == 1) {
+            statusImage.setColorFilter(CONNECTING_STATUS_FILTER);
+            statusMessageView.setText("");
+            statusMessageView.setHint(statusIndex == StatusUtil.STATUS_OFFLINE ?
+                    R.string.disconnecting : R.string.connecting);
+        } else {
+            statusImage.clearColorFilter();
+            statusMessageView.setText(statusMessage);
+            statusMessageView.setHint(R.string.status_message_hint);
+        }
+
 
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
@@ -233,18 +189,9 @@ public class AccountsAdapter extends CursorAdapter implements
         this.onAvatarClickListener = onAvatarClickListener;
     }
 
-    public void setOnStatusSelectionListener(OnStatusSelectionListener onStatusSelectionListener) {
-        this.onStatusSelectionListener = onStatusSelectionListener;
-    }
-
     public interface OnAvatarClickListener {
 
         public void onAvatarClicked(int accountDbId);
-    }
-
-    public interface OnStatusSelectionListener {
-
-        public void onStatusSelected(String accountType, String userId, int statusIndex);
     }
 
 }

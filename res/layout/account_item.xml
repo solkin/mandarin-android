@@ -2,45 +2,66 @@
 
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/activatedBackgroundIndicator">
-    <LinearLayout android:id="@+id/user_container"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:layout_width="match_parent"
-                  android:orientation="vertical">
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:padding="10dp">
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <QuickContactBadge
                 android:contentDescription="@string/account_info"
-                android:layout_width="82dp"
-                android:layout_height="82dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:id="@+id/user_badge"
-                android:layout_gravity="center_horizontal|top"
-                android:src="@drawable/ic_default_avatar" android:layout_marginTop="12dp"/>
+                android:layout_gravity="left|top"
+                android:src="@drawable/ic_default_avatar"/>
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/user_nick"
+                android:fontFamily="sans-serif-light"
                 android:layout_marginTop="6dp"
-                android:id="@+id/user_nick_id"
-                android:layout_gravity="center_horizontal"
-                android:singleLine="true"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:gravity="center_horizontal"
-                android:textAppearance="?android:attr/textAppearanceMediumInverse"/>
+                android:textAppearance="?android:attr/textAppearanceInverse"/>
     </LinearLayout>
-    <Spinner android:layout_width="match_parent"
-             android:layout_height="0dp"
-             android:id="@+id/status_spinner"
-             android:layout_weight="1"
-            style="@android:style/Widget.Holo.Spinner"/>
-    <TextView
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/status_text"
-            android:background="@drawable/textfield_holo_dark"
-            android:textAppearance="?android:attr/textAppearanceInverse"
-            android:focusable="false"
-            android:hint="@string/status_message"/>
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="6dp">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/status_icon"
+                    android:src="@drawable/status_icq_online"
+                    android:contentDescription="@string/buddy_status"/>
+            <TextView
+                    android:id="@+id/status_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="16sp"
+                    android:textAppearance="?android:attr/textAppearanceInverse"
+                    android:text="@string/status_online"/>
+        </LinearLayout>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:id="@+id/status_message"
+                android:fontFamily="sans-serif-light"
+                android:textSize="16sp"
+                android:textAppearance="?android:attr/textAppearanceInverse"
+                android:hint="@string/status_message_hint"/>
+    </LinearLayout>
 </LinearLayout>

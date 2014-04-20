@@ -54,9 +54,6 @@ public class MainActivity extends ChiefActivity {
 
 
         final ActionBar bar = getActionBar();
-        //bar.setDisplayShowHomeEnabled(true);
-        //bar.setDisplayShowTitleEnabled(true);
-        //bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
         bar.setTitle(R.string.dialogs);
@@ -112,22 +109,13 @@ public class MainActivity extends ChiefActivity {
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list
         accountsAdapter = new AccountsAdapter(this, getLoaderManager());
-        accountsAdapter.setOnStatusSelectionListener(new AccountsAdapter.OnStatusSelectionListener() {
-            @Override
-            public void onStatusSelected(String accountType, String userId, int statusIndex) {
-                try {
-                    getServiceInteraction().updateAccountStatusIndex(accountType, userId, statusIndex);
-                    // statusTextView.setText("");
-                } catch (RemoteException ignored) {
-                    Log.d(Settings.LOG_TAG, "Unable to setup status due to remote exception");
-                    Toast.makeText(MainActivity.this, R.string.unable_to_setup_status, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
         accountsAdapter.setOnAvatarClickListener(new AccountsAdapter.OnAvatarClickListener() {
             @Override
             public void onAvatarClicked(int accountDbId) {
-
+                // Account is online and we can show it's brief info.
+                final AccountInfoTask accountInfoTask =
+                        new AccountInfoTask(MainActivity.this, accountDbId);
+                TaskExecutor.getInstance().execute(accountInfoTask);
             }
         });
         // Bind to our new adapter.

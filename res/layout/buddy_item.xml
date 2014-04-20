@@ -38,6 +38,7 @@
                     android:id="@+id/buddy_status_message"
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
+                    android:lines="1"
                     android:textSize="14sp"
                     android:scrollHorizontally="true"
                     android:ellipsize="marquee"

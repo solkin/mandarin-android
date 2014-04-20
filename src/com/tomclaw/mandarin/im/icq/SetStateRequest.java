@@ -22,6 +22,12 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class SetStateRequest extends WimRequest {
 
+    public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
+    public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
+    public static final String STATE_REQUESTED = "state_requested";
+    public static final String STATE_APPLIED = "state_applied";
+    public static final String SET_STATE_SUCCESS = "set_state_success";
+
     private int statusIndex;
 
     public SetStateRequest(int statusIndex) {
@@ -34,8 +40,8 @@ public class SetStateRequest extends WimRequest {
         // Prepare intent for activity.
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
-        intent.putExtra(AccountInfoActivity.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
-        intent.putExtra(AccountInfoActivity.STATE_REQUESTED, statusIndex);
+        intent.putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
+        intent.putExtra(STATE_REQUESTED, statusIndex);
         // Parsing response.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
@@ -50,13 +56,13 @@ public class SetStateRequest extends WimRequest {
                 if (statusIndexApplied == statusIndex) {
                     isSetStateSuccess = true;
                 } else {
-                    intent.putExtra(AccountInfoActivity.STATE_APPLIED, statusIndexApplied);
+                    intent.putExtra(STATE_APPLIED, statusIndexApplied);
                 }
             } catch (StatusNotFoundException ignored) {
                 // No such state? Hm... Really strange default state.
             }
         }
-        intent.putExtra(AccountInfoActivity.SET_STATE_SUCCESS, isSetStateSuccess);
+        intent.putExtra(SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or McDonald's.
         return REQUEST_DELETE;
     }

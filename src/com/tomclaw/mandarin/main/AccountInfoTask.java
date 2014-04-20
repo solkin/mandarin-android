@@ -8,6 +8,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.Task;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 
 import java.lang.ref.WeakReference;
 
@@ -44,15 +45,15 @@ public class AccountInfoTask extends Task {
                     String accountStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE));
                     // Now we ready to start buddy info activity.
                     context.startActivity(new Intent(context, AccountInfoActivity.class)
-                            .putExtra(AccountInfoActivity.ACCOUNT_DB_ID, accountDbId)
-                            .putExtra(AccountInfoActivity.BUDDY_ID, accountId)
-                            .putExtra(AccountInfoActivity.BUDDY_NICK, accountNick)
-                            .putExtra(AccountInfoActivity.BUDDY_AVATAR_HASH, avatarHash)
+                            .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
+                            .putExtra(BuddyInfoRequest.BUDDY_ID, accountId)
+                            .putExtra(BuddyInfoRequest.BUDDY_NICK, accountNick)
+                            .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, avatarHash)
 
-                            .putExtra(AccountInfoActivity.ACCOUNT_TYPE, accountType)
-                            .putExtra(AccountInfoActivity.BUDDY_STATUS, accountStatus)
-                            .putExtra(BuddyInfoActivity.BUDDY_STATUS_TITLE, accountStatusTitle)
-                            .putExtra(BuddyInfoActivity.BUDDY_STATUS_MESSAGE, accountStatusMessage)
+                            .putExtra(BuddyInfoRequest.ACCOUNT_TYPE, accountType)
+                            .putExtra(BuddyInfoRequest.BUDDY_STATUS, accountStatus)
+                            .putExtra(BuddyInfoRequest.BUDDY_STATUS_TITLE, accountStatusTitle)
+                            .putExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE, accountStatusMessage)
                     );
                 }
                 cursor.close();

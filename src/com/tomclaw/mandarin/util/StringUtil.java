@@ -1,6 +1,10 @@
 package com.tomclaw.mandarin.util;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.util.Base64;
+import android.widget.Toast;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -47,5 +51,13 @@ public class StringUtil {
 
     public static String unescapeXml(String string) {
         return Entities.XML.unescape(string);
+    }
+
+
+    public static void copyStringToClipboard(Context context, String string, int toastText) {
+        ClipboardManager clipboardManager = (ClipboardManager)
+                context.getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("", string));
+        Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
     }
 }

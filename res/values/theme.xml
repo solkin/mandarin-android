@@ -14,9 +14,20 @@
     <color name="draft_indicator_color">#ff989898</color>
     <color name="unread_indicator_color">#ff5aa9dd</color>
     <color name="profile_panel_background">#EE232323</color>
+    <color name="button_navbar_normal">#11000000</color>
+    <color name="button_navbar_pressed">#44000000</color>
+    <color name="separator_navbar">#44000000</color>
+    <color name="connecting_status_filter">#aaffffff</color>
     <style name="Theme.Mandarin" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
         <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
         <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item> -->
+    </style>
+    <style name="Button.NavBar" parent="android:Widget.Button">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">#ffdddddd</item>
+        <item name="android:background">@drawable/button_navbar</item>
+        <item name="android:gravity">left|center_vertical</item>
     </style>
 </resources>

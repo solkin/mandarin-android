@@ -26,6 +26,18 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
  */
 public class BuddyInfoRequest extends WimRequest {
 
+    public static final String ACCOUNT_DB_ID = "account_db_id";
+    public static final String ACCOUNT_TYPE = "account_type";
+    public static final String BUDDY_ID = "buddy_id";
+    public static final String BUDDY_NICK = "buddy_nick";
+    public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
+    public static final String BUDDY_STATUS = "buddy_status";
+
+    public static final String NO_INFO_CASE = "no_info_case";
+
+    public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
+    public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
+
     private String buddyId;
 
     /**
@@ -44,8 +56,8 @@ public class BuddyInfoRequest extends WimRequest {
     protected int parseJson(JSONObject response) throws JSONException {
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
-        intent.putExtra(BuddyInfoActivity.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
-        intent.putExtra(BuddyInfoActivity.BUDDY_ID, buddyId);
+        intent.putExtra(ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
+        intent.putExtra(BUDDY_ID, buddyId);
         // Start to JSON parsing.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
@@ -97,7 +109,7 @@ public class BuddyInfoRequest extends WimRequest {
                 putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));
             }
         } else {
-            intent.putExtra(BuddyInfoActivity.NO_INFO_CASE, true);
+            intent.putExtra(NO_INFO_CASE, true);
         }
         // We must send intent in any case,
         // because our request is going to be deleted.

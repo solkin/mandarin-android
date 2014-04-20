@@ -1,8 +1,11 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -14,10 +17,15 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
+import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MainActivity extends ChiefActivity {
 
@@ -51,7 +59,6 @@ public class MainActivity extends ChiefActivity {
         }
 
         setContentView(R.layout.main_activity);
-
 
         final ActionBar bar = getActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
@@ -116,10 +123,83 @@ public class MainActivity extends ChiefActivity {
                 final AccountInfoTask accountInfoTask =
                         new AccountInfoTask(MainActivity.this, accountDbId);
                 TaskExecutor.getInstance().execute(accountInfoTask);
+                closeProfilePanel();
             }
         });
         // Bind to our new adapter.
         accountsList.setAdapter(accountsAdapter);
+        accountsList.setMultiChoiceModeListener(new AccountsMultiChoiceModeListener());
+        accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = accountsAdapter.getCursor();
+                if (cursor != null && cursor.moveToPosition(position)) {
+                    final int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                    final String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
+                    final String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
+                    final int statusIndex = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS));
+                    final int accountConnecting = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING));
+
+                    // Checking for account is connecting now and we must wait for some time.
+                    if (accountConnecting == 1) {
+                        int toastMessage;
+                        if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                            toastMessage = R.string.account_shutdowning;
+                        } else {
+                            toastMessage = R.string.account_connecting;
+                        }
+                        Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Checking for account is offline and we need to connect.
+                        if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                            View connectDialog = getLayoutInflater().inflate(R.layout.connect_dialog, null);
+                            final Spinner statusSpinner = (Spinner) connectDialog.findViewById(R.id.status_spinner);
+
+                            final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
+                                    MainActivity.this, accountType, StatusUtil.getConnectStatuses(accountType));
+                            statusSpinner.setAdapter(spinnerAdapter);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle(R.string.connect_account_title);
+                            builder.setMessage(R.string.connect_account_message);
+                            builder.setView(connectDialog);
+                            builder.setPositiveButton(R.string.connect_yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    try {
+                                        int selectedStatusIndex = spinnerAdapter.getStatus(
+                                                statusSpinner.getSelectedItemPosition());
+                                        // Trying to connect account.
+                                        getServiceInteraction().updateAccountStatusIndex(
+                                                accountType, userId, selectedStatusIndex);
+                                    } catch (RemoteException ignored) {
+                                        // Heh... Nothing to do in this case.
+                                        Toast.makeText(MainActivity.this, R.string.unable_to_connect_account,
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton(R.string.connect_no, null);
+                            builder.show();
+                        } else {
+                            // Account is online and we can show it's brief info.
+                            final AccountInfoTask accountInfoTask =
+                                    new AccountInfoTask(MainActivity.this, accountDbId);
+                            TaskExecutor.getInstance().execute(accountInfoTask);
+                            closeProfilePanel();
+                        }
+                    }
+                }
+            }
+        });
+        Button settingsButton = (Button) findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeProfilePanel();
+                openSettings();
+            }
+        });
     }
 
     @Override
@@ -155,8 +235,7 @@ public class MainActivity extends ChiefActivity {
                 return true;
             }
             case R.id.settings: {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                openSettings();
                 return true;
             }
             case R.id.rate_application: {
@@ -209,6 +288,15 @@ public class MainActivity extends ChiefActivity {
 
     public void onCoreServiceIntent(Intent intent) {
         Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
+    }
+
+    private void closeProfilePanel() {
+        drawerLayout.closeDrawers();
+    }
+
+    private void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
@@ -276,6 +364,62 @@ public class MainActivity extends ChiefActivity {
         } catch (android.content.ActivityNotFoundException ignored) {
             startActivity(new Intent(Intent.ACTION_VIEW,
                     Uri.parse(GOOGLE_PLAY_URI + appPackageName)));
+        }
+    }
+
+    private class AccountsMultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper<Integer, Integer> selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, (int) id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            selectionHelper = new SelectionHelper<Integer, Integer>();
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            inflater.inflate(R.menu.accounts_edit_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.remove_account_menu:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.remove_accounts_title);
+                    builder.setMessage(R.string.remove_accounts_text);
+                    builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Collection<Integer> selectedAccounts = new ArrayList<Integer>(selectionHelper.getSelectedIds());
+                            AccountsRemoveTask task = new AccountsRemoveTask(MainActivity.this, selectedAccounts);
+                            TaskExecutor.getInstance().execute(task);
+                            // Action picked, so close the CAB
+                            mode.finish();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.do_not_remove, null);
+                    builder.show();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
         }
     }
 }

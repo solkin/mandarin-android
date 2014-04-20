@@ -120,6 +120,7 @@
     <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
     <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
     <string name="status_message_hint">Изменить подпись статуса…</string>
+    <string name="click_to_connect_hint">Нажмите здесь для подключения</string>
     <string name="apply">Применить</string>
     <string name="not_now">Не сейчас</string>
     <string name="clear">Очистить</string>

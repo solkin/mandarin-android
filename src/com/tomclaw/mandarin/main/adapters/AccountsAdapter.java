@@ -1,27 +1,24 @@
 package com.tomclaw.mandarin.main.adapters;
 
-import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.CursorAdapter;
+import android.widget.ImageView;
+import android.widget.QuickContactBadge;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 
 /**
@@ -130,16 +127,23 @@ public class AccountsAdapter extends CursorAdapter implements
         statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
         statusTitleView.setText(statusTitle);
 
+        int statusMessageHint;
         if(isConnecting == 1) {
             statusImage.setColorFilter(CONNECTING_STATUS_FILTER);
-            statusMessageView.setText("");
-            statusMessageView.setHint(statusIndex == StatusUtil.STATUS_OFFLINE ?
+            statusMessage = "";
+            statusMessageHint = (statusIndex == StatusUtil.STATUS_OFFLINE ?
                     R.string.disconnecting : R.string.connecting);
         } else {
             statusImage.clearColorFilter();
-            statusMessageView.setText(statusMessage);
-            statusMessageView.setHint(R.string.status_message_hint);
+            if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                statusMessageHint = R.string.click_to_connect_hint;
+            } else {
+                statusMessageHint = R.string.status_message_hint;
+            }
         }
+
+        statusMessageView.setText(statusMessage);
+        statusMessageView.setHint(statusMessageHint);
 
 
         // Avatar.

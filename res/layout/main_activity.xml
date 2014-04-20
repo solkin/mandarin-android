@@ -59,12 +59,16 @@
                 android:longClickable="true"
                 android:choiceMode="multipleChoiceModal"
                 android:layout_weight="1"/>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
             <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/separator_navbar"/>
-            <Button android:layout_width="match_parent"
+            <Button android:id="@+id/settings_button"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings"
                     android:drawableLeft="@drawable/action_settings"
@@ -75,7 +79,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/separator_navbar"/>
-            <Button android:layout_width="match_parent"
+            <Button android:id="@+id/connection_button"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/accounts_shutdown"
                     android:drawableLeft="@drawable/action_shutdown"

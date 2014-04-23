@@ -29,8 +29,9 @@ import java.util.Collection;
 
 public class MainActivity extends ChiefActivity {
 
-    private static String MARKET_URI = "market://details?id=";
-    private static String GOOGLE_PLAY_URI = "http://play.google.com/store/apps/details?id=";
+    private static final String MARKET_URI = "market://details?id=";
+    private static final String GOOGLE_PLAY_URI = "http://play.google.com/store/apps/details?id=";
+    public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
 
     private AccountsAdapter accountsAdapter;
     private RosterDialogsAdapter dialogsAdapter;
@@ -214,7 +215,14 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        int menuResource;
+        // Checking for drawer is opened and show such menu.
+        if(drawerLayout.isDrawerOpen(Gravity.START)) {
+            menuResource = R.menu.accounts_list_menu;
+        } else {
+            menuResource = R.menu.main_activity_menu;
+        }
+        getMenuInflater().inflate(menuResource, menu);
         return true;
     }
 
@@ -225,8 +233,7 @@ public class MainActivity extends ChiefActivity {
         }
         switch (item.getItemId()) {
             case R.id.accounts: {
-                Intent intent = new Intent(this, AccountsActivity.class);
-                startActivity(intent);
+                drawerLayout.openDrawer(Gravity.START);
                 return true;
             }
             case R.id.create_dialog: {
@@ -247,6 +254,11 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
                 return true;
             }
+            case R.id.add_account_menu:
+                Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
+                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
+                return true;
             default: {
                 return super.onOptionsItemSelected(item);
             }

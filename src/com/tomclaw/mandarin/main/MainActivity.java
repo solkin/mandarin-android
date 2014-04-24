@@ -1,32 +1,32 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
-import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
-import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 public class MainActivity extends ChiefActivity {
 
-    private static final String MARKET_URI = "market://details?id=";
-    private static final String GOOGLE_PLAY_URI = "http://play.google.com/store/apps/details?id=";
+    private static final String MARKET_DETAILS_URI = "market://details?id=";
+    private static final String MARKET_DEVELOPER_URI = "market://search?q=";
+    private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
+    private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=";
+
     public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
 
     private RosterDialogsAdapter dialogsAdapter;
@@ -129,6 +129,10 @@ public class MainActivity extends ChiefActivity {
                 rateApplication();
                 return true;
             }
+            case R.id.all_projects: {
+                allProjects();
+                return true;
+            }
             case R.id.info: {
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
@@ -191,10 +195,20 @@ public class MainActivity extends ChiefActivity {
         final String appPackageName = getPackageName();
         try {
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(MARKET_URI + appPackageName)));
+                    Uri.parse(MARKET_DETAILS_URI + appPackageName)));
         } catch (android.content.ActivityNotFoundException ignored) {
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(GOOGLE_PLAY_URI + appPackageName)));
+                    Uri.parse(GOOGLE_PLAY_DETAILS_URI + appPackageName)));
+        }
+    }
+
+    private void allProjects() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(MARKET_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
+        } catch (android.content.ActivityNotFoundException ignored) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(GOOGLE_PLAY_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
         }
     }
 

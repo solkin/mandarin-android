@@ -96,8 +96,8 @@ public class MainActivity extends ChiefActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuResource;
-        // Checking for drawer is opened and show such menu.
-        if(drawerLayout.isDrawerOpen(Gravity.START)) {
+        // Checking for drawer is initialized, opened and show such menu.
+        if(drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
             menuResource = R.menu.accounts_list_menu;
         } else {
             menuResource = R.menu.main_activity_menu;

@@ -33,3 +33,12 @@
 -keepclassmembers class * implements com.tomclaw.mandarin.util.Unobfuscatable {
   <init>(...);
 }
+
+-useuniqueclassmembernames
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
+
+-printseeds seeds.txt
+-printusage unused.txt
+-printmapping mapping.txt

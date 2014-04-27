@@ -505,6 +505,23 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
+    @Override
+    public void startActivity(Intent intent) {
+        try {
+            // First attempt at fixing an HTC broken by evil Apple patents.
+            if (intent.getComponent() != null
+                    && ".HtcLinkifyDispatcherActivity".equals(intent.getComponent().getShortClassName()))
+                intent.setComponent(null);
+            super.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            /*
+             * Probably an HTC broken by evil Apple patents. This is not perfect,
+             * but better than crashing the whole application.
+             */
+            super.startActivity(Intent.createChooser(intent, null));
+        }
+    }
+
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper<Integer, Long> selectionHelper;

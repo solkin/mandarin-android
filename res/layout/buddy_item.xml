@@ -31,7 +31,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"
-                    android:textSize="16sp"/>
+                    android:textSize="17sp"/>
             <com.tomclaw.mandarin.main.views.ScrollingTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:lines="1"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:scrollHorizontally="true"
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"

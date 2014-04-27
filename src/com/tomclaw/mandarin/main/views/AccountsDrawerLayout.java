@@ -10,12 +10,16 @@ import android.database.Cursor;
 import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.AccountInfoTask;
 import com.tomclaw.mandarin.main.AccountsRemoveTask;
@@ -73,7 +77,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
 
         // Accounts list.
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
-        // Creating adapter for accounts list
+        // Creating adapter for accounts list.
         accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
         accountsAdapter.setOnAvatarClickListener(new AccountsAdapter.OnAvatarClickListener() {
             @Override
@@ -97,6 +101,8 @@ public class AccountsDrawerLayout extends DrawerLayout {
                     final String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
                     final String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
                     final int statusIndex = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS));
+                    final String statusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_TITLE));
+                    final String statusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE));
                     final int accountConnecting = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING));
 
                     // Checking for account is connecting now and we must wait for some time.
@@ -107,46 +113,16 @@ public class AccountsDrawerLayout extends DrawerLayout {
                         } else {
                             toastMessage = R.string.account_connecting;
                         }
-                        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show();
                     } else {
                         // Checking for account is offline and we need to connect.
                         if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                            View connectDialog = LayoutInflater.from(getContext()).inflate(R.layout.connect_dialog, null);
-                            final Spinner statusSpinner = (Spinner) connectDialog.findViewById(R.id.status_spinner);
-
-                            final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
-                                    getContext(), accountType, StatusUtil.getConnectStatuses(accountType));
-                            statusSpinner.setAdapter(spinnerAdapter);
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setTitle(R.string.connect_account_title);
-                            builder.setMessage(R.string.connect_account_message);
-                            builder.setView(connectDialog);
-                            builder.setPositiveButton(R.string.connect_yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    try {
-                                        int selectedStatusIndex = spinnerAdapter.getStatus(
-                                                statusSpinner.getSelectedItemPosition());
-                                        // Trying to connect account.
-                                        activity.getServiceInteraction().updateAccountStatusIndex(
-                                                accountType, userId, selectedStatusIndex);
-                                    } catch (RemoteException ignored) {
-                                        // Heh... Nothing to do in this case.
-                                        Toast.makeText(getContext(), R.string.unable_to_connect_account,
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            builder.setNegativeButton(R.string.connect_no, null);
-                            builder.show();
+                            showConnectionDialog(accountType, userId);
                         } else {
-                            // Account is online and we can show it's brief info.
-                            final AccountInfoTask accountInfoTask =
-                                    new AccountInfoTask(getContext(), accountDbId);
-                            TaskExecutor.getInstance().execute(accountInfoTask);
-                            closeAccountsPanel();
+                            // Account is online and we can change status.
+                            showChangeStatusDialog(accountType, userId, statusIndex, statusTitle, statusMessage);
                         }
+                        closeAccountsPanel();
                     }
                 }
             }
@@ -156,7 +132,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), SettingsActivity.class);
-                getContext().startActivity(intent);
+                activity.startActivity(intent);
                 closeAccountsPanel();
             }
         });
@@ -186,6 +162,103 @@ public class AccountsDrawerLayout extends DrawerLayout {
         closeDrawers();
     }
 
+    public void showConnectionDialog(final String accountType, final String userId) {
+        View connectionView = LayoutInflater.from(activity).inflate(R.layout.connect_dialog, null);
+        final Spinner statusSpinner = (Spinner) connectionView.findViewById(R.id.status_spinner);
+
+        final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
+                getContext(), accountType, StatusUtil.getConnectStatuses(accountType));
+        statusSpinner.setAdapter(spinnerAdapter);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(R.string.connect_account_title);
+        builder.setView(connectionView);
+        builder.setPositiveButton(R.string.connect_yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    int selectedStatusIndex = spinnerAdapter.getStatus(
+                            statusSpinner.getSelectedItemPosition());
+                    // Trying to connect account.
+                    activity.getServiceInteraction().updateAccountStatusIndex(
+                            accountType, userId, selectedStatusIndex);
+                } catch (RemoteException ignored) {
+                    // Heh... Nothing to do in this case.
+                    Toast.makeText(activity, R.string.unable_to_connect_account,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.connect_no, null);
+        builder.show();
+    }
+
+    public void showChangeStatusDialog(final String accountType, final String userId,
+                                       int userStatusIndex, String userStatusTitle, String userStatusMessage) {
+        View changeStatusView = LayoutInflater.from(activity).inflate(R.layout.change_status_dialog, null);
+        final Spinner statusSpinner = (Spinner) changeStatusView.findViewById(R.id.status_spinner);
+        final EditText statusMessage = (EditText) changeStatusView.findViewById(R.id.status_message_edit);
+
+        final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
+                getContext(), accountType, StatusUtil.getSetupStatuses(accountType));
+        statusSpinner.setAdapter(spinnerAdapter);
+        // Setup selected status in spinner.
+        try {
+            statusSpinner.setSelection(spinnerAdapter.getStatusPosition(userStatusIndex), false);
+        } catch (StatusNotFoundException ignored) {
+            // Nothing to do in this case. This may be produced by incorrect setup status collection.
+            Log.d(Settings.LOG_TAG, "Status not found in account info: " + userStatusIndex);
+        }
+        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                statusMessage.setText("");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        String statusString;
+        // Status text.
+        if (TextUtils.isEmpty(userStatusMessage)
+                && !TextUtils.equals(userStatusTitle, StatusUtil.getStatusTitle(accountType, userStatusIndex))) {
+            // Account status message is empty, but status title don't
+            // and title is not a default title. Let's show status title
+            // instead empty status message.
+            statusString = userStatusTitle;
+        } else {
+            statusString = userStatusMessage;
+        }
+        statusMessage.setText(statusString);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(R.string.select_status_title);
+        builder.setView(changeStatusView);
+        builder.setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    int selectedStatusIndex = spinnerAdapter.getStatus(
+                            statusSpinner.getSelectedItemPosition());
+                    String statusTitleString = StatusUtil.getStatusTitle(accountType, selectedStatusIndex);
+                    String statusMessageString = statusMessage.getText().toString();
+                    // Trying to connect account.
+                    activity.getServiceInteraction().updateAccountStatus(
+                            accountType, userId, selectedStatusIndex,
+                            statusTitleString, statusMessageString);
+                } catch (RemoteException ignored) {
+                    // Heh... Nothing to do in this case.
+                    Toast.makeText(activity, R.string.unable_to_connect_account,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.connect_no, null);
+        builder.show();
+    }
+
     private class AccountsMultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper<Integer, Integer> selectionHelper;
@@ -193,7 +266,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             selectionHelper.onStateChanged(position, (int) id, checked);
-            mode.setTitle(String.format(getContext().getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+            mode.setTitle(String.format(activity.getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
 
         @Override
@@ -215,7 +288,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.remove_account_menu:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setTitle(R.string.remove_accounts_title);
                     builder.setMessage(R.string.remove_accounts_text);
                     builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {

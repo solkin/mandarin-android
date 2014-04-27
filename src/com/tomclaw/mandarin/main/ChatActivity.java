@@ -149,7 +149,7 @@ public class ChatActivity extends ChiefActivity {
         });
 
         chatRoot = (LinearLayout) findViewById(R.id.chat_root);
-        popupView = getLayoutInflater().inflate(R.layout.smileys_popup, null);
+        popupView = getLayoutInflater().inflate(R.layout.smileys_popup, chatRoot, false);
         smileysFooter = (LinearLayout) findViewById(R.id.smileys_footer);
 
         // Defining default height of keyboard.
@@ -224,7 +224,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void insertSmileyText(String smileyText) {
-        smileyText += " ";
+        smileyText = " " + smileyText + " ";
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
         String message = getMessageText();

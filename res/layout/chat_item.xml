@@ -17,7 +17,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/message_date" android:layout_gravity="center_horizontal" android:paddingBottom="5dp"
                 android:background="@drawable/ic_date_back" android:visibility="visible" android:typeface="normal"
-                android:textSize="16sp"/>
+                android:textSize="@dimen/chat_date_size"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
@@ -34,11 +34,8 @@
                     android:layout_height="wrap_content" android:background="@drawable/ic_inc_bubble"
                     android:id="@+id/inc_bubble_back">
                 <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/inc_text" android:layout_gravity="left|center_vertical"
-                        android:singleLine="false" android:padding="2dp" android:textSize="16sp"
-                        android:autoLink="web"/>
+                        style="@style/Chat.Message"
+                        android:id="@+id/inc_text" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -70,10 +67,9 @@
             <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
                           android:layout_height="wrap_content" android:background="@drawable/ic_out_bubble"
                           android:id="@+id/out_bubble_back" android:layout_gravity="right">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                          android:text="" android:id="@+id/out_text" android:layout_gravity="left|center_vertical"
-                          android:singleLine="false" android:padding="2dp" android:textSize="16sp"
-                          android:autoLink="web"/>
+                <TextView
+                          style="@style/Chat.Message"
+                          android:id="@+id/out_text" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -83,9 +79,8 @@
             android:layout_height="match_parent" android:id="@+id/error_message"
             android:background="@drawable/ic_error_bubble">
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/Chat.Message"
                 android:text="@string/error_bubble"
-                android:id="@+id/error_text" android:padding="2dp" android:textSize="16sp"/>
+                android:id="@+id/error_text" />
     </LinearLayout>
 </LinearLayout>

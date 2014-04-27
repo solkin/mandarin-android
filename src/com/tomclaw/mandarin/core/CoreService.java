@@ -86,6 +86,16 @@ public class CoreService extends Service {
                                         String statusTitle, String statusMessage) throws RemoteException {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
+
+        @Override
+        public void connectAccounts() {
+            sessionHolder.connectAccounts();
+        }
+
+        @Override
+        public void disconnectAccounts() {
+            sessionHolder.disconnectAccounts();
+        }
     };
 
     @Override

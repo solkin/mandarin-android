@@ -219,6 +219,10 @@ public abstract class AccountRoot implements Unobfuscatable {
         return getStatusIndex() == StatusUtil.STATUS_OFFLINE && !isConnecting();
     }
 
+    public boolean isOnline() {
+        return getStatusIndex() != StatusUtil.STATUS_OFFLINE && !isConnecting();
+    }
+
     /**
      * Setup only connecting flag and updates account in database.
      *

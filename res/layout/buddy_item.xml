@@ -5,7 +5,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/activatedBackgroundIndicator">
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:padding="3dp">
     <LinearLayout android:id="@+id/buddy_container"
                   android:layout_height="match_parent"
                   android:layout_weight="1"

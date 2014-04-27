@@ -59,6 +59,7 @@ public class AccountsAdapter extends CursorAdapter implements
      * Listeners
      */
     private OnAvatarClickListener onAvatarClickListener;
+    private OnAccountsStateListener onAccountsStateListener;
 
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -109,9 +110,10 @@ public class AccountsAdapter extends CursorAdapter implements
         TextView statusMessageView = ((TextView) view.findViewById(R.id.status_message));
         ImageView statusImage = ((ImageView) view.findViewById(R.id.status_icon));
         // Statuses.
-        int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
-        int isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING);
+        final int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
+        final boolean isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1;
         final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
+        final boolean isConnected = (!isConnecting && statusIndex != StatusUtil.STATUS_OFFLINE);
 
         // Stable status string.
         String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
@@ -128,7 +130,7 @@ public class AccountsAdapter extends CursorAdapter implements
         statusTitleView.setText(statusTitle);
 
         int statusMessageHint;
-        if(isConnecting == 1) {
+        if (isConnecting) {
             statusImage.setColorFilter(CONNECTING_STATUS_FILTER);
             statusMessage = "";
             statusMessageHint = (statusIndex == StatusUtil.STATUS_OFFLINE ?
@@ -154,8 +156,9 @@ public class AccountsAdapter extends CursorAdapter implements
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(onAvatarClickListener != null) {
-                    onAvatarClickListener.onAvatarClicked(accountDbId);
+                if (onAvatarClickListener != null) {
+
+                    onAvatarClickListener.onAvatarClicked(accountDbId, isConnected);
                 }
             }
         });
@@ -179,6 +182,7 @@ public class AccountsAdapter extends CursorAdapter implements
         COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
         COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
         swapCursor(cursor);
+        checkAccountsState();
     }
 
     @Override
@@ -189,13 +193,64 @@ public class AccountsAdapter extends CursorAdapter implements
             cursor.close();
         }
     }
+
+    /**
+     * Checking for accounts state.
+     * If any one connecting or disconnecting - first priority event.
+     * If eny account is online - second priority event.
+     * Offline event only if all accounts are offline.
+     * Also, NoAccounts if accounts table is empty.
+     */
+    private void checkAccountsState() {
+        OnAccountsStateListener.AccountsState state = OnAccountsStateListener.AccountsState.Offline;
+        Cursor cursor = getCursor();
+        if(cursor == null || cursor.getCount() == 0) {
+            onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.NoAccounts);
+            return;
+        }
+        for (int c = 0; c < cursor.getCount(); c++) {
+            cursor.moveToPosition(c);
+            int status = cursor.getInt(COLUMN_USER_STATUS);
+            boolean connecting = (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1);
+            if(connecting) {
+                // We are changing status to offline.
+                if(status == StatusUtil.STATUS_OFFLINE) {
+                    onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Disconnecting);
+                } else {
+                    onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Connecting);
+                }
+                return;
+            }
+            if (status != StatusUtil.STATUS_OFFLINE) {
+                state = OnAccountsStateListener.AccountsState.Online;
+            }
+        }
+        onAccountsStateListener.onAccountsStateChanged(state);
+    }
+
     public void setOnAvatarClickListener(OnAvatarClickListener onAvatarClickListener) {
         this.onAvatarClickListener = onAvatarClickListener;
     }
 
-    public interface OnAvatarClickListener {
-
-        public void onAvatarClicked(int accountDbId);
+    public void setOnAccountsStateListener(OnAccountsStateListener onAccountsStateListener) {
+        this.onAccountsStateListener = onAccountsStateListener;
     }
 
+    public interface OnAvatarClickListener {
+
+        public void onAvatarClicked(int accountDbId, boolean isConnected);
+    }
+
+    public interface OnAccountsStateListener {
+
+        enum AccountsState {
+            NoAccounts,
+            Offline,
+            Disconnecting,
+            Connecting,
+            Online
+        }
+
+        public void onAccountsStateChanged(AccountsState state);
+    }
 }

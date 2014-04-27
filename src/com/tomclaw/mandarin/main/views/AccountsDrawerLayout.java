@@ -17,6 +17,7 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
@@ -75,18 +76,111 @@ public class AccountsDrawerLayout extends DrawerLayout {
         // Set the drawer toggle as the DrawerListener
         setDrawerListener(drawerToggle);
 
+        // Buttons.
+        final Button connectionButton = (Button) findViewById(R.id.connection_button);
+        final View.OnClickListener connectListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    activity.getServiceInteraction().connectAccounts();
+                } catch (RemoteException e) {
+                    // Heh... Nothing to do in this case.
+                    Toast.makeText(activity, R.string.unable_to_connect_account,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        final View.OnClickListener disconnectListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    activity.getServiceInteraction().disconnectAccounts();
+                } catch (RemoteException e) {
+                    // Heh... Nothing to do in this case.
+                    Toast.makeText(activity, R.string.unable_to_shutdown_account,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        Button settingsButton = (Button) findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                activity.startActivity(intent);
+                closeAccountsPanel();
+            }
+        });
         // Accounts list.
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list.
         accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
         accountsAdapter.setOnAvatarClickListener(new AccountsAdapter.OnAvatarClickListener() {
+
             @Override
-            public void onAvatarClicked(int accountDbId) {
-                // Account is online and we can show it's brief info.
-                final AccountInfoTask accountInfoTask =
-                        new AccountInfoTask(activity, accountDbId);
-                TaskExecutor.getInstance().execute(accountInfoTask);
-                closeAccountsPanel();
+            public void onAvatarClicked(int accountDbId, boolean isConnected) {
+                if(isConnected) {
+                    // Account is online and we can show it's brief info.
+                    final AccountInfoTask accountInfoTask =
+                            new AccountInfoTask(activity, accountDbId);
+                    TaskExecutor.getInstance().execute(accountInfoTask);
+                    closeAccountsPanel();
+                }
+            }
+        });
+        accountsAdapter.setOnAccountsStateListener(new AccountsAdapter.OnAccountsStateListener() {
+
+            @Override
+            public void onAccountsStateChanged(final AccountsState state) {
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        int buttonText;
+                        boolean buttonEnabled;
+                        boolean buttonVisibility;
+                        View.OnClickListener buttonListener;
+                        switch(state) {
+                            case NoAccounts: {
+                                buttonText = R.string.accounts;
+                                buttonEnabled = false;
+                                buttonVisibility = false;
+                                buttonListener = null;
+                                break;
+                            }
+                            case Offline: {
+                                buttonText = R.string.accounts_connect;
+                                buttonEnabled = true;
+                                buttonVisibility = true;
+                                buttonListener = connectListener;
+                                break;
+                            }
+                            case Online: {
+                                buttonText = R.string.accounts_shutdown;
+                                buttonEnabled = true;
+                                buttonVisibility = true;
+                                buttonListener = disconnectListener;
+                                break;
+                            }
+                            case Connecting: {
+                                buttonText = R.string.connecting;
+                                buttonEnabled = false;
+                                buttonVisibility = true;
+                                buttonListener = null;
+                                break;
+                            }
+                            default: {
+                                buttonText = R.string.disconnecting;
+                                buttonEnabled = false;
+                                buttonVisibility = true;
+                                buttonListener = null;
+                            }
+                        }
+                        connectionButton.setText(buttonText);
+                        connectionButton.setEnabled(buttonEnabled);
+                        connectionButton.setVisibility(buttonVisibility ? VISIBLE : GONE);
+                        connectionButton.setOnClickListener(buttonListener);
+                    }
+                });
             }
         });
         // Bind to our new adapter.
@@ -125,15 +219,6 @@ public class AccountsDrawerLayout extends DrawerLayout {
                         closeAccountsPanel();
                     }
                 }
-            }
-        });
-        Button settingsButton = (Button) findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                activity.startActivity(intent);
-                closeAccountsPanel();
             }
         });
     }

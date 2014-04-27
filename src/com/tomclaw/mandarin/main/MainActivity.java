@@ -23,7 +23,7 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 public class MainActivity extends ChiefActivity {
 
     private static final String MARKET_DETAILS_URI = "market://details?id=";
-    private static final String MARKET_DEVELOPER_URI = "market://search?q=";
+    private static final String MARKET_DEVELOPER_URI = "market://search?q=pub:";
     private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
     private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=";
 

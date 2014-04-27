@@ -100,6 +100,25 @@ public class SessionHolder {
         }
     }
 
+    /**
+     * Connect all offline accounts with default online status.
+     */
+    public void connectAccounts() {
+        for (AccountRoot accountRoot : accountRootList) {
+            if(accountRoot.isOffline()) {
+                accountRoot.setStatus(StatusUtil.getDefaultOnlineStatus(accountRoot.getAccountType()));
+            }
+        }
+    }
+
+    public void disconnectAccounts() {
+        for (AccountRoot accountRoot : accountRootList) {
+            if(accountRoot.isOnline()) {
+                accountRoot.setStatus(StatusUtil.STATUS_OFFLINE);
+            }
+        }
+    }
+
     private AccountRoot getAccountRoot(String accountType, String userId) throws AccountNotFoundException {
         for (AccountRoot accountRoot : accountRootList) {
             // Checking for account type and user id.

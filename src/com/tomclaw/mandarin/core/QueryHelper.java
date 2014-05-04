@@ -397,6 +397,27 @@ public class QueryHelper {
     }
 
     public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
+        messagesByIds(messageIds).delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+    }
+
+    public static boolean isIncomingMessagesPresent(ContentResolver contentResolver, Collection<Long> messageIds) {
+        QueryBuilder queryBuilder = messagesByIds(messageIds);
+        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        return cursor.getCount() > 0;
+    }
+
+    public static void unreadMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
+        QueryBuilder queryBuilder = messagesByIds(messageIds);
+        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
+        // Mark specified messages as unread.
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
+    private static QueryBuilder messagesByIds(Collection<Long> messageIds) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isMultiple = false;
         for (long messageId : messageIds) {
@@ -407,8 +428,7 @@ public class QueryHelper {
             }
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, messageId);
         }
-        // Remove specified messages.
-        queryBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        return queryBuilder;
     }
 
     private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {

@@ -64,6 +64,19 @@ public class MainActivity extends ChiefActivity {
 
         // Dialogs list.
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
+        dialogsAdapter.setAdapterCallback(new RosterDialogsAdapter.RosterAdapterCallback() {
+            @Override
+            public void onRosterUpdate() {
+                // Disable placeholder when loading started.
+                dialogsList.setEmptyView(null);
+            }
+
+            @Override
+            public void onRosterEmpty() {
+                // Show empty view only for really empty list.
+                dialogsList.setEmptyView(findViewById(android.R.id.empty));
+            }
+        });
         dialogsList = (ListView) findViewById(R.id.chats_list_view);
         dialogsList.setAdapter(dialogsAdapter);
         dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,8 +92,6 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-
-        dialogsList.setEmptyView(findViewById(android.R.id.empty));
     }
 
     @Override

@@ -5,18 +5,15 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
@@ -32,8 +29,6 @@ import com.tomclaw.mandarin.im.StatusUtil;
  */
 public class AccountsAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final int CONNECTING_STATUS_COLOR_FILTER = 0xaaffffff;
 
     /**
      * Adapter ID
@@ -58,6 +53,13 @@ public class AccountsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private int CONNECTING_STATUS_FILTER;
+
+    /**
+     * Listeners
+     */
+    private OnAvatarClickListener onAvatarClickListener;
+    private OnAccountsStateListener onAccountsStateListener;
 
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -65,6 +67,7 @@ public class AccountsAdapter extends CursorAdapter implements
         inflater = LayoutInflater.from(context);
         // Initialize loader for adapter Id.
         loaderManager.initLoader(ADAPTER_ID, null, this);
+        CONNECTING_STATUS_FILTER = context.getResources().getColor(R.color.connecting_status_filter);
     }
 
     @Override
@@ -96,44 +99,69 @@ public class AccountsAdapter extends CursorAdapter implements
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Setup text values.
-        String userId = cursor.getString(COLUMN_USER_ID);
+        final int accountDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
+        final String userId = cursor.getString(COLUMN_USER_ID);
         String userNick = cursor.getString(COLUMN_USER_NICK);
         if (TextUtils.isEmpty(userNick)) {
             userNick = userId;
         }
         ((TextView) view.findViewById(R.id.user_nick)).setText(userNick);
+        TextView statusTitleView = ((TextView) view.findViewById(R.id.status_title));
+        TextView statusMessageView = ((TextView) view.findViewById(R.id.status_message));
+        ImageView statusImage = ((ImageView) view.findViewById(R.id.status_icon));
         // Statuses.
-        int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
-        int isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING);
-        String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-        ImageView userStatus = ((ImageView) view.findViewById(R.id.user_status));
-        userStatus.setImageResource(
-                StatusUtil.getStatusDrawable(accountType, statusIndex));
-        SpannableString statusString;
-        if (isConnecting == 1) {
-            userStatus.setColorFilter(CONNECTING_STATUS_COLOR_FILTER);
-            statusString = new SpannableString(statusIndex == StatusUtil.STATUS_OFFLINE ?
-                    context.getString(R.string.disconnecting) : context.getString(R.string.connecting));
-        } else {
-            userStatus.clearColorFilter();
-            // Stable status string.
-            String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
-            String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
-            if (statusIndex == StatusUtil.STATUS_OFFLINE
-                    || TextUtils.equals(statusTitle, statusMessage)) {
-                // Buddy status is offline now or status message is only status title.
-                // No status message could be displayed.
-                statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
-                statusMessage = "";
-            }
-            statusString = new SpannableString(statusTitle + " " + statusMessage);
-            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        final int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
+        final boolean isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1;
+        final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
+        final boolean isConnected = (!isConnecting && statusIndex != StatusUtil.STATUS_OFFLINE);
+
+        // Stable status string.
+        String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
+        String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
+        if (statusIndex == StatusUtil.STATUS_OFFLINE
+                || TextUtils.equals(statusTitle, statusMessage)) {
+            // User status is offline now or status message is only status title.
+            // No status message could be displayed.
+            statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
+            statusMessage = "";
         }
-        ((TextView) view.findViewById(R.id.user_status_message)).setText(statusString);
+
+        statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
+        statusTitleView.setText(statusTitle);
+
+        int statusMessageHint;
+        if (isConnecting) {
+            statusImage.setColorFilter(CONNECTING_STATUS_FILTER);
+            statusMessage = "";
+            statusMessageHint = (statusIndex == StatusUtil.STATUS_OFFLINE ?
+                    R.string.disconnecting : R.string.connecting);
+        } else {
+            statusImage.clearColorFilter();
+            if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                statusMessageHint = R.string.click_to_connect_hint;
+            } else {
+                statusMessageHint = R.string.status_message_hint;
+            }
+        }
+
+        statusMessageView.setText(statusMessage);
+        statusMessageView.setHint(statusMessageHint);
+
+
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
-        ImageView contactBadge = ((ImageView) view.findViewById(R.id.user_badge));
+        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
+
+        contactBadge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onAvatarClickListener != null) {
+
+                    onAvatarClickListener.onAvatarClicked(accountDbId, isConnected);
+                }
+            }
+        });
     }
 
     @Override
@@ -154,6 +182,7 @@ public class AccountsAdapter extends CursorAdapter implements
         COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
         COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
         swapCursor(cursor);
+        checkAccountsState();
     }
 
     @Override
@@ -163,5 +192,65 @@ public class AccountsAdapter extends CursorAdapter implements
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
+    }
+
+    /**
+     * Checking for accounts state.
+     * If any one connecting or disconnecting - first priority event.
+     * If eny account is online - second priority event.
+     * Offline event only if all accounts are offline.
+     * Also, NoAccounts if accounts table is empty.
+     */
+    private void checkAccountsState() {
+        OnAccountsStateListener.AccountsState state = OnAccountsStateListener.AccountsState.Offline;
+        Cursor cursor = getCursor();
+        if(cursor == null || cursor.getCount() == 0) {
+            onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.NoAccounts);
+            return;
+        }
+        for (int c = 0; c < cursor.getCount(); c++) {
+            cursor.moveToPosition(c);
+            int status = cursor.getInt(COLUMN_USER_STATUS);
+            boolean connecting = (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1);
+            if(connecting) {
+                // We are changing status to offline.
+                if(status == StatusUtil.STATUS_OFFLINE) {
+                    onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Disconnecting);
+                } else {
+                    onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Connecting);
+                }
+                return;
+            }
+            if (status != StatusUtil.STATUS_OFFLINE) {
+                state = OnAccountsStateListener.AccountsState.Online;
+            }
+        }
+        onAccountsStateListener.onAccountsStateChanged(state);
+    }
+
+    public void setOnAvatarClickListener(OnAvatarClickListener onAvatarClickListener) {
+        this.onAvatarClickListener = onAvatarClickListener;
+    }
+
+    public void setOnAccountsStateListener(OnAccountsStateListener onAccountsStateListener) {
+        this.onAccountsStateListener = onAccountsStateListener;
+    }
+
+    public interface OnAvatarClickListener {
+
+        public void onAvatarClicked(int accountDbId, boolean isConnected);
+    }
+
+    public interface OnAccountsStateListener {
+
+        enum AccountsState {
+            NoAccounts,
+            Offline,
+            Disconnecting,
+            Connecting,
+            Online
+        }
+
+        public void onAccountsStateChanged(AccountsState state);
     }
 }

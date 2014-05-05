@@ -1,38 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<com.tomclaw.mandarin.main.views.AccountsDrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/chats_list_view"
-            android:choiceMode="multipleChoiceModal"/>
-
     <LinearLayout
-            android:id="@android:id/empty"
+            android:id="@+id/content_frame"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp">
+            android:layout_height="match_parent">
 
-        <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/dialogs_empty_view"
-                android:contentDescription="@string/no_dialogs_opened"/>
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_dialogs_opened"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center"
-                android:paddingTop="12dp"/>
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/chats_list_view"
+                android:choiceMode="multipleChoiceModal"/>
+
+        <LinearLayout
+                android:id="@android:id/empty"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp">
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/dialogs_empty_view"
+                    android:contentDescription="@string/no_dialogs_opened"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_dialogs_opened"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:paddingTop="12dp"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+    <LinearLayout android:id="@+id/left_drawer"
+                  android:layout_width="300dp"
+                  android:layout_height="match_parent"
+                  android:layout_gravity="start"
+                  android:orientation="vertical"
+                  android:background="@color/profile_panel_background">
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/accounts_list_view"
+                android:layout_gravity="center"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:longClickable="true"
+                android:choiceMode="multipleChoiceModal"
+                android:layout_weight="1"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator_navbar"/>
+            <Button android:id="@+id/settings_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings"
+                    android:drawableLeft="@drawable/action_settings"
+                    android:drawablePadding="4dp"
+                    android:paddingLeft="4dp"
+                    style="@style/Button.NavBar"/>
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator_navbar"/>
+            <Button android:id="@+id/connection_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/accounts_shutdown"
+                    android:drawableLeft="@drawable/action_shutdown"
+                    android:drawablePadding="4dp"
+                    android:paddingLeft="4dp"
+                    style="@style/Button.NavBar"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.tomclaw.mandarin.main.views.AccountsDrawerLayout>

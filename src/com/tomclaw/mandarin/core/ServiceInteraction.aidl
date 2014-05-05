@@ -14,4 +14,6 @@ interface ServiceInteraction
 	boolean removeAccount(int accountDbId);
 	void updateAccountStatusIndex(String accountType, String userId, int statusIndex);
 	void updateAccountStatus(String accountType, String userId, int statusIndex, String statusTitle, String statusMessage);
+	void connectAccounts();
+	void disconnectAccounts();
 }

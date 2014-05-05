@@ -42,8 +42,8 @@ public class SetMoodRequest extends WimRequest {
         // Prepare intent for activity.
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
-        intent.putExtra(AccountInfoActivity.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
-        intent.putExtra(AccountInfoActivity.STATE_REQUESTED, statusIndex);
+        intent.putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
+        intent.putExtra(SetStateRequest.STATE_REQUESTED, statusIndex);
         // Parsing response.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
@@ -51,7 +51,7 @@ public class SetMoodRequest extends WimRequest {
         if (statusCode == WIM_OK) {
             isSetStateSuccess = true;
         }
-        intent.putExtra(AccountInfoActivity.SET_STATE_SUCCESS, isSetStateSuccess);
+        intent.putExtra(SetStateRequest.SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or McDonald's.
         return REQUEST_DELETE;
     }

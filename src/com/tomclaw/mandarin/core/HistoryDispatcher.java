@@ -214,7 +214,8 @@ public class HistoryDispatcher {
                         }
                         if (PreferenceHelper.isSystemNotifications(context)
                                 || PreferenceHelper.isLights(context)) {
-                            notificationBuilder.setLights(0xffff6600, 1000, 1000);
+                            notificationBuilder.setLights(Settings.LED_COLOR_RGB,
+                                    Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
                         }
                         onNotificationShown();
                     }

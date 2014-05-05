@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,15 +17,22 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
+import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 public class MainActivity extends ChiefActivity {
 
-    private static String MARKET_URI = "market://details?id=";
-    private static String GOOGLE_PLAY_URI = "http://play.google.com/store/apps/details?id=";
+    private static final String MARKET_DETAILS_URI = "market://details?id=";
+    private static final String MARKET_DEVELOPER_URI = "market://search?q=pub:";
+    private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
+    private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=";
+
+    public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
 
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
+
+    private AccountsDrawerLayout drawerLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,13 +53,30 @@ public class MainActivity extends ChiefActivity {
         setContentView(R.layout.main_activity);
 
         final ActionBar bar = getActionBar();
-        bar.setDisplayShowHomeEnabled(true);
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
         bar.setTitle(R.string.dialogs);
+
+        drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.init(this);
+        drawerLayout.setTitle(getString(R.string.dialogs));
+        drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
         // Dialogs list.
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
+        dialogsAdapter.setAdapterCallback(new RosterDialogsAdapter.RosterAdapterCallback() {
+            @Override
+            public void onRosterUpdate() {
+                // Disable placeholder when loading started.
+                dialogsList.setEmptyView(null);
+            }
+
+            @Override
+            public void onRosterEmpty() {
+                // Show empty view only for really empty list.
+                dialogsList.setEmptyView(findViewById(android.R.id.empty));
+            }
+        });
         dialogsList = (ListView) findViewById(R.id.chats_list_view);
         dialogsList.setAdapter(dialogsAdapter);
         dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -67,8 +92,6 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-
-        dialogsList.setEmptyView(findViewById(android.R.id.empty));
     }
 
     @Override
@@ -83,22 +106,25 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
-        // SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        // Configure the search info and add any event listeners
+        int menuResource;
+        // Checking for drawer is initialized, opened and show such menu.
+        if(drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
+            menuResource = R.menu.accounts_list_menu;
+        } else {
+            menuResource = R.menu.main_activity_menu;
+        }
+        getMenuInflater().inflate(menuResource, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerLayout.onToggleOptionsItemSelected(item)) {
+            return true;
+        }
         switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                return true;
-            }
             case R.id.accounts: {
-                Intent intent = new Intent(this, AccountsActivity.class);
-                startActivity(intent);
+                drawerLayout.openDrawer(Gravity.START);
                 return true;
             }
             case R.id.create_dialog: {
@@ -107,12 +133,15 @@ public class MainActivity extends ChiefActivity {
                 return true;
             }
             case R.id.settings: {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                openSettings();
                 return true;
             }
             case R.id.rate_application: {
                 rateApplication();
+                return true;
+            }
+            case R.id.all_projects: {
+                allProjects();
                 return true;
             }
             case R.id.info: {
@@ -120,8 +149,14 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
                 return true;
             }
-            default:
+            case R.id.add_account_menu:
+                Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
+                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
+                return true;
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 
@@ -139,8 +174,53 @@ public class MainActivity extends ChiefActivity {
         Log.d(Settings.LOG_TAG, "onCoreServiceDown");
     }
 
+    @Override
+    public void setTitle(CharSequence title) {
+        drawerLayout.setTitle(title.toString());
+        getActionBar().setTitle(title);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerLayout.syncToggleState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerLayout.onToggleConfigurationChanged(newConfig);
+    }
+
     public void onCoreServiceIntent(Intent intent) {
         Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
+    }
+
+    public void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void rateApplication() {
+        final String appPackageName = getPackageName();
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(MARKET_DETAILS_URI + appPackageName)));
+        } catch (android.content.ActivityNotFoundException ignored) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(GOOGLE_PLAY_DETAILS_URI + appPackageName)));
+        }
+    }
+
+    private void allProjects() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(MARKET_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
+        } catch (android.content.ActivityNotFoundException ignored) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(GOOGLE_PLAY_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
+        }
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
@@ -197,17 +277,6 @@ public class MainActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
-        }
-    }
-
-    private void rateApplication() {
-        final String appPackageName = getPackageName();
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(MARKET_URI + appPackageName)));
-        } catch (android.content.ActivityNotFoundException ignored) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(GOOGLE_PLAY_URI + appPackageName)));
         }
     }
 }

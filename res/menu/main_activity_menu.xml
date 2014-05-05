@@ -22,6 +22,11 @@
             android:showAsAction="never"
             android:title="@string/info"/>
     <item
+            android:id="@+id/all_projects"
+            android:icon="@drawable/google_play"
+            android:showAsAction="never"
+            android:title="@string/all_projects"/>
+    <item
             android:id="@+id/rate_application"
             android:icon="@drawable/content_email"
             android:showAsAction="never"

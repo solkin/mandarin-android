@@ -61,6 +61,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
      */
     private Context context;
     private LayoutInflater inflater;
+    private RosterAdapterCallback adapterCallback;
 
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -72,10 +73,16 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+        // Notifying listener.
+        if(adapterCallback != null) {
+            adapterCallback.onRosterUpdate();
+        }
         return new CursorLoader(context,
                 Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
-                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
-                + " THEN 0 ELSE 1 END" + ") DESC," + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 2 ELSE 0 END) DESC, "
+                + "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
+                        + " THEN 0 ELSE 1 END" + ") DESC, "
+                + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
     @Override
@@ -92,6 +99,10 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
         COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
         swapCursor(cursor);
+        // Notifying listener.
+        if(adapterCallback != null && cursor.getCount() == 0) {
+            adapterCallback.onRosterEmpty();
+        }
     }
 
     @Override
@@ -186,5 +197,19 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         return cursor.getInt(COLUMN_ROW_AUTO_ID);
+    }
+
+    public RosterAdapterCallback getAdapterCallback() {
+        return adapterCallback;
+    }
+
+    public void setAdapterCallback(RosterAdapterCallback adapterCallback) {
+        this.adapterCallback = adapterCallback;
+    }
+
+    public interface RosterAdapterCallback {
+
+        public void onRosterUpdate();
+        public void onRosterEmpty();
     }
 }

@@ -2,31 +2,29 @@ package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created by solkin on 12/26/13.
  */
 public abstract class AbstractInfoActivity extends ChiefActivity {
-
-    public static final String ACCOUNT_DB_ID = "account_db_id";
-    public static final String ACCOUNT_TYPE = "account_type";
-    public static final String BUDDY_ID = "buddy_id";
-    public static final String BUDDY_NICK = "buddy_nick";
-    public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
-    public static final String BUDDY_STATUS = "buddy_status";
-
-    public static final String NO_INFO_CASE = "no_info_case";
 
     private int accountDbId;
     private String accountType;
@@ -44,12 +42,13 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
 
         // Obtain and check basic info about interested buddy.
         Intent intent = getIntent();
-        accountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-        accountType = intent.getStringExtra(ACCOUNT_TYPE);
-        buddyId = intent.getStringExtra(BUDDY_ID);
-        buddyNick = intent.getStringExtra(BUDDY_NICK);
-        avatarHash = intent.getStringExtra(BUDDY_AVATAR_HASH);
-        buddyStatus = intent.getIntExtra(BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+        accountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+        accountType = intent.getStringExtra(BuddyInfoRequest.ACCOUNT_TYPE);
+        buddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
+        buddyNick = intent.getStringExtra(BuddyInfoRequest.BUDDY_NICK);
+        avatarHash = intent.getStringExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH);
+        buddyStatus = intent.getIntExtra(BuddyInfoRequest.BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+
         // Check for required fields are correct.
         if (TextUtils.isEmpty(buddyId) || accountDbId == GlobalProvider.ROW_INVALID) {
             // Nothing we can do in this case. Only show toast and close activity.
@@ -57,6 +56,50 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
             finish();
             return;
         }
+
+        // Obtain and check basic info about interested buddy.
+        String buddyStatusTitle = intent.getStringExtra(BuddyInfoRequest.BUDDY_STATUS_TITLE);
+        String buddyStatusMessage = intent.getStringExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE);
+
+        // Initialize info activity layout.
+        setContentView(R.layout.buddy_info_activity);
+
+        TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
+        buddyIdView.setText(getBuddyId());
+
+        TextView buddyNickView = (TextView) findViewById(R.id.buddy_nick);
+        buddyNickView.setText(getBuddyNick());
+
+        if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
+            int statusImageResource = StatusUtil.getStatusDrawable(getAccountType(), getBuddyStatus());
+
+            if (getBuddyStatus() == StatusUtil.STATUS_OFFLINE
+                    || TextUtils.equals(buddyStatusTitle, buddyStatusMessage)) {
+                // Buddy status is offline now or status message is only status title.
+                // No status message could be displayed.
+                buddyStatusMessage = "";
+            }
+            final SpannableString statusString = new SpannableString(buddyStatusTitle + " " + buddyStatusMessage);
+            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, buddyStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Yeah, we have status info - so we might show status info.
+            findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
+            View statusContent = findViewById(R.id.info_status_content);
+            statusContent.setVisibility(View.VISIBLE);
+            statusContent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StringUtil.copyStringToClipboard(AbstractInfoActivity.this, statusString.toString(), R.string.status_copied);
+                }
+            });
+
+            ((ImageView) findViewById(R.id.status_icon)).setImageResource(statusImageResource);
+            ((TextView) findViewById(R.id.status_text)).setText(statusString);
+        }
+
+        // Buddy avatar.
+        ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
     }
 
     public abstract void onBuddyInfoRequestError();
@@ -81,11 +124,11 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
     @Override
     public void onCoreServiceIntent(Intent intent) {
         // Check for info present in this intent.
-        boolean isInfoPresent = !intent.getBooleanExtra(NO_INFO_CASE, false);
+        boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
         Bundle bundle = intent.getExtras();
         if (isInfoPresent && bundle != null) {
-            int requestAccountDbId = intent.getIntExtra(ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-            String requestBuddyId = intent.getStringExtra(BUDDY_ID);
+            int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+            String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
             Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
             // Checking for this is info we need.
             if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {

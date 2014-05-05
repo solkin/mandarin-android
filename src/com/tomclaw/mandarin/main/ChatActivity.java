@@ -24,7 +24,9 @@ import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,6 +56,7 @@ public class ChatActivity extends ChiefActivity {
     private OnSmileyClickCallback callback;
     private boolean isConfigurationChanging;
     private boolean isPaused;
+    private boolean isGoToDestroy;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -149,7 +152,7 @@ public class ChatActivity extends ChiefActivity {
         });
 
         chatRoot = (LinearLayout) findViewById(R.id.chat_root);
-        popupView = getLayoutInflater().inflate(R.layout.smileys_popup, null);
+        popupView = getLayoutInflater().inflate(R.layout.smileys_popup, chatRoot, false);
         smileysFooter = (LinearLayout) findViewById(R.id.smileys_footer);
 
         // Defining default height of keyboard.
@@ -224,7 +227,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void insertSmileyText(String smileyText) {
-        smileyText += " ";
+        smileyText = " " + smileyText + " ";
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
         String message = getMessageText();
@@ -423,11 +426,15 @@ public class ChatActivity extends ChiefActivity {
         if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         } else {
-            Intent intent = new Intent(this, MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+            openMainActivity();
         }
+    }
+
+    private void openMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -480,7 +487,8 @@ public class ChatActivity extends ChiefActivity {
     private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
         // This can be executed while activity became invisible to user,
         // so we must check it here. After activity restored, messages will be read automatically.
-        if (!isPaused) {
+        // Also, activity might be gone to destroy in a moments.
+        if (!isPaused && !isGoToDestroy) {
             TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
                     firstMessageDbId, lastMessageDbId));
         }
@@ -502,6 +510,24 @@ public class ChatActivity extends ChiefActivity {
                 Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
             }
+        }
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        try {
+            // First attempt at fixing an HTC broken by evil Apple patents.
+            if (intent.getComponent() != null
+                    && ".HtcLinkifyDispatcherActivity".equals(intent.getComponent().getShortClassName())) {
+                intent.setComponent(null);
+            }
+            super.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            /*
+             * Probably an HTC broken by evil Apple patents. This is not perfect,
+             * but better than crashing the whole application.
+             */
+            super.startActivity(Intent.createChooser(intent, null));
         }
     }
 
@@ -540,8 +566,11 @@ public class ChatActivity extends ChiefActivity {
                     startActivity(createShareIntent());
                     break;
                 case R.id.message_remove:
-                    removeSelectedMessages();
-                    break;
+                    removeSelectedMessages(mode);
+                    return true;
+                case R.id.message_unread:
+                    unreadSelectedMessages(mode);
+                    return true;
                 default:
                     return false;
             }
@@ -576,9 +605,40 @@ public class ChatActivity extends ChiefActivity {
             return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
         }
 
-        private void removeSelectedMessages() {
-            selectionHelper.getSelectedIds();
-            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelectedIds());
+        private void removeSelectedMessages(final ActionMode mode) {
+            new AlertDialog.Builder(ChatActivity.this)
+                    .setTitle(R.string.remove_messages)
+                    .setMessage(R.string.remove_selected_messages)
+                    .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            selectionHelper.getSelectedIds();
+                            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelectedIds());
+                            mode.finish();
+                        }
+                    })
+                    .setNeutralButton(R.string.do_not_remove, null).show();
+        }
+
+        private void unreadSelectedMessages(final ActionMode mode) {
+            final Collection<Long> selectedIds = new ArrayList<Long>(selectionHelper.getSelectedIds());
+            if(!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
+                new AlertDialog.Builder(ChatActivity.this)
+                        .setTitle(R.string.unread_messages)
+                        .setMessage(R.string.mark_messages_unread)
+                        .setPositiveButton(R.string.yes_mark, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mode.finish();
+                                isGoToDestroy = true;
+                                QueryHelper.unreadMessages(getContentResolver(), selectedIds);
+                                openMainActivity();
+                            }
+                        })
+                        .setNeutralButton(R.string.no_need, null).show();
+            } else {
+                Toast.makeText(ChatActivity.this, R.string.no_incoming_selected, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

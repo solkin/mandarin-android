@@ -20,6 +20,7 @@
     <string name="settings">Настройки</string>
     <string name="info">Информация</string>
     <string name="rate_application">Оценить</string>
+    <string name="all_projects">Все проекты</string>
     <string name="dialogs">Диалоги</string>
     <string name="close_chat">Закрыть диалог</string>
     <string name="close_chat_short">Закрыть</string>
@@ -46,6 +47,7 @@
     <string name="recycle">Корзина</string>
     <string name="message_copy">Копировать</string>
     <string name="message_remove">Удалить</string>
+    <string name="message_unread">Непрочитано</string>
     <string name="message_share">Поделиться</string>
 
     <string name="clear_history_title">Очистить историю?</string>
@@ -73,7 +75,6 @@
     <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
 
     <string name="count_new_messages">%d новых сообщений</string>
-    <string name="do_not_remove">Нет</string>
     <string name="reply_now">Ответить</string>
     <string name="open_chats">Диалоги</string>
     <string name="share_messages_via">Поделиться сообщением через</string>
@@ -113,12 +114,15 @@
     <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
     <string name="account_info">Профиль</string>
 
+    <string name="account_connect">Подключить</string>
     <string name="account_shutdown">Отключить</string>
     <string name="account_remove">Удалить</string>
     <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>
     <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
     <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
-    <string name="status_message">Подробнее…</string>
+    <string name="status_message_hint">Изменить подпись статуса…</string>
+    <string name="status_message_change_hint">Подпись статуса…</string>
+    <string name="click_to_connect_hint">Нажмите здесь для подключения</string>
     <string name="apply">Применить</string>
     <string name="not_now">Не сейчас</string>
     <string name="clear">Очистить</string>
@@ -201,4 +205,17 @@
     <string name="pref_title_lights">Светодиод</string>
     <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
     <string name="draft_indicator_text">Черновик</string>
+
+    <string name="accounts_connect">Подключиться</string>
+    <string name="accounts_shutdown">Отключиться</string>
+
+    <string name="select_status_title">Выберите статус</string>
+    <string name="select_status_description">Чтобы поделиться с друзьями Вашим настроением, укажите подходящий статус</string>
+    <string name="unread_messages">Пометить непрочитанным</string>
+    <string name="mark_messages_unread">Пометить выделенные входящие сообщения непрочитанными и закрыть окно переписки?</string>
+    <string name="yes_mark">Да, пожалуй</string>
+    <string name="no_need">Отменить</string>
+    <string name="remove_messages">Удалить сообщения</string>
+    <string name="remove_selected_messages">Выделенные сообщения будут безвозвратно удалены из истории переписки. Продолжить?</string>
+    <string name="no_incoming_selected">Не выделено ни одного входящего сообщения</string>
 </resources>

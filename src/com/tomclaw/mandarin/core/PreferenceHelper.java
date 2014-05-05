@@ -57,7 +57,7 @@ public class PreferenceHelper {
         boolean isChatBackground = getBooleanPreference(context, R.string.pref_chat_background, R.bool.pref_chat_background_default);
         int backgroundRes;
         if (isChatBackground) {
-            backgroundRes = R.drawable.chat_background_doodle;
+            backgroundRes = R.drawable.chat_background_doodle_light;
         } else {
             backgroundRes = R.drawable.chat_background_gradient;
         }

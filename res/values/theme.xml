@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="header_head_color" format="color|reference"/>
+    <attr name="header_back_color" format="color|reference"/>
+    <attr name="header_font_color" format="color|reference"/>
+    <attr name="header_line_color" format="color|reference"/>
     <color name="background_action_bar">#FFFF9E16</color>
     <color name="background_split_action_bar">#FF555555</color>
     <color name="item_background_action_bar">#FFFFFFFF</color>
-    <color name="header_head_color">#F0CCCCCC</color>
-    <color name="header_back_color">#99CCCCCC</color>
-    <color name="header_font_color">#AA000000</color>
-    <color name="header_line_color">#E0CCCCCC</color>
     <color name="chat_gradient_start">#FFDBDBDB</color>
     <color name="chat_gradient_end">#FFEDEDED</color>
     <color name="smiley_selected_background">#aabababa</color>
@@ -18,10 +18,26 @@
     <color name="button_navbar_pressed">#55000000</color>
     <color name="separator_navbar">#44000000</color>
     <color name="connecting_status_filter">#88000000</color>
-    <style name="Theme.Mandarin" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Any customizations for your app running on devices with Theme.Holo here -->
-        <!--<item name="actionBarStyle">@style/Widget.Mandarin.ActionBar</item>
-        <item name="android:actionBarStyle">@style/Widget.Mandarin.ActionBar</item> -->
+    <color name="status_title_color">#FFFAFAFA</color>
+    <color name="status_message_color">#FFFAFAFA</color>
+    <color name="account_nick_color">#FFFAFAFA</color>
+    <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="header_head_color">#F0CCCCCC</item>
+        <item name="header_back_color">#99CCCCCC</item>
+        <item name="header_font_color">#AA000000</item>
+        <item name="header_line_color">#E0CCCCCC</item>
+    </style>
+    <style name="Theme.Mandarin.Dark" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/ActionBar.Holo.Opaque</item>
+    </style>
+    <style name="ActionBar.Holo.Opaque" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
+        <item name="android:subtitleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle</item>
+
+        <item name="header_head_color">#F0CCCCCC</item>
+        <item name="header_back_color">#99CCCCCC</item>
+        <item name="header_font_color">#AA000000</item>
+        <item name="header_line_color">#E0CCCCCC</item>
     </style>
     <style name="Button.NavBar" parent="android:Widget.Button">
         <item name="android:fontFamily">sans-serif-light</item>

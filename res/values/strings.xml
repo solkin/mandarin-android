@@ -47,7 +47,7 @@
     <string name="recycle">Корзина</string>
     <string name="message_copy">Копировать</string>
     <string name="message_remove">Удалить</string>
-    <string name="message_unread">Непрочитано</string>
+    <string name="message_unread">Не прочитано</string>
     <string name="message_share">Поделиться</string>
 
     <string name="clear_history_title">Очистить историю?</string>
@@ -219,7 +219,7 @@
     <string name="remove_selected_messages">Выделенные сообщения будут безвозвратно удалены из истории переписки. Продолжить?</string>
     <string name="no_incoming_selected">Не выделено ни одного входящего сообщения</string>
     <string name="yesterday">вчера</string>
-    <string name="last_seen_date" formatted="false">Был(а) здесь %1$s в %2$s</string>
-    <string name="last_seen_time" formatted="false">Был(а) здесь в %s</string>
-    <string name="typing">набирает сообщение...</string>
+    <string name="last_seen_date" formatted="false">Был(а) %1$s в %2$s</string>
+    <string name="last_seen_time" formatted="false">Был(а) в %s</string>
+    <string name="typing">набирает сообщение…</string>
 </resources>

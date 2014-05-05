@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -65,7 +66,7 @@ public class ChatActivity extends ChiefActivity {
     private boolean isGoToDestroy;
     private BuddyObserver buddyObserver;
     private TimeHelper timeHelper;
-    private CountDownTimer typingTimer;
+    private MessageWatcher messageWatcher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,7 +157,8 @@ public class ChatActivity extends ChiefActivity {
                 }
             }
         });
-        messageText.addTextChangedListener(new MessageWatcher());
+        messageWatcher = new MessageWatcher();
+        messageText.addTextChangedListener(messageWatcher);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -277,6 +279,16 @@ public class ChatActivity extends ChiefActivity {
                 new SendTypingTask(this, buddyDbId, isTyping));
     }
 
+    private void setTypingSync(boolean isTyping) {
+        try {
+            String appSession = getServiceInteraction().getAppSession();
+            RequestHelper.requestTyping(getContentResolver(), appSession,
+                    chatHistoryAdapter.getBuddyDbId(), isTyping);
+        } catch (RemoteException ignored) {
+            // Service is detached. Sadly :(
+        }
+    }
+
     private void onGlobalLayoutUpdated() {
         // This must be refactored.
         Rect rect = new Rect();
@@ -358,6 +370,11 @@ public class ChatActivity extends ChiefActivity {
     @Override
     protected void onDestroy() {
         if (messageText != null) {
+            // Stop typing status.
+            if(!TextUtils.isEmpty(getMessageText())) {
+                messageWatcher.stop();
+                setTypingSync(false);
+            }
             QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
         }
         buddyObserver.stop();
@@ -892,8 +909,7 @@ public class ChatActivity extends ChiefActivity {
 
             @Override
             public void onFinish() {
-                typingTimer.cancel();
-                isTimerDown = true;
+                stop();
                 setTyping(false);
             }
         };
@@ -917,16 +933,24 @@ public class ChatActivity extends ChiefActivity {
                 // No timer yet or timer is finished. Let's start typing.
                 setTyping(true);
             } else {
-                typingTimer.cancel();
-                isTimerDown = true;
+                stop();
                 // Checking for empty text view, so, we must stop typing.
                 if(TextUtils.isEmpty(s)) {
                     typingTimer.onFinish();
                     return;
                 }
             }
+            start();
+        }
+
+        private void start() {
             typingTimer.start();
             isTimerDown = false;
+        }
+
+        private void stop() {
+            typingTimer.cancel();
+            isTimerDown = true;
         }
     }
 

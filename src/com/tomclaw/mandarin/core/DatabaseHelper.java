@@ -175,9 +175,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             case 2: {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
-                        + " ADD COLUMN "
-                        + GlobalProvider.ROSTER_BUDDY_LAST_SEEN + " int default 0, "
-                        + GlobalProvider.ROSTER_BUDDY_LAST_TYPING + " int default 0");
+                        + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_LAST_SEEN + " int default 0");
+                db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_LAST_TYPING + " int default 0");
             }
         }
     }

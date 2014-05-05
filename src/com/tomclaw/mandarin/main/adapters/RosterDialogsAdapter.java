@@ -55,6 +55,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
     private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
     private static int COLUMN_ROSTER_BUDDY_DRAFT;
+    private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
 
     /**
      * Variables
@@ -98,6 +99,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
         COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
+        COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
         swapCursor(cursor);
         // Notifying listener.
         if(adapterCallback != null && cursor.getCount() == 0) {
@@ -158,8 +160,15 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             // No status message could be displayed.
             statusMessage = "";
         }
-        SpannableString statusString = new SpannableString(statusTitle + " " + statusMessage);
-        statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString statusString;
+        long lastTyping = cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
+        // Checking for typing no more than 5 minutes.
+        if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < 5 * 60 * 1000) {
+            statusString = new SpannableString(context.getString(R.string.typing));
+        } else {
+            statusString = new SpannableString(statusTitle + " " + statusMessage);
+            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
         // Unread count.
         int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
         // Applying values.

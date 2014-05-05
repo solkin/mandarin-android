@@ -169,7 +169,7 @@ public class RequestHelper {
                 contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
                 contentValues.put(GlobalProvider.REQUEST_CLASS, IcqTypingRequest.class.getName());
                 contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
-                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
+                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
                 contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
                 contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
                 contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(typingRequest));

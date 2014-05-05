@@ -4,7 +4,7 @@
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search"
           android:icon="@drawable/action_search"
-          android:showAsAction="ifRoom|collapseActionView"
+          android:showAsAction="never|collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
     <item
             android:id="@+id/buddy_info_menu"

@@ -58,9 +58,9 @@ public class IcqSession {
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
-    private static final int timeoutSocket = 70000;
-    private static final int timeoutConnection = 60000;
-    private static final int timeoutSession = 900000;
+    private static final int timeoutSocket = 70 * 1000;
+    private static final int timeoutConnection = 60 * 1000;
+    private static final int timeoutSession = 24 * 60 * 60 * 1000;
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -345,9 +345,11 @@ public class IcqSession {
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
 
+                        long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
+
                         QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
                                 groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
-                                buddyIcon);
+                                buddyIcon, lastSeen);
                     }
                 }
                 QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);
@@ -371,6 +373,7 @@ public class IcqSession {
                 String statusTitle;
                 String statusMessage = "";
                 String buddyIcon;
+                long lastSeen = -1;
                 if (sourceObject != null) {
                     buddyId = sourceObject.getString(AIM_ID);
                     buddyNick = sourceObject.optString(FRIENDLY);
@@ -378,6 +381,7 @@ public class IcqSession {
                     String buddyType = sourceObject.getString(USER_TYPE);
                     buddyIcon = sourceObject.optString(BUDDY_ICON);
                     statusIndex = getStatusIndex(null, buddyStatus);
+                    lastSeen = sourceObject.optLong(LAST_SEEN, -1);
                 } else {
                     buddyId = eventData.getString(AIM_ID);
                     buddyNick = eventData.optString(FRIENDLY);
@@ -400,7 +404,7 @@ public class IcqSession {
                         String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
                         QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                                 icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon);
+                                recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
                     }
                     // This will try to create buddy if such is not present
                     // in roster and then retry message insertion.
@@ -445,12 +449,23 @@ public class IcqSession {
                 String buddyType = eventData.getString(USER_TYPE);
                 String buddyIcon = eventData.optString(BUDDY_ICON);
 
+                long lastSeen = eventData.optLong(LAST_SEEN, -1);
+
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                        buddyId, statusIndex, statusTitle, statusMessage, buddyIcon);
+                        buddyId, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
             } catch (JSONException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing presence - JSON exception", ex);
             } catch (BuddyNotFoundException ex) {
                 Log.d(Settings.LOG_TAG, "error while processing presence - buddy not found");
+            }
+        } else if (eventType.equals(TYPING)) {
+            try {
+                String buddyId = eventData.getString(AIM_ID);
+                String typingStatus = eventData.getString(TYPING_STATUS);
+                QueryHelper.modifyBuddyTyping(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                        buddyId, TextUtils.equals(typingStatus, TYPING_STATUS_TYPE));
+            } catch (Throwable ignored) {
+                Log.d(Settings.LOG_TAG, "error while processing typing.");
             }
         } else if (eventType.equals(MY_INFO)) {
             try {

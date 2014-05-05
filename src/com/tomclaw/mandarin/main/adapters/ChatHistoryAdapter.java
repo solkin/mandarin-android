@@ -24,6 +24,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
+import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.text.SimpleDateFormat;
 
@@ -48,12 +49,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.drawable.ic_delivered
     };
 
-    /**
-     * Date and time format helpers
-     */
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
-    private static final SimpleDateFormat simpleTimeFormat12 = new SimpleDateFormat("h:mm a");
-    private static final SimpleDateFormat simpleTimeFormat24 = new SimpleDateFormat("HH:mm");
+    private TimeHelper timeHelper;
 
     /**
      * Adapter ID
@@ -73,11 +69,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.loaderManager = loaderManager;
+        this.timeHelper = timeHelper;
         setBuddyDbId(buddyBdId);
         setFilterQueryProvider(new ChatFilterQueryProvider());
         // Initialize smileys.
@@ -181,8 +178,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
-        String messageTimeText = getFormattedTime(messageTime);
-        String messageDateText = simpleDateFormat.format(messageTime);
+        String messageTimeText = timeHelper.getFormattedTime(messageTime);
+        String messageDateText = timeHelper.getFormattedDate(messageTime);
         boolean messageRead = cursor.getInt(COLUMN_MESSAGE_READ) == 1;
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
@@ -217,7 +214,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         // Showing or hiding date.
         // Go to previous message and comparing dates.
         if (!(cursor.moveToPrevious() && messageDateText
-                .equals(simpleDateFormat.format(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
+                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
             // Update visibility.
             view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
             // Update date text view.
@@ -244,8 +241,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
             String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
             long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-            String messageTimeText = getFormattedTime(messageTime);
-            String messageDateText = simpleDateFormat.format(messageTime);
+            String messageTimeText = timeHelper.getFormattedTime(messageTime);
+            String messageDateText = timeHelper.getFormattedDate(messageTime);
             int accountDbId = cursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
             int buddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
             String buddyNick = "unknown";
@@ -272,14 +269,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             return messageBuilder.toString();
         }
         throw new MessageNotFoundException();
-    }
-
-    private SimpleDateFormat getTimeFormat() {
-        return DateFormat.is24HourFormat(context) ? simpleTimeFormat24 : simpleTimeFormat12;
-    }
-
-    private String getFormattedTime(long timestamp) {
-        return getTimeFormat().format(timestamp);
     }
 
     private QueryBuilder getDefaultQueryBuilder() {

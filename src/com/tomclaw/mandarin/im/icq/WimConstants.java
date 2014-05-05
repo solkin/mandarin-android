@@ -47,6 +47,10 @@ public class WimConstants {
     public static final String EQUAL = "=";
     public static final String AIM_SID = "aimsid";
     public static final String FETCH_BASE_URL = "fetchBaseURL";
+    public static final String TYPING = "typing";
+    public static final String TYPING_STATUS = "typingStatus";
+    public static final String TYPING_STATUS_NONE = "none";
+    public static final String TYPING_STATUS_TYPE = "typing";
     public static final String MY_INFO = "myInfo";
     public static final String SESSION_ENDED = "sessionEnded";
     public static final String WELL_KNOWN_URLS = "wellKnownUrls";
@@ -67,6 +71,7 @@ public class WimConstants {
     public static final String STATE = "state";
     public static final String USER_TYPE = "userType";
     public static final String BUDDY_ICON = "buddyIcon";
+    public static final String LAST_SEEN = "lastseen";
     public static final String IM = "im";
     public static final String MESSAGE = "message";
     public static final String MSG_ID = "msgId";

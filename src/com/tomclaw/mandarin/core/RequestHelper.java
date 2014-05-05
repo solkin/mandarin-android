@@ -152,4 +152,30 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setMoodRequest));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
+
+    public static void requestTyping(ContentResolver contentResolver, String appSession,
+                                     int buddyDbId, boolean isTyping) {
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Oh, cursor may be null sometimes.
+        if (cursor != null) {
+            // Cursor may have more than only one entry.
+            if (cursor.moveToFirst()) {
+                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
+                IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
+                // Writing to requests database.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
+                contentValues.put(GlobalProvider.REQUEST_CLASS, IcqTypingRequest.class.getName());
+                contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
+                contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+                contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(typingRequest));
+                contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+            }
+            cursor.close();
+        }
+    }
 }

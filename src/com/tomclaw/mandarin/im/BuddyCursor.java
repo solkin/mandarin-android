@@ -29,6 +29,8 @@ public class BuddyCursor implements Closeable {
     private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
     private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
     private static int COLUMN_ROSTER_BUDDY_DRAFT;
+    private static int COLUMN_ROSTER_BUDDY_LAST_SEEN;
+    private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
 
     public BuddyCursor(Cursor cursor) {
         this.cursor = cursor;
@@ -49,6 +51,8 @@ public class BuddyCursor implements Closeable {
         COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
         COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
+        COLUMN_ROSTER_BUDDY_LAST_SEEN = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_SEEN);
+        COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
     }
 
     public boolean moveToPosition(int position) {
@@ -107,6 +111,14 @@ public class BuddyCursor implements Closeable {
         return cursor.getString(COLUMN_ROSTER_BUDDY_DRAFT);
     }
 
+    public long getBuddyLastSeen() {
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_SEEN);
+    }
+
+    public long getBuddyLastTyping() {
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
+    }
+
     public boolean moveToFirst() {
         return cursor.moveToFirst();
     }
@@ -114,5 +126,9 @@ public class BuddyCursor implements Closeable {
     @Override
     public void close() {
         cursor.close();
+    }
+
+    public boolean isClosed() {
+        return cursor.isClosed();
     }
 }

@@ -483,12 +483,13 @@ public class QueryHelper {
 
     public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
                                          int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage,
-                                         String buddyIcon) throws BuddyNotFoundException {
+                                         String buddyIcon, long lastSeen) throws BuddyNotFoundException {
         // Plain buddy modify.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, buddyStatusIndex);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, buddyStatusTitle);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, buddyStatusMessage);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         String avatarHash;
         // Obtain buddy db id.
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -522,10 +523,36 @@ public class QueryHelper {
         }
     }
 
+    public static void modifyBuddyTyping(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                         boolean isTyping) throws BuddyNotFoundException {
+        // Plain buddy modify.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_TYPING, isTyping ? System.currentTimeMillis() : 0);
+        // Obtain buddy db id.
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        // Cursor may have more than only one entry.
+        if (cursor.moveToFirst()) {
+            // Cycling all the identical buddies in different groups.
+            do {
+                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                modifyBuddy(contentResolver, buddyDbId, contentValues);
+            } while (cursor.moveToNext());
+            // Closing cursor.
+            cursor.close();
+        } else {
+            // Closing cursor.
+            cursor.close();
+            throw new BuddyNotFoundException();
+        }
+    }
+
     public static void updateOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
-                                           long updateTime, int groupId, String groupName,
-                                           String buddyId, String buddyNick, int statusIndex,
-                                           String statusTitle, String statusMessage, String buddyIcon) {
+                                           long updateTime, int groupId, String groupName, String buddyId,
+                                           String buddyNick, int statusIndex, String statusTitle,
+                                           String statusMessage, String buddyIcon, long lastSeen) {
         ContentValues buddyValues = new ContentValues();
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountType);
@@ -540,6 +567,7 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         String avatarHash;
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId).and()

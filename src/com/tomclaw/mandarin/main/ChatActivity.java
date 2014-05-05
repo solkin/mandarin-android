@@ -6,9 +6,11 @@ import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -18,15 +20,17 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.SelectionHelper;
+import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,6 +39,8 @@ import java.util.TreeMap;
  * Time: 11:49 PM
  */
 public class ChatActivity extends ChiefActivity {
+
+    private static final int TYPING_DELAY = 5 * 1000;
 
     private LinearLayout chatRoot;
     private ChatListView chatList;
@@ -57,6 +63,9 @@ public class ChatActivity extends ChiefActivity {
     private boolean isConfigurationChanging;
     private boolean isPaused;
     private boolean isGoToDestroy;
+    private BuddyObserver buddyObserver;
+    private TimeHelper timeHelper;
+    private CountDownTimer typingTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,11 +86,14 @@ public class ChatActivity extends ChiefActivity {
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        int buddyDbId = getIntentBuddyDbId(getIntent());
+        timeHelper = new TimeHelper(this);
 
-        setTitleByBuddyDbId(buddyDbId);
+        final int buddyDbId = getIntentBuddyDbId(getIntent());
 
-        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId);
+        startTitleObservation(buddyDbId);
+        buddyObserver.touch();
+
+        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
 
         chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
@@ -144,6 +156,7 @@ public class ChatActivity extends ChiefActivity {
                 }
             }
         });
+        messageText.addTextChangedListener(new MessageWatcher());
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,8 +267,14 @@ public class ChatActivity extends ChiefActivity {
                 }
             };
             TaskExecutor.getInstance().execute(
-                    new SendMessageTask(ChatActivity.this, buddyDbId, message, callback));
+                    new SendMessageTask(this, buddyDbId, message, callback));
         }
+    }
+
+    private void setTyping(boolean isTyping) {
+        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+        TaskExecutor.getInstance().execute(
+                new SendTypingTask(this, buddyDbId, isTyping));
     }
 
     private void onGlobalLayoutUpdated() {
@@ -341,6 +360,7 @@ public class ChatActivity extends ChiefActivity {
         if (messageText != null) {
             QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
         }
+        buddyObserver.stop();
         super.onDestroy();
     }
 
@@ -412,12 +432,12 @@ public class ChatActivity extends ChiefActivity {
 
         int buddyDbId = getIntentBuddyDbId(intent);
 
-        setTitleByBuddyDbId(buddyDbId);
+        startTitleObservation(buddyDbId);
 
         if (chatHistoryAdapter != null) {
             chatHistoryAdapter.notifyDataSetInvalidated();
         }
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId);
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
         chatList.setAdapter(chatHistoryAdapter);
     }
 
@@ -475,13 +495,62 @@ public class ChatActivity extends ChiefActivity {
         return buddyDbId;
     }
 
-    private void setTitleByBuddyDbId(int buddyDbId) {
-        try {
+    private void startTitleObservation(final int buddyDbId) {
+        if(buddyObserver != null) {
+            buddyObserver.stop();
+        }
+        buddyObserver = new BuddyObserver(getContentResolver(), buddyDbId) {
+            @Override
+            public void onBuddyInfoChanged(final BuddyCursor buddyCursor) {
+                final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
+                        buddyCursor.getBuddyStatus());
+                final String title = buddyCursor.getBuddyNick();
+                final String subtitle;
+
+                long lastTyping = buddyCursor.getBuddyLastTyping();
+                // Checking for typing no more than 5 minutes.
+                if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < 5 * 60 * 1000) {
+                    subtitle = getString(R.string.typing);
+                } else {
+                    long lastSeen = buddyCursor.getBuddyLastSeen();
+                    if (lastSeen > 0) {
+                        String lastSeenText;
+                        String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
+                        String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
+                        int daysDelta = ((int) (System.currentTimeMillis() / (24 * 60 * 60 * 1000))) - ((int) (lastSeen / (24 * 60 * 60)));
+
+                        if (daysDelta < 1) {
+                            lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
+                        } else if (daysDelta == 1) {
+                            lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
+                        } else {
+                            lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
+                        }
+                        subtitle = lastSeenText;
+                    } else {
+                        subtitle = buddyCursor.getBuddyStatusTitle();
+                    }
+                }
+
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        ActionBar actionBar = getActionBar();
+                        actionBar.setTitle(title);
+                        actionBar.setSubtitle(subtitle);
+                        actionBar.setIcon(icon);
+                    }
+                });
+            }
+        };
+        /*try {
+            ActionBar actionBar = getActionBar();
             // This will provide buddy nick by db id.
-            getActionBar().setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+            actionBar.setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
+
         } catch (BuddyNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
-        }
+        }*/
     }
 
     private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
@@ -785,6 +854,79 @@ public class ChatActivity extends ChiefActivity {
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
             callback.onFailed();
+        }
+    }
+
+    public class SendTypingTask extends Task {
+
+        private final int buddyDbId;
+        private boolean isTyping;
+        private final WeakReference<ChiefActivity> weakActivity;
+
+        public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+            this.buddyDbId = buddyDbId;
+            this.isTyping = isTyping;
+            this.weakActivity = new WeakReference<ChiefActivity>(activity);
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            ChiefActivity activity = weakActivity.get();
+            if (activity != null) {
+                String appSession = activity.getServiceInteraction().getAppSession();
+                ContentResolver contentResolver = activity.getContentResolver();
+                // Sending protocol typing request.
+                RequestHelper.requestTyping(contentResolver, appSession,
+                        buddyDbId, isTyping);
+            }
+        }
+    }
+
+    private class MessageWatcher implements TextWatcher {
+
+        private boolean isTimerDown = true;
+        private CountDownTimer typingTimer = new CountDownTimer(TYPING_DELAY, TYPING_DELAY) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                typingTimer.cancel();
+                isTimerDown = true;
+                setTyping(false);
+            }
+        };
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if(isTimerDown) {
+                if(TextUtils.isEmpty(s)) {
+                    // There was a text typed, timer is gone and
+                    // now text was cleared. Nothing to be done.
+                    return;
+                }
+                // No timer yet or timer is finished. Let's start typing.
+                setTyping(true);
+            } else {
+                typingTimer.cancel();
+                isTimerDown = true;
+                // Checking for empty text view, so, we must stop typing.
+                if(TextUtils.isEmpty(s)) {
+                    typingTimer.onFinish();
+                    return;
+                }
+            }
+            typingTimer.start();
+            isTimerDown = false;
         }
     }
 

@@ -76,6 +76,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_AVATAR_HASH = "buddy_avatar_hash";
     public static final String ROSTER_BUDDY_SEARCH_FIELD = "buddy_search_field";
     public static final String ROSTER_BUDDY_DRAFT = "buddy_draft";
+    public static final String ROSTER_BUDDY_LAST_SEEN = "buddy_last_seen";
+    public static final String ROSTER_BUDDY_LAST_TYPING = "buddy_last_typing";
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -88,7 +90,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_NOTICE_SHOWN = "notice_shown";
     public static final String HISTORY_SEARCH_FIELD = "search_field";
 
-    // Database create scripts
+    // Database create scripts.
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
             + REQUEST_CLASS + " text, " + REQUEST_SESSION + " text, "
@@ -118,7 +120,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_GROUP + " text, " + ROSTER_BUDDY_DIALOG + " int, "
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
             + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text, "
-            + ROSTER_BUDDY_SEARCH_FIELD + " text, " + ROSTER_BUDDY_DRAFT + " text" + ");";
+            + ROSTER_BUDDY_SEARCH_FIELD + " text, " + ROSTER_BUDDY_DRAFT + " text, "
+            + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -142,14 +145,14 @@ public class GlobalProvider extends ContentProvider {
 
     public static final int ROW_INVALID = -1;
 
-    // Database helper object
+    // Database helper object.
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
 
     // Methods.
     public static String METHOD_UPDATE_UNREAD = "update_unread";
 
-    // URI id
+    // URI id.
     private static final int URI_REQUEST = 1;
     private static final int URI_ACCOUNT = 2;
     private static final int URI_BUDDY = 3;
@@ -157,7 +160,7 @@ public class GlobalProvider extends ContentProvider {
     private static final int URI_HISTORY = 5;
     private static final int URI_HISTORY_DISTINCT = 6;
 
-    // URI tool instance
+    // URI tool instance.
     private static final UriMatcher uriMatcher;
 
     static {

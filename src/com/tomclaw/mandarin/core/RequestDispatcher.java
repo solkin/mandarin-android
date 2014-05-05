@@ -224,6 +224,7 @@ public class RequestDispatcher {
             }
             requestCursor.close();
             accountCursor.close();
+            requestCursor.unregisterContentObserver(requestObserver);
             return true;
         }
     }
@@ -241,7 +242,6 @@ public class RequestDispatcher {
 
         @Override
         public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
             synchronized (sync) {
                 sync.notify();
             }

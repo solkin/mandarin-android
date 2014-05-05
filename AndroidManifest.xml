@@ -120,8 +120,7 @@
         </activity>
         <provider android:name=".core.GlobalProvider"
                   android:authorities="com.tomclaw.mandarin.core.GlobalProvider"
-                  android:exported="false">
-        </provider>
+                  android:exported="true"/>
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b94d613b9e798ff9e854d315043fd0f9caf32355"/>
     </application>
 </manifest>

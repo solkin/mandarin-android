@@ -513,8 +513,7 @@ public class QueryHelper {
             // There are may be a lot of buddies in lots of groups, but this is the same buddy with the save avatar.
             if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
                 // Avatar is ready.
-                RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
-                        accountDbId, buddyId, buddyIcon);
+                RequestHelper.requestBuddyAvatar(contentResolver, accountDbId, buddyId, buddyIcon);
             }
         } else {
             // Closing cursor.
@@ -596,8 +595,7 @@ public class QueryHelper {
 
         if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
             // Avatar is ready.
-            RequestHelper.requestBuddyAvatar(contentResolver, CoreService.getAppSession(),
-                    accountDbId, buddyId, buddyIcon);
+            RequestHelper.requestBuddyAvatar(contentResolver, accountDbId, buddyId, buddyIcon);
         }
     }
 

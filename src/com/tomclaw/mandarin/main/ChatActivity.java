@@ -280,13 +280,8 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void setTypingSync(boolean isTyping) {
-        try {
-            String appSession = getServiceInteraction().getAppSession();
-            RequestHelper.requestTyping(getContentResolver(), appSession,
+            RequestHelper.requestTyping(getContentResolver(),
                     chatHistoryAdapter.getBuddyDbId(), isTyping);
-        } catch (RemoteException ignored) {
-            // Service is detached. Sadly :(
-        }
     }
 
     private void onGlobalLayoutUpdated() {
@@ -846,15 +841,13 @@ public class ChatActivity extends ChiefActivity {
         public void executeBackground() throws Throwable {
             ChiefActivity activity = weakActivity.get();
             if (activity != null) {
-                String appSession = activity.getServiceInteraction().getAppSession();
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
                 boolean isCollapseMessages = PreferenceHelper.isCollapseMessages(activity);
                 QueryHelper.insertMessage(contentResolver, isCollapseMessages, buddyDbId, 2, // TODO: real message type
                         cookie, message, false);
                 // Sending protocol message request.
-                RequestHelper.requestMessage(contentResolver, appSession,
-                        buddyDbId, cookie, message);
+                RequestHelper.requestMessage(contentResolver, buddyDbId, cookie, message);
             }
         }
 
@@ -890,11 +883,9 @@ public class ChatActivity extends ChiefActivity {
         public void executeBackground() throws Throwable {
             ChiefActivity activity = weakActivity.get();
             if (activity != null) {
-                String appSession = activity.getServiceInteraction().getAppSession();
                 ContentResolver contentResolver = activity.getContentResolver();
                 // Sending protocol typing request.
-                RequestHelper.requestTyping(contentResolver, appSession,
-                        buddyDbId, isTyping);
+                RequestHelper.requestTyping(contentResolver, buddyDbId, isTyping);
             }
         }
     }

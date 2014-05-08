@@ -112,7 +112,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void disconnect() {
-        RequestHelper.endSession(getContentResolver(), CoreService.getAppSession(), accountDbId);
+        RequestHelper.endSession(getContentResolver(), accountDbId);
     }
 
     @Override
@@ -150,9 +150,9 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public void updateStatus() {
-        RequestHelper.requestSetState(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+        RequestHelper.requestSetState(getContentResolver(), getAccountDbId(),
                 getBaseStatusValue(statusIndex));
-        RequestHelper.requestSetMood(getContentResolver(), CoreService.getAppSession(), getAccountDbId(),
+        RequestHelper.requestSetMood(getContentResolver(), getAccountDbId(),
                 getMoodStatusValue(statusIndex), statusTitle, statusMessage);
     }
 
@@ -246,7 +246,7 @@ public class IcqAccountRoot extends AccountRoot {
         } else {
             if (!TextUtils.equals(getAvatarHash(), HttpUtil.getUrlHash(buddyIcon))) {
                 // Avatar is ready.
-                RequestHelper.requestAccountAvatar(getContentResolver(), CoreService.getAppSession(),
+                RequestHelper.requestAccountAvatar(getContentResolver(),
                         getAccountDbId(), buddyIcon);
             }
         }

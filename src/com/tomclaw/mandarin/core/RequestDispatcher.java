@@ -122,16 +122,8 @@ public class RequestDispatcher {
                             if (isPersistent) {
                                 switch (requestState) {
                                     case Request.REQUEST_PENDING: {
-                                        // Request might be sent again, but we need to update request
-                                        // application session to escape this clause anymore in this session.
-                                        Log.d(Settings.LOG_TAG, "Request might be sent again, but we need to " +
-                                                "update request application session to escape this clause " +
-                                                "anymore in this session.");
-                                        ContentValues contentValues = new ContentValues();
-                                        contentValues.put(GlobalProvider.REQUEST_SESSION, CoreService.getAppSession());
-                                        contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
-                                                GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                                        isBreak = true;
+                                        // Persistent request, might be processed at anytime.
+                                        Log.d(Settings.LOG_TAG, "Persistent request, might be processed at anytime.");
                                         break;
                                     }
                                     case Request.REQUEST_SENT: {
@@ -147,11 +139,6 @@ public class RequestDispatcher {
                                 // Decline request.
                                 isDecline = true;
                                 Log.d(Settings.LOG_TAG, "Another session and not persistent request.");
-                            }
-                            // Checking for content was changed.
-                            if (isBreak) {
-                                // We'll receive change event from observer soon.
-                                break;
                             }
                             // Checking for request is obsolete and must be declined.
                             if (isDecline) {

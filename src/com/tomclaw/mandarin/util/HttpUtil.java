@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.util;
 
 import android.util.Pair;
 import com.tomclaw.mandarin.im.icq.WimConstants;
+import org.apache.http.HttpStatus;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -90,8 +91,8 @@ public class HttpUtil {
         HttpUtil.writeStringToConnection(connection, data);
         // Open connection to response.
         connection.connect();
-        // Read response.
-        return connection.getInputStream();
+
+        return getResponse(connection);
     }
 
     public static InputStream executeGet(HttpURLConnection connection) throws IOException {
@@ -99,7 +100,18 @@ public class HttpUtil {
         connection.setDoInput(true);
         connection.setDoOutput(false);
 
-        return connection.getInputStream();
+        return getResponse(connection);
+    }
+
+    private static InputStream getResponse(HttpURLConnection connection) throws IOException {
+        int responseCode = connection.getResponseCode();
+        InputStream in;
+        // Checking for this is error stream.
+        if(responseCode >= HttpStatus.SC_BAD_REQUEST) {
+            return connection.getErrorStream();
+        } else {
+            return connection.getInputStream();
+        }
     }
 
     public static String streamToString(InputStream inputStream) throws IOException {

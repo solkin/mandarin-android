@@ -29,7 +29,11 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
     protected final int parseResponse(InputStream httpResponseStream) throws Throwable {
         String responseString = HttpUtil.streamToString(httpResponseStream);
         Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
-        return parseJson(new JSONObject(responseString));
+        return parseJson(parseResponse(responseString));
+    }
+
+    protected JSONObject parseResponse(String responseString) throws JSONException {
+        return new JSONObject(responseString);
     }
 
     protected abstract int parseJson(JSONObject response) throws JSONException;

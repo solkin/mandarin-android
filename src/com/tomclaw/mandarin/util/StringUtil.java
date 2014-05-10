@@ -24,6 +24,10 @@ public class StringUtil {
 
     private static final String NUMERIC_REGEXP = "^[0-9]*$";
 
+    private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+    private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
+    private static final String MAPPING_CP1252 = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+
     public static int getAlphabetIndex(String nickName) {
         for (int c = 0; c < nickName.length(); c++) {
             char character = nickName.charAt(c);
@@ -59,5 +63,27 @@ public class StringUtil {
                 context.getSystemService(Context.CLIPBOARD_SERVICE);
         clipboardManager.setPrimaryClip(ClipData.newPlainText("", string));
         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+    }
+
+    public static String fixCyrillicSymbols(String string) {
+        String fixed = string;
+        fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
+        fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
+        return fixed;
+    }
+
+    private static String replaceMappedSymbols(String string, String mapping, String origin) {
+        StringBuilder builder = new StringBuilder();
+        for (int c = 0; c < string.length(); c++) {
+            char stringChar = string.charAt(c);
+            for (int i = 0; i < mapping.length(); i++) {
+                char mappingChar = mapping.charAt(i);
+                if (stringChar == mappingChar) {
+                    stringChar = origin.charAt(i);
+                }
+            }
+            builder.append(stringChar);
+        }
+        return builder.toString();
     }
 }

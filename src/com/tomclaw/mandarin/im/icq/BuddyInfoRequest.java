@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.main.BuddyInfoActivity;
+import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +50,11 @@ public class BuddyInfoRequest extends WimRequest {
 
     public BuddyInfoRequest(String buddyId) {
         this.buddyId = buddyId;
+    }
+
+    @Override
+    protected JSONObject parseResponse(String responseString) throws JSONException {
+        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
     }
 
     @Override

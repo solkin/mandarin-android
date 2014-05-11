@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="header_head_color" format="color|reference"/>
+    <attr name="header_back_color" format="color|reference"/>
+    <attr name="header_font_color" format="color|reference"/>
+    <attr name="header_line_color" format="color|reference"/>
+
+    <attr name="chat_date_color" format="color|reference"/>
+    <attr name="chat_time_color" format="color|reference"/>
+    <attr name="chat_text_color" format="color|reference"/>
+
+    <attr name="chat_background_doodle" format="reference"/>
+
+    <attr name="chat_background_gradient" format="reference"/>
+</resources>

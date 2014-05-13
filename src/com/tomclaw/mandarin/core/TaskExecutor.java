@@ -1,9 +1,6 @@
 package com.tomclaw.mandarin.core;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,13 +10,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TaskExecutor {
 
-    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-    private static final int KEEP_ALIVE_TIME = 1;
-    private static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
-
-    private final BlockingQueue<Runnable> mDecodeWorkQueue = new LinkedBlockingQueue<Runnable>();
-    private final ThreadPoolExecutor mThreadPoolExecutor = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
-            KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mDecodeWorkQueue);
+    private final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
 
     private static class Holder {
 
@@ -36,11 +27,11 @@ public class TaskExecutor {
                 @Override
                 public void run() {
                     task.onPreExecuteMain();
-                    mThreadPoolExecutor.execute(task);
+                    threadExecutor.submit(task);
                 }
             });
         } else {
-            mThreadPoolExecutor.execute(task);
+            threadExecutor.submit(task);
         }
     }
 }

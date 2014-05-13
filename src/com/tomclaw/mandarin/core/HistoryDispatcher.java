@@ -9,12 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.QueryBuilder;
@@ -34,6 +36,8 @@ public class HistoryDispatcher {
     private volatile long notificationCancelTime = 0;
 
     private static final int NOTIFICATION_ID = 0x01;
+
+    private final int largeIconSize;
 
     private static final String[] unReadProjection = new String[]{
             GlobalProvider.HISTORY_BUDDY_DB_ID,
@@ -55,6 +59,7 @@ public class HistoryDispatcher {
         contentResolver = context.getContentResolver();
         // Creating observers.
         historyObserver = new HistoryObserver();
+        largeIconSize = BitmapCache.convertDpToPixel(64, context);
     }
 
     public void startObservation() {
@@ -89,6 +94,7 @@ public class HistoryDispatcher {
 
         @Override
         public void executeBackground() throws Throwable {
+            long time = System.currentTimeMillis();
             // Obtain unique unread buddies. If exist.
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
@@ -127,6 +133,7 @@ public class HistoryDispatcher {
                     StringBuilder nickNamesBuilder = new StringBuilder();
                     // Last-message variables.
                     int buddyDbId;
+                    Bitmap largeIcon = null;
                     String message = "";
                     int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
                     do {
@@ -139,19 +146,36 @@ public class HistoryDispatcher {
                         Cursor messageCursor = messageQueryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
                         // Checking for the last message. Yeah, the last, not first.
                         if (messageCursor.moveToFirst()) {
-                            int HISTORY_MESSAGE_TEXT_COLUMN = messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
                             // Obtaining and collecting message-specific data.
                             unread += messageCursor.getCount();
-                            message = messageCursor.getString(HISTORY_MESSAGE_TEXT_COLUMN);
+                            message = messageCursor.getString(messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
                             String nickName;
+                            String avatarHash;
                             try {
-                                nickName = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
+                                BuddyCursor buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
+                                nickName = buddyCursor.getBuddyNick();
+                                // Check for nick name is empty and use buddy id in this case.
+                                if(TextUtils.isEmpty(nickName)) {
+                                    nickName = buddyCursor.getBuddyId();
+                                }
+                                avatarHash = buddyCursor.getBuddyAvatarHash();
+                                buddyCursor.close();
                             } catch (BuddyNotFoundException ignored) {
                                 // TODO: check with no-nick and unknown buddies.
-                                nickName = "unknown";
+                                nickName = context.getString(R.string.unknown_buddy);
+                                avatarHash = null;
                             }
-                            if (!TextUtils.isEmpty(nickNamesBuilder)) {
+                            if (TextUtils.isEmpty(nickNamesBuilder)) {
+                                // This is first buddy with unread message.
+                                if(!TextUtils.isEmpty(avatarHash)) {
+                                    // Obtain avatar for notification.
+                                    largeIcon = BitmapCache.getInstance().getBitmapSync(
+                                            avatarHash, largeIconSize, largeIconSize, true);
+                                }
+                            } else {
                                 nickNamesBuilder.append(", ");
+                                // There are some buddies with unread - no avatar can be placed.
+                                largeIcon = null;
                             }
                             nickNamesBuilder.append(nickName);
                             // Checking for style type for correct filling.
@@ -200,7 +224,8 @@ public class HistoryDispatcher {
                             .setStyle(style)
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
-                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent);
+                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
+                            .setLargeIcon(largeIcon);
                     if (isAlarmRequired && isNotificationCompleted()) {
                         if (PreferenceHelper.isSystemNotifications(context)) {
                             notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
@@ -237,6 +262,7 @@ public class HistoryDispatcher {
                 notificationManager.cancel(NOTIFICATION_ID);
             }
             unReadCursor.close();
+            Log.d(Settings.LOG_TAG, "History dispatching time: " + (System.currentTimeMillis() - time));
             // Call to update unread count.
             contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
         }

@@ -667,7 +667,7 @@ public class QueryHelper {
         throw new BuddyNotFoundException();
     }
 
-    private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
+    public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
             throws BuddyNotFoundException {
         return getBuddyCursor(contentResolver, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
     }

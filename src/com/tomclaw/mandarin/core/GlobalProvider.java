@@ -131,7 +131,8 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
             + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text" + ");";
 
-    private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD = new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
+    private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD =
+            new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
             .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
             .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
             .append(" WHERE ")
@@ -279,6 +280,7 @@ public class GlobalProvider extends ContentProvider {
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
         if (method.equals(METHOD_UPDATE_UNREAD)) {
+            long time = System.currentTimeMillis();
             sqLiteDatabase.beginTransaction();
             try {
                 sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());
@@ -286,6 +288,7 @@ public class GlobalProvider extends ContentProvider {
             } finally {
                 sqLiteDatabase.endTransaction();
             }
+            Log.d(Settings.LOG_TAG, "Update unread time: " + (System.currentTimeMillis() - time));
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;

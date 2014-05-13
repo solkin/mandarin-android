@@ -126,6 +126,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(query);
 
             Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
+
+            PreferenceHelper.setShowStartHelper(context, false);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }

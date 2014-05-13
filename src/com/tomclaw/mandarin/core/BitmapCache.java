@@ -1,9 +1,11 @@
 package com.tomclaw.mandarin.core;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
@@ -28,8 +30,8 @@ public class BitmapCache {
     }
 
     private static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
-    private static final int BITMAP_SIZE_ORIGINAL = -1;
-    private final String BITMAP_CACHE_FOLDER = "bitmaps";
+    public static final int BITMAP_SIZE_ORIGINAL = 0;
+    private static final String BITMAP_CACHE_FOLDER = "bitmaps";
     private File path;
     private LruCache<String, Bitmap> bitmapLruCache;
 
@@ -106,20 +108,15 @@ public class BitmapCache {
                 }
                 // Resize bitmap for the largest size.
                 if (isProportional) {
-                    if (width > height) {
-                        height = bitmap.getHeight() * width / height;
-                        width = bitmap.getWidth();
-                    } else if (height > width) {
-                        width = bitmap.getWidth() * height / width;
-                        height = bitmap.getHeight();
-                    } else {
-                        width = bitmap.getWidth();
-                        height = bitmap.getHeight();
+                    if (bitmap.getWidth() > bitmap.getHeight()) {
+                        height = width * bitmap.getHeight() / bitmap.getWidth();
+                    } else if (bitmap.getHeight() > bitmap.getWidth()) {
+                        width = height * bitmap.getWidth() / bitmap.getHeight();
                     }
                 }
                 // Check for bitmap needs to be resized.
                 if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
                 }
                 bitmapLruCache.put(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {
@@ -153,5 +150,18 @@ public class BitmapCache {
 
     private File getBitmapFile(String hash) {
         return new File(path, hash.concat(".").concat(COMPRESS_FORMAT.name()));
+    }
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static int convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return (int) (dp * metrics.density);
     }
 }

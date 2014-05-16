@@ -83,7 +83,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
             public void onClick(View v) {
                 try {
                     activity.getServiceInteraction().connectAccounts();
-                } catch (RemoteException e) {
+                } catch (Throwable ignored) {
                     // Heh... Nothing to do in this case.
                     Toast.makeText(activity, R.string.unable_to_connect_account,
                             Toast.LENGTH_SHORT).show();
@@ -267,7 +267,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                     // Trying to connect account.
                     activity.getServiceInteraction().updateAccountStatusIndex(
                             accountType, userId, selectedStatusIndex);
-                } catch (RemoteException ignored) {
+                } catch (Throwable ignored) {
                     // Heh... Nothing to do in this case.
                     Toast.makeText(activity, R.string.unable_to_connect_account,
                             Toast.LENGTH_SHORT).show();
@@ -333,7 +333,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                     activity.getServiceInteraction().updateAccountStatus(
                             accountType, userId, selectedStatusIndex,
                             statusTitleString, statusMessageString);
-                } catch (RemoteException ignored) {
+                } catch (Throwable ignored) {
                     // Heh... Nothing to do in this case.
                     Toast.makeText(activity, R.string.unable_to_connect_account,
                             Toast.LENGTH_SHORT).show();

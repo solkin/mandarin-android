@@ -769,16 +769,15 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ReadMessagesTask extends Task {
+    private class ReadMessagesTask extends WeakObjectTask<ContentResolver> {
 
-        private final WeakReference<ContentResolver> weakContentResolver;
         private final int buddyDbId;
         private final long firstMessageDbId;
         private final long lastMessageDbId;
 
         public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
                                 long firstMessageDbId, long lastMessageDbId) {
-            this.weakContentResolver = new WeakReference<ContentResolver>(contentResolver);
+            super(contentResolver);
             this.buddyDbId = buddyDbId;
             this.firstMessageDbId = firstMessageDbId;
             this.lastMessageDbId = lastMessageDbId;
@@ -786,7 +785,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void executeBackground() throws MessageNotFoundException {
-            ContentResolver contentResolver = weakContentResolver.get();
+            ContentResolver contentResolver = getWeakObject();
             if (contentResolver != null) {
                 QueryHelper.readMessages(contentResolver,
                         buddyDbId, firstMessageDbId, lastMessageDbId);
@@ -797,25 +796,26 @@ public class ChatActivity extends ChiefActivity {
     private class ClearHistoryTask extends PleaseWaitTask {
 
         private final int buddyDbId;
-        private final WeakReference<ContentResolver> weakContentResolver;
 
         public ClearHistoryTask(Context context, int buddyDbId) {
             super(context);
-            this.weakContentResolver = new WeakReference<ContentResolver>(context.getContentResolver());
             this.buddyDbId = buddyDbId;
         }
 
         @Override
         public void executeBackground() {
-            ContentResolver contentResolver = weakContentResolver.get();
-            if (contentResolver != null) {
-                QueryHelper.clearHistory(contentResolver, buddyDbId);
+            Context context = getWeakObject();
+            if(context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                if (contentResolver != null) {
+                    QueryHelper.clearHistory(contentResolver, buddyDbId);
+                }
             }
         }
 
         @Override
         public void onFailMain() {
-            Context context = getWeakContext().get();
+            Context context = getWeakObject();
             if (context != null) {
                 // Show error.
                 Toast.makeText(context, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
@@ -823,23 +823,22 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendMessageTask extends Task {
+    private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private String message;
         private final MessageCallback callback;
-        private final WeakReference<ChiefActivity> weakActivity;
 
         public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+            super(activity);
             this.buddyDbId = buddyDbId;
             this.message = message;
-            this.weakActivity = new WeakReference<ChiefActivity>(activity);
             this.callback = callback;
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
@@ -858,7 +857,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 // Show error.
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
@@ -867,21 +866,20 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class SendTypingTask extends Task {
+    public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private boolean isTyping;
-        private final WeakReference<ChiefActivity> weakActivity;
 
         public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+            super(activity);
             this.buddyDbId = buddyDbId;
             this.isTyping = isTyping;
-            this.weakActivity = new WeakReference<ChiefActivity>(activity);
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 // Sending protocol typing request.

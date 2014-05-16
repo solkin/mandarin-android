@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +42,7 @@ public class AccountInfoActivity extends BuddyInfoActivity {
                     getServiceInteraction().updateAccountStatusIndex(
                             getAccountType(), getBuddyId(), StatusUtil.STATUS_OFFLINE);
                     finish();
-                } catch (RemoteException ignored) {
+                } catch (Throwable ignored) {
                     // Heh... Nothing to do in this case.
                     Toast.makeText(this, R.string.unable_to_shutdown_account, Toast.LENGTH_SHORT).show();
                 }
@@ -60,7 +59,7 @@ public class AccountInfoActivity extends BuddyInfoActivity {
 
                             @Override
                             public void onSuccessMain() {
-                                ChiefActivity chiefActivity = weakChiefActivity.get();
+                                ChiefActivity chiefActivity = getChiefActivity();
                                 if (chiefActivity != null) {
                                     chiefActivity.finish();
                                 }

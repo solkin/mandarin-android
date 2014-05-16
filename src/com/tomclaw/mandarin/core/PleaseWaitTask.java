@@ -12,13 +12,12 @@ import java.lang.ref.WeakReference;
  * Date: 09.11.13
  * Time: 14:19
  */
-public abstract class PleaseWaitTask extends Task {
+public abstract class PleaseWaitTask extends WeakObjectTask<Context> {
 
-    private final WeakReference<Context> weakContext;
     private WeakReference<ProgressDialog> weakProgressDialog;
 
     public PleaseWaitTask(Context context) {
-        this.weakContext = new WeakReference<Context>(context);
+        super(context);
     }
 
     @Override
@@ -28,7 +27,7 @@ public abstract class PleaseWaitTask extends Task {
 
     @Override
     public void onPreExecuteMain() {
-        Context context = weakContext.get();
+        Context context = getWeakObject();
         if (context != null) {
             ProgressDialog progressDialog = ProgressDialog.show(context, null, context.getString(getWaitStringId()));
             weakProgressDialog = new WeakReference<ProgressDialog>(progressDialog);
@@ -41,10 +40,6 @@ public abstract class PleaseWaitTask extends Task {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-    }
-
-    public WeakReference<Context> getWeakContext() {
-        return weakContext;
     }
 
     public int getWaitStringId() {

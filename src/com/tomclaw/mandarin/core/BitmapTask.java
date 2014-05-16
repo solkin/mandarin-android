@@ -12,15 +12,14 @@ import java.lang.ref.WeakReference;
  * Date: 08.12.13
  * Time: 22:13
  */
-public class BitmapTask extends Task {
+public class BitmapTask extends WeakObjectTask<ImageView> {
 
-    private final WeakReference<ImageView> imageWeakReference;
     private Bitmap bitmap;
     private String hash;
     private int width, height;
 
     public BitmapTask(ImageView imageView, String hash) {
-        this.imageWeakReference = new WeakReference<ImageView>(imageView);
+        super(imageView);
         this.hash = hash;
         this.width = imageView.getWidth();
         this.height = imageView.getHeight();
@@ -36,7 +35,7 @@ public class BitmapTask extends Task {
 
     @Override
     public void executeBackground() throws Throwable {
-        ImageView image = imageWeakReference.get();
+        ImageView image = getWeakObject();
         if (image != null) {
             bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
         }
@@ -44,7 +43,7 @@ public class BitmapTask extends Task {
 
     @Override
     public void onSuccessMain() {
-        ImageView image = imageWeakReference.get();
+        ImageView image = getWeakObject();
         // Hash may be changed in another task.
         if (image != null && bitmap != null && TextUtils.equals(getImageTag(image), hash)) {
             image.setImageBitmap(bitmap);

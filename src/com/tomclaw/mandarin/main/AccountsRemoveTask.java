@@ -17,7 +17,7 @@ import java.util.Collection;
 public class AccountsRemoveTask extends PleaseWaitTask {
 
     private final Collection<Integer> selectedAccounts;
-    protected final WeakReference<ChiefActivity> weakChiefActivity;
+    private final WeakReference<ChiefActivity> weakChiefActivity;
 
     public AccountsRemoveTask(ChiefActivity activity, Collection<Integer> selectedAccounts) {
         super(activity);
@@ -38,9 +38,13 @@ public class AccountsRemoveTask extends PleaseWaitTask {
         }
     }
 
+    public ChiefActivity getChiefActivity() {
+        return weakChiefActivity.get();
+    }
+
     @Override
     public void onFailMain() {
-        Context context = getWeakContext().get();
+        Context context = getWeakObject();
         if (context != null) {
             // Show error.
             Toast.makeText(context, R.string.error_remove_account, Toast.LENGTH_LONG).show();

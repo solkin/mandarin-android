@@ -79,7 +79,7 @@ public abstract class ChiefActivity extends Activity {
     /**
      * Running core service
      */
-    protected void startCoreService() {
+    public void startCoreService() {
         /** Checking for core service is down **/
         if (!checkCoreService()) {
             /** Starting service **/

@@ -117,9 +117,9 @@
     <string name="account_connect">Подключить</string>
     <string name="account_shutdown">Отключить</string>
     <string name="account_remove">Удалить</string>
-    <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезапустить приложение.</string>
-    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезапустить приложение.</string>
-    <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезапустить приложение.</string>
+    <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезайти в приложение.</string>
+    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезайти в приложение.</string>
+    <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезайти в приложение.</string>
     <string name="status_message_hint">Изменить подпись статуса…</string>
     <string name="status_message_change_hint">Подпись статуса…</string>
     <string name="click_to_connect_hint">Нажмите здесь для подключения</string>

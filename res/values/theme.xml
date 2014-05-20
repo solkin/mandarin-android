@@ -29,6 +29,15 @@
         <item name="chat_time_color">#FF111111</item>
         <item name="chat_text_color">#FF111111</item>
 
+        <item name="chat_date_back">@drawable/ic_date_back</item>
+        <item name="chat_inc_bubble">@drawable/ic_inc_bubble</item>
+        <item name="chat_out_bubble">@drawable/ic_out_bubble</item>
+        <item name="chat_error_bubble">@drawable/ic_error_bubble</item>
+
+        <item name="chat_icons_tint">#FF151515</item>
+        <item name="chat_input_background">#FFEEEEEE</item>
+        <item name="chat_separator">#aaaaaa</item>
+
         <item name="chat_background_doodle">@drawable/chat_background_doodle_light</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_light</item>
@@ -44,6 +53,15 @@
         <item name="chat_date_color">#FF111111</item>
         <item name="chat_time_color">#FFDADADA</item>
         <item name="chat_text_color">#FF111111</item>
+
+        <item name="chat_date_back">@drawable/ic_date_back</item>
+        <item name="chat_inc_bubble">@drawable/ic_inc_bubble</item>
+        <item name="chat_out_bubble">@drawable/ic_out_bubble</item>
+        <item name="chat_error_bubble">@drawable/ic_error_bubble</item>
+
+        <item name="chat_icons_tint">#FFFFFFFF</item>
+        <item name="chat_input_background">#FF202020</item>
+        <item name="chat_separator">#FF303030</item>
 
         <item name="chat_background_doodle">@drawable/chat_background_doodle_dark</item>
 

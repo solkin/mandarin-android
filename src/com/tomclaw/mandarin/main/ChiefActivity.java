@@ -9,6 +9,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
@@ -38,6 +39,9 @@ public abstract class ChiefActivity extends Activity {
         Crashlytics.start(this);
 
         super.onCreate(savedInstanceState);
+
+        setTheme(PreferenceHelper.isDarkTheme(this) ?
+                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
 
         setContentView(R.layout.progress);
         /** Starting service **/

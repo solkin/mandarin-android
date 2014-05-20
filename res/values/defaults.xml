@@ -11,6 +11,7 @@
     <bool name="pref_chat_show_keyboard_default">false</bool>
     <bool name="pref_send_by_enter_default">false</bool>
     <bool name="pref_music_auto_status_default">false</bool>
+    <bool name="pref_dark_theme_default">false</bool>
 
     <bool name="pref_show_start_helper_default">true</bool>
 </resources>

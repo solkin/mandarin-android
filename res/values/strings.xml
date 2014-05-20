@@ -223,4 +223,5 @@
     <string name="last_seen_time" formatted="false">Был(а) в %s</string>
     <string name="typing">набирает сообщение…</string>
     <string name="unknown_buddy">Без имени</string>
+    <string name="pref_title_dark_theme">Тёмная тема оформления</string>
 </resources>

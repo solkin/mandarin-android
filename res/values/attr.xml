@@ -12,4 +12,13 @@
     <attr name="chat_background_doodle" format="reference"/>
 
     <attr name="chat_background_gradient" format="reference"/>
+
+    <attr name="chat_date_back" format="reference"/>
+    <attr name="chat_inc_bubble" format="reference"/>
+    <attr name="chat_out_bubble" format="reference"/>
+    <attr name="chat_error_bubble" format="reference"/>
+
+    <attr name="chat_icons_tint" format="color|reference"/>
+    <attr name="chat_input_background" format="color|reference"/>
+    <attr name="chat_separator" format="color|reference"/>
 </resources>

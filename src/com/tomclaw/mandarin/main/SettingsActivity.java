@@ -51,14 +51,6 @@ public class SettingsActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {

@@ -16,6 +16,7 @@ public class MyInfo implements Unobfuscatable {
     private String displayId;
     private String friendly;
     private String state;
+    private int invisible = 0;
     private String moodIcon;
     private String moodTitle;
     private String statusMsg;
@@ -36,7 +37,7 @@ public class MyInfo implements Unobfuscatable {
     }
 
     public String getState() {
-        return state;
+        return invisible == 1 ? WimConstants.INVISIBLE : state;
     }
 
     public String optMoodIcon() {

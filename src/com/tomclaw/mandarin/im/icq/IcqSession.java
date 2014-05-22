@@ -151,7 +151,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(DEV_ID_K, DEV_ID_VALUE));
             nameValuePairs.add(new Pair<String, String>(LANGUAGE, "ru-ru"));
             nameValuePairs.add(new Pair<String, String>(MINIMIZE_RESPONSE, "0"));
-            nameValuePairs.add(new Pair<String, String>(MOBILE, "1"));
+            nameValuePairs.add(new Pair<String, String>(MOBILE, "0"));
             nameValuePairs.add(new Pair<String, String>(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
             nameValuePairs.add(new Pair<String, String>(RAW_MSG, "0"));
             nameValuePairs.add(new Pair<String, String>(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));

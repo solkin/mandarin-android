@@ -260,12 +260,8 @@ public class IcqAccountRoot extends AccountRoot {
         int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
         String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
 
-        // Heuristic check for invisible state.
-        if (getStatusIndex() == getStatusIndex(R.integer.invisible_status)
-                && statusIndex == getStatusIndex(R.integer.default_base_status)
-                && TextUtils.equals(statusTitle, StatusUtil.getStatusTitle(getAccountType(), getStatusIndex(R.integer.invisible_status)))) {
-            Log.d(Settings.LOG_TAG, "Invisible state detected!");
-        } else if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) { // Checking for we are disconnecting now.
+        // Checking for we are disconnecting now.
+        if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) {
             // This will update account state and write account into db.
             updateAccountState(statusIndex, statusTitle, statusMessage, false);
         }

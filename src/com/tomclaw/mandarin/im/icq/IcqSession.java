@@ -401,10 +401,14 @@ public class IcqSession {
                                 icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
                         isProcessed = true;
                     } catch (BuddyNotFoundException ignored) {
-                        String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                        QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                                icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+                        if(PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                            isProcessed = true;
+                        } else {
+                            String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                            QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                                    icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
+                                    recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+                        }
                     }
                     // This will try to create buddy if such is not present
                     // in roster and then retry message insertion.

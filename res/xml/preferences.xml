@@ -27,6 +27,11 @@
                 android:summary="@string/pref_summary_show_temp"
                 android:title="@string/pref_title_show_temp"
                 android:defaultValue="@bool/pref_show_temp_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_ignore_unknown"
+                android:summary="@string/pref_summary_ignore_unknown"
+                android:title="@string/pref_title_ignore_unknown"
+                android:defaultValue="@bool/pref_ignore_unknown_default"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_chat_title"

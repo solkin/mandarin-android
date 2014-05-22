@@ -224,4 +224,6 @@
     <string name="typing">набирает сообщение…</string>
     <string name="unknown_buddy">Без имени</string>
     <string name="pref_title_dark_theme">Тёмная тема оформления</string>
+    <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать сообщения от неизвестных людей.</string>
+    <string name="pref_title_ignore_unknown">Игнорировать неизвестных</string>
 </resources>

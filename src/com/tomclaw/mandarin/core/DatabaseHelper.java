@@ -156,7 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Initialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
         for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('а' + r.nextInt('я' - 'а')); // Generate a letter between a and z
+            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
             sb.append(tmp); // Add it to the String
         }
         String word = sb.toString();

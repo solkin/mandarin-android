@@ -18,7 +18,7 @@
                 android:id="@+id/message_date"
                 android:layout_gravity="center_horizontal"
                 android:paddingBottom="5dp"
-                android:background="@drawable/ic_date_back"
+                android:background="?attr/chat_date_back"
                 android:visibility="visible"
                 android:typeface="normal"
                 android:textSize="@dimen/chat_date_size"
@@ -40,7 +40,7 @@
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_inc_bubble"
+                    android:background="?attr/chat_inc_bubble"
                     android:id="@+id/inc_bubble_back">
                 <TextView
                         style="@style/Chat.Message"
@@ -90,7 +90,7 @@
             <LinearLayout android:orientation="vertical"
                           android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
-                          android:background="@drawable/ic_out_bubble"
+                          android:background="?attr/chat_out_bubble"
                           android:id="@+id/out_bubble_back"
                           android:layout_gravity="right">
                 <TextView
@@ -104,7 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/error_message"
-            android:background="@drawable/ic_error_bubble">
+            android:background="?attr/chat_error_bubble">
         <TextView
                 style="@style/Chat.Message"
                 android:text="@string/error_bubble"

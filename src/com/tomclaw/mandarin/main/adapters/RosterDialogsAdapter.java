@@ -75,14 +75,14 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         // Notifying listener.
-        if(adapterCallback != null) {
+        if (adapterCallback != null) {
             adapterCallback.onRosterUpdate();
         }
         return new CursorLoader(context,
                 Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
                 null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 2 ELSE 0 END) DESC, "
                 + "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
-                        + " THEN 0 ELSE 1 END" + ") DESC, "
+                + " THEN 0 ELSE 1 END" + ") DESC, "
                 + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 
@@ -102,7 +102,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
         swapCursor(cursor);
         // Notifying listener.
-        if(adapterCallback != null && cursor.getCount() == 0) {
+        if (adapterCallback != null && cursor.getCount() == 0) {
             adapterCallback.onRosterEmpty();
         }
     }
@@ -219,6 +219,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     public interface RosterAdapterCallback {
 
         public void onRosterUpdate();
+
         public void onRosterEmpty();
     }
 }

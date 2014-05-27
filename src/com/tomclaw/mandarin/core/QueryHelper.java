@@ -661,7 +661,7 @@ public class QueryHelper {
             throws BuddyNotFoundException {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         BuddyCursor buddyCursor = new BuddyCursor(cursor);
-        if(buddyCursor.moveToFirst()) {
+        if (buddyCursor.moveToFirst()) {
             return buddyCursor;
         }
         throw new BuddyNotFoundException();

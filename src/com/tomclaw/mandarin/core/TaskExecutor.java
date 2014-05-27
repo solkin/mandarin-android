@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.

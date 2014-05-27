@@ -107,7 +107,7 @@ public class HttpUtil {
         int responseCode = connection.getResponseCode();
         InputStream in;
         // Checking for this is error stream.
-        if(responseCode >= HttpStatus.SC_BAD_REQUEST) {
+        if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
             return connection.getErrorStream();
         } else {
             return connection.getInputStream();

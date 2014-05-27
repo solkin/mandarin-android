@@ -1,7 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.content.Context;
-
 import java.lang.ref.WeakReference;
 
 /**

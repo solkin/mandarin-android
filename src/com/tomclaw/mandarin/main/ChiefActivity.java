@@ -55,7 +55,7 @@ public abstract class ChiefActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(isDarkTheme != PreferenceHelper.isDarkTheme(this)) {
+        if (isDarkTheme != PreferenceHelper.isDarkTheme(this)) {
             Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             finish();
             startActivity(intent);

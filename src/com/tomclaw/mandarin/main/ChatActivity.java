@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,8 +28,9 @@ import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -279,8 +279,8 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void setTypingSync(boolean isTyping) {
-            RequestHelper.requestTyping(getContentResolver(),
-                    chatHistoryAdapter.getBuddyDbId(), isTyping);
+        RequestHelper.requestTyping(getContentResolver(),
+                chatHistoryAdapter.getBuddyDbId(), isTyping);
     }
 
     private void onGlobalLayoutUpdated() {
@@ -365,7 +365,7 @@ public class ChatActivity extends ChiefActivity {
     protected void onDestroy() {
         if (messageText != null) {
             // Stop typing status.
-            if(!TextUtils.isEmpty(getMessageText())) {
+            if (!TextUtils.isEmpty(getMessageText())) {
                 messageWatcher.stop();
                 setTypingSync(false);
             }
@@ -507,7 +507,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void startTitleObservation(final int buddyDbId) {
-        if(buddyObserver != null) {
+        if (buddyObserver != null) {
             buddyObserver.stop();
         }
         buddyObserver = new BuddyObserver(getContentResolver(), buddyDbId) {
@@ -529,16 +529,16 @@ public class ChatActivity extends ChiefActivity {
                         String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
                         String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
 
-                        Calendar today=Calendar.getInstance();
-                        today=TimeHelper.clearTimes(today);
+                        Calendar today = Calendar.getInstance();
+                        today = TimeHelper.clearTimes(today);
 
-                        Calendar yesterday=Calendar.getInstance();
-                        yesterday.add(Calendar.DAY_OF_YEAR,-1);
-                        yesterday=TimeHelper.clearTimes(yesterday);
+                        Calendar yesterday = Calendar.getInstance();
+                        yesterday.add(Calendar.DAY_OF_YEAR, -1);
+                        yesterday = TimeHelper.clearTimes(yesterday);
 
-                        if(lastSeen * 1000 > today.getTimeInMillis()) {
+                        if (lastSeen * 1000 > today.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
-                        } else if(lastSeen * 1000 > yesterday.getTimeInMillis()) {
+                        } else if (lastSeen * 1000 > yesterday.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
                         } else {
                             lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
@@ -709,7 +709,7 @@ public class ChatActivity extends ChiefActivity {
 
         private void unreadSelectedMessages(final ActionMode mode) {
             final Collection<Long> selectedIds = new ArrayList<Long>(selectionHelper.getSelectedIds());
-            if(!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
+            if (!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
                 new AlertDialog.Builder(ChatActivity.this)
                         .setTitle(R.string.unread_messages)
                         .setMessage(R.string.mark_messages_unread)
@@ -811,7 +811,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeBackground() {
             Context context = getWeakObject();
-            if(context != null) {
+            if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
                 if (contentResolver != null) {
                     QueryHelper.clearHistory(contentResolver, buddyDbId);
@@ -919,8 +919,8 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            if(isTimerDown) {
-                if(TextUtils.isEmpty(s)) {
+            if (isTimerDown) {
+                if (TextUtils.isEmpty(s)) {
                     // There was a text typed, timer is gone and
                     // now text was cleared. Nothing to be done.
                     return;
@@ -930,7 +930,7 @@ public class ChatActivity extends ChiefActivity {
             } else {
                 stop();
                 // Checking for empty text view, so, we must stop typing.
-                if(TextUtils.isEmpty(s)) {
+                if (TextUtils.isEmpty(s)) {
                     typingTimer.onFinish();
                     return;
                 }

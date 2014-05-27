@@ -77,12 +77,12 @@ public class PreferenceHelper {
     private static int getThemeDrawable(Context context, int attr, int defValue) {
         int resId = defValue;
         Resources.Theme theme = context.getTheme();
-        if(theme != null) {
+        if (theme != null) {
             int[] resources = new int[]{attr};
             TypedArray array = null;
             try {
                 array = theme.obtainStyledAttributes(resources);
-                if(array != null) {
+                if (array != null) {
                     resId = array.getResourceId(0, defValue);
                 }
             } finally {

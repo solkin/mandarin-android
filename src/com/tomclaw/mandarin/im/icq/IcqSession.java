@@ -401,7 +401,7 @@ public class IcqSession {
                                 icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
                         isProcessed = true;
                     } catch (BuddyNotFoundException ignored) {
-                        if(PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                        if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
                             isProcessed = true;
                         } else {
                             String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);

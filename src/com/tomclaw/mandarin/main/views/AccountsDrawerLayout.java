@@ -119,7 +119,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
 
             @Override
             public void onAvatarClicked(int accountDbId, boolean isConnected) {
-                if(isConnected) {
+                if (isConnected) {
                     // Account is online and we can show it's brief info.
                     final AccountInfoTask accountInfoTask =
                             new AccountInfoTask(activity, accountDbId);
@@ -139,7 +139,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                         boolean buttonEnabled;
                         boolean buttonVisibility;
                         View.OnClickListener buttonListener;
-                        switch(state) {
+                        switch (state) {
                             case NoAccounts: {
                                 buttonText = R.string.accounts;
                                 buttonEnabled = false;

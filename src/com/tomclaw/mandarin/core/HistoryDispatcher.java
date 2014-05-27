@@ -155,7 +155,7 @@ public class HistoryDispatcher {
                                 BuddyCursor buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
                                 nickName = buddyCursor.getBuddyNick();
                                 // Check for nick name is empty and use buddy id in this case.
-                                if(TextUtils.isEmpty(nickName)) {
+                                if (TextUtils.isEmpty(nickName)) {
                                     nickName = buddyCursor.getBuddyId();
                                 }
                                 avatarHash = buddyCursor.getBuddyAvatarHash();
@@ -167,7 +167,7 @@ public class HistoryDispatcher {
                             }
                             if (TextUtils.isEmpty(nickNamesBuilder)) {
                                 // This is first buddy with unread message.
-                                if(!TextUtils.isEmpty(avatarHash)) {
+                                if (!TextUtils.isEmpty(avatarHash)) {
                                     // Obtain avatar for notification.
                                     largeIcon = BitmapCache.getInstance().getBitmapSync(
                                             avatarHash, largeIconSize, largeIconSize, true);

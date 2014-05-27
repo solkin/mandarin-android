@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin

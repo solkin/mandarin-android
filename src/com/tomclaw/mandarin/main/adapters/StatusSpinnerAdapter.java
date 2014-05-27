@@ -1,17 +1,14 @@
 package com.tomclaw.mandarin.main.adapters;
 
-import android.app.Activity;
-import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;

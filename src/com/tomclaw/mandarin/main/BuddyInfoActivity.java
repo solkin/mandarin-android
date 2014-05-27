@@ -50,7 +50,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
         // Preparing for action bar.
         ActionBar bar = getActionBar();
-        if(bar != null) {
+        if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

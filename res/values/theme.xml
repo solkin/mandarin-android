@@ -59,7 +59,7 @@
         <item name="chat_out_bubble">@drawable/ic_out_bubble_dark</item>
         <item name="chat_error_bubble">@drawable/ic_error_bubble_dark</item>
 
-        <item name="chat_icons_tint">#FFFFFFFF</item>
+        <item name="chat_icons_tint">#FFDADADA</item>
         <item name="chat_input_background">#FF202020</item>
         <item name="chat_separator">#FF303030</item>
 

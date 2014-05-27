@@ -30,8 +30,7 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -529,15 +528,22 @@ public class ChatActivity extends ChiefActivity {
                         String lastSeenText;
                         String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
                         String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
-                        int daysDelta = ((int) (System.currentTimeMillis() / (24 * 60 * 60 * 1000))) - ((int) (lastSeen / (24 * 60 * 60)));
 
-                        if (daysDelta < 1) {
+                        Calendar today=Calendar.getInstance();
+                        today=TimeHelper.clearTimes(today);
+
+                        Calendar yesterday=Calendar.getInstance();
+                        yesterday.add(Calendar.DAY_OF_YEAR,-1);
+                        yesterday=TimeHelper.clearTimes(yesterday);
+
+                        if(lastSeen * 1000 > today.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
-                        } else if (daysDelta == 1) {
+                        } else if(lastSeen * 1000 > yesterday.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
                         } else {
                             lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
                         }
+
                         subtitle = lastSeenText;
                     } else {
                         subtitle = buddyCursor.getBuddyStatusTitle();

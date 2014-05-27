@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.format.DateFormat;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Created by solkin on 05/05/14.
@@ -33,5 +34,13 @@ public class TimeHelper {
 
     public String getFormattedTime(long timestamp) {
         return getTimeFormat().format(timestamp);
+    }
+
+    public static Calendar clearTimes(Calendar c) {
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.SECOND,0);
+        c.set(Calendar.MILLISECOND,0);
+        return c;
     }
 }

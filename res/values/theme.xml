@@ -5,26 +5,21 @@
     <color name="item_background_action_bar">#FFFFFFFF</color>
     <color name="chat_gradient_light_start">#FFDBDBDB</color>
     <color name="chat_gradient_light_end">#FFEDEDED</color>
-    <color name="chat_gradient_dark_start">#FF121212</color>
-    <color name="chat_gradient_dark_end">#FF242424</color>
+    <color name="chat_gradient_dark_start">#FF040404</color>
+    <color name="chat_gradient_dark_end">#FF101010</color>
     <color name="smiley_selected_background">#aabababa</color>
     <color name="smiley_selected_stroke">#aa888899</color>
     <color name="draft_indicator_color">#ff989898</color>
     <color name="unread_indicator_color">#ff5aa9dd</color>
-    <color name="profile_panel_background">#EE232323</color>
     <color name="button_navbar_normal">#11000000</color>
     <color name="button_navbar_pressed">#55000000</color>
-    <color name="separator_navbar">#44000000</color>
     <color name="connecting_status_filter">#88000000</color>
     <color name="status_title_color">#FFFAFAFA</color>
     <color name="status_message_color">#FFFAFAFA</color>
     <color name="account_nick_color">#FFFAFAFA</color>
     <color name="tint_color">#70000000</color>
+    <color name="background_tint_color">#CC000000</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!--item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowShowWallpaper">true</item-->
-
         <item name="header_head_color">#F0CCCCCC</item>
         <item name="header_back_color">#99CCCCCC</item>
         <item name="header_font_color">#AA000000</item>
@@ -43,6 +38,11 @@
         <item name="chat_input_background">#FFEEEEEE</item>
         <item name="chat_separator">#aaaaaa</item>
 
+        <item name="profile_panel_background">#EE232323</item>
+        <item name="separator_navbar">#44000000</item>
+        <item name="button_navbar_text">#ffdddddd</item>
+        <item name="button_navbar_background">@drawable/button_navbar</item>
+
         <item name="chat_background_doodle">@drawable/chat_background_doodle_light</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_light</item>
@@ -50,20 +50,19 @@
     <style name="Theme.Mandarin.Dark" parent="android:Theme.Holo">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Opaque.Translucent</item>
 
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:backgroundDimAmount">0.75</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/background_tint_color</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
 
         <item name="header_head_color">#80333333</item>
         <item name="header_back_color">#99444444</item>
         <item name="header_font_color">#A0FFFFFF</item>
         <item name="header_line_color">#90444444</item>
 
-        <item name="chat_date_color">#FF090909</item>
+        <item name="chat_date_color">#FFDADADA</item>
         <item name="chat_time_color">#FFDADADA</item>
-        <item name="chat_text_color">#FF090909</item>
+        <item name="chat_text_color">#FFDADADA</item>
 
         <item name="chat_date_back">@drawable/ic_date_back_dark</item>
         <item name="chat_inc_bubble">@drawable/ic_inc_bubble_dark</item>
@@ -71,10 +70,15 @@
         <item name="chat_error_bubble">@drawable/ic_error_bubble_dark</item>
 
         <item name="chat_icons_tint">#FFDADADA</item>
-        <item name="chat_input_background">#FF202020</item>
-        <item name="chat_separator">#FF303030</item>
+        <item name="chat_input_background">#FF151515</item>
+        <item name="chat_separator">#FF252525</item>
 
-        <item name="chat_background_doodle">@drawable/chat_background_doodle_dark</item>
+        <item name="profile_panel_background">#EE151515</item>
+        <item name="separator_navbar">#44000000</item>
+        <item name="button_navbar_text">#ffdddddd</item>
+        <item name="button_navbar_background">@drawable/button_navbar</item>
+
+        <item name="chat_background_doodle">@android:color/transparent</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_dark</item>
     </style>
@@ -90,8 +94,8 @@
     <style name="Button.NavBar" parent="android:Widget.Button">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">#ffdddddd</item>
-        <item name="android:background">@drawable/button_navbar</item>
+        <item name="android:textColor">?attr/button_navbar_text</item>
+        <item name="android:background">?attr/button_navbar_background</item>
         <item name="android:gravity">left|center_vertical</item>
     </style>
     <style name="Chat.Message" parent="android:Widget.TextView">

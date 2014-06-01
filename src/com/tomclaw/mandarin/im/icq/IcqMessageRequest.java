@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,6 +30,11 @@ public class IcqMessageRequest extends WimRequest {
         this.to = to;
         this.message = message;
         this.cookie = cookie;
+    }
+
+    @Override
+    protected String getHttpRequestType() {
+        return HttpUtil.POST;
     }
 
     @Override

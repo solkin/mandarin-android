@@ -47,7 +47,7 @@
                   android:layout_height="match_parent"
                   android:layout_gravity="start"
                   android:orientation="vertical"
-                  android:background="@color/profile_panel_background">
+                  android:background="?attr/profile_panel_background">
         <ListView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -66,7 +66,7 @@
             <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/separator_navbar"/>
+                    android:background="?attr/separator_navbar"/>
             <Button android:id="@+id/settings_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/separator_navbar"/>
+                    android:background="?attr/separator_navbar"/>
             <Button android:id="@+id/connection_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

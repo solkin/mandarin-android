@@ -21,4 +21,9 @@
     <attr name="chat_icons_tint" format="color|reference"/>
     <attr name="chat_input_background" format="color|reference"/>
     <attr name="chat_separator" format="color|reference"/>
+
+    <attr name="profile_panel_background" format="color|reference"/>
+    <attr name="separator_navbar" format="color|reference"/>
+    <attr name="button_navbar_text" format="color|reference"/>
+    <attr name="button_navbar_background" format="color|reference"/>
 </resources>

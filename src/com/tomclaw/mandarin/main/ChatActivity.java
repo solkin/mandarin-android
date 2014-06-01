@@ -106,10 +106,8 @@ public class ChatActivity extends ChiefActivity {
             }
         });
 
-        if(!PreferenceHelper.isDarkTheme(this)) {
-            int chatBackground = PreferenceHelper.getChatBackground(this);
-            chatList.setBackgroundResource(chatBackground);
-        }
+        int chatBackground = PreferenceHelper.getChatBackground(this);
+        chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
         String enteredText;

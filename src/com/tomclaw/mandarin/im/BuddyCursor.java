@@ -4,7 +4,6 @@ import android.database.Cursor;
 import com.tomclaw.mandarin.core.GlobalProvider;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  * Created by solkin on 23/03/14.

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="header_head_color" format="color|reference"/>
+    <attr name="header_back_color" format="color|reference"/>
+    <attr name="header_font_color" format="color|reference"/>
+    <attr name="header_line_color" format="color|reference"/>
+
+    <attr name="chat_date_color" format="color|reference"/>
+    <attr name="chat_time_color" format="color|reference"/>
+    <attr name="chat_text_color" format="color|reference"/>
+
+    <attr name="chat_background_doodle" format="reference"/>
+
+    <attr name="chat_background_gradient" format="reference"/>
+
+    <attr name="chat_date_back" format="reference"/>
+    <attr name="chat_inc_bubble" format="reference"/>
+    <attr name="chat_out_bubble" format="reference"/>
+    <attr name="chat_error_bubble" format="reference"/>
+
+    <attr name="chat_icons_tint" format="color|reference"/>
+    <attr name="chat_input_background" format="color|reference"/>
+    <attr name="chat_separator" format="color|reference"/>
+
+    <attr name="profile_panel_background" format="color|reference"/>
+    <attr name="separator_navbar" format="color|reference"/>
+    <attr name="button_navbar_text" format="color|reference"/>
+    <attr name="button_navbar_background" format="color|reference"/>
+</resources>

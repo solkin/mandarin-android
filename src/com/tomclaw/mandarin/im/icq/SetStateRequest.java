@@ -5,7 +5,6 @@ import android.util.Pair;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.main.AccountInfoActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 

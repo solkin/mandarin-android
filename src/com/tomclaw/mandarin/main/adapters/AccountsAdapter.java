@@ -204,7 +204,7 @@ public class AccountsAdapter extends CursorAdapter implements
     private void checkAccountsState() {
         OnAccountsStateListener.AccountsState state = OnAccountsStateListener.AccountsState.Offline;
         Cursor cursor = getCursor();
-        if(cursor == null || cursor.getCount() == 0) {
+        if (cursor == null || cursor.getCount() == 0) {
             onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.NoAccounts);
             return;
         }
@@ -212,9 +212,9 @@ public class AccountsAdapter extends CursorAdapter implements
             cursor.moveToPosition(c);
             int status = cursor.getInt(COLUMN_USER_STATUS);
             boolean connecting = (cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1);
-            if(connecting) {
+            if (connecting) {
                 // We are changing status to offline.
-                if(status == StatusUtil.STATUS_OFFLINE) {
+                if (status == StatusUtil.STATUS_OFFLINE) {
                     onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Disconnecting);
                 } else {
                     onAccountsStateListener.onAccountsStateChanged(OnAccountsStateListener.AccountsState.Connecting);

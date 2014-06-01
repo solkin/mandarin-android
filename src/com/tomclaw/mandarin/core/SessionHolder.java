@@ -105,7 +105,7 @@ public class SessionHolder {
      */
     public void connectAccounts() {
         for (AccountRoot accountRoot : accountRootList) {
-            if(accountRoot.isOffline()) {
+            if (accountRoot.isOffline()) {
                 accountRoot.setStatus(StatusUtil.getDefaultOnlineStatus(accountRoot.getAccountType()));
             }
         }
@@ -113,7 +113,7 @@ public class SessionHolder {
 
     public void disconnectAccounts() {
         for (AccountRoot accountRoot : accountRootList) {
-            if(accountRoot.isOnline()) {
+            if (accountRoot.isOnline()) {
                 accountRoot.setStatus(StatusUtil.STATUS_OFFLINE);
             }
         }

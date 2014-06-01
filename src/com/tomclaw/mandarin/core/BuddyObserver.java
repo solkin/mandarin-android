@@ -35,7 +35,7 @@ public abstract class BuddyObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange) {
         Cursor buddyCursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        if(buddyCursor.moveToFirst()) {
+        if (buddyCursor.moveToFirst()) {
             onBuddyInfoChanged(new BuddyCursor(buddyCursor));
             buddyCursor.close();
         }

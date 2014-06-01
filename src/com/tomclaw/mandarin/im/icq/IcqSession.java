@@ -60,7 +60,7 @@ public class IcqSession {
 
     private static final int timeoutSocket = 70 * 1000;
     private static final int timeoutConnection = 60 * 1000;
-    private static final int timeoutSession = 24 * 60 * 60 * 1000;
+    private static final int timeoutSession = 60 * 60 * 1000;
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -151,7 +151,7 @@ public class IcqSession {
             nameValuePairs.add(new Pair<String, String>(DEV_ID_K, DEV_ID_VALUE));
             nameValuePairs.add(new Pair<String, String>(LANGUAGE, "ru-ru"));
             nameValuePairs.add(new Pair<String, String>(MINIMIZE_RESPONSE, "0"));
-            nameValuePairs.add(new Pair<String, String>(MOBILE, "1"));
+            nameValuePairs.add(new Pair<String, String>(MOBILE, "0"));
             nameValuePairs.add(new Pair<String, String>(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
             nameValuePairs.add(new Pair<String, String>(RAW_MSG, "0"));
             nameValuePairs.add(new Pair<String, String>(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
@@ -401,10 +401,14 @@ public class IcqSession {
                                 icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
                         isProcessed = true;
                     } catch (BuddyNotFoundException ignored) {
-                        String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                        QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                                icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+                        if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                            isProcessed = true;
+                        } else {
+                            String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                            QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                                    icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
+                                    recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+                        }
                     }
                     // This will try to create buddy if such is not present
                     // in roster and then retry message insertion.

@@ -661,13 +661,13 @@ public class QueryHelper {
             throws BuddyNotFoundException {
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         BuddyCursor buddyCursor = new BuddyCursor(cursor);
-        if(buddyCursor.moveToFirst()) {
+        if (buddyCursor.moveToFirst()) {
             return buddyCursor;
         }
         throw new BuddyNotFoundException();
     }
 
-    private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
+    public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
             throws BuddyNotFoundException {
         return getBuddyCursor(contentResolver, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
     }

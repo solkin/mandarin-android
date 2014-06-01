@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,6 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.TimeHelper;
-
-import java.text.SimpleDateFormat;
 
 /**
  * Created with IntelliJ IDEA.

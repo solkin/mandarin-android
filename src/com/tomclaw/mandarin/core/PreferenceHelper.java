@@ -2,6 +2,8 @@ package com.tomclaw.mandarin.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -43,6 +45,14 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
     }
 
+    public static boolean isDarkTheme(Context context) {
+        return getBooleanPreference(context, R.string.pref_dark_theme, R.bool.pref_dark_theme_default);
+    }
+
+    public static boolean isIgnoreUnknown(Context context) {
+        return getBooleanPreference(context, R.string.pref_ignore_unknown, R.bool.pref_ignore_unknown_default);
+    }
+
     public static Uri getNotificationUri(Context context) {
         String uriValue = getStringPreference(context, R.string.pref_notification_sound,
                 R.string.pref_notification_sound_default);
@@ -55,13 +65,33 @@ public class PreferenceHelper {
 
     public static int getChatBackground(Context context) {
         boolean isChatBackground = getBooleanPreference(context, R.string.pref_chat_background, R.bool.pref_chat_background_default);
-        int backgroundRes;
         if (isChatBackground) {
-            backgroundRes = R.drawable.chat_background_doodle;
+            return getThemeDrawable(context, R.attr.chat_background_doodle,
+                    R.drawable.chat_background_doodle_light);
         } else {
-            backgroundRes = R.drawable.chat_background_gradient;
+            return getThemeDrawable(context, R.attr.chat_background_gradient,
+                    R.drawable.chat_background_gradient_light);
         }
-        return backgroundRes;
+    }
+
+    private static int getThemeDrawable(Context context, int attr, int defValue) {
+        int resId = defValue;
+        Resources.Theme theme = context.getTheme();
+        if (theme != null) {
+            int[] resources = new int[]{attr};
+            TypedArray array = null;
+            try {
+                array = theme.obtainStyledAttributes(resources);
+                if (array != null) {
+                    resId = array.getResourceId(0, defValue);
+                }
+            } finally {
+                if (array != null) {
+                    array.recycle();
+                }
+            }
+        }
+        return resId;
     }
 
     public static boolean isShowStartHelper(Context context) {

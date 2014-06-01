@@ -3,12 +3,12 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
-              android:background="@color/header_back_color">
+              android:background="?header_back_color">
 
     <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/header_head_color"/>
+            android:background="?header_head_color"/>
 
     <TextView
             android:id="@+id/header_text"
@@ -18,11 +18,11 @@
             android:padding="5dp"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@color/header_font_color"/>
+            android:textColor="?header_font_color"/>
 
     <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/header_line_color"/>
+            android:background="?header_line_color"/>
 
 </LinearLayout>

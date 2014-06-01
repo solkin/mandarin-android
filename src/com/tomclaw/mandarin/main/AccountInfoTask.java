@@ -7,28 +7,25 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.Task;
+import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Created by solkin on 12/26/13.
  */
-public class AccountInfoTask extends Task {
+public class AccountInfoTask extends WeakObjectTask<Context> {
 
-    private WeakReference<Context> weakContext;
     private final int accountDbId;
 
     public AccountInfoTask(Context context, int accountDbId) {
-        weakContext = new WeakReference<Context>(context);
+        super(context);
         this.accountDbId = accountDbId;
     }
 
     @Override
     public void executeBackground() throws Throwable {
         // Get context from weak reference.
-        Context context = weakContext.get();
+        Context context = getWeakObject();
         if (context != null) {
             // Obtain basic account info.
             Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null,
@@ -45,15 +42,15 @@ public class AccountInfoTask extends Task {
                     String accountStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE));
                     // Now we ready to start buddy info activity.
                     context.startActivity(new Intent(context, AccountInfoActivity.class)
-                            .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
-                            .putExtra(BuddyInfoRequest.BUDDY_ID, accountId)
-                            .putExtra(BuddyInfoRequest.BUDDY_NICK, accountNick)
-                            .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, avatarHash)
+                                    .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
+                                    .putExtra(BuddyInfoRequest.BUDDY_ID, accountId)
+                                    .putExtra(BuddyInfoRequest.BUDDY_NICK, accountNick)
+                                    .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, avatarHash)
 
-                            .putExtra(BuddyInfoRequest.ACCOUNT_TYPE, accountType)
-                            .putExtra(BuddyInfoRequest.BUDDY_STATUS, accountStatus)
-                            .putExtra(BuddyInfoRequest.BUDDY_STATUS_TITLE, accountStatusTitle)
-                            .putExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE, accountStatusMessage)
+                                    .putExtra(BuddyInfoRequest.ACCOUNT_TYPE, accountType)
+                                    .putExtra(BuddyInfoRequest.BUDDY_STATUS, accountStatus)
+                                    .putExtra(BuddyInfoRequest.BUDDY_STATUS_TITLE, accountStatusTitle)
+                                    .putExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE, accountStatusMessage)
                     );
                 }
                 cursor.close();
@@ -64,7 +61,7 @@ public class AccountInfoTask extends Task {
     @Override
     public void onFailMain() {
         // Get context from weak reference.
-        Context context = weakContext.get();
+        Context context = getWeakObject();
         if (context != null) {
             Toast.makeText(context, R.string.error_show_account_info, Toast.LENGTH_SHORT).show();
         }

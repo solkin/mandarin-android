@@ -9,6 +9,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
@@ -27,6 +28,7 @@ public abstract class ChiefActivity extends Activity {
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
     private boolean isCoreServiceReady;
+    private boolean isDarkTheme;
 
     /**
      * Called when the activity is first created.
@@ -39,12 +41,25 @@ public abstract class ChiefActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
+        isDarkTheme = PreferenceHelper.isDarkTheme(this);
+        setTheme(isDarkTheme ? R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+
         setContentView(R.layout.progress);
         /** Starting service **/
         isServiceBound = false;
         isCoreServiceReady = false;
 
         startCoreService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isDarkTheme != PreferenceHelper.isDarkTheme(this)) {
+            Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -79,7 +94,7 @@ public abstract class ChiefActivity extends Activity {
     /**
      * Running core service
      */
-    protected void startCoreService() {
+    public void startCoreService() {
         /** Checking for core service is down **/
         if (!checkCoreService()) {
             /** Starting service **/

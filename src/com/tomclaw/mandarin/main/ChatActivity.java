@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,8 +28,8 @@ import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 /**
@@ -280,8 +279,8 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void setTypingSync(boolean isTyping) {
-            RequestHelper.requestTyping(getContentResolver(),
-                    chatHistoryAdapter.getBuddyDbId(), isTyping);
+        RequestHelper.requestTyping(getContentResolver(),
+                chatHistoryAdapter.getBuddyDbId(), isTyping);
     }
 
     private void onGlobalLayoutUpdated() {
@@ -366,7 +365,7 @@ public class ChatActivity extends ChiefActivity {
     protected void onDestroy() {
         if (messageText != null) {
             // Stop typing status.
-            if(!TextUtils.isEmpty(getMessageText())) {
+            if (!TextUtils.isEmpty(getMessageText())) {
                 messageWatcher.stop();
                 setTypingSync(false);
             }
@@ -508,7 +507,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void startTitleObservation(final int buddyDbId) {
-        if(buddyObserver != null) {
+        if (buddyObserver != null) {
             buddyObserver.stop();
         }
         buddyObserver = new BuddyObserver(getContentResolver(), buddyDbId) {
@@ -529,15 +528,22 @@ public class ChatActivity extends ChiefActivity {
                         String lastSeenText;
                         String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
                         String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
-                        int daysDelta = ((int) (System.currentTimeMillis() / (24 * 60 * 60 * 1000))) - ((int) (lastSeen / (24 * 60 * 60)));
 
-                        if (daysDelta < 1) {
+                        Calendar today = Calendar.getInstance();
+                        today = TimeHelper.clearTimes(today);
+
+                        Calendar yesterday = Calendar.getInstance();
+                        yesterday.add(Calendar.DAY_OF_YEAR, -1);
+                        yesterday = TimeHelper.clearTimes(yesterday);
+
+                        if (lastSeen * 1000 > today.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
-                        } else if (daysDelta == 1) {
+                        } else if (lastSeen * 1000 > yesterday.getTimeInMillis()) {
                             lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
                         } else {
                             lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
                         }
+
                         subtitle = lastSeenText;
                     } else {
                         subtitle = buddyCursor.getBuddyStatusTitle();
@@ -703,7 +709,7 @@ public class ChatActivity extends ChiefActivity {
 
         private void unreadSelectedMessages(final ActionMode mode) {
             final Collection<Long> selectedIds = new ArrayList<Long>(selectionHelper.getSelectedIds());
-            if(!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
+            if (!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
                 new AlertDialog.Builder(ChatActivity.this)
                         .setTitle(R.string.unread_messages)
                         .setMessage(R.string.mark_messages_unread)
@@ -769,16 +775,15 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ReadMessagesTask extends Task {
+    private class ReadMessagesTask extends WeakObjectTask<ContentResolver> {
 
-        private final WeakReference<ContentResolver> weakContentResolver;
         private final int buddyDbId;
         private final long firstMessageDbId;
         private final long lastMessageDbId;
 
         public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
                                 long firstMessageDbId, long lastMessageDbId) {
-            this.weakContentResolver = new WeakReference<ContentResolver>(contentResolver);
+            super(contentResolver);
             this.buddyDbId = buddyDbId;
             this.firstMessageDbId = firstMessageDbId;
             this.lastMessageDbId = lastMessageDbId;
@@ -786,7 +791,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void executeBackground() throws MessageNotFoundException {
-            ContentResolver contentResolver = weakContentResolver.get();
+            ContentResolver contentResolver = getWeakObject();
             if (contentResolver != null) {
                 QueryHelper.readMessages(contentResolver,
                         buddyDbId, firstMessageDbId, lastMessageDbId);
@@ -797,25 +802,26 @@ public class ChatActivity extends ChiefActivity {
     private class ClearHistoryTask extends PleaseWaitTask {
 
         private final int buddyDbId;
-        private final WeakReference<ContentResolver> weakContentResolver;
 
         public ClearHistoryTask(Context context, int buddyDbId) {
             super(context);
-            this.weakContentResolver = new WeakReference<ContentResolver>(context.getContentResolver());
             this.buddyDbId = buddyDbId;
         }
 
         @Override
         public void executeBackground() {
-            ContentResolver contentResolver = weakContentResolver.get();
-            if (contentResolver != null) {
-                QueryHelper.clearHistory(contentResolver, buddyDbId);
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                if (contentResolver != null) {
+                    QueryHelper.clearHistory(contentResolver, buddyDbId);
+                }
             }
         }
 
         @Override
         public void onFailMain() {
-            Context context = getWeakContext().get();
+            Context context = getWeakObject();
             if (context != null) {
                 // Show error.
                 Toast.makeText(context, R.string.error_clearing_history, Toast.LENGTH_LONG).show();
@@ -823,23 +829,22 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendMessageTask extends Task {
+    private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private String message;
         private final MessageCallback callback;
-        private final WeakReference<ChiefActivity> weakActivity;
 
         public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+            super(activity);
             this.buddyDbId = buddyDbId;
             this.message = message;
-            this.weakActivity = new WeakReference<ChiefActivity>(activity);
             this.callback = callback;
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
@@ -858,7 +863,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 // Show error.
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
@@ -867,21 +872,20 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class SendTypingTask extends Task {
+    public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private boolean isTyping;
-        private final WeakReference<ChiefActivity> weakActivity;
 
         public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+            super(activity);
             this.buddyDbId = buddyDbId;
             this.isTyping = isTyping;
-            this.weakActivity = new WeakReference<ChiefActivity>(activity);
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = weakActivity.get();
+            ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 // Sending protocol typing request.
@@ -915,8 +919,8 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            if(isTimerDown) {
-                if(TextUtils.isEmpty(s)) {
+            if (isTimerDown) {
+                if (TextUtils.isEmpty(s)) {
                     // There was a text typed, timer is gone and
                     // now text was cleared. Nothing to be done.
                     return;
@@ -926,7 +930,7 @@ public class ChatActivity extends ChiefActivity {
             } else {
                 stop();
                 // Checking for empty text view, so, we must stop typing.
-                if(TextUtils.isEmpty(s)) {
+                if (TextUtils.isEmpty(s)) {
                     typingTimer.onFinish();
                     return;
                 }

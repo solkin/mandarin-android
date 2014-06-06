@@ -6,7 +6,6 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -36,9 +35,6 @@ public abstract class ChiefActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "ChiefActivity onCreate");
-        // Release all reports.
-        Crashlytics.start(this);
-
         super.onCreate(savedInstanceState);
 
         isDarkTheme = PreferenceHelper.isDarkTheme(this);

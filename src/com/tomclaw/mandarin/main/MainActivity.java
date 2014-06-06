@@ -19,6 +19,8 @@ import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.SelectionHelper;
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
 
 public class MainActivity extends ChiefActivity {
 
@@ -92,6 +94,16 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkForCrashes();
+    }
+
+    private void checkForCrashes() {
+        CrashManager.register(this, "16283e6bea480850d8f4c1b41d7a74be");
     }
 
     @Override

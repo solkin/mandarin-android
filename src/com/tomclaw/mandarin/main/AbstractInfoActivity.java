@@ -104,6 +104,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
 
     public abstract void onBuddyInfoRequestError();
 
+    private void hideProgressBar() {
+        findViewById(R.id.progress_bar).setVisibility(View.GONE);
+    }
+
     @Override
     public void onCoreServiceReady() {
         try {
@@ -125,15 +129,15 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
     public void onCoreServiceIntent(Intent intent) {
         // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
-        Bundle bundle = intent.getExtras();
-        if (isInfoPresent && bundle != null) {
-            int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-            String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
-            Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
-            // Checking for this is info we need.
-            if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
-                // Hide the progress bar.
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+        int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+        String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
+        Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
+        // Checking for this is info we need.
+        if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
+            // Hide the progress bar.
+            hideProgressBar();
+            if (isInfoPresent) {
+                Bundle bundle = intent.getExtras();
                 // Show info blocks.
                 findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
@@ -164,11 +168,12 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
                     }
                 }
             } else {
-                Log.d(Settings.LOG_TAG, "Wrong buddy info!");
+                Log.d(Settings.LOG_TAG, "No info case :(");
+                hideProgressBar();
+                onBuddyInfoRequestError();
             }
         } else {
-            Log.d(Settings.LOG_TAG, "No info case :(");
-            onBuddyInfoRequestError();
+            Log.d(Settings.LOG_TAG, "Wrong buddy info!");
         }
     }
 

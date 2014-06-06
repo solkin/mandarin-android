@@ -377,11 +377,11 @@ public class IcqSession {
                 if (sourceObject != null) {
                     buddyId = sourceObject.getString(AIM_ID);
                     buddyNick = sourceObject.optString(FRIENDLY);
-                    String buddyStatus = sourceObject.getString(STATE);
-                    String buddyType = sourceObject.getString(USER_TYPE);
+                    String buddyStatus = sourceObject.optString(STATE);
+                    String buddyType = sourceObject.optString(USER_TYPE);
                     buddyIcon = sourceObject.optString(BUDDY_ICON);
-                    statusIndex = getStatusIndex(null, buddyStatus);
                     lastSeen = sourceObject.optLong(LAST_SEEN, -1);
+                    statusIndex = getStatusIndex(null, buddyStatus);
                 } else {
                     buddyId = eventData.getString(AIM_ID);
                     buddyNick = eventData.optString(FRIENDLY);

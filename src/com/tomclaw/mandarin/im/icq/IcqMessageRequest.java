@@ -54,8 +54,8 @@ public class IcqMessageRequest extends WimRequest {
                 }
             }
             return REQUEST_DELETE;
-        } else if (statusCode == 462 || statusCode >= 600 && statusCode < 700) { // TODO: check this status codes.
-            // Target error.
+        } else if (statusCode >= 460 && statusCode <= 606) {
+            // Target error. Mark message as error and delete request from pending operations.
             String requestId = responseObject.getString(REQUEST_ID);
             QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), requestId, 1);
             return REQUEST_DELETE;

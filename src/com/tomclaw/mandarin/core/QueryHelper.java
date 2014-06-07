@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -255,6 +256,30 @@ public class QueryHelper {
     public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
+        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+    }
+
+    public static void modifyOperation(ContentResolver contentResolver, int buddyDbId, int operation) {
+        modifyOperation(contentResolver, Collections.singleton(buddyDbId), operation);
+    }
+
+    public static void modifyOperation(ContentResolver contentResolver, Collection<Integer> buddyDbIds, int operation) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, operation);
+        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+    }
+
+    public static void modifyBuddyNick(ContentResolver contentResolver, int buddyDbId,
+                                       String buddyNick, boolean isStartOperation) {
+        modifyBuddyNick(contentResolver, Collections.singleton(buddyDbId), buddyNick, isStartOperation);
+    }
+
+    public static void modifyBuddyNick(ContentResolver contentResolver, Collection<Integer> buddyDbIds,
+                                       String buddyNick, boolean isStartOperation) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, isStartOperation ?
+                GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME : GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
         modifyBuddies(contentResolver, buddyDbIds, contentValues);
     }
 
@@ -655,6 +680,49 @@ public class QueryHelper {
             Log.d(Settings.LOG_TAG, "moved to recycle: " + movedBuddies);
         }
         removedCursor.close();
+    }
+
+    public static Collection<Integer> getBuddyDbIds(ContentResolver contentResolver, int accountDbId, String buddyId)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain account db id.
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        // Cursor may have no more than only one entry. But lets check.
+        if (cursor.moveToFirst()) {
+            List<Integer> buddyDbIds = new ArrayList<Integer>();
+            do {
+                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                buddyDbIds.add(buddyDbId);
+            } while(cursor.moveToNext());
+            // Closing cursor.
+            cursor.close();
+            return buddyDbIds;
+        }
+        // Closing cursor.
+        cursor.close();
+        throw new BuddyNotFoundException();
+    }
+
+    public static int getBuddyDbId(ContentResolver contentResolver, int accountDbId, String groupName, String buddyId)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain account db id.
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        // Cursor may have no more than only one entry. But lets check.
+        if (cursor.moveToFirst()) {
+            int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            // Closing cursor.
+            cursor.close();
+            return buddyDbId;
+        }
+        // Closing cursor.
+        cursor.close();
+        throw new BuddyNotFoundException();
     }
 
     private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, QueryBuilder queryBuilder)

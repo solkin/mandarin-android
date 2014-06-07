@@ -1,22 +1,26 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SearchView;
+import android.view.*;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,6 +64,7 @@ public class RosterActivity extends ChiefActivity {
                 }
             }
         });
+        generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());
 
         final ActionBar mActionBar = getActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
@@ -142,5 +147,105 @@ public class RosterActivity extends ChiefActivity {
     private void setFilterValue(int filterValue) {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
                 .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
+    }
+    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper<Integer, Integer> selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, (int) id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+            updateMenu(mode, mode.getMenu());
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create selection helper to store selected messages.
+            selectionHelper = new SelectionHelper<Integer, Integer>();
+            updateMenu(mode, menu);
+            return true;
+        }
+
+        private void updateMenu(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            menu.clear();
+            int menuRes = (selectionHelper.getSelectedCount() > 1) ?
+                    R.menu.roster_edit_multiple_menu : R.menu.roster_edit_single_menu;
+            inflater.inflate(menuRes, menu);
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch(item.getItemId()) {
+                case R.id.rename_buddy_menu: {
+                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
+                    renameSelectedBuddy(buddyDbId);
+                    break;
+                }
+                case R.id.remove_buddy_menu: {
+                    removeSelectedBuddies(selectionHelper.getSelectedIds());
+                    break;
+                }
+            }
+            mode.finish();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
+        }
+
+        private void renameSelectedBuddy(final int buddyDbId) {
+            BuddyCursor buddyCursor = null;
+            try {
+                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(), buddyDbId);
+                final int accountDbId = buddyCursor.getBuddyAccountDbId();
+                final String buddyId = buddyCursor.getBuddyId();
+                final String buddyPreviousNick = buddyCursor.getBuddyNick();
+
+                View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
+
+                final EditText buddyNameText = (EditText) view.findViewById(R.id.buddy_name_edit);
+                buddyNameText.setText(buddyPreviousNick);
+                buddyNameText.setSelection(buddyNameText.length());
+
+                AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
+                        .setTitle(R.string.edit_buddy_name)
+                        .setView(view)
+                        .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String buddySatisfiedNick = buddyNameText.getText().toString();
+
+                                QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId, buddySatisfiedNick, true);
+
+                                RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
+                                        buddyPreviousNick, buddySatisfiedNick);
+                            }
+                        })
+                        .setNegativeButton(R.string.not_now, null)
+                        .create();
+                alertDialog.show();
+            } catch (BuddyNotFoundException e) {
+                Toast.makeText(RosterActivity.this, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
+            } finally {
+                if(buddyCursor != null) {
+                    buddyCursor.close();
+                }
+            }
+        }
+
+        private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
+
+        }
     }
 }

@@ -78,6 +78,12 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_DRAFT = "buddy_draft";
     public static final String ROSTER_BUDDY_LAST_SEEN = "buddy_last_seen";
     public static final String ROSTER_BUDDY_LAST_TYPING = "buddy_last_typing";
+    public static final String ROSTER_BUDDY_OPERATION = "buddy_operation";
+
+    public static final int ROSTER_BUDDY_OPERATION_NO = 0;
+    public static final int ROSTER_BUDDY_OPERATION_ADD = 1;
+    public static final int ROSTER_BUDDY_OPERATION_RENAME = 2;
+    public static final int ROSTER_BUDDY_OPERATION_REMOVE = 3;
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
@@ -121,7 +127,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
             + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text, "
             + ROSTER_BUDDY_SEARCH_FIELD + " text, " + ROSTER_BUDDY_DRAFT + " text, "
-            + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0" + ");";
+            + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0"
+            + ROSTER_BUDDY_OPERATION + " int default " + ROSTER_BUDDY_OPERATION_NO + ", " + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

@@ -226,4 +226,11 @@
     <string name="pref_title_dark_theme">Тёмная тема оформления</string>
     <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать сообщения от неизвестных людей.</string>
     <string name="pref_title_ignore_unknown">Игнорировать неизвестных</string>
+
+    <string name="remove_buddy_short">Удалить</string>
+    <string name="rename_buddy_short">Переименовать</string>
+    <string name="edit_buddy_name">Переименовать контакт</string>
+    <string name="rename_buddy_description">Введите желаемое имя для выбранного контакта:</string>
+    <string name="buddy_name_hint">Имя контакта…</string>
+    <string name="no_buddy_in_roster">Контакт отсутствует в списке контактов</string>
 </resources>

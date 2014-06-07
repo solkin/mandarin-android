@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
 
@@ -27,15 +28,7 @@ public class RequestHelper {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
-                // Writing to requests database.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-                contentValues.put(GlobalProvider.REQUEST_CLASS, IcqMessageRequest.class.getName());
-                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-                contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-                contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(messageRequest));
-                contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, messageRequest);
             }
             cursor.close();
         }
@@ -43,15 +36,7 @@ public class RequestHelper {
 
     public static void endSession(ContentResolver contentResolver, int accountDbId) {
         EndSessionRequest endSessionRequest = new EndSessionRequest();
-        // Writing to requests database.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-        contentValues.put(GlobalProvider.REQUEST_CLASS, EndSessionRequest.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(endSessionRequest));
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, endSessionRequest);
     }
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
@@ -64,15 +49,7 @@ public class RequestHelper {
             // Checking for at least one such download request exist.
             if (!cursor.moveToFirst()) {
                 BuddyAvatarRequest buddyAvatarRequest = new BuddyAvatarRequest(buddyId, url);
-                // Writing to requests database.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_DOWNLOAD);
-                contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyAvatarRequest.class.getName());
-                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-                contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-                contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(buddyAvatarRequest));
-                contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, true, accountDbId, buddyAvatarRequest);
             }
             cursor.close();
         }
@@ -87,15 +64,7 @@ public class RequestHelper {
             // Checking for at least one such download request exist.
             if (!cursor.moveToFirst()) {
                 AccountAvatarRequest accountAvatarRequest = new AccountAvatarRequest(url);
-                // Writing to requests database.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_DOWNLOAD);
-                contentValues.put(GlobalProvider.REQUEST_CLASS, AccountAvatarRequest.class.getName());
-                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-                contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-                contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(accountAvatarRequest));
-                contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, true, accountDbId, accountAvatarRequest);
             }
             cursor.close();
         }
@@ -104,44 +73,19 @@ public class RequestHelper {
     public static void requestBuddyInfo(ContentResolver contentResolver, String appSession,
                                         int accountDbId, String buddyId) {
         BuddyInfoRequest buddyInfoRequest = new BuddyInfoRequest(buddyId);
-        // Writing to requests database.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-        contentValues.put(GlobalProvider.REQUEST_CLASS, BuddyInfoRequest.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
-        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 0);
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(buddyInfoRequest));
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddyInfoRequest);
     }
 
     public static void requestSetState(ContentResolver contentResolver, int accountDbId, int statusIndex) {
         SetStateRequest setStateRequest = new SetStateRequest(statusIndex);
-        // Writing to requests database.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-        contentValues.put(GlobalProvider.REQUEST_CLASS, SetStateRequest.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_TAG, accountDbId + SetStateRequest.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setStateRequest));
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        String tag = accountDbId + SetStateRequest.class.getName();
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, tag, setStateRequest);
     }
 
     public static void requestSetMood(ContentResolver contentResolver, int accountDbId, int statusIndex,
                                       String statusTitle, String statusMessage) {
         SetMoodRequest setMoodRequest = new SetMoodRequest(statusIndex, statusTitle, statusMessage);
-        // Writing to requests database.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-        contentValues.put(GlobalProvider.REQUEST_CLASS, SetMoodRequest.class.getName());
-        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(setMoodRequest));
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, setMoodRequest);
     }
 
     public static void requestTyping(ContentResolver contentResolver, int buddyDbId, boolean isTyping) {
@@ -154,17 +98,45 @@ public class RequestHelper {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
-                // Writing to requests database.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.REQUEST_TYPE, Request.REQUEST_TYPE_SHORT);
-                contentValues.put(GlobalProvider.REQUEST_CLASS, IcqTypingRequest.class.getName());
-                contentValues.put(GlobalProvider.REQUEST_PERSISTENT, 1);
-                contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-                contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-                contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(typingRequest));
-                contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, typingRequest);
             }
             cursor.close();
         }
+    }
+
+    public static void requestRename(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                     String buddyPreviousNameNick, String buddySatisfiedNick) {
+        BuddyRenameRequest buddyRenameRequest = new BuddyRenameRequest(
+                buddyId, buddyPreviousNameNick, buddySatisfiedNick);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, buddyRenameRequest);
+    }
+
+    private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
+                                      int accountDbId, String appSession, Request request) {
+        insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);
+    }
+
+    private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
+                                      int accountDbId, Request request) {
+        insertRequest(contentResolver, type, isPersistent, accountDbId, null, null, request);
+    }
+
+    private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
+                                      int accountDbId, String tag, String appSession, Request request) {
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_TYPE, type);
+        contentValues.put(GlobalProvider.REQUEST_CLASS, request.getClass().getName());
+        contentValues.put(GlobalProvider.REQUEST_PERSISTENT, isPersistent ? 1 : 0);
+        contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        if(!TextUtils.isEmpty(appSession)) {
+            contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
+        }
+        if(!TextUtils.isEmpty(tag)) {
+            contentValues.put(GlobalProvider.REQUEST_TAG, tag);
+        }
+        contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(request));
+        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 }

@@ -190,6 +190,7 @@ public class HistoryDispatcher {
                     String content;
                     int replyIcon;
                     NotificationCompat.Style style;
+                    String ticker;
                     // Checking for required style.
                     if (multipleSenders) {
                         title = context.getString(R.string.count_new_messages, unread);
@@ -197,6 +198,7 @@ public class HistoryDispatcher {
                         replyIcon = R.drawable.social_reply_all;
                         inboxStyle.setBigContentTitle(title);
                         style = inboxStyle;
+                        ticker = title;
                     } else {
                         title = nickNamesBuilder.toString();
                         content = message;
@@ -204,6 +206,7 @@ public class HistoryDispatcher {
                         bigTextStyle.bigText(message);
                         bigTextStyle.setBigContentTitle(title);
                         style = bigTextStyle;
+                        ticker = message;
                     }
                     // Show chat activity with concrete buddy.
                     PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
@@ -225,7 +228,8 @@ public class HistoryDispatcher {
                             .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
                             .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
-                            .setLargeIcon(largeIcon);
+                            .setLargeIcon(largeIcon)
+                            .setTicker(ticker);
                     if (isAlarmRequired && isNotificationCompleted()) {
                         if (PreferenceHelper.isSystemNotifications(context)) {
                             notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);

@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-            android:id="@+id/create_dialog"
-            android:icon="@drawable/social_new_chat"
-            android:showAsAction="ifRoom"
-            android:title="@string/create_dialog"/>
-    <item
-            android:id="@+id/accounts"
-            android:icon="@drawable/access_accounts"
-            android:showAsAction="never"
-            android:title="@string/accounts"/>
-    <item
-            android:id="@+id/settings"
-            android:icon="@drawable/action_settings"
-            android:showAsAction="never"
-            android:title="@string/settings"/>
-    <item
-            android:id="@+id/info"
-            android:icon="@drawable/action_about"
-            android:showAsAction="never"
-            android:title="@string/info"/>
-    <item
-            android:id="@+id/all_projects"
-            android:icon="@drawable/google_play"
-            android:showAsAction="never"
-            android:title="@string/all_projects"/>
-    <item
-            android:id="@+id/rate_application"
-            android:icon="@drawable/content_email"
-            android:showAsAction="never"
-            android:title="@string/rate_application"/>
+    <item android:id="@+id/create_dialog"
+          android:icon="@drawable/social_new_chat"
+          android:showAsAction="ifRoom"
+          android:title="@string/create_dialog"/>
+    <item android:id="@+id/accounts"
+          android:icon="@drawable/access_accounts"
+          android:showAsAction="never"
+          android:title="@string/accounts"/>
+    <item android:id="@+id/settings"
+          android:icon="@drawable/action_settings"
+          android:showAsAction="never"
+          android:title="@string/settings"/>
+    <item android:id="@+id/info"
+          android:icon="@drawable/action_about"
+          android:showAsAction="never"
+          android:title="@string/info"/>
+    <item android:id="@+id/all_projects"
+          android:icon="@drawable/google_play"
+          android:showAsAction="never"
+          android:title="@string/all_projects"/>
+    <item android:id="@+id/rate_application"
+          android:icon="@drawable/content_email"
+          android:showAsAction="never"
+          android:title="@string/rate_application"/>
 </menu>

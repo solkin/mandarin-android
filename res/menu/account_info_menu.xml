@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-            android:id="@+id/account_shutdown"
-            android:showAsAction="always"
-            android:title="@string/account_shutdown"
-            android:icon="@drawable/action_shutdown">
-    </item>
-    <item
-            android:id="@+id/account_remove"
-            android:showAsAction="ifRoom"
-            android:title="@string/account_remove"
-            android:icon="@drawable/content_discard">
-    </item>
+    <item android:id="@+id/account_shutdown"
+          android:showAsAction="always"
+          android:title="@string/account_shutdown"
+          android:icon="@drawable/action_shutdown"/>
+    <item android:id="@+id/account_remove"
+          android:showAsAction="ifRoom"
+          android:title="@string/account_remove"
+          android:icon="@drawable/content_discard"/>
 </menu>

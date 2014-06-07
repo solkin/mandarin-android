@@ -170,6 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Yo!
+        Log.d(Settings.LOG_TAG, "Now we need to upgrade database from " + oldVersion + " to " + newVersion);
         switch (oldVersion) {
             case 1: {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
@@ -181,6 +182,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
                         + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_LAST_TYPING + " int default 0");
             }
+            case 3: {
+                db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_OPERATION + " int default "
+                        + GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
+            }
         }
+        Log.d(Settings.LOG_TAG, "Database upgrade completed");
     }
 }

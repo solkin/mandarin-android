@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-            android:id="@+id/buddy_info_copy"
-            android:icon="@drawable/content_copy"
-            android:showAsAction="ifRoom|withText"
-            android:title="@string/buddy_info_copy">
-    </item>
-    <item
-            android:id="@+id/buddy_info_share"
-            android:icon="@drawable/social_share"
-            android:showAsAction="ifRoom|withText"
-            android:title="@string/buddy_info_share">
-    </item>
+    <item android:id="@+id/buddy_info_copy"
+          android:icon="@drawable/content_copy"
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/buddy_info_copy"/>
+    <item android:id="@+id/buddy_info_share"
+          android:icon="@drawable/social_share"
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/buddy_info_share"/>
 </menu>

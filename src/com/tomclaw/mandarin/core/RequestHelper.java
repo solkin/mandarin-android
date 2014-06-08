@@ -111,6 +111,12 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, buddyRenameRequest);
     }
 
+    public static void requestRemove(ContentResolver contentResolver, int accountDbId,
+                                     String groupName, String buddyId) {
+        BuddyRemoveRequest buddyRemoveRequest = new BuddyRemoveRequest(groupName, buddyId);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, buddyRemoveRequest);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

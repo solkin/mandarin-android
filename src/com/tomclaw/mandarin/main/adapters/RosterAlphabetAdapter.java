@@ -243,6 +243,8 @@ public class RosterAlphabetAdapter extends CursorAdapter
         if (!isShowTemp) {
             queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         }
+        queryBuilder.and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION,
+                GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
         queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
         return queryBuilder;
     }

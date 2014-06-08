@@ -79,7 +79,9 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             adapterCallback.onRosterUpdate();
         }
         return new CursorLoader(context,
-                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
+                Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'" + " AND "
+                        + GlobalProvider.ROSTER_BUDDY_OPERATION + "!=" + GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE,
                 null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 2 ELSE 0 END) DESC, "
                 + "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
                 + " THEN 0 ELSE 1 END" + ") DESC, "

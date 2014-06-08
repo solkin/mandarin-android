@@ -19,6 +19,7 @@ public class BuddyCursor implements Closeable {
     private static int COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID;
     private static int COLUMN_ROSTER_BUDDY_ID;
     private static int COLUMN_ROSTER_BUDDY_NICK;
+    private static int COLUMN_ROSTER_BUDDY_GROUP;
     private static int COLUMN_ROSTER_BUDDY_DIALOG;
     private static int COLUMN_ROSTER_BUDDY_STATUS;
     private static int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
@@ -30,6 +31,7 @@ public class BuddyCursor implements Closeable {
     private static int COLUMN_ROSTER_BUDDY_DRAFT;
     private static int COLUMN_ROSTER_BUDDY_LAST_SEEN;
     private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
+    private static int COLUMN_ROSTER_BUDDY_OPERATION;
 
     public BuddyCursor(Cursor cursor) {
         this.cursor = cursor;
@@ -41,6 +43,7 @@ public class BuddyCursor implements Closeable {
         COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID);
         COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
         COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
+        COLUMN_ROSTER_BUDDY_GROUP = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_GROUP);
         COLUMN_ROSTER_BUDDY_DIALOG = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG);
         COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
         COLUMN_ROSTER_BUDDY_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE);
@@ -52,6 +55,7 @@ public class BuddyCursor implements Closeable {
         COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
         COLUMN_ROSTER_BUDDY_LAST_SEEN = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_SEEN);
         COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
+        COLUMN_ROSTER_BUDDY_OPERATION = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_OPERATION);
     }
 
     public boolean moveToPosition(int position) {
@@ -72,6 +76,10 @@ public class BuddyCursor implements Closeable {
 
     public String getBuddyNick() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_NICK);
+    }
+
+    public String getBuddyGroup() {
+        return cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
     }
 
     public boolean getBuddyDialog() {
@@ -116,6 +124,10 @@ public class BuddyCursor implements Closeable {
 
     public long getBuddyLastTyping() {
         return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
+    }
+
+    public int getBuddyOperation() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_OPERATION);
     }
 
     public boolean moveToFirst() {

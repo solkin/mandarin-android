@@ -2,6 +2,8 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,16 +12,14 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -245,7 +245,47 @@ public class RosterActivity extends ChiefActivity {
         }
 
         private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
+            Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
+            BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
+            TaskExecutor.getInstance().execute(task);
+        }
+    }
 
+    private class BuddyRemoveTask extends PleaseWaitTask {
+
+        private Collection<Integer> buddyDbIds;
+
+        public BuddyRemoveTask(Context context, Collection<Integer> buddyDbIds) {
+            super(context);
+            this.buddyDbIds = buddyDbIds;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if(context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                for (int buddyDbId : buddyDbIds) {
+                    BuddyCursor buddyCursor = null;
+                    try {
+                        buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
+                        int accountDbId = buddyCursor.getBuddyAccountDbId();
+                        String groupName = buddyCursor.getBuddyGroup();
+                        String buddyId = buddyCursor.getBuddyId();
+                        // Mark as removing.
+                        QueryHelper.modifyOperation(contentResolver, buddyDbId,
+                                GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
+                        // Remove request.
+                        RequestHelper.requestRemove(contentResolver, accountDbId, groupName, buddyId);
+                    } catch (BuddyNotFoundException ignored) {
+                        // Wha-a-a-at?! No buddy found.
+                    } finally {
+                        if(buddyCursor != null) {
+                            buddyCursor.close();
+                        }
+                    }
+                }
+            }
         }
     }
 }

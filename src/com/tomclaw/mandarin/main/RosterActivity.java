@@ -219,7 +219,7 @@ public class RosterActivity extends ChiefActivity {
                 buddyNameText.setSelection(buddyNameText.length());
 
                 AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
-                        .setTitle(R.string.edit_buddy_name)
+                        .setTitle(R.string.edit_buddy_name_title)
                         .setView(view)
                         .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
                             @Override
@@ -245,9 +245,27 @@ public class RosterActivity extends ChiefActivity {
         }
 
         private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
-            Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
-            BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
-            TaskExecutor.getInstance().execute(task);
+            final Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
+            boolean isMultiple = buddyDbIds.size() > 1;
+            String message;
+            if(isMultiple) {
+                message = getString(R.string.remove_buddies_message, buddyDbIds.size());
+            } else {
+                message = getString(R.string.remove_buddy_message);
+            }
+            AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
+                    .setTitle(isMultiple ? R.string.remove_buddies_title : R.string.remove_buddy_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
+                            TaskExecutor.getInstance().execute(task);
+                        }
+                    })
+                    .setNegativeButton(R.string.do_not_remove, null)
+                    .create();
+            alertDialog.show();
         }
     }
 

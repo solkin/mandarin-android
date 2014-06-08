@@ -716,7 +716,7 @@ public class QueryHelper {
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         // Appending criteria values.
         for(String key : criteria.keySet()) {
-            queryBuilder.columnEquals(key, criteria.get(key));
+            queryBuilder.and().columnEquals(key, criteria.get(key));
         }
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have no more than only one entry. But lets check.

@@ -24,7 +24,7 @@ public class BuddyRemoveRequest extends WimRequest {
     public BuddyRemoveRequest() {
     }
 
-    public BuddyRemoveRequest(String buddyId, String groupName) {
+    public BuddyRemoveRequest(String groupName, String buddyId) {
         this.buddyId = buddyId;
         this.groupName = groupName;
     }

@@ -127,8 +127,8 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_UPDATE_TIME + " int, " + ROSTER_BUDDY_ALPHABET_INDEX + " int, "
             + ROSTER_BUDDY_UNREAD_COUNT + " int default 0, " + ROSTER_BUDDY_AVATAR_HASH + " text, "
             + ROSTER_BUDDY_SEARCH_FIELD + " text, " + ROSTER_BUDDY_DRAFT + " text, "
-            + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0"
-            + ROSTER_BUDDY_OPERATION + " int default " + ROSTER_BUDDY_OPERATION_NO + ", " + ");";
+            + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0, "
+            + ROSTER_BUDDY_OPERATION + " int default " + ROSTER_BUDDY_OPERATION_NO + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

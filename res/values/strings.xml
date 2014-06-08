@@ -229,8 +229,14 @@
 
     <string name="remove_buddy_short">Удалить</string>
     <string name="rename_buddy_short">Переименовать</string>
-    <string name="edit_buddy_name">Переименовать контакт</string>
+    <string name="edit_buddy_name_title">Переименовать контакт</string>
     <string name="rename_buddy_description">Введите желаемое имя для выбранного контакта:</string>
     <string name="buddy_name_hint">Имя контакта…</string>
     <string name="no_buddy_in_roster">Контакт отсутствует в списке контактов</string>
+    <string name="remove_buddy_title">Удалить контакт?</string>
+    <string name="remove_buddies_title">Удалить контакты?</string>
+    <string name="remove_buddies_message">Вы выбрали для удаления %d контакта(ов). Удаление контактов также стирает историю
+        переписки с ними. Продолжить?
+    </string>
+    <string name="remove_buddy_message">Вы действительно хотите удалить выбранный контакт и историю переписки с ним?</string>
 </resources>

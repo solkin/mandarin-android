@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 
 import java.util.Collection;
 import java.util.Collections;

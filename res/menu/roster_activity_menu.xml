@@ -6,4 +6,8 @@
           android:icon="@drawable/action_search"
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
+    <item android:id="@+id/menu_add_buddy"
+          android:title="@string/menu_add_buddy"
+          android:icon="@drawable/action_add_person"
+          android:showAsAction="ifRoom|collapseActionView"/>
 </menu>

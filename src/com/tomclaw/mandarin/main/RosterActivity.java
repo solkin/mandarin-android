@@ -2,8 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +14,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -148,6 +147,7 @@ public class RosterActivity extends ChiefActivity {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
                 .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
     }
+
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper<Integer, Integer> selectionHelper;
@@ -184,7 +184,7 @@ public class RosterActivity extends ChiefActivity {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch(item.getItemId()) {
+            switch (item.getItemId()) {
                 case R.id.rename_buddy_menu: {
                     int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
                     renameSelectedBuddy(buddyDbId);
@@ -238,7 +238,7 @@ public class RosterActivity extends ChiefActivity {
             } catch (BuddyNotFoundException e) {
                 Toast.makeText(RosterActivity.this, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
             } finally {
-                if(buddyCursor != null) {
+                if (buddyCursor != null) {
                     buddyCursor.close();
                 }
             }
@@ -248,7 +248,7 @@ public class RosterActivity extends ChiefActivity {
             final Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
             boolean isMultiple = buddyDbIds.size() > 1;
             String message;
-            if(isMultiple) {
+            if (isMultiple) {
                 message = getString(R.string.remove_buddies_message, buddyDbIds.size());
             } else {
                 message = getString(R.string.remove_buddy_message);
@@ -266,44 +266,6 @@ public class RosterActivity extends ChiefActivity {
                     .setNegativeButton(R.string.do_not_remove, null)
                     .create();
             alertDialog.show();
-        }
-    }
-
-    private class BuddyRemoveTask extends PleaseWaitTask {
-
-        private Collection<Integer> buddyDbIds;
-
-        public BuddyRemoveTask(Context context, Collection<Integer> buddyDbIds) {
-            super(context);
-            this.buddyDbIds = buddyDbIds;
-        }
-
-        @Override
-        public void executeBackground() throws Throwable {
-            Context context = getWeakObject();
-            if(context != null) {
-                ContentResolver contentResolver = context.getContentResolver();
-                for (int buddyDbId : buddyDbIds) {
-                    BuddyCursor buddyCursor = null;
-                    try {
-                        buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
-                        int accountDbId = buddyCursor.getBuddyAccountDbId();
-                        String groupName = buddyCursor.getBuddyGroup();
-                        String buddyId = buddyCursor.getBuddyId();
-                        // Mark as removing.
-                        QueryHelper.modifyOperation(contentResolver, buddyDbId,
-                                GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
-                        // Remove request.
-                        RequestHelper.requestRemove(contentResolver, accountDbId, groupName, buddyId);
-                    } catch (BuddyNotFoundException ignored) {
-                        // Wha-a-a-at?! No buddy found.
-                    } finally {
-                        if(buddyCursor != null) {
-                            buddyCursor.close();
-                        }
-                    }
-                }
-            }
         }
     }
 }

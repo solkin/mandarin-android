@@ -610,8 +610,8 @@ public class QueryHelper {
                 buddyValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
             }
             // Checking for rename operation label.
-            if(buddyCursor.getBuddyOperation() == GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME) {
-                if(TextUtils.equals(buddyCursor.getBuddyNick(), buddyNick)) {
+            if (buddyCursor.getBuddyOperation() == GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME) {
+                if (TextUtils.equals(buddyCursor.getBuddyNick(), buddyNick)) {
                     // Nick is same. Remove rename label.
                     buddyValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
                 } else {
@@ -630,7 +630,7 @@ public class QueryHelper {
             avatarHash = null;
             contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
         } finally {
-            if(buddyCursor != null) {
+            if (buddyCursor != null) {
                 buddyCursor.close();
             }
         }
@@ -715,7 +715,7 @@ public class QueryHelper {
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         // Appending criteria values.
-        for(String key : criteria.keySet()) {
+        for (String key : criteria.keySet()) {
             queryBuilder.and().columnEquals(key, criteria.get(key));
         }
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
@@ -725,7 +725,7 @@ public class QueryHelper {
             do {
                 int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 buddyDbIds.add(buddyDbId);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
             return buddyDbIds;

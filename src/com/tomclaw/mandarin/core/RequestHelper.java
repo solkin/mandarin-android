@@ -136,10 +136,10 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_PERSISTENT, isPersistent ? 1 : 0);
         contentValues.put(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
         contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
-        if(!TextUtils.isEmpty(appSession)) {
+        if (!TextUtils.isEmpty(appSession)) {
             contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
         }
-        if(!TextUtils.isEmpty(tag)) {
+        if (!TextUtils.isEmpty(tag)) {
             contentValues.put(GlobalProvider.REQUEST_TAG, tag);
         }
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(request));

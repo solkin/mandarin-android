@@ -44,10 +44,10 @@ public class BuddyRemoveRequest extends WimRequest {
             return REQUEST_DELETE;
         }
         // Check for server reply.
-        if(statusCode == WIM_OK) {
+        if (statusCode == WIM_OK) {
             // Buddy will be removed later when it became outdated in roster.
             return REQUEST_DELETE;
-        } else if(statusCode == 460 || statusCode == 462) {
+        } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Return buddy.
             QueryHelper.modifyOperation(getAccountRoot().getContentResolver(),
                     buddyDbId, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);

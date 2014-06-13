@@ -26,7 +26,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.main.BuddyInfoTask;
+import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 
 /**
  * Created with IntelliJ IDEA.

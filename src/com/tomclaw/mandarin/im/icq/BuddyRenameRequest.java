@@ -47,11 +47,11 @@ public class BuddyRenameRequest extends WimRequest {
             return REQUEST_DELETE;
         }
         // Check for server reply.
-        if(statusCode == WIM_OK) {
+        if (statusCode == WIM_OK) {
             // We'll delete rename label later, when roster
             // with satisfied nick will be received.
             return REQUEST_DELETE;
-        } else if(statusCode == 460 || statusCode == 462) {
+        } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Return previous nick.
             QueryHelper.modifyBuddyNick(getAccountRoot().getContentResolver(),
                     buddyDbIds, buddyPreviousNick, false);

@@ -14,6 +14,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -112,6 +113,12 @@ public class RosterActivity extends ChiefActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
+                return true;
+            }
+            case R.id.menu_add_buddy: {
+                SearchAccountCallback callback = new SearchAccountCallback();
+                AccountProviderTask task = new AccountProviderTask(this, callback);
+                TaskExecutor.getInstance().execute(task);
                 return true;
             }
             default:
@@ -266,6 +273,19 @@ public class RosterActivity extends ChiefActivity {
                     .setNegativeButton(R.string.do_not_remove, null)
                     .create();
             alertDialog.show();
+        }
+    }
+
+    private class SearchAccountCallback implements AccountProviderTask.AccountProviderCallback {
+
+        @Override
+        public void onAccountSelected(int accountDbId) {
+
+        }
+
+        @Override
+        public void onNoActiveAccounts() {
+
         }
     }
 }

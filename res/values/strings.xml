@@ -240,4 +240,6 @@
     </string>
     <string name="remove_buddy_message">Вы действительно хотите удалить выбранный контакт и историю переписки с ним?</string>
     <string name="menu_add_buddy">Добавить контакт</string>
+    <string name="select_account_title">Выберите профиль</string>
+    <string name="select_account_description">Пожалуйста, выберите профиль, в который хотите добавить контакт:</string>
 </resources>

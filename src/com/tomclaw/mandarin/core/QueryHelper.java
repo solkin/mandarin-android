@@ -174,6 +174,15 @@ public class QueryHelper {
         return accountExists;
     }
 
+    public static Cursor getActiveAccountsCount(ContentResolver contentResolver) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified accounts. If exist.
+        queryBuilder.columnNotEquals(GlobalProvider.ACCOUNT_STATUS, StatusUtil.STATUS_OFFLINE)
+                .and().columnEquals(GlobalProvider.ACCOUNT_CONNECTING, 0);
+        // Not so good decision to return simple cursor!
+        return queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+    }
+
     /**
      * Insert account into database and update it's account db id and context.
      *
@@ -761,6 +770,8 @@ public class QueryHelper {
         BuddyCursor buddyCursor = new BuddyCursor(cursor);
         if (buddyCursor.moveToFirst()) {
             return buddyCursor;
+        } else {
+            buddyCursor.close();
         }
         throw new BuddyNotFoundException();
     }

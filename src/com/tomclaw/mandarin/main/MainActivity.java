@@ -209,8 +209,7 @@ public class MainActivity extends ChiefActivity {
     }
 
     public void openSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void rateApplication() {

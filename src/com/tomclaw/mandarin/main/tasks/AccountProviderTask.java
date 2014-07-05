@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -24,6 +25,7 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
 
     private AccountProviderCallback callback;
     private boolean isShowDialog = false;
+    private int selectedAccountDbId = -1;
 
     public AccountProviderTask(Activity object, AccountProviderCallback callback) {
         super(object);
@@ -38,11 +40,9 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
             try {
                 cursor = QueryHelper.getActiveAccountsCount(context.getContentResolver());
                 if(cursor == null || cursor.getCount() == 0 || !cursor.moveToFirst()) {
-                    callback.onNoActiveAccounts();
                     isShowDialog = false;
                 } else if(cursor.getCount() == 1) {
-                    int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                    callback.onAccountSelected(accountDbId);
+                    selectedAccountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                     isShowDialog = false;
                 } else {
                     isShowDialog = true;
@@ -58,18 +58,37 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
     @Override
     public void onPostExecuteMain() {
         Activity context = getWeakObject();
-        if(context != null && isShowDialog) {
-            View view = LayoutInflater.from(context).inflate(R.layout.account_selector_dialog, null);
+        if(context != null) {
+            if(isShowDialog) {
+                View view = LayoutInflater.from(context).inflate(R.layout.account_selector_dialog, null);
 
-            ListView listView = (ListView) view.findViewById(R.id.accounts_list_view);
-            AccountsSelectorAdapter adapter = new AccountsSelectorAdapter(context, context.getLoaderManager());
-            listView.setAdapter(adapter);
+                final AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setTitle(R.string.select_account_title)
+                        .setView(view)
+                        .create();
 
-            AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle(R.string.select_account_title)
-                    .setView(view)
-                    .create();
-            dialog.show();
+                ListView listView = (ListView) view.findViewById(R.id.accounts_list_view);
+                final AccountsSelectorAdapter adapter = new AccountsSelectorAdapter(context, context.getLoaderManager());
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        try {
+                            int accountDbId = adapter.getAccountDbId(position);
+                            callback.onAccountSelected(accountDbId);
+                        } catch (AccountNotFoundException ignored) {
+                            callback.onNoActiveAccounts();
+                        }
+                        // Hide dialog in any way.
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            } else if(selectedAccountDbId != -1) {
+                callback.onAccountSelected(selectedAccountDbId);
+            } else {
+                callback.onNoActiveAccounts();
+            }
         }
     }
 

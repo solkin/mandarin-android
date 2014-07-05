@@ -84,6 +84,11 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
+        <activity android:name=".main.SearchActivity"
+                  android:label="@string/search_buddy"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
         <activity android:name=".main.AccountInfoActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"

@@ -9,6 +9,8 @@ import android.widget.Toast;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -23,6 +25,8 @@ public class StringUtil {
     public static final int DEFAULT_ALPHABET_INDEX = '?';
 
     private static final String NUMERIC_REGEXP = "^[0-9]*$";
+
+    public static final String UTF8_ENCODING = "UTF-8";
 
     private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
@@ -85,5 +89,9 @@ public class StringUtil {
             builder.append(stringChar);
         }
         return builder.toString();
+    }
+
+    public static String urlEncode(String string) throws UnsupportedEncodingException {
+        return URLEncoder.encode(string, UTF8_ENCODING).replace("+", "%20");
     }
 }

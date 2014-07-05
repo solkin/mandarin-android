@@ -242,4 +242,6 @@
     <string name="menu_add_buddy">Добавить контакт</string>
     <string name="select_account_title">Выберите профиль</string>
     <string name="select_account_description">Пожалуйста, выберите профиль, в который хотите добавить контакт:</string>
+    <string name="search_buddy">Поиск контактов</string>
+    <string name="no_active_accounts">Чтобы добавлять новые контакты, подключите хотя бы один профиль</string>
 </resources>

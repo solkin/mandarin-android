@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
 
@@ -115,6 +116,12 @@ public class RequestHelper {
                                      String groupName, String buddyId) {
         BuddyRemoveRequest buddyRemoveRequest = new BuddyRemoveRequest(groupName, buddyId);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, buddyRemoveRequest);
+    }
+
+    public static void requestSearch(ContentResolver contentResolver, String appSession, int accountDbId,
+                                     IcqSearchOptionsBuilder optionsBuilder) {
+        BuddySearchRequest buddySearchRequest = new BuddySearchRequest(optionsBuilder, 20, 0, "RU");
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddySearchRequest);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,

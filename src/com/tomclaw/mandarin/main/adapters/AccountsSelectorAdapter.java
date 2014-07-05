@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
@@ -130,5 +130,13 @@ public class AccountsSelectorAdapter extends CursorAdapter implements
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
+    }
+
+    public int getAccountDbId(int position) throws AccountNotFoundException {
+        Cursor cursor = getCursor();
+        if(cursor != null && !cursor.isClosed() && cursor.moveToPosition(position)) {
+            return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+        }
+        throw new AccountNotFoundException();
     }
 }

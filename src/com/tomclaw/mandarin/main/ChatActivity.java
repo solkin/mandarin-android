@@ -444,6 +444,11 @@ public class ChatActivity extends ChiefActivity {
 
         int buddyDbId = getIntentBuddyDbId(intent);
 
+        // Checking for buddy db id is really correct.
+        if(buddyDbId == -1) {
+            return;
+        }
+
         startTitleObservation(buddyDbId);
 
         if (chatHistoryAdapter != null) {
@@ -500,9 +505,9 @@ public class ChatActivity extends ChiefActivity {
         Bundle bundle = intent.getExtras();
         int buddyDbId = -1;
         // Checking for bundle condition.
-        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+        if (bundle != null) {
             // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         }
         return buddyDbId;
     }

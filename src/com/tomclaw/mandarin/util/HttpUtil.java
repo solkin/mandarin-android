@@ -45,8 +45,7 @@ public class HttpUtil {
             }
             builder.append(pair.first)
                     .append(WimConstants.EQUAL)
-                    .append(URLEncoder.encode(pair.second, UTF8_ENCODING)
-                            .replace("+", "%20"));
+                    .append(StringUtil.urlEncode(pair.second));
         }
         return builder.toString();
     }

@@ -10,6 +10,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.SearchBuddyInfo;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
+import com.tomclaw.mandarin.main.adapters.EndlessListAdapter;
 import com.tomclaw.mandarin.main.adapters.SearchResultAdapter;
 
 import java.util.Set;
@@ -36,15 +37,23 @@ public class SearchResultActivity extends ChiefActivity {
             return;
         }
 
-        searchAdapter = new SearchResultAdapter(this);
+        searchAdapter = new SearchResultAdapter(this, new EndlessListAdapter.EndlessAdapterListener() {
+            @Override
+            public void onLoadMoreItems(int offset) {
+                requestItems(offset);
+            }
+        });
         ListView searchResultList = (ListView) findViewById(R.id.search_result_list);
         searchResultList.setAdapter(searchAdapter);
+        requestItems(0);
+    }
 
+    private void requestItems(final int offset) {
         TaskExecutor.getInstance().execute(new ServiceTask(this) {
             @Override
             public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                 String appSession = interaction.getAppSession();
-                RequestHelper.requestSearch(getContentResolver(), appSession, accountDbId, builder);
+                RequestHelper.requestSearch(getContentResolver(), appSession, accountDbId, builder, offset);
             }
 
             @Override
@@ -86,10 +95,15 @@ public class SearchResultActivity extends ChiefActivity {
                     Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
                     searchAdapter.appendResult(info);
                 }
+                searchAdapter.setMoreItemsAvailable(total > offset + buddyIds.size());
                 searchAdapter.notifyDataSetChanged();
             } else {
                 Log.d(Settings.LOG_TAG, "No result case :(");
-                onSearchRequestError();
+                if(searchAdapter.isEmpty()) {
+                    onSearchRequestError();
+                }
+                searchAdapter.setMoreItemsAvailable(false);
+                searchAdapter.notifyDataSetChanged();
             }
         } else {
             Log.d(Settings.LOG_TAG, "Another search request with another account db id.");

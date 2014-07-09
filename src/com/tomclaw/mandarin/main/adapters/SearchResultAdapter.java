@@ -19,61 +19,18 @@ import java.util.List;
 /**
  * Created by Solkin on 09.07.2014.
  */
-public class SearchResultAdapter extends BaseAdapter {
+public class SearchResultAdapter extends EndlessListAdapter<SearchBuddyInfo> {
 
-    private final List<SearchBuddyInfo> infoList = new ArrayList<SearchBuddyInfo>();
-    private TimeHelper timeHelper;
-    private boolean isMoreItemsAvailable = false;
-
-    private Context context;
-    private LayoutInflater inflater;
-
-    public SearchResultAdapter(Context context) {
-        this.context = context;
-        this.inflater = LayoutInflater.from(context);
-        this.timeHelper = new TimeHelper(context);
+    public SearchResultAdapter(Context context, EndlessAdapterListener listener) {
+        super(context, listener);
     }
 
     @Override
-    public int getCount() {
-        return infoList.size() + (isMoreItemsAvailable ? 1 : 0);
+    protected int getItemLayout() {
+        return R.layout.search_result_item;
     }
 
     @Override
-    public SearchBuddyInfo getItem(int position) {
-        if(isMoreItemsAvailable && position == infoList.size()) {
-            return null;
-        }
-        return infoList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return (isMoreItemsAvailable && position == infoList.size()) ? 1 : 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view;
-        try {
-            if (convertView == null) {
-                view = newView(context, parent);
-            } else {
-                view = convertView;
-            }
-            SearchBuddyInfo info = getItem(position);
-            bindView(view, context, info);
-        } catch (Throwable ex) {
-            view = inflater.inflate(R.layout.buddy_item, parent, false);
-            Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
-        }
-        return view;
-    }
-
-    public View newView(Context context, ViewGroup viewGroup) {
-        return inflater.inflate(R.layout.search_result_item, viewGroup, false);
-    }
-
     public void bindView(View view, Context context, SearchBuddyInfo info) {
         TextView buddyNick = (TextView) view.findViewById(R.id.buddy_nick);
         TextView buddyShortInfo = (TextView) view.findViewById(R.id.buddy_short_info);
@@ -130,13 +87,5 @@ public class SearchResultAdapter extends BaseAdapter {
             where += what;
         }
         return where;
-    }
-
-    public void appendResult(SearchBuddyInfo info) {
-        infoList.add(info);
-    }
-
-    public void setMoreItemsAvailable(boolean isMoreItemsAvailable) {
-        this.isMoreItemsAvailable = isMoreItemsAvailable;
     }
 }

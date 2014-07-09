@@ -1,0 +1,102 @@
+package com.tomclaw.mandarin.main;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ListView;
+import android.widget.Toast;
+import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.im.SearchBuddyInfo;
+import com.tomclaw.mandarin.im.SearchOptionsBuilder;
+import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
+import com.tomclaw.mandarin.main.adapters.SearchResultAdapter;
+
+import java.util.Set;
+
+/**
+ * Created by Solkin on 06.07.2014.
+ */
+public class SearchResultActivity extends ChiefActivity {
+
+    public static final String SEARCH_OPTIONS = "search_options";
+
+    private int accountDbId;
+    private SearchOptionsBuilder builder;
+    private SearchResultAdapter searchAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.search_result_activity);
+
+        if(!parseIntent(getIntent())) {
+            finish();
+            return;
+        }
+
+        searchAdapter = new SearchResultAdapter(this);
+        ListView searchResultList = (ListView) findViewById(R.id.search_result_list);
+        searchResultList.setAdapter(searchAdapter);
+
+        TaskExecutor.getInstance().execute(new ServiceTask(this) {
+            @Override
+            public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                String appSession = interaction.getAppSession();
+                RequestHelper.requestSearch(getContentResolver(), appSession, accountDbId, builder);
+            }
+
+            @Override
+            public void onFailBackground() {
+                onSearchRequestError();
+            }
+        });
+    }
+
+    private boolean parseIntent(Intent intent) {
+        Bundle bundle = intent.getExtras();
+        // Checking for bundle condition.
+        if (bundle != null) {
+            accountDbId = bundle.getInt(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+            builder = (SearchOptionsBuilder) bundle.getSerializable(SEARCH_OPTIONS);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onCoreServiceIntent(Intent intent) {
+        // Check for info present in this intent.
+        boolean isResultPresent = !intent.getBooleanExtra(BuddySearchRequest.NO_SEARCH_RESULT_CASE, false);
+        int requestAccountDbId = intent.getIntExtra(BuddySearchRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+        SearchOptionsBuilder requestSearchOptions =
+                (SearchOptionsBuilder) intent.getSerializableExtra(BuddySearchRequest.SEARCH_OPTIONS);
+        // Checking for request is the same.
+        if (requestAccountDbId == accountDbId && requestSearchOptions != null &&
+                ((Object) requestSearchOptions).equals(builder)) {
+            int total = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_TOTAL, 0);
+            int offset = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_OFFSET, 0);
+            // Checking for result present and total count is positive.
+            if(isResultPresent && total > 0) {
+                Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);
+                Set<String> buddyIds = bundle.keySet();
+                for(String buddyId : buddyIds) {
+                    SearchBuddyInfo info = (SearchBuddyInfo) bundle.getSerializable(buddyId);
+                    Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
+                    searchAdapter.appendResult(info);
+                }
+                searchAdapter.notifyDataSetChanged();
+            } else {
+                Log.d(Settings.LOG_TAG, "No result case :(");
+                onSearchRequestError();
+            }
+        } else {
+            Log.d(Settings.LOG_TAG, "Another search request with another account db id.");
+        }
+    }
+
+    private void onSearchRequestError() {
+        Toast.makeText(this, R.string.search_buddy_error, Toast.LENGTH_SHORT).show();
+    }
+}

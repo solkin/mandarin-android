@@ -28,7 +28,7 @@ import com.tomclaw.mandarin.im.StatusUtil;
  * Date: 4/17/13
  * Time: 4:07 PM
  */
-public class AccountAddActivity extends ChiefActivity {
+public class AccountAddActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     public static final String EXTRA_CLASS_NAME = "class_name";
     public static final String EXTRA_START_HELPER = "start_helper";
@@ -39,6 +39,8 @@ public class AccountAddActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // We want to receive service state notifications.
+        addCoreServiceListener(this);
         // Obtain class name extra to setup AccountRoot type.
         String className = getIntent().getStringExtra(EXTRA_CLASS_NAME);
         Log.d(Settings.LOG_TAG, "AccountAddActivity start for " + className);

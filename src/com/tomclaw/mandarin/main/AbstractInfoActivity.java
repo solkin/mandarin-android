@@ -24,7 +24,7 @@ import com.tomclaw.mandarin.util.StringUtil;
 /**
  * Created by solkin on 12/26/13.
  */
-public abstract class AbstractInfoActivity extends ChiefActivity {
+public abstract class AbstractInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener{
 
     private int accountDbId;
     private String accountType;
@@ -38,7 +38,9 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Settings.LOG_TAG, "BuddyInfoActivity onCreate");
+        Log.d(Settings.LOG_TAG, "AbstractInfoActivity onCreate");
+        // We want to receive service state notifications.
+        addCoreServiceListener(this);
 
         // Obtain and check basic info about interested buddy.
         Intent intent = getIntent();
@@ -169,7 +171,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
                 }
             } else {
                 Log.d(Settings.LOG_TAG, "No info case :(");
-                hideProgressBar();
                 onBuddyInfoRequestError();
             }
         } else {

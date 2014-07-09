@@ -488,15 +488,6 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
-        // TODO: must be implemented.
-    }
-
-    @Override
     public void onCoreServiceIntent(Intent intent) {
         // TODO: must be implemented.
     }

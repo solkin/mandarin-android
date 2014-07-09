@@ -14,6 +14,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 
@@ -60,30 +61,27 @@ public class SearchActivity extends ChiefActivity {
                 builder.online(onlineBox.isChecked());
                 builder.age(Integer.parseInt(ageFrom.getText().toString()),
                         Integer.parseInt(ageTo.getText().toString()));
-                SearchOptionsBuilder.Gender gender;
+                Gender gender;
                 switch (genderGroup.getCheckedRadioButtonId()) {
                     case R.id.female_radio: {
-                        gender = SearchOptionsBuilder.Gender.Female;
+                        gender = Gender.Female;
                         break;
                     }
                     case R.id.male_radio: {
-                        gender = SearchOptionsBuilder.Gender.Male;
+                        gender = Gender.Male;
                         break;
                     }
                     default: {
-                        gender = SearchOptionsBuilder.Gender.Any;
+                        gender = Gender.Any;
                         break;
                     }
                 }
                 builder.gender(gender);
 
-                try {
-                    String appSession = getServiceInteraction().getAppSession();
-
-                    RequestHelper.requestSearch(getContentResolver(), appSession, accountDbId, builder);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
+                intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
+                intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                startActivity(intent);
             }
         });
     }
@@ -93,7 +91,6 @@ public class SearchActivity extends ChiefActivity {
         int accountDbId = -1;
         // Checking for bundle condition.
         if (bundle != null) {
-            // Setup active page.
             accountDbId = bundle.getInt(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         }
         return accountDbId;
@@ -107,14 +104,6 @@ public class SearchActivity extends ChiefActivity {
             }
         }
         return true;
-    }
-
-    @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
     }
 
     @Override

@@ -119,8 +119,8 @@ public class RequestHelper {
     }
 
     public static void requestSearch(ContentResolver contentResolver, String appSession, int accountDbId,
-                                     IcqSearchOptionsBuilder optionsBuilder) {
-        BuddySearchRequest buddySearchRequest = new BuddySearchRequest(optionsBuilder, 20, 0, "RU");
+                                     SearchOptionsBuilder optionsBuilder) {
+        BuddySearchRequest buddySearchRequest = new BuddySearchRequest((IcqSearchOptionsBuilder) optionsBuilder, 20, 0, "RU");
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddySearchRequest);
     }
 

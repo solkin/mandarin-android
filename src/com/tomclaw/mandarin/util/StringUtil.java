@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.util;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -71,8 +72,10 @@ public class StringUtil {
 
     public static String fixCyrillicSymbols(String string) {
         String fixed = string;
-        fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
-        fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
+        if(!TextUtils.isEmpty(string)) {
+            fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
+            fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
+        }
         return fixed;
     }
 

@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
-import android.widget.TextView;
+import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Igor on 26.06.2014.
  */
-public class IcqSearchOptionsBuilder implements SearchOptionsBuilder {
+public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     private StringBuilder match;
 
@@ -35,7 +35,9 @@ public class IcqSearchOptionsBuilder implements SearchOptionsBuilder {
 
     @Override
     public void online(boolean option) {
-        appendOption("online", option ? "true" : "false");
+        if(option) {
+            appendOption("online", "true");
+        }
     }
 
     @Override
@@ -79,5 +81,10 @@ public class IcqSearchOptionsBuilder implements SearchOptionsBuilder {
     @Override
     public String toString() {
         return match.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return TextUtils.equals(toString(), o.toString());
     }
 }

@@ -136,14 +136,6 @@ public class RosterActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
-    }
-
-    @Override
     public void onCoreServiceIntent(Intent intent) {
     }
 

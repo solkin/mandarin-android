@@ -10,7 +10,9 @@
     <color name="smiley_selected_background">#aabababa</color>
     <color name="smiley_selected_stroke">#aa888899</color>
     <color name="draft_indicator_color">#ff989898</color>
-    <color name="unread_indicator_color">#ff5aa9dd</color>
+    <color name="blue_indicator_color">#ff5aa9dd</color>
+    <color name="green_indicator_color">#ff5cb85c</color>
+    <color name="red_indicator_color">#ffd9534f</color>
     <color name="button_navbar_normal">#11000000</color>
     <color name="button_navbar_pressed">#55000000</color>
     <color name="connecting_status_filter">#88000000</color>
@@ -97,6 +99,13 @@
         <item name="android:textColor">?attr/button_navbar_text</item>
         <item name="android:background">?attr/button_navbar_background</item>
         <item name="android:gravity">left|center_vertical</item>
+    </style>
+    <style name="Button.Green" parent="android:Widget.Button">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">#fefefe</item>
+        <item name="android:background">@drawable/button_selector</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
     </style>
     <style name="Chat.Message" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>

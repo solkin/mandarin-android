@@ -177,15 +177,6 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
-        Log.d(Settings.LOG_TAG, "onCoreServiceDown");
-    }
-
-    @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
         getActionBar().setTitle(title);

@@ -74,7 +74,11 @@
     <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
     <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
 
-    <string name="count_new_messages">%d новых сообщений</string>
+    <plurals name="count_new_messages">
+        <item quantity="one">%d новое сообщение</item>
+        <item quantity="few">%d новых сообщения</item>
+        <item quantity="other">%d новых сообщений</item>
+    </plurals>
     <string name="reply_now">Ответить</string>
     <string name="open_chats">Диалоги</string>
     <string name="share_messages_via">Поделиться сообщением через</string>
@@ -245,4 +249,11 @@
     <string name="search_buddy">Поиск контактов</string>
     <string name="no_active_accounts">Чтобы добавлять новые контакты, подключите хотя бы один профиль</string>
     <string name="search_buddy_error">Не удалось найти контакты по запросу. Попробуйте позднее.</string>
+    <plurals name="buddy_years">
+        <item quantity="zero">%d лет</item>
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="many">%d лет</item>
+        <item quantity="other">%d года</item>
+    </plurals>
 </resources>

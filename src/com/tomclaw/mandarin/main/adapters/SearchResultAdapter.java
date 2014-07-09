@@ -110,7 +110,10 @@ public class SearchResultAdapter extends BaseAdapter {
         // Buddy years.
         String birthDate = "";
         if(info.getBirthDate() > 0) {
-            birthDate = timeHelper.getFormattedYears(System.currentTimeMillis() - info.getBirthDate());
+            int years = TimeHelper.getYears(info.getBirthDate());
+            if(years > 0) {
+                birthDate = context.getResources().getQuantityString(R.plurals.buddy_years, years, years);
+            }
         }
         shortInfo = appendIfNotEmpty(shortInfo, birthDate, ", ");
 

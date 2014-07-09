@@ -5,7 +5,6 @@ import android.text.format.DateFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by solkin on 05/05/14.
@@ -37,11 +36,10 @@ public class TimeHelper {
         return getTimeFormat().format(timestamp);
     }
 
-    public String getFormattedYears(long timeStamp) {
+    public static int getYears(long timeStamp) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStamp);
-        int years = calendar.get(Calendar.YEAR) - 1970;
-        return String.valueOf(years);
+        calendar.setTimeInMillis(System.currentTimeMillis() - timeStamp);
+        return calendar.get(Calendar.YEAR) - 1970;
     }
 
     public static Calendar clearTimes(Calendar c) {

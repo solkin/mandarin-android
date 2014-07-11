@@ -249,6 +249,8 @@
     <string name="search_buddy">Поиск контактов</string>
     <string name="no_active_accounts">Чтобы добавлять новые контакты, подключите хотя бы один профиль</string>
     <string name="search_buddy_error">Не удалось найти контакты по запросу. Попробуйте позднее.</string>
+    <string name="buddy_search_progress">Поиск контактов…</string>
+    <string name="buddy_search_no_result">Нет контактов по Вашему запросу.</string>
     <plurals name="buddy_years">
         <item quantity="zero">%d лет</item>
         <item quantity="one">%d год</item>

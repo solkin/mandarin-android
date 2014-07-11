@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.SearchBuddyInfo;
@@ -25,6 +26,7 @@ public class SearchResultActivity extends ChiefActivity {
     private int accountDbId;
     private SearchOptionsBuilder builder;
     private SearchResultAdapter searchAdapter;
+    private ViewSwitcher emptyViewSwitcher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class SearchResultActivity extends ChiefActivity {
             return;
         }
 
+        emptyViewSwitcher = (ViewSwitcher) findViewById(android.R.id.empty);
+
         searchAdapter = new SearchResultAdapter(this, new EndlessListAdapter.EndlessAdapterListener() {
             @Override
             public void onLoadMoreItems(int offset) {
@@ -44,6 +48,7 @@ public class SearchResultActivity extends ChiefActivity {
             }
         });
         ListView searchResultList = (ListView) findViewById(R.id.search_result_list);
+        searchResultList.setEmptyView(emptyViewSwitcher);
         searchResultList.setAdapter(searchAdapter);
         requestItems(0);
     }
@@ -100,7 +105,7 @@ public class SearchResultActivity extends ChiefActivity {
             } else {
                 Log.d(Settings.LOG_TAG, "No result case :(");
                 if(searchAdapter.isEmpty()) {
-                    onSearchRequestError();
+                    onSearchRequestNoResult();
                 }
                 searchAdapter.setMoreItemsAvailable(false);
                 searchAdapter.notifyDataSetChanged();
@@ -108,6 +113,10 @@ public class SearchResultActivity extends ChiefActivity {
         } else {
             Log.d(Settings.LOG_TAG, "Another search request with another account db id.");
         }
+    }
+
+    private void onSearchRequestNoResult() {
+        emptyViewSwitcher.showNext();
     }
 
     private void onSearchRequestError() {

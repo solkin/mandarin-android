@@ -57,7 +57,7 @@ public class SearchResultAdapter extends EndlessListAdapter<SearchBuddyInfo> {
                 gender = context.getString(R.string.female);
                 break;
             case Male:
-                gender = context.getString(R.string.female);
+                gender = context.getString(R.string.male);
                 break;
             default:
                 gender = "";

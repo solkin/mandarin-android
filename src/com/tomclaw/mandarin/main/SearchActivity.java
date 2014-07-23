@@ -4,12 +4,11 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -17,17 +16,25 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
+import com.tomclaw.mandarin.main.views.AgePickerView;
 
 /**
  * Created by Igor on 26.06.2014.
  */
 public class SearchActivity extends ChiefActivity {
 
+    private int accountDbId;
+
+    private TextView keywordName;
+    private AgePickerView agePickerView;
+    private Spinner genderSpinner;
+    private CheckBox onlineBox;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final int accountDbId = getIntentAccountDbId(getIntent());
+        accountDbId = getIntentAccountDbId(getIntent());
         if(accountDbId == -1) {
             finish();
             return;
@@ -39,51 +46,45 @@ public class SearchActivity extends ChiefActivity {
 
         setContentView(R.layout.search_activity);
 
-        final TextView firstName = (TextView) findViewById(R.id.first_name_edit);
-        final TextView lastName = (TextView) findViewById(R.id.last_name_edit);
-        final TextView keywordName = (TextView) findViewById(R.id.keyword_edit);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.gender_spinner_item,
+                getResources().getStringArray(R.array.gender_spinner_strings));
+        adapter.setDropDownViewResource(R.layout.gender_spinner_dropdown_item);
+        Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
+        genderSelector.setAdapter(adapter);
 
-        final CheckBox onlineBox = (CheckBox) findViewById(R.id.online_check);
-        final RadioGroup genderGroup = (RadioGroup) findViewById(R.id.gender_group);
+        keywordName = (TextView) findViewById(R.id.keyword_edit);
+        agePickerView = (AgePickerView) findViewById(R.id.age_range);
+        genderSpinner = (Spinner) findViewById(R.id.gender_selector);
+        onlineBox = (CheckBox) findViewById(R.id.online_check);
+    }
 
-        final TextView ageFrom = (TextView) findViewById(R.id.age_from_edit);
-        final TextView ageTo = (TextView) findViewById(R.id.age_to_edit);
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.search_activity_menu, menu);
+        final MenuItem item = menu.findItem(R.id.search_action_menu);
+        item.getActionView().setOnClickListener(new View.OnClickListener() {
 
-        Button searchButton = (Button) findViewById(R.id.search_button);
-        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
-                // Obtain search builder instance from account.
-                builder.firstName(firstName.getText().toString());
-                builder.lastName(lastName.getText().toString());
-                builder.keyword(keywordName.getText().toString());
-                builder.online(onlineBox.isChecked());
-                builder.age(Integer.parseInt(ageFrom.getText().toString()),
-                        Integer.parseInt(ageTo.getText().toString()));
-                Gender gender;
-                switch (genderGroup.getCheckedRadioButtonId()) {
-                    case R.id.female_radio: {
-                        gender = Gender.Female;
-                        break;
-                    }
-                    case R.id.male_radio: {
-                        gender = Gender.Male;
-                        break;
-                    }
-                    default: {
-                        gender = Gender.Any;
-                        break;
-                    }
-                }
-                builder.gender(gender);
-
-                Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
-                intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
-                intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                startActivity(intent);
+                menu.performIdentifierAction(item.getItemId(), 0);
             }
         });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+            case R.id.search_action_menu: {
+                doSearch();
+                break;
+            }
+        }
+        return true;
     }
 
     private int getIntentAccountDbId(Intent intent) {
@@ -97,16 +98,27 @@ public class SearchActivity extends ChiefActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                finish();
-            }
-        }
-        return true;
+    public void onCoreServiceIntent(Intent intent) {
     }
 
-    @Override
-    public void onCoreServiceIntent(Intent intent) {
+    private void doSearch() {
+        IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
+        // Obtain search builder instance from account.
+        builder.keyword(keywordName.getText().toString());
+        builder.online(onlineBox.isChecked());
+        if(!agePickerView.isAnyAge()) {
+            builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
+        }
+        String selectedGender = (String) genderSpinner.getSelectedItem();
+        if(TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
+            builder.gender(Gender.Female);
+        } else if(TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
+            builder.gender(Gender.Male);
+        }
+
+        Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
+        intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
+        intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+        startActivity(intent);
     }
 }

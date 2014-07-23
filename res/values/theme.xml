@@ -9,10 +9,10 @@
     <color name="chat_gradient_dark_end">#FF101010</color>
     <color name="smiley_selected_background">#aabababa</color>
     <color name="smiley_selected_stroke">#aa888899</color>
-    <color name="draft_indicator_color">#ff989898</color>
-    <color name="blue_indicator_color">#ff5aa9dd</color>
+    <color name="draft_indicator_color">#ff95a5a6</color>
+    <color name="blue_indicator_color">#ff3498db</color>
     <color name="green_indicator_color">#ff5cb85c</color>
-    <color name="red_indicator_color">#ffd9534f</color>
+    <color name="red_indicator_color">#ffe74c3c</color>
     <color name="button_navbar_normal">#11000000</color>
     <color name="button_navbar_pressed">#55000000</color>
     <color name="connecting_status_filter">#88000000</color>

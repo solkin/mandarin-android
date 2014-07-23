@@ -90,7 +90,7 @@
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.SearchResultActivity"
-                  android:label="@string/search_buddy"
+                  android:label="@string/search_result"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>

@@ -49,7 +49,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
             }
             bindView(view, statusIndex);
         } catch (Throwable ex) {
-            view = inflater.inflate(R.layout.status_item, parent, false);
+            view = newView(parent);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
         }
         return view;

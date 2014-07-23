@@ -13,4 +13,10 @@
         <item>@string/filter_show_online_only</item>
     </string-array>
 
+    <string-array name="gender_spinner_strings">
+        <item>@string/gender_female</item>
+        <item>@string/gender_male</item>
+        <item>@string/gender_any</item>
+    </string-array>
+
 </resources>

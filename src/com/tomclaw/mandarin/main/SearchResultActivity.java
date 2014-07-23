@@ -1,8 +1,10 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -32,6 +34,10 @@ public class SearchResultActivity extends ChiefActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+
         setContentView(R.layout.search_result_activity);
 
         if(!parseIntent(getIntent())) {
@@ -51,6 +57,16 @@ public class SearchResultActivity extends ChiefActivity {
         searchResultList.setEmptyView(emptyViewSwitcher);
         searchResultList.setAdapter(searchAdapter);
         requestItems(0);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+            }
+        }
+        return true;
     }
 
     private void requestItems(final int offset) {

@@ -35,7 +35,7 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     @Override
     public void online(boolean option) {
-        if(option) {
+        if (option) {
             appendOption("online", "true");
         }
     }
@@ -65,11 +65,11 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
     }
 
     private void appendOption(String optionName, String optionValue) {
-        if(TextUtils.isEmpty(optionValue)) {
+        if (TextUtils.isEmpty(optionValue)) {
             return;
         }
         try {
-            if(match.length() > 0) {
+            if (match.length() > 0) {
                 match.append(',');
             }
             match.append(optionName).append('=').append(StringUtil.urlEncode(optionValue));

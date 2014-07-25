@@ -128,8 +128,8 @@ public class RequestHelper {
     }
 
     public static void requestBuddyPresence(ContentResolver contentResolver, String appSession, int accountDbId,
-                                     int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap,
-                                     IcqSearchOptionsBuilder searchOptions) {
+                                            int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap,
+                                            IcqSearchOptionsBuilder searchOptions) {
         BuddyPresenceRequest request = new BuddyPresenceRequest(total, skipped, shortInfoMap, searchOptions);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, request);
     }

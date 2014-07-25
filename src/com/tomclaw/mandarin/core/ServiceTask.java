@@ -15,10 +15,10 @@ public abstract class ServiceTask extends WeakObjectTask<ChiefActivity>
     @Override
     public final void executeBackground() throws Throwable {
         ChiefActivity activity = getWeakObject();
-        if(activity != null) {
+        if (activity != null) {
             ServiceInteraction interaction = activity.getServiceInteraction();
             activity.removeCoreServiceListener(this);
-            if(interaction == null || !activity.isCoreServiceReady()) {
+            if (interaction == null || !activity.isCoreServiceReady()) {
                 activity.addCoreServiceListener(this);
                 onServiceRestarting();
             } else {

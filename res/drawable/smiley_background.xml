@@ -4,6 +4,6 @@
     <solid android:color="@color/smiley_selected_background"/>
     <stroke
             android:width="2dp"
-            android:color="@color/smiley_selected_stroke" />
-    <corners android:radius="2dp" />
+            android:color="@color/smiley_selected_stroke"/>
+    <corners android:radius="2dp"/>
 </shape>

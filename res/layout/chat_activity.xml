@@ -16,7 +16,7 @@
             android:layout_weight="1" android:choiceMode="multipleChoiceModal"/>
     <View android:id="@+id/separator"
           android:background="?attr/chat_separator"
-          android:layout_width = "fill_parent"
+          android:layout_width="match_parent"
           android:layout_height="1px"/>
     <LinearLayout
             android:orientation="horizontal"
@@ -60,5 +60,5 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/init_keyboard_height"
             android:background="@android:color/transparent"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 </LinearLayout>

@@ -14,7 +14,6 @@ import com.tomclaw.mandarin.core.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -221,6 +220,7 @@ public abstract class ChiefActivity extends Activity {
 
     /**
      * Returns current service state
+     *
      * @return boolean - service state
      */
     public boolean isCoreServiceReady() {
@@ -247,13 +247,13 @@ public abstract class ChiefActivity extends Activity {
     }
 
     private void notifyCoreServiceReady() {
-        for(CoreServiceListener listener : coreServiceListeners) {
+        for (CoreServiceListener listener : coreServiceListeners) {
             listener.onCoreServiceReady();
         }
     }
 
     private void notifyCoreServiceDown() {
-        for(CoreServiceListener listener : coreServiceListeners) {
+        for (CoreServiceListener listener : coreServiceListeners) {
             listener.onCoreServiceDown();
         }
     }

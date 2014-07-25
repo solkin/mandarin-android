@@ -445,7 +445,7 @@ public class ChatActivity extends ChiefActivity {
         int buddyDbId = getIntentBuddyDbId(intent);
 
         // Checking for buddy db id is really correct.
-        if(buddyDbId == -1) {
+        if (buddyDbId == -1) {
             return;
         }
 

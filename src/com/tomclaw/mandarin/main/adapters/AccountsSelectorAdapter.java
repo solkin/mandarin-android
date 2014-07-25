@@ -134,7 +134,7 @@ public class AccountsSelectorAdapter extends CursorAdapter implements
 
     public int getAccountDbId(int position) throws AccountNotFoundException {
         Cursor cursor = getCursor();
-        if(cursor != null && !cursor.isClosed() && cursor.moveToPosition(position)) {
+        if (cursor != null && !cursor.isClosed() && cursor.moveToPosition(position)) {
             return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
         }
         throw new AccountNotFoundException();

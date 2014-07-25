@@ -72,7 +72,7 @@ public class StringUtil {
 
     public static String fixCyrillicSymbols(String string) {
         String fixed = string;
-        if(!TextUtils.isEmpty(string)) {
+        if (!TextUtils.isEmpty(string)) {
             fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
             fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
         }

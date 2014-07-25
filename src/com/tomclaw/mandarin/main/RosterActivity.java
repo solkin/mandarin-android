@@ -282,7 +282,7 @@ public class RosterActivity extends ChiefActivity {
         public void onAccountSelected(int accountDbId) {
             Log.d(Settings.LOG_TAG, "Account selected: " + accountDbId);
             Context context = weakContext.get();
-            if(context != null) {
+            if (context != null) {
                 Intent intent = new Intent(context, SearchActivity.class);
                 intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                 context.startActivity(intent);
@@ -293,7 +293,7 @@ public class RosterActivity extends ChiefActivity {
         public void onNoActiveAccounts() {
             Log.d(Settings.LOG_TAG, "No active accounts.");
             Context context = weakContext.get();
-            if(context != null) {
+            if (context != null) {
                 Toast.makeText(context, R.string.no_active_accounts, Toast.LENGTH_SHORT).show();
             }
         }

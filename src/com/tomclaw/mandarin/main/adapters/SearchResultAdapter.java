@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
@@ -32,8 +31,8 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         TextView onlineIndicator = (TextView) view.findViewById(R.id.online_indicator);
         // Buddy friendly name - first and last names or nick name.
         String friendly = "";
-        if(TextUtils.isEmpty(info.getFirstName()) && TextUtils.isEmpty(info.getLastName())) {
-            if(TextUtils.isEmpty(info.getBuddyNick())) {
+        if (TextUtils.isEmpty(info.getFirstName()) && TextUtils.isEmpty(info.getLastName())) {
+            if (TextUtils.isEmpty(info.getBuddyNick())) {
                 friendly = info.getBuddyId();
             } else {
                 friendly = info.getBuddyNick();
@@ -47,7 +46,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         String shortInfo = appendIfNotEmpty("", info.getHomeAddress(), "");
         // Buddy gender. Female, male or nothing.
         String gender;
-        switch(info.getGender()) {
+        switch (info.getGender()) {
             case Female:
                 gender = context.getString(R.string.female);
                 break;
@@ -61,9 +60,9 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         shortInfo = appendIfNotEmpty(shortInfo, gender, ", ");
         // Buddy years.
         String birthDate = "";
-        if(info.getBirthDate() > 0) {
+        if (info.getBirthDate() > 0) {
             int years = TimeHelper.getYears(info.getBirthDate());
-            if(years > 0) {
+            if (years > 0) {
                 birthDate = context.getResources().getQuantityString(R.plurals.buddy_years, years, years);
             }
         }
@@ -78,7 +77,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
     }
 
     private String appendIfNotEmpty(String where, String what, String divider) {
-        if(!TextUtils.isEmpty(what)) {
+        if (!TextUtils.isEmpty(what)) {
             if (!TextUtils.isEmpty(where)) {
                 where += divider;
             }

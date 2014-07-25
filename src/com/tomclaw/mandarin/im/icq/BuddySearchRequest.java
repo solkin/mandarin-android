@@ -62,7 +62,7 @@ public class BuddySearchRequest extends WimRequest {
             int skipped = results.getInt("nSkipped");
             int profiles = results.getInt("nProfiles");
             Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<String, ShortBuddyInfo>();
-            if(profiles > 0) {
+            if (profiles > 0) {
                 JSONArray infoArray = results.getJSONArray("infoArray");
                 for (int i = 0; i < infoArray.length(); i++) {
                     JSONObject buddyInfo = infoArray.getJSONObject(i);
@@ -152,7 +152,7 @@ public class BuddySearchRequest extends WimRequest {
         intent.putExtra(SEARCH_RESULT_TOTAL, total);
         intent.putExtra(SEARCH_RESULT_OFFSET, skipped);
         Bundle profilesBundle = new Bundle();
-        for(String buddyId : shortInfoMap.keySet()) {
+        for (String buddyId : shortInfoMap.keySet()) {
             profilesBundle.putSerializable(buddyId, shortInfoMap.get(buddyId));
         }
         intent.putExtra(SEARCH_RESULT_BUNDLE, profilesBundle);

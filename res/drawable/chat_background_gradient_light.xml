@@ -5,5 +5,5 @@
     <gradient
             android:startColor="@color/chat_gradient_light_start"
             android:endColor="@color/chat_gradient_light_end"
-            android:angle="-270" />
+            android:angle="-270"/>
 </shape>

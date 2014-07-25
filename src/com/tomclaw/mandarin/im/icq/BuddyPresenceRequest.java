@@ -55,7 +55,7 @@ public class BuddyPresenceRequest extends WimRequest {
             for (int i = 0; i < users.length(); i++) {
                 JSONObject buddy = users.getJSONObject(i);
                 ShortBuddyInfo buddyInfo = shortInfoMap.get(buddy.getString("aimId"));
-                if(buddyInfo != null) {
+                if (buddyInfo != null) {
                     String state = buddy.getString("state");
                     String buddyIcon = buddy.optString("buddyIcon", null);
                     int statusIndex;
@@ -67,7 +67,7 @@ public class BuddyPresenceRequest extends WimRequest {
                     }
                     buddyInfo.setOnline(statusIndex != StatusUtil.STATUS_OFFLINE);
                     // Create custom avatar request.
-                    if(!TextUtils.isEmpty(buddyIcon)) {
+                    if (!TextUtils.isEmpty(buddyIcon)) {
                         Log.d(Settings.LOG_TAG, "search avatar for " + buddyInfo.getBuddyId() + ": " + buddyIcon);
                         RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
                                 getAccountRoot().getAccountDbId(), buddyInfo.getBuddyId(),
@@ -97,7 +97,7 @@ public class BuddyPresenceRequest extends WimRequest {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        for(String buddyId : shortInfoMap.keySet()) {
+        for (String buddyId : shortInfoMap.keySet()) {
             params.add(new Pair<String, String>("t", buddyId));
         }
         return params;

@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main.tasks;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +10,9 @@ import android.widget.ListView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
-import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.AccountsSelectorAdapter;
-import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
  * Created by Solkin on 13.06.2014.
@@ -35,20 +31,20 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
     @Override
     public void executeBackground() throws Throwable {
         Activity context = getWeakObject();
-        if(context != null) {
+        if (context != null) {
             Cursor cursor = null;
             try {
                 cursor = QueryHelper.getActiveAccountsCount(context.getContentResolver());
-                if(cursor == null || cursor.getCount() == 0 || !cursor.moveToFirst()) {
+                if (cursor == null || cursor.getCount() == 0 || !cursor.moveToFirst()) {
                     isShowDialog = false;
-                } else if(cursor.getCount() == 1) {
+                } else if (cursor.getCount() == 1) {
                     selectedAccountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                     isShowDialog = false;
                 } else {
                     isShowDialog = true;
                 }
             } finally {
-                if(cursor != null) {
+                if (cursor != null) {
                     cursor.close();
                 }
             }
@@ -58,8 +54,8 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
     @Override
     public void onPostExecuteMain() {
         Activity context = getWeakObject();
-        if(context != null) {
-            if(isShowDialog) {
+        if (context != null) {
+            if (isShowDialog) {
                 View view = LayoutInflater.from(context).inflate(R.layout.account_selector_dialog, null);
 
                 final AlertDialog dialog = new AlertDialog.Builder(context)
@@ -84,7 +80,7 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
                     }
                 });
                 dialog.show();
-            } else if(selectedAccountDbId != -1) {
+            } else if (selectedAccountDbId != -1) {
                 callback.onAccountSelected(selectedAccountDbId);
             } else {
                 callback.onNoActiveAccounts();
@@ -95,6 +91,7 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
     public interface AccountProviderCallback {
 
         public void onAccountSelected(int accountDbId);
+
         public void onNoActiveAccounts();
     }
 }

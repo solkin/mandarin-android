@@ -24,7 +24,7 @@ import com.tomclaw.mandarin.util.StringUtil;
 /**
  * Created by solkin on 12/26/13.
  */
-public abstract class AbstractInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener{
+public abstract class AbstractInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     private int accountDbId;
     private String accountType;

@@ -40,7 +40,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
     @Override
     public T getItem(int position) {
-        if(isMoreItemsAvailable && position == tList.size()) {
+        if (isMoreItemsAvailable && position == tList.size()) {
             return null;
         }
         return tList.get(position);
@@ -71,7 +71,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
                 view = convertView;
             }
             T t = getItem(position);
-            if(getItemViewType(position) == TYPE_NORMAL) {
+            if (getItemViewType(position) == TYPE_NORMAL) {
                 bindView(view, context, t);
             } else {
                 onShowProgressItem(position);
@@ -86,7 +86,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
     public View newView(int position, ViewGroup viewGroup) {
         int layoutRes;
-        if(getItemViewType(position) == TYPE_NORMAL) {
+        if (getItemViewType(position) == TYPE_NORMAL) {
             layoutRes = getItemLayout();
         } else {
             layoutRes = R.layout.endless_list_wait_item;
@@ -109,7 +109,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
     }
 
     private void onShowProgressItem(int position) {
-        if(position > latestInvokedPosition) {
+        if (position > latestInvokedPosition) {
             listener.onLoadMoreItems(tList.size());
             latestInvokedPosition = position;
         }

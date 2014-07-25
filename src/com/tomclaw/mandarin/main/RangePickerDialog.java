@@ -48,7 +48,7 @@ public class RangePickerDialog extends AlertDialog {
         pickerMax.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                if(getMinValue() > getMaxValue()) {
+                if (getMinValue() > getMaxValue()) {
                     setMinValue(getMaxValue());
                 }
             }

@@ -13,8 +13,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
+import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
@@ -46,7 +46,7 @@ public class SearchResultActivity extends ChiefActivity {
 
         setContentView(R.layout.search_result_activity);
 
-        if(!parseIntent(getIntent())) {
+        if (!parseIntent(getIntent())) {
             finish();
             return;
         }
@@ -67,7 +67,7 @@ public class SearchResultActivity extends ChiefActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ShortBuddyInfo info = searchAdapter.getItem(position);
-                if(info != null) {
+                if (info != null) {
                     showBuddyInfo(info);
                 }
             }
@@ -126,10 +126,10 @@ public class SearchResultActivity extends ChiefActivity {
             int total = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_TOTAL, 0);
             int offset = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_OFFSET, 0);
             // Checking for result present and total count is positive.
-            if(isResultPresent && total > 0) {
+            if (isResultPresent && total > 0) {
                 Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);
                 Set<String> buddyIds = bundle.keySet();
-                for(String buddyId : buddyIds) {
+                for (String buddyId : buddyIds) {
                     ShortBuddyInfo info = (ShortBuddyInfo) bundle.getSerializable(buddyId);
                     Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
                     searchAdapter.appendResult(info);
@@ -138,17 +138,17 @@ public class SearchResultActivity extends ChiefActivity {
                 searchAdapter.notifyDataSetChanged();
             } else {
                 Log.d(Settings.LOG_TAG, "No result case :(");
-                if(searchAdapter.isEmpty()) {
+                if (searchAdapter.isEmpty()) {
                     onSearchRequestNoResult();
                 }
                 searchAdapter.setMoreItemsAvailable(false);
                 searchAdapter.notifyDataSetChanged();
             }
-        } else if(requestAccountDbId == accountDbId && !TextUtils.isEmpty(avatarBuddyId) &&
+        } else if (requestAccountDbId == accountDbId && !TextUtils.isEmpty(avatarBuddyId) &&
                 !TextUtils.isEmpty(avatarHash)) {
             List<ShortBuddyInfo> shortInfoList = searchAdapter.getItems();
-            for(ShortBuddyInfo info : shortInfoList) {
-                if(TextUtils.equals(info.getBuddyId(), avatarBuddyId)) {
+            for (ShortBuddyInfo info : shortInfoList) {
+                if (TextUtils.equals(info.getBuddyId(), avatarBuddyId)) {
                     info.setAvatarHash(avatarHash);
                     searchAdapter.notifyDataSetChanged();
                     break;

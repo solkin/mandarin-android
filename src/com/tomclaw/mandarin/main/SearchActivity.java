@@ -3,18 +3,17 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.Gender;
-import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
 
@@ -35,7 +34,7 @@ public class SearchActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         accountDbId = getIntentAccountDbId(getIntent());
-        if(accountDbId == -1) {
+        if (accountDbId == -1) {
             finish();
             return;
         }
@@ -106,13 +105,13 @@ public class SearchActivity extends ChiefActivity {
         // Obtain search builder instance from account.
         builder.keyword(keywordName.getText().toString());
         builder.online(onlineBox.isChecked());
-        if(!agePickerView.isAnyAge()) {
+        if (!agePickerView.isAnyAge()) {
             builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
         }
         String selectedGender = (String) genderSpinner.getSelectedItem();
-        if(TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
+        if (TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
             builder.gender(Gender.Female);
-        } else if(TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
+        } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
             builder.gender(Gender.Male);
         }
 

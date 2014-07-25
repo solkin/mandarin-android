@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -13,6 +15,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
 import com.tomclaw.mandarin.main.adapters.EndlessListAdapter;
@@ -60,6 +63,15 @@ public class SearchResultActivity extends ChiefActivity {
         searchResultList.setEmptyView(emptyViewSwitcher);
         searchResultList.setAdapter(searchAdapter);
         requestItems(0);
+        searchResultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ShortBuddyInfo info = searchAdapter.getItem(position);
+                if(info != null) {
+                    showBuddyInfo(info);
+                }
+            }
+        });
     }
 
     @Override
@@ -153,5 +165,14 @@ public class SearchResultActivity extends ChiefActivity {
 
     private void onSearchRequestError() {
         Toast.makeText(this, R.string.search_buddy_error, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showBuddyInfo(ShortBuddyInfo info) {
+        startActivity(new Intent(this, BuddyInfoActivity.class)
+                        .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
+                        .putExtra(BuddyInfoRequest.BUDDY_ID, info.getBuddyId())
+                        .putExtra(BuddyInfoRequest.BUDDY_NICK, info.getBuddyNick())
+                        .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, info.getAvatarHash())
+        );
     }
 }

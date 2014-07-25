@@ -3,12 +3,12 @@ package com.tomclaw.mandarin.main.adapters;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
-import com.tomclaw.mandarin.im.icq.BuddyAvatarRequest;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 /**
@@ -73,7 +73,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         onlineIndicator.setText(info.isOnline() ? R.string.status_online : R.string.status_offline);
         onlineIndicator.setBackgroundResource(info.isOnline() ? R.drawable.green_indicator : R.drawable.red_indicator);
         // Avatar.
-        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
+        ImageView contactBadge = ((ImageView) view.findViewById(R.id.buddy_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, info.getAvatarHash(), R.drawable.ic_default_avatar);
     }
 

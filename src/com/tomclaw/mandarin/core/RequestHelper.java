@@ -134,6 +134,23 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, request);
     }
 
+    public static void requestSearchAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                           String appSession, String url) {
+        // Obtain existing request.
+        Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
+                GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
+        // Oh, cursor may be null sometimes.
+        if (cursor != null) {
+            // Checking for at least one such download request exist.
+            if (!cursor.moveToFirst()) {
+                SearchAvatarRequest searchAvatarRequest = new SearchAvatarRequest(buddyId, url);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
+                        appSession, searchAvatarRequest);
+            }
+            cursor.close();
+        }
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

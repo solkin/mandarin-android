@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -13,9 +14,11 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
+import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
 import com.tomclaw.mandarin.main.adapters.EndlessListAdapter;
 import com.tomclaw.mandarin.main.adapters.SearchResultAdapter;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -97,11 +100,14 @@ public class SearchResultActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-        // Check for info present in this intent.
+        // Buddy search request data.
         boolean isResultPresent = !intent.getBooleanExtra(BuddySearchRequest.NO_SEARCH_RESULT_CASE, false);
         int requestAccountDbId = intent.getIntExtra(BuddySearchRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
         SearchOptionsBuilder requestSearchOptions =
                 (SearchOptionsBuilder) intent.getSerializableExtra(BuddySearchRequest.SEARCH_OPTIONS);
+        // Search avatar request data.
+        String avatarBuddyId = intent.getStringExtra(SearchAvatarRequest.BUDDY_ID);
+        String avatarHash = intent.getStringExtra(SearchAvatarRequest.BUDDY_AVATAR_HASH);
         // Checking for request is the same.
         if (requestAccountDbId == accountDbId && requestSearchOptions != null &&
                 ((Object) requestSearchOptions).equals(builder)) {
@@ -125,6 +131,16 @@ public class SearchResultActivity extends ChiefActivity {
                 }
                 searchAdapter.setMoreItemsAvailable(false);
                 searchAdapter.notifyDataSetChanged();
+            }
+        } else if(requestAccountDbId == accountDbId && !TextUtils.isEmpty(avatarBuddyId) &&
+                !TextUtils.isEmpty(avatarHash)) {
+            List<ShortBuddyInfo> shortInfoList = searchAdapter.getItems();
+            for(ShortBuddyInfo info : shortInfoList) {
+                if(TextUtils.equals(info.getBuddyId(), avatarBuddyId)) {
+                    info.setAvatarHash(avatarHash);
+                    searchAdapter.notifyDataSetChanged();
+                    break;
+                }
             }
         } else {
             Log.d(Settings.LOG_TAG, "Another search request with another account db id.");

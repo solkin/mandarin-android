@@ -100,6 +100,10 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
         tList.add(t);
     }
 
+    public List<T> getItems() {
+        return tList;
+    }
+
     public void setMoreItemsAvailable(boolean isMoreItemsAvailable) {
         this.isMoreItemsAvailable = isMoreItemsAvailable;
     }

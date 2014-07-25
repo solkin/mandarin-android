@@ -61,22 +61,4 @@
                     android:paddingRight="4dp"/>
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:visibility="visible"
-            android:id="@+id/button_layout">
-        <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/button_buddy_add"
-                android:padding="2dp"
-                android:layout_margin="6dp"
-                android:background="@drawable/button_selector"
-                android:textColor="#ffffff"
-                android:gravity="center"
-                android:src="@drawable/content_new"/>
-    </LinearLayout>
 </LinearLayout>

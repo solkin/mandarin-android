@@ -1,11 +1,13 @@
 package com.tomclaw.mandarin.im;
 
+import com.tomclaw.mandarin.util.Unobfuscatable;
+
 import java.io.Serializable;
 
 /**
  * Created by Solkin on 06.07.2014.
  */
-public class SearchBuddyInfo implements Serializable {
+public class ShortBuddyInfo implements Serializable, Unobfuscatable {
 
     private String buddyId;
     private String buddyNick;
@@ -15,6 +17,10 @@ public class SearchBuddyInfo implements Serializable {
     private String homeAddress;
     private long birthDate;
     private boolean isOnline = false;
+    private String avatarHash;
+
+    public ShortBuddyInfo() {
+    }
 
     public String getBuddyId() {
         return buddyId;
@@ -78,5 +84,13 @@ public class SearchBuddyInfo implements Serializable {
 
     public void setOnline(boolean isOnline) {
         this.isOnline = isOnline;
+    }
+
+    public String getAvatarHash() {
+        return avatarHash;
+    }
+
+    public void setAvatarHash(String avatarHash) {
+        this.avatarHash = avatarHash;
     }
 }

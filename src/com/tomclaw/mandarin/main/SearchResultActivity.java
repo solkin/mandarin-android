@@ -10,7 +10,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.im.SearchBuddyInfo;
+import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.main.adapters.EndlessListAdapter;
@@ -112,7 +112,7 @@ public class SearchResultActivity extends ChiefActivity {
                 Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);
                 Set<String> buddyIds = bundle.keySet();
                 for(String buddyId : buddyIds) {
-                    SearchBuddyInfo info = (SearchBuddyInfo) bundle.getSerializable(buddyId);
+                    ShortBuddyInfo info = (ShortBuddyInfo) bundle.getSerializable(buddyId);
                     Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
                     searchAdapter.appendResult(info);
                 }

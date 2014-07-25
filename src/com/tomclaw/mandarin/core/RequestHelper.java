@@ -5,8 +5,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
+import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -122,6 +125,13 @@ public class RequestHelper {
                                      SearchOptionsBuilder optionsBuilder, int offset) {
         BuddySearchRequest buddySearchRequest = new BuddySearchRequest((IcqSearchOptionsBuilder) optionsBuilder, 20, offset, "RU");
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddySearchRequest);
+    }
+
+    public static void requestBuddyPresence(ContentResolver contentResolver, String appSession, int accountDbId,
+                                     int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap,
+                                     IcqSearchOptionsBuilder searchOptions) {
+        BuddyPresenceRequest request = new BuddyPresenceRequest(total, skipped, shortInfoMap, searchOptions);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, request);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,

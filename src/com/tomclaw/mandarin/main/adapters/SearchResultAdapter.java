@@ -2,24 +2,18 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.im.SearchBuddyInfo;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.im.ShortBuddyInfo;
+import com.tomclaw.mandarin.im.icq.BuddyAvatarRequest;
 import com.tomclaw.mandarin.util.TimeHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Solkin on 09.07.2014.
  */
-public class SearchResultAdapter extends EndlessListAdapter<SearchBuddyInfo> {
+public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
 
     public SearchResultAdapter(Context context, EndlessAdapterListener listener) {
         super(context, listener);
@@ -31,7 +25,7 @@ public class SearchResultAdapter extends EndlessListAdapter<SearchBuddyInfo> {
     }
 
     @Override
-    public void bindView(View view, Context context, SearchBuddyInfo info) {
+    public void bindView(View view, Context context, ShortBuddyInfo info) {
         TextView buddyNick = (TextView) view.findViewById(R.id.buddy_nick);
         TextView buddyShortInfo = (TextView) view.findViewById(R.id.buddy_short_info);
         TextView onlineIndicator = (TextView) view.findViewById(R.id.online_indicator);
@@ -77,6 +71,8 @@ public class SearchResultAdapter extends EndlessListAdapter<SearchBuddyInfo> {
         buddyShortInfo.setText(shortInfo);
         onlineIndicator.setText(info.isOnline() ? R.string.status_online : R.string.status_offline);
         onlineIndicator.setBackgroundResource(info.isOnline() ? R.drawable.green_indicator : R.drawable.red_indicator);
+
+
     }
 
     private String appendIfNotEmpty(String where, String what, String divider) {

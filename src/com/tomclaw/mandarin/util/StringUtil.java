@@ -25,8 +25,6 @@ public class StringUtil {
 
     public static final int DEFAULT_ALPHABET_INDEX = '?';
 
-    private static final String NUMERIC_REGEXP = "^[0-9]*$";
-
     public static final String UTF8_ENCODING = "UTF-8";
 
     private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
@@ -44,7 +42,7 @@ public class StringUtil {
     }
 
     public static boolean isNumeric(String value) {
-        return value.matches(NUMERIC_REGEXP);
+        return !TextUtils.isEmpty(value) && TextUtils.isDigitsOnly(value);
     }
 
     public static String getHmacSha256Base64(String key, String data)
@@ -96,5 +94,15 @@ public class StringUtil {
 
     public static String urlEncode(String string) throws UnsupportedEncodingException {
         return URLEncoder.encode(string, UTF8_ENCODING).replace("+", "%20");
+    }
+
+    public static String appendIfNotEmpty(String where, String what, String divider) {
+        if (!TextUtils.isEmpty(what)) {
+            if (!TextUtils.isEmpty(where)) {
+                where += divider;
+            }
+            where += what;
+        }
+        return where;
     }
 }

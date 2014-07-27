@@ -30,14 +30,12 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vu Thi Thuy"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/buddy_nick"
                         android:textStyle="bold"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="287564321"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/buddy_id"
                         android:fontFamily="sans-serif-light"/>

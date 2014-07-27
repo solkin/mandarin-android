@@ -63,28 +63,22 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
     }
 
     private String getShareString() {
-        StringBuilder shareString = new StringBuilder();
+        String shareString = "";
         // Checking and attaching first and last name.
-        if (!TextUtils.isEmpty(getFirstName())) {
-            shareString.append(getFirstName()).append(" ");
-        }
-        if (!TextUtils.isEmpty(getLastName())) {
-            shareString.append(getLastName()).append(" ");
-        }
+        shareString = StringUtil.appendIfNotEmpty(shareString, getFirstName(), "");
+        shareString = StringUtil.appendIfNotEmpty(shareString, getLastName(), " ");
         // Strong checking for buddy nick.
-        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId()))) {
-            if (TextUtils.isEmpty(shareString)) {
-                shareString.append(getBuddyNick()).append(" ");
-            } else {
-                shareString.append("(").append(getBuddyNick()).append(") ");
+        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId())) &&
+                !TextUtils.equals(shareString, getBuddyNick())) {
+            String buddyNick = getBuddyNick();
+            if (!TextUtils.isEmpty(shareString)) {
+                buddyNick = "(" + buddyNick + ")";
             }
+            shareString = StringUtil.appendIfNotEmpty(shareString, buddyNick, " ");
         }
-        // Something appended? Appending dash.
-        if (!TextUtils.isEmpty(shareString)) {
-            shareString.append("- ");
-        }
-        shareString.append(getBuddyId());
-        return shareString.toString();
+        // Appending user id.
+        shareString = StringUtil.appendIfNotEmpty(shareString, getBuddyId(), " - ");
+        return shareString;
     }
 
     private Intent createShareIntent() {

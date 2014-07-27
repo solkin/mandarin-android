@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
+import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 /**
@@ -38,12 +39,12 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
                 friendly = info.getBuddyNick();
             }
         } else {
-            friendly = appendIfNotEmpty(friendly, info.getFirstName(), "");
-            friendly = appendIfNotEmpty(friendly, info.getLastName(), " ");
+            friendly = StringUtil.appendIfNotEmpty(friendly, info.getFirstName(), "");
+            friendly = StringUtil.appendIfNotEmpty(friendly, info.getLastName(), " ");
         }
         buddyNick.setText(friendly);
         // Buddy home address.
-        String shortInfo = appendIfNotEmpty("", info.getHomeAddress(), "");
+        String shortInfo = StringUtil.appendIfNotEmpty("", info.getHomeAddress(), "");
         // Buddy gender. Female, male or nothing.
         String gender;
         switch (info.getGender()) {
@@ -57,7 +58,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
                 gender = "";
                 break;
         }
-        shortInfo = appendIfNotEmpty(shortInfo, gender, ", ");
+        shortInfo = StringUtil.appendIfNotEmpty(shortInfo, gender, ", ");
         // Buddy years.
         String birthDate = "";
         if (info.getBirthDate() > 0) {
@@ -66,7 +67,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
                 birthDate = context.getResources().getQuantityString(R.plurals.buddy_years, years, years);
             }
         }
-        shortInfo = appendIfNotEmpty(shortInfo, birthDate, ", ");
+        shortInfo = StringUtil.appendIfNotEmpty(shortInfo, birthDate, ", ");
 
         buddyShortInfo.setText(shortInfo);
         onlineIndicator.setText(info.isOnline() ? R.string.status_online : R.string.status_offline);
@@ -74,15 +75,5 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         // Avatar.
         ImageView contactBadge = ((ImageView) view.findViewById(R.id.buddy_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, info.getAvatarHash(), R.drawable.ic_default_avatar);
-    }
-
-    private String appendIfNotEmpty(String where, String what, String divider) {
-        if (!TextUtils.isEmpty(what)) {
-            if (!TextUtils.isEmpty(where)) {
-                where += divider;
-            }
-            where += what;
-        }
-        return where;
     }
 }

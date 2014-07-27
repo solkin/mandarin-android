@@ -9,4 +9,5 @@
           android:ellipsize="marquee"
           android:textAlignment="inherit"
           android:textSize="18sp"
-          android:fontFamily="sans-serif-light"/>
+          android:fontFamily="sans-serif-light"
+          android:gravity="center"/>

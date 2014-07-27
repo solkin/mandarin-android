@@ -35,6 +35,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
     private String firstName;
     private String lastName;
 
+    private TextView buddyNickView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +71,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
         buddyIdView.setText(getBuddyId());
 
-        TextView buddyNickView = (TextView) findViewById(R.id.buddy_nick);
-        buddyNickView.setText(getBuddyNick());
+        buddyNickView = (TextView) findViewById(R.id.buddy_nick);
+        updateBuddyNick();
 
         if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
             int statusImageResource = StatusUtil.getStatusDrawable(getAccountType(), getBuddyStatus());
@@ -102,6 +104,18 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         // Buddy avatar.
         ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
+    }
+
+    private void updateBuddyNick() {
+        String nick = buddyNickView.getText().toString();
+        if(TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
+            nick = getBuddyNick();
+            if(TextUtils.isEmpty(nick)) {
+                nick = StringUtil.appendIfNotEmpty(nick, getFirstName(), "");
+                nick = StringUtil.appendIfNotEmpty(nick, getLastName(), " ");
+            }
+        }
+        buddyNickView.setText(nick);
     }
 
     public abstract void onBuddyInfoRequestError();
@@ -160,15 +174,16 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                             }
                             // Correct user-defined values for sharing.
                             if (Integer.valueOf(key) == R.id.friendly_name) {
-                                buddyNick = value;
+                                setBuddyNick(value);
                             } else if (Integer.valueOf(key) == R.id.first_name) {
-                                firstName = value;
+                                setFirstName(value);
                             } else if (Integer.valueOf(key) == R.id.last_name) {
-                                lastName = value;
+                                setLastName(value);
                             }
                         }
                     }
                 }
+                updateBuddyNick();
             } else {
                 Log.d(Settings.LOG_TAG, "No info case :(");
                 onBuddyInfoRequestError();

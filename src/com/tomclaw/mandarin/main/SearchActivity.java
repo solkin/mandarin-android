@@ -7,15 +7,14 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.Gender;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
+import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -101,23 +100,31 @@ public class SearchActivity extends ChiefActivity {
     }
 
     private void doSearch() {
-        IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
-        // Obtain search builder instance from account.
-        builder.keyword(keywordName.getText().toString());
-        builder.online(onlineBox.isChecked());
-        if (!agePickerView.isAnyAge()) {
-            builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
-        }
-        String selectedGender = (String) genderSpinner.getSelectedItem();
-        if (TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
-            builder.gender(Gender.Female);
-        } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
-            builder.gender(Gender.Male);
-        }
+        String keyword = keywordName.getText().toString();
+        if(StringUtil.isNumeric(keyword)) {
+            startActivity(new Intent(this, BuddyInfoActivity.class)
+                            .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
+                            .putExtra(BuddyInfoRequest.BUDDY_ID, keyword)
+            );
+        } else {
+            IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
+            // Obtain search builder instance from account.
+            builder.keyword(keyword);
+            builder.online(onlineBox.isChecked());
+            if (!agePickerView.isAnyAge()) {
+                builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
+            }
+            String selectedGender = (String) genderSpinner.getSelectedItem();
+            if (TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
+                builder.gender(Gender.Female);
+            } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
+                builder.gender(Gender.Male);
+            }
 
-        Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
-        intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
-        intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        startActivity(intent);
+            Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
+            intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
+            intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+            startActivity(intent);
+        }
     }
 }

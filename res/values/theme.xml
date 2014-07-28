@@ -100,12 +100,17 @@
         <item name="android:background">?attr/button_navbar_background</item>
         <item name="android:gravity">left|center_vertical</item>
     </style>
-    <style name="Button.Green" parent="android:Widget.Button">
+    <style name="Button.Flat" parent="android:Widget.Button">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">#fefefe</item>
-        <item name="android:background">@drawable/button_selector</item>
+        <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
+    </style>
+    <style name="Button.Green" parent="Button.Flat">
+        <item name="android:background">@drawable/green_button_selector</item>
+    </style>
+    <style name="Button.Blue" parent="Button.Flat">
+        <item name="android:background">@drawable/blue_button_selector</item>
     </style>
     <style name="Chat.Message" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>

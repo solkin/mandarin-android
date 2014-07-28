@@ -15,7 +15,7 @@
     <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
     <string name="account_already_exists">Добавляемый профиль уже существует!</string>
-    <string name="add_buddy">Добавить контакт</string>
+    <string name="add_buddy">Добавить в список контактов</string>
     <string name="create_dialog">Создать диалог</string>
     <string name="settings">Настройки</string>
     <string name="info">Информация</string>
@@ -284,4 +284,7 @@
     <string name="buddy_online_search">Сейчас онлайн</string>
     <string name="search_button">Поиск</string>
     <string name="search_result">Результат поиска</string>
+    <string name="open_dialog">Открыть диалог</string>
+    <string name="defaultGroupName">Главная</string>
+    <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
 </resources>

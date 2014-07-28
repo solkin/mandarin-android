@@ -66,7 +66,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         String buddyStatusMessage = intent.getStringExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE);
 
         // Initialize info activity layout.
-        setContentView(R.layout.buddy_info_activity);
+        setContentView(getLayout());
 
         TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
         buddyIdView.setText(getBuddyId());
@@ -105,6 +105,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
     }
+
+    protected abstract int getLayout();
 
     private void updateBuddyNick() {
         String nick = buddyNickView.getText().toString();

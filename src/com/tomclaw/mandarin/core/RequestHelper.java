@@ -108,6 +108,13 @@ public class RequestHelper {
         }
     }
 
+    public static void requestAdd(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                  String groupName, String authorizationMsg) {
+        BuddyAddRequest buddyAddRequest = new BuddyAddRequest(
+                buddyId, groupName, authorizationMsg);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, true, accountDbId, buddyAddRequest);
+    }
+
     public static void requestRename(ContentResolver contentResolver, int accountDbId, String buddyId,
                                      String buddyPreviousNameNick, String buddySatisfiedNick) {
         BuddyRenameRequest buddyRenameRequest = new BuddyRenameRequest(

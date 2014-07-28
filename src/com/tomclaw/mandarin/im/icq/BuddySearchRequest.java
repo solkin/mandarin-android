@@ -50,6 +50,11 @@ public class BuddySearchRequest extends WimRequest {
     }
 
     @Override
+    protected JSONObject parseResponse(String responseString) throws JSONException {
+        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
+    }
+
+    @Override
     protected int parseJson(JSONObject response) throws JSONException {
         // Start to JSON parsing.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);

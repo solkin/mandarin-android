@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -212,6 +213,7 @@ public class RosterActivity extends ChiefActivity {
                 final int accountDbId = buddyCursor.getBuddyAccountDbId();
                 final String buddyId = buddyCursor.getBuddyId();
                 final String buddyPreviousNick = buddyCursor.getBuddyNick();
+                final boolean isPersistent = (buddyCursor.getBuddyGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
 
                 View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
 
@@ -226,11 +228,15 @@ public class RosterActivity extends ChiefActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String buddySatisfiedNick = buddyNameText.getText().toString();
-
-                                QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId, buddySatisfiedNick, true);
-
-                                RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
-                                        buddyPreviousNick, buddySatisfiedNick);
+                                // Renaming only if buddy nicks are different.
+                                if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
+                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId,
+                                            buddySatisfiedNick, isPersistent);
+                                    if (isPersistent) {
+                                        RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
+                                                buddyPreviousNick, buddySatisfiedNick);
+                                    }
+                                }
                             }
                         })
                         .setNegativeButton(R.string.not_now, null)

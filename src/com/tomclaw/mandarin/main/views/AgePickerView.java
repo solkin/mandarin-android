@@ -44,6 +44,11 @@ public class AgePickerView extends TextView {
                     public void onRangePicked(int min, int max) {
                         updateText(min, max);
                     }
+
+                    @Override
+                    public void onRangeAny() {
+                        updateText(ageMin, ageMax);
+                    }
                 });
                 dialog.show();
             }
@@ -55,8 +60,14 @@ public class AgePickerView extends TextView {
     private void updateText(int min, int max) {
         valueMin = min;
         valueMax = max;
-        String ageToString = getContext().getResources().getQuantityString(R.plurals.buddy_years, max, max);
-        setText(getResources().getString(R.string.age_format, min, ageToString));
+        if(valueMin == ageMin && valueMax == ageMax) {
+            setText(R.string.age_any);
+        } else if(valueMin == valueMax) {
+            setText(getContext().getResources().getQuantityString(R.plurals.buddy_years, max, max));
+        } else {
+            String ageToString = getContext().getResources().getQuantityString(R.plurals.buddy_years, max, max);
+            setText(getResources().getString(R.string.age_format, min, ageToString));
+        }
     }
 
     public boolean isAnyAge() {

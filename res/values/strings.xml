@@ -287,4 +287,5 @@
     <string name="open_dialog">Открыть диалог</string>
     <string name="defaultGroupName">Главная</string>
     <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
+    <string name="age_any">Любой</string>
 </resources>

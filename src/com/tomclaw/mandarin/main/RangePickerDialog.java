@@ -62,6 +62,12 @@ public class RangePickerDialog extends AlertDialog {
                 dismiss();
             }
         });
+        setButton(BUTTON_NEUTRAL, context.getString(R.string.age_any), new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                listener.onRangeAny();
+            }
+        });
         setButton(BUTTON_POSITIVE, context.getString(R.string.apply), new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -89,5 +95,7 @@ public class RangePickerDialog extends AlertDialog {
     public interface RangePickerListener {
 
         public void onRangePicked(int min, int max);
+
+        public void onRangeAny();
     }
 }

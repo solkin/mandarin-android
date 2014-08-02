@@ -100,31 +100,24 @@ public class SearchActivity extends ChiefActivity {
     }
 
     private void doSearch() {
+        IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
         String keyword = keywordName.getText().toString();
-        if(StringUtil.isNumeric(keyword)) {
-            startActivity(new Intent(this, BuddyInfoActivity.class)
-                            .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
-                            .putExtra(BuddyInfoRequest.BUDDY_ID, keyword)
-            );
-        } else {
-            IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
-            // Obtain search builder instance from account.
-            builder.keyword(keyword);
-            builder.online(onlineBox.isChecked());
-            if (!agePickerView.isAnyAge()) {
-                builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
-            }
-            String selectedGender = (String) genderSpinner.getSelectedItem();
-            if (TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
-                builder.gender(Gender.Female);
-            } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
-                builder.gender(Gender.Male);
-            }
-
-            Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
-            intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
-            intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-            startActivity(intent);
+        // Obtain search builder instance from account.
+        builder.keyword(keyword);
+        builder.online(onlineBox.isChecked());
+        if (!agePickerView.isAnyAge()) {
+            builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());
         }
+        String selectedGender = (String) genderSpinner.getSelectedItem();
+        if (TextUtils.equals(selectedGender, getString(R.string.gender_female))) {
+            builder.gender(Gender.Female);
+        } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
+            builder.gender(Gender.Male);
+        }
+
+        Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
+        intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);
+        intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+        startActivity(intent);
     }
 }

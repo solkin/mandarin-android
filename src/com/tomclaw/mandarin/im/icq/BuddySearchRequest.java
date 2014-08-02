@@ -77,31 +77,6 @@ public class BuddySearchRequest extends WimRequest {
                     // Obtain buddy info from profile.
                     String buddyId = profile.getString("aimId");
                     info.setBuddyId(buddyId);
-                    info.setBuddyNick(StringUtil.fixCyrillicSymbols(profile.optString("friendlyName")));
-                    info.setFirstName(StringUtil.fixCyrillicSymbols(profile.optString("firstName")));
-                    info.setLastName(StringUtil.fixCyrillicSymbols(profile.optString("lastName")));
-                    String gender = profile.optString("gender");
-                    if (!TextUtils.equals(gender, "unknown")) {
-                        info.setGender(gender.equals("male") ? Gender.Male : Gender.Female);
-                    }
-                    JSONArray homeAddress = profile.optJSONArray("homeAddress");
-                    if (homeAddress != null) {
-                        String city = "";
-                        for (int c = 0; c < homeAddress.length(); c++) {
-                            if (c > 0) {
-                                city += ", ";
-                            }
-                            city += StringUtil.fixCyrillicSymbols(homeAddress.getJSONObject(c).optString("city"));
-                        }
-                        if (!TextUtils.isEmpty(city)) {
-                            info.setHomeAddress(city);
-                        }
-                    }
-                    long birthDate = profile.optLong("birthDate") * 1000;
-                    if (birthDate > 0) {
-                        info.setBirthDate(birthDate);
-                    }
-                    info.setOnline(TextUtils.equals(profile.optString("online"), "true"));
                     shortInfoMap.put(buddyId, info);
                 }
             }
@@ -129,7 +104,7 @@ public class BuddySearchRequest extends WimRequest {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", "json"));
-        params.add(new Pair<String, String>("infoLevel", "mid"));
+        params.add(new Pair<String, String>("infoLevel", "min"));
         params.add(new Pair<String, String>("nToSkip", String.valueOf(nToSkip)));
         params.add(new Pair<String, String>("nToGet", String.valueOf(nToGet)));
         params.add(new Pair<String, String>("locale", locale));

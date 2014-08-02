@@ -32,8 +32,8 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         TextView onlineIndicator = (TextView) view.findViewById(R.id.online_indicator);
         // Buddy friendly name - first and last names or nick name.
         String friendly = "";
-        if (TextUtils.isEmpty(info.getFirstName()) && TextUtils.isEmpty(info.getLastName())) {
-            if (TextUtils.isEmpty(info.getBuddyNick())) {
+        if (StringUtil.isEmptyOrWhitespace(info.getFirstName()) && StringUtil.isEmptyOrWhitespace(info.getLastName())) {
+            if (StringUtil.isEmptyOrWhitespace(info.getBuddyNick())) {
                 friendly = info.getBuddyId();
             } else {
                 friendly = info.getBuddyNick();

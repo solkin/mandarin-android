@@ -7,9 +7,11 @@ import android.util.Pair;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,8 +56,9 @@ public class BuddyPresenceRequest extends WimRequest {
             JSONArray users = data.getJSONArray("users");
             for (int i = 0; i < users.length(); i++) {
                 JSONObject buddy = users.getJSONObject(i);
+                JSONObject profile = buddy.optJSONObject("profile");
                 ShortBuddyInfo buddyInfo = shortInfoMap.get(buddy.getString("aimId"));
-                if (buddyInfo != null) {
+                if (profile != null && buddyInfo != null) {
                     String state = buddy.getString("state");
                     String buddyIcon = buddy.optString("buddyIcon", null);
                     int statusIndex;
@@ -72,6 +75,31 @@ public class BuddyPresenceRequest extends WimRequest {
                         RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
                                 getAccountRoot().getAccountDbId(), buddyInfo.getBuddyId(),
                                 CoreService.getAppSession(), buddyIcon);
+                    }
+                    // Parsing profile.
+                    buddyInfo.setBuddyNick(StringUtil.fixCyrillicSymbols(profile.optString("friendlyName")));
+                    buddyInfo.setFirstName(StringUtil.fixCyrillicSymbols(profile.optString("firstName")));
+                    buddyInfo.setLastName(StringUtil.fixCyrillicSymbols(profile.optString("lastName")));
+                    String gender = profile.optString("gender");
+                    if (!TextUtils.equals(gender, "unknown")) {
+                        buddyInfo.setGender(gender.equals("male") ? Gender.Male : Gender.Female);
+                    }
+                    JSONArray homeAddress = profile.optJSONArray("homeAddress");
+                    if (homeAddress != null) {
+                        String city = "";
+                        for (int c = 0; c < homeAddress.length(); c++) {
+                            if (c > 0) {
+                                city += ", ";
+                            }
+                            city += StringUtil.fixCyrillicSymbols(homeAddress.getJSONObject(c).optString("city"));
+                        }
+                        if (!TextUtils.isEmpty(city)) {
+                            buddyInfo.setHomeAddress(city);
+                        }
+                    }
+                    long birthDate = profile.optLong("birthDate") * 1000;
+                    if (birthDate > 0) {
+                        buddyInfo.setBirthDate(birthDate);
                     }
                 }
             }
@@ -97,6 +125,7 @@ public class BuddyPresenceRequest extends WimRequest {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<String, String>("mdir", "1"));
         for (String buddyId : shortInfoMap.keySet()) {
             params.add(new Pair<String, String>("t", buddyId));
         }

@@ -97,12 +97,16 @@ public class StringUtil {
     }
 
     public static String appendIfNotEmpty(String where, String what, String divider) {
-        if (!TextUtils.isEmpty(what)) {
-            if (!TextUtils.isEmpty(where)) {
+        if (!StringUtil.isEmptyOrWhitespace(what)) {
+            if (!StringUtil.isEmptyOrWhitespace(where)) {
                 where += divider;
             }
             where += what;
         }
         return where;
+    }
+
+    public static boolean isEmptyOrWhitespace(String string) {
+        return TextUtils.isEmpty(string) || TextUtils.isEmpty(string.trim());
     }
 }

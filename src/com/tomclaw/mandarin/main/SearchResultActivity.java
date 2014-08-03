@@ -7,7 +7,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
+import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
@@ -129,7 +132,7 @@ public class SearchResultActivity extends ChiefActivity {
                 for (String buddyId : buddyIds) {
                     ShortBuddyInfo info = (ShortBuddyInfo) bundle.getSerializable(buddyId);
                     Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
-                    if(info.isItemStatic()) {
+                    if (info.isItemStatic()) {
                         searchAdapter.appendStaticItem(info);
                     } else {
                         searchAdapter.appendItem(info);

@@ -140,7 +140,7 @@ public class BuddyPresenceRequest extends WimRequest {
         params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<String, String>("mdir", "1"));
         // Checking for keyword is user id and this is first result page.
-        if(StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
+        if (StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
                 !buddyIds.contains(searchOptions.getKeyword())) {
             params.add(createBuddyPair(searchOptions.getKeyword()));
             isKeywordNumeric = true;

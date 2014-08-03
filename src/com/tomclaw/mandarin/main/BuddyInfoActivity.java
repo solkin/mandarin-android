@@ -81,7 +81,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         });
 
         boolean buddyExists = QueryHelper.checkBuddy(getContentResolver(), getAccountDbId(), getBuddyId());
-        if(buddyExists) {
+        if (buddyExists) {
             buttonSwitcher.setAnimateFirstView(false);
             buttonSwitcher.showNext();
         }
@@ -151,7 +151,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         @Override
         public void executeBackground() throws Throwable {
             Context context = getWeakObject();
-            if(context != null) {
+            if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
                 // Default adding attributes. May be corrected.
                 String accountType = QueryHelper.getAccountType(contentResolver, accountDbId);
@@ -191,7 +191,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         @Override
         public void onSuccessMain() {
             Context context = getWeakObject();
-            if(context != null) {
+            if (context != null) {
                 Intent intent = new Intent(context, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
@@ -202,7 +202,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         @Override
         public void onFailMain() {
             Context context = getWeakObject();
-            if(context != null) {
+            if (context != null) {
                 Toast.makeText(context, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
                 buttonSwitcher.showPrevious();
             }

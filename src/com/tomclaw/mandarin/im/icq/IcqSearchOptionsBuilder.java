@@ -6,7 +6,6 @@ import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Objects;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -27,7 +26,7 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     @Override
     public void keyword(String option) {
-        if(appendOption("keyword", option)) {
+        if (appendOption("keyword", option)) {
             keyword = option;
         }
     }
@@ -100,7 +99,7 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     @Override
     public boolean equals(Object o) {
-        if(o != null && o instanceof SearchOptionsBuilder) {
+        if (o != null && o instanceof SearchOptionsBuilder) {
             SearchOptionsBuilder builder = (SearchOptionsBuilder) o;
             return (getSearchId() == builder.getSearchId()) &&
                     TextUtils.equals(toString(), ((Object) builder).toString());

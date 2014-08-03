@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import org.json.JSONException;

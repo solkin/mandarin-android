@@ -60,9 +60,9 @@ public class AgePickerView extends TextView {
     private void updateText(int min, int max) {
         valueMin = min;
         valueMax = max;
-        if(valueMin == ageMin && valueMax == ageMax) {
+        if (valueMin == ageMin && valueMax == ageMax) {
             setText(R.string.age_any);
-        } else if(valueMin == valueMax) {
+        } else if (valueMin == valueMax) {
             setText(getContext().getResources().getQuantityString(R.plurals.buddy_years, max, max));
         } else {
             String ageToString = getContext().getResources().getQuantityString(R.plurals.buddy_years, max, max);

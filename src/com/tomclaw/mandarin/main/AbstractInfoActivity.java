@@ -114,9 +114,9 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
 
     private void updateBuddyNick() {
         String nick = getBuddyName();
-        if(TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
+        if (TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
             nick = getBuddyNick();
-            if(TextUtils.isEmpty(nick)) {
+            if (TextUtils.isEmpty(nick)) {
                 nick = StringUtil.appendIfNotEmpty(nick, getFirstName(), "");
                 nick = StringUtil.appendIfNotEmpty(nick, getLastName(), " ");
             }

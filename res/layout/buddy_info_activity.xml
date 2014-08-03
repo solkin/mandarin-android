@@ -5,10 +5,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
     <LinearLayout
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="14dp">
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp">
         <include layout="@layout/info_header"/>
         <ViewSwitcher
                 android:layout_width="match_parent"

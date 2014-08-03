@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
-import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,15 +10,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
@@ -166,7 +161,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 String authorizationMsg = context.getString(R.string.authorizationMsg);
                 // Buddy adding procedure.
                 QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
-                QueryHelper.insertAddingBuddy(contentResolver, accountDbId, accountType, updateTime,
+                QueryHelper.replaceOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
                         groupId, groupName, buddyId, buddyNick, avatarHash);
                 RequestHelper.requestAdd(contentResolver, accountDbId, buddyId, groupName, authorizationMsg);
             }

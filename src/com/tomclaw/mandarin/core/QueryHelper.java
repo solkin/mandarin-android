@@ -596,9 +596,9 @@ public class QueryHelper {
         }
     }
 
-    public static void insertAddingBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
-                                   long updateTime, int groupId, String groupName, String buddyId,
-                                   String buddyNick, String avatarHash) {
+    public static void replaceOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
+                                            long updateTime, int groupId, String groupName, String buddyId,
+                                            String buddyNick, String avatarHash) {
         int statusIndex = StatusUtil.STATUS_OFFLINE;
         String statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
         String statusMessage = "";
@@ -621,7 +621,29 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_ADD);
-        contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID).limit(1);
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = getBuddyCursor(contentResolver, queryBuilder);
+            long buddyDbId = buddyCursor.getBuddyDbId();
+            boolean buddyDialogFlag = buddyCursor.getBuddyDialog();
+            // Update dialog flag.
+            buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag ? 1 : 0);
+            // Update this row.
+            queryBuilder.recycle();
+            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+            queryBuilder.update(contentResolver, buddyValues, Settings.BUDDY_RESOLVER_URI);
+        } catch (BuddyNotFoundException ignored) {
+            contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
+        }
     }
 
     public static void updateOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
@@ -686,7 +708,7 @@ public class QueryHelper {
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
             queryBuilder.update(contentResolver, buddyValues, Settings.BUDDY_RESOLVER_URI);
-        } catch (BuddyNotFoundException e) {
+        } catch (BuddyNotFoundException ignored) {
             avatarHash = null;
             contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
         } finally {

@@ -19,7 +19,13 @@ public class ShortBuddyInfo implements Serializable, Unobfuscatable {
     private boolean isOnline = false;
     private String avatarHash;
 
+    private boolean itemStatic;
+
     public ShortBuddyInfo() {
+    }
+
+    public ShortBuddyInfo(String buddyId) {
+        this.buddyId = buddyId;
     }
 
     public String getBuddyId() {
@@ -92,5 +98,13 @@ public class ShortBuddyInfo implements Serializable, Unobfuscatable {
 
     public void setAvatarHash(String avatarHash) {
         this.avatarHash = avatarHash;
+    }
+
+    public boolean isItemStatic() {
+        return itemStatic;
+    }
+
+    public void setItemStatic(boolean itemStatic) {
+        this.itemStatic = itemStatic;
     }
 }

@@ -108,8 +108,12 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
 
     protected abstract int getLayout();
 
+    public String getBuddyName() {
+        return buddyNickView.getText().toString();
+    }
+
     private void updateBuddyNick() {
-        String nick = buddyNickView.getText().toString();
+        String nick = getBuddyName();
         if(TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
             nick = getBuddyNick();
             if(TextUtils.isEmpty(nick)) {

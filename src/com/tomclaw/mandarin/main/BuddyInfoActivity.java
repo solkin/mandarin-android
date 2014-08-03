@@ -103,7 +103,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
     private void addBuddy() {
         AddBuddyTask addBuddyTask = new AddBuddyTask(this, getAccountDbId(),
-                getBuddyId(), getBuddyNick(), getAvatarHash());
+                getBuddyId(), getBuddyName(), getAvatarHash());
         TaskExecutor.getInstance().execute(addBuddyTask);
     }
 

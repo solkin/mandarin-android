@@ -100,7 +100,7 @@ public class SearchActivity extends ChiefActivity {
     }
 
     private void doSearch() {
-        IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder();
+        IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder(System.currentTimeMillis());
         String keyword = keywordName.getText().toString();
         // Obtain search builder instance from account.
         builder.keyword(keyword);

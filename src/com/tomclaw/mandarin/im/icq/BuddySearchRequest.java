@@ -66,24 +66,21 @@ public class BuddySearchRequest extends WimRequest {
             int total = results.getInt("nTotal");
             int skipped = results.getInt("nSkipped");
             int profiles = results.getInt("nProfiles");
-            Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<String, ShortBuddyInfo>();
+            List<String> userIds = new ArrayList<String>();
             if (profiles > 0) {
                 JSONArray infoArray = results.getJSONArray("infoArray");
                 for (int i = 0; i < infoArray.length(); i++) {
                     JSONObject buddyInfo = infoArray.getJSONObject(i);
-                    ShortBuddyInfo info = new ShortBuddyInfo();
-
                     JSONObject profile = buddyInfo.getJSONObject("profile");
-                    // Obtain buddy info from profile.
+                    // Obtain buddy id from profile.
                     String buddyId = profile.getString("aimId");
-                    info.setBuddyId(buddyId);
-                    shortInfoMap.put(buddyId, info);
+                    userIds.add(buddyId);
                 }
             }
             // Delegate request to get buddies avatars.
             RequestHelper.requestBuddyPresence(getAccountRoot().getContentResolver(),
                     CoreService.getAppSession(), getAccountRoot().getAccountDbId(),
-                    total, skipped, shortInfoMap, searchOptions);
+                    total, skipped, userIds, searchOptions);
         } else {
             // We must send intent in any case,
             // because our request is going to be deleted.

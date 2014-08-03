@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,18 +31,24 @@ public class BuddyPresenceRequest extends WimRequest {
 
     private int total;
     private int skipped;
-    private Map<String, ShortBuddyInfo> shortInfoMap;
+    private List<String> buddyIds;
     private IcqSearchOptionsBuilder searchOptions;
+    private boolean isKeywordNumeric = false;
 
     public BuddyPresenceRequest() {
     }
 
-    public BuddyPresenceRequest(int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap,
+    public BuddyPresenceRequest(int total, int skipped, List<String> buddyIds,
                                 IcqSearchOptionsBuilder searchOptions) {
         this.total = total;
         this.skipped = skipped;
-        this.shortInfoMap = shortInfoMap;
+        this.buddyIds = buddyIds;
         this.searchOptions = searchOptions;
+    }
+
+    @Override
+    protected JSONObject parseResponse(String responseString) throws JSONException {
+        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
     }
 
     @Override
@@ -52,13 +59,15 @@ public class BuddyPresenceRequest extends WimRequest {
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {
+            Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<String, ShortBuddyInfo>();
             JSONObject data = responseObject.getJSONObject("data");
             JSONArray users = data.getJSONArray("users");
             for (int i = 0; i < users.length(); i++) {
                 JSONObject buddy = users.getJSONObject(i);
                 JSONObject profile = buddy.optJSONObject("profile");
-                ShortBuddyInfo buddyInfo = shortInfoMap.get(buddy.getString("aimId"));
-                if (profile != null && buddyInfo != null) {
+                String buddyId = buddy.getString("aimId");
+                if (profile != null) {
+                    ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
                     String state = buddy.getString("state");
                     String buddyIcon = buddy.optString("buddyIcon", null);
                     int statusIndex;
@@ -71,18 +80,20 @@ public class BuddyPresenceRequest extends WimRequest {
                     buddyInfo.setOnline(statusIndex != StatusUtil.STATUS_OFFLINE);
                     // Create custom avatar request.
                     if (!TextUtils.isEmpty(buddyIcon)) {
-                        Log.d(Settings.LOG_TAG, "search avatar for " + buddyInfo.getBuddyId() + ": " + buddyIcon);
+                        Log.d(Settings.LOG_TAG, "search avatar for " + buddyId + ": " + buddyIcon);
                         RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
-                                getAccountRoot().getAccountDbId(), buddyInfo.getBuddyId(),
+                                getAccountRoot().getAccountDbId(), buddyId,
                                 CoreService.getAppSession(), buddyIcon);
                     }
                     // Parsing profile.
-                    buddyInfo.setBuddyNick(StringUtil.fixCyrillicSymbols(profile.optString("friendlyName")));
-                    buddyInfo.setFirstName(StringUtil.fixCyrillicSymbols(profile.optString("firstName")));
-                    buddyInfo.setLastName(StringUtil.fixCyrillicSymbols(profile.optString("lastName")));
+                    buddyInfo.setBuddyNick(profile.optString("friendlyName"));
+                    buddyInfo.setFirstName(profile.optString("firstName"));
+                    buddyInfo.setLastName(profile.optString("lastName"));
                     String gender = profile.optString("gender");
-                    if (!TextUtils.equals(gender, "unknown")) {
-                        buddyInfo.setGender(gender.equals("male") ? Gender.Male : Gender.Female);
+                    if (TextUtils.equals(gender, "female")) {
+                        buddyInfo.setGender(Gender.Female);
+                    } else if (TextUtils.equals(gender, "male")) {
+                        buddyInfo.setGender(Gender.Male);
                     }
                     JSONArray homeAddress = profile.optJSONArray("homeAddress");
                     if (homeAddress != null) {
@@ -91,7 +102,7 @@ public class BuddyPresenceRequest extends WimRequest {
                             if (c > 0) {
                                 city += ", ";
                             }
-                            city += StringUtil.fixCyrillicSymbols(homeAddress.getJSONObject(c).optString("city"));
+                            city += homeAddress.getJSONObject(c).optString("city");
                         }
                         if (!TextUtils.isEmpty(city)) {
                             buddyInfo.setHomeAddress(city);
@@ -101,6 +112,8 @@ public class BuddyPresenceRequest extends WimRequest {
                     if (birthDate > 0) {
                         buddyInfo.setBirthDate(birthDate);
                     }
+                    buddyInfo.setItemStatic(isKeywordNumeric && TextUtils.equals(buddyId, searchOptions.getKeyword()));
+                    shortInfoMap.put(buddyId, buddyInfo);
                 }
             }
             intent = BuddySearchRequest.getSearchResultIntent(getAccountRoot().getAccountDbId(),
@@ -126,9 +139,19 @@ public class BuddyPresenceRequest extends WimRequest {
         params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<String, String>("mdir", "1"));
-        for (String buddyId : shortInfoMap.keySet()) {
-            params.add(new Pair<String, String>("t", buddyId));
+        // Checking for keyword is user id and this is first result page.
+        if(StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
+                !buddyIds.contains(searchOptions.getKeyword())) {
+            params.add(createBuddyPair(searchOptions.getKeyword()));
+            isKeywordNumeric = true;
+        }
+        for (String buddyId : buddyIds) {
+            params.add(createBuddyPair(buddyId));
         }
         return params;
+    }
+
+    private static Pair<String, String> createBuddyPair(String buddyId) {
+        return new Pair<String, String>("t", buddyId);
     }
 }

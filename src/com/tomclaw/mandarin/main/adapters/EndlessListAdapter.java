@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import com.tomclaw.mandarin.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
     private boolean isMoreItemsAvailable = false;
     private EndlessAdapterListener listener;
 
+    private int staticItemsCount = 0;
     private int latestInvokedPosition = -1;
 
     private Context context;
@@ -96,12 +98,16 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
     public abstract void bindView(View view, Context context, T t);
 
-    public void appendResult(T t) {
+    public void appendStaticItem(T t) {
+        tList.add(staticItemsCount++, t);
+    }
+
+    public void appendItem(T t) {
         tList.add(t);
     }
 
     public List<T> getItems() {
-        return tList;
+        return Collections.unmodifiableList(tList);
     }
 
     public void setMoreItemsAvailable(boolean isMoreItemsAvailable) {
@@ -110,13 +116,17 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
     private void onShowProgressItem(int position) {
         if (position > latestInvokedPosition) {
-            listener.onLoadMoreItems(tList.size());
+            listener.onLoadMoreItems(tList.size() - staticItemsCount);
             latestInvokedPosition = position;
         }
     }
 
     public boolean isEmpty() {
         return tList.isEmpty();
+    }
+
+    public int getStaticItemsCount() {
+        return staticItemsCount;
     }
 
     public interface EndlessAdapterListener {

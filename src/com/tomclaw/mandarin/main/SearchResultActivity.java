@@ -122,25 +122,28 @@ public class SearchResultActivity extends ChiefActivity {
                 ((Object) requestSearchOptions).equals(builder)) {
             int total = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_TOTAL, 0);
             int offset = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_OFFSET, 0);
+            Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);
             // Checking for result present and total count is positive.
-            if (isResultPresent && total > 0) {
-                Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);
+            if (isResultPresent && bundle.size() > 0) {
                 Set<String> buddyIds = bundle.keySet();
                 for (String buddyId : buddyIds) {
                     ShortBuddyInfo info = (ShortBuddyInfo) bundle.getSerializable(buddyId);
                     Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
-                    searchAdapter.appendResult(info);
+                    if(info.isItemStatic()) {
+                        searchAdapter.appendStaticItem(info);
+                    } else {
+                        searchAdapter.appendItem(info);
+                    }
                 }
                 searchAdapter.setMoreItemsAvailable(total > offset + buddyIds.size());
-                searchAdapter.notifyDataSetChanged();
             } else {
                 Log.d(Settings.LOG_TAG, "No result case :(");
                 if (searchAdapter.isEmpty()) {
                     onSearchRequestNoResult();
                 }
                 searchAdapter.setMoreItemsAvailable(false);
-                searchAdapter.notifyDataSetChanged();
             }
+            searchAdapter.notifyDataSetChanged();
         } else if (requestAccountDbId == accountDbId && !TextUtils.isEmpty(avatarBuddyId) &&
                 !TextUtils.isEmpty(avatarHash)) {
             List<ShortBuddyInfo> shortInfoList = searchAdapter.getItems();

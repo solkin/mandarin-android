@@ -9,6 +9,7 @@ import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -135,9 +136,9 @@ public class RequestHelper {
     }
 
     public static void requestBuddyPresence(ContentResolver contentResolver, String appSession, int accountDbId,
-                                            int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap,
+                                            int total, int skipped, List<String> buddyIds,
                                             IcqSearchOptionsBuilder searchOptions) {
-        BuddyPresenceRequest request = new BuddyPresenceRequest(total, skipped, shortInfoMap, searchOptions);
+        BuddyPresenceRequest request = new BuddyPresenceRequest(total, skipped, buddyIds, searchOptions);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, request);
     }
 

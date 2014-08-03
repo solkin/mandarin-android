@@ -6,6 +6,7 @@ import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -13,14 +14,26 @@ import java.io.UnsupportedEncodingException;
 public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     private StringBuilder match;
+    private String keyword;
 
     public IcqSearchOptionsBuilder() {
+        this(0);
+    }
+
+    public IcqSearchOptionsBuilder(long searchId) {
+        super(searchId);
         match = new StringBuilder();
     }
 
     @Override
     public void keyword(String option) {
-        appendOption("keyword", option);
+        if(appendOption("keyword", option)) {
+            keyword = option;
+        }
+    }
+
+    public String getKeyword() {
+        return keyword;
     }
 
     @Override
@@ -64,18 +77,20 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
         }
     }
 
-    private void appendOption(String optionName, String optionValue) {
+    private boolean appendOption(String optionName, String optionValue) {
         if (TextUtils.isEmpty(optionValue)) {
-            return;
+            return false;
         }
         try {
             if (match.length() > 0) {
                 match.append(',');
             }
             match.append(optionName).append('=').append(StringUtil.urlEncode(optionValue));
+            return true;
         } catch (UnsupportedEncodingException ignored) {
             // Nothing to be done in this case. Really sorry.
         }
+        return false;
     }
 
     @Override
@@ -85,6 +100,11 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
 
     @Override
     public boolean equals(Object o) {
-        return TextUtils.equals(toString(), o.toString());
+        if(o != null && o instanceof SearchOptionsBuilder) {
+            SearchOptionsBuilder builder = (SearchOptionsBuilder) o;
+            return (getSearchId() == builder.getSearchId()) &&
+                    TextUtils.equals(toString(), ((Object) builder).toString());
+        }
+        return false;
     }
 }

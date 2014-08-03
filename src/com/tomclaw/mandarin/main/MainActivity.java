@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
 
 public class MainActivity extends ChiefActivity {
 
@@ -102,7 +103,11 @@ public class MainActivity extends ChiefActivity {
     }
 
     private void checkForCrashes() {
-        CrashManager.register(this, "16283e6bea480850d8f4c1b41d7a74be");
+        CrashManager.register(this, "16283e6bea480850d8f4c1b41d7a74be", new CrashManagerListener() {
+            public boolean shouldAutoUploadCrashes() {
+                return true;
+            }
+        });
     }
 
     @Override

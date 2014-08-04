@@ -16,6 +16,8 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -42,10 +44,17 @@ public class RosterActivity extends ChiefActivity {
 
         setContentView(R.layout.roster_activity);
 
-        // Alphabetical list.
+        // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
-        final RosterAlphabetAdapter generalAdapter =
-                new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
+        final RosterStickyAdapter generalAdapter;
+        // Checking for adapter mode.
+        String rosterMode = PreferenceHelper.getRosterMode(this);
+        if(TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
+            generalAdapter = new RosterGroupAdapter(this, getLoaderManager(), getFilterValue());
+        } else {
+            generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
+        }
+        // Accepting adapter.
         generalList.setAdapter(generalAdapter);
         generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

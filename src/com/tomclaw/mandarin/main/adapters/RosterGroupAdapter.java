@@ -10,16 +10,19 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Solkin
- * Date: 13.10.13
- * Time: 17:44
- */
-public class RosterAlphabetAdapter extends RosterStickyAdapter {
+import java.util.HashMap;
+import java.util.Map;
 
-    public RosterAlphabetAdapter(Activity context, LoaderManager loaderManager, int filter) {
+/**
+ * Created by solkin on 04.08.14.
+ */
+public class RosterGroupAdapter extends RosterStickyAdapter {
+
+    private transient Map<String, Integer> groupsMap;
+
+    public RosterGroupAdapter(Activity context, LoaderManager loaderManager, int filter) {
         super(context, loaderManager, filter);
+        groupsMap = new HashMap<String, Integer>();
     }
 
     @Override
@@ -32,7 +35,7 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.header_text)).setText(String.valueOf(
-                Character.toUpperCase((char) cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX))));
+                cursor.getString(COLUMN_ROSTER_BUDDY_GROUP).toUpperCase()));
         return convertView;
     }
 
@@ -42,11 +45,18 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
+        String groupName = cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
+        Integer groupId = groupsMap.get(groupName);
+        if(groupId == null) {
+            groupId = groupsMap.size();
+            groupsMap.put(groupName, groupId);
+        }
+        return groupId;
     }
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
+        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_GROUP).andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_NICK);
     }
 }

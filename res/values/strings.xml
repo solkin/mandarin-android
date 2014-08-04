@@ -288,4 +288,9 @@
     <string name="defaultGroupName">Главная</string>
     <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
     <string name="age_any">Любой</string>
+
+    <string name="group_by_alphabet">По алфавиту</string>
+    <string name="group_by_groups">По группам</string>
+    <string name="pref_title_roster_mode">Отображение контактов</string>
+    <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
 </resources>

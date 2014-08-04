@@ -53,6 +53,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_ignore_unknown, R.bool.pref_ignore_unknown_default);
     }
 
+    public static String getRosterMode(Context context) {
+        return getStringPreference(context, R.string.pref_roster_mode, R.string.pref_roster_mode_default);
+    }
+
     public static Uri getNotificationUri(Context context) {
         String uriValue = getStringPreference(context, R.string.pref_notification_sound,
                 R.string.pref_notification_sound_default);

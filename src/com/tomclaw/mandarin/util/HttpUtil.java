@@ -7,7 +7,6 @@ import org.apache.http.HttpStatus;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -45,8 +44,7 @@ public class HttpUtil {
             }
             builder.append(pair.first)
                     .append(WimConstants.EQUAL)
-                    .append(URLEncoder.encode(pair.second, UTF8_ENCODING)
-                            .replace("+", "%20"));
+                    .append(StringUtil.urlEncode(pair.second));
         }
         return builder.toString();
     }

@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main;
+package com.tomclaw.mandarin.main.tasks;
 
 import android.content.Context;
 import android.os.RemoteException;
@@ -7,6 +7,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.main.ChiefActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;

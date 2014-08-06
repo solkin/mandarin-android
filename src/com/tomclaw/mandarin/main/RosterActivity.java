@@ -1,22 +1,31 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SearchView;
+import android.view.*;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
+import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
+import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
+import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,10 +44,17 @@ public class RosterActivity extends ChiefActivity {
 
         setContentView(R.layout.roster_activity);
 
-        // Alphabetical list.
+        // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
-        final RosterAlphabetAdapter generalAdapter =
-                new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
+        final RosterStickyAdapter generalAdapter;
+        // Checking for adapter mode.
+        String rosterMode = PreferenceHelper.getRosterMode(this);
+        if(TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
+            generalAdapter = new RosterGroupAdapter(this, getLoaderManager(), getFilterValue());
+        } else {
+            generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
+        }
+        // Accepting adapter.
         generalList.setAdapter(generalAdapter);
         generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -60,6 +76,7 @@ public class RosterActivity extends ChiefActivity {
                 }
             }
         });
+        generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());
 
         final ActionBar mActionBar = getActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
@@ -110,6 +127,12 @@ public class RosterActivity extends ChiefActivity {
                 onBackPressed();
                 return true;
             }
+            case R.id.menu_add_buddy: {
+                SearchAccountCallback callback = new SearchAccountCallback(this);
+                AccountProviderTask task = new AccountProviderTask(this, callback);
+                TaskExecutor.getInstance().execute(task);
+                return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -120,14 +143,6 @@ public class RosterActivity extends ChiefActivity {
         Intent intent = new Intent(this, MainActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-    }
-
-    @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
     }
 
     @Override
@@ -142,5 +157,160 @@ public class RosterActivity extends ChiefActivity {
     private void setFilterValue(int filterValue) {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
                 .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
+    }
+
+    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+
+        private SelectionHelper<Integer, Integer> selectionHelper;
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            selectionHelper.onStateChanged(position, (int) id, checked);
+            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+            updateMenu(mode, mode.getMenu());
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create selection helper to store selected messages.
+            selectionHelper = new SelectionHelper<Integer, Integer>();
+            updateMenu(mode, menu);
+            return true;
+        }
+
+        private void updateMenu(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            // Assumes that you have menu resources
+            menu.clear();
+            int menuRes = (selectionHelper.getSelectedCount() > 1) ?
+                    R.menu.roster_edit_multiple_menu : R.menu.roster_edit_single_menu;
+            inflater.inflate(menuRes, menu);
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.rename_buddy_menu: {
+                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
+                    renameSelectedBuddy(buddyDbId);
+                    break;
+                }
+                case R.id.remove_buddy_menu: {
+                    removeSelectedBuddies(selectionHelper.getSelectedIds());
+                    break;
+                }
+            }
+            mode.finish();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            selectionHelper.clearSelection();
+        }
+
+        private void renameSelectedBuddy(final int buddyDbId) {
+            BuddyCursor buddyCursor = null;
+            try {
+                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(), buddyDbId);
+                final int accountDbId = buddyCursor.getBuddyAccountDbId();
+                final String buddyId = buddyCursor.getBuddyId();
+                final String buddyPreviousNick = buddyCursor.getBuddyNick();
+                final boolean isPersistent = (buddyCursor.getBuddyGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
+
+                View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
+
+                final EditText buddyNameText = (EditText) view.findViewById(R.id.buddy_name_edit);
+                buddyNameText.setText(buddyPreviousNick);
+                buddyNameText.setSelection(buddyNameText.length());
+
+                AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
+                        .setTitle(R.string.edit_buddy_name_title)
+                        .setView(view)
+                        .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String buddySatisfiedNick = buddyNameText.getText().toString();
+                                // Renaming only if buddy nicks are different.
+                                if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
+                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId,
+                                            buddySatisfiedNick, isPersistent);
+                                    if (isPersistent) {
+                                        RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
+                                                buddyPreviousNick, buddySatisfiedNick);
+                                    }
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.not_now, null)
+                        .create();
+                alertDialog.show();
+            } catch (BuddyNotFoundException e) {
+                Toast.makeText(RosterActivity.this, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
+            } finally {
+                if (buddyCursor != null) {
+                    buddyCursor.close();
+                }
+            }
+        }
+
+        private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
+            final Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
+            boolean isMultiple = buddyDbIds.size() > 1;
+            String message;
+            if (isMultiple) {
+                message = getString(R.string.remove_buddies_message, buddyDbIds.size());
+            } else {
+                message = getString(R.string.remove_buddy_message);
+            }
+            AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
+                    .setTitle(isMultiple ? R.string.remove_buddies_title : R.string.remove_buddy_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
+                            TaskExecutor.getInstance().execute(task);
+                        }
+                    })
+                    .setNegativeButton(R.string.do_not_remove, null)
+                    .create();
+            alertDialog.show();
+        }
+    }
+
+    private class SearchAccountCallback implements AccountProviderTask.AccountProviderCallback {
+
+        WeakReference<Context> weakContext;
+
+        private SearchAccountCallback(Context context) {
+            this.weakContext = new WeakReference<Context>(context);
+        }
+
+        @Override
+        public void onAccountSelected(int accountDbId) {
+            Log.d(Settings.LOG_TAG, "Account selected: " + accountDbId);
+            Context context = weakContext.get();
+            if (context != null) {
+                Intent intent = new Intent(context, SearchActivity.class);
+                intent.putExtra(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                context.startActivity(intent);
+            }
+        }
+
+        @Override
+        public void onNoActiveAccounts() {
+            Log.d(Settings.LOG_TAG, "No active accounts.");
+            Context context = weakContext.get();
+            if (context != null) {
+                Toast.makeText(context, R.string.no_active_accounts, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

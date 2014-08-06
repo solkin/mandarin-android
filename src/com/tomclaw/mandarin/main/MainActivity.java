@@ -19,6 +19,8 @@ import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.SelectionHelper;
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
 
 public class MainActivity extends ChiefActivity {
 
@@ -95,6 +97,20 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        checkForCrashes();
+    }
+
+    private void checkForCrashes() {
+        CrashManager.register(this, "16283e6bea480850d8f4c1b41d7a74be", new CrashManagerListener() {
+            public boolean shouldAutoUploadCrashes() {
+                return true;
+            }
+        });
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -166,15 +182,6 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
-        Log.d(Settings.LOG_TAG, "onCoreServiceDown");
-    }
-
-    @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
         getActionBar().setTitle(title);
@@ -198,8 +205,7 @@ public class MainActivity extends ChiefActivity {
     }
 
     public void openSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void rateApplication() {

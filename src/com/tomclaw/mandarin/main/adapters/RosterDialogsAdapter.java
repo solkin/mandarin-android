@@ -26,7 +26,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.main.BuddyInfoTask;
+import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,7 +79,9 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             adapterCallback.onRosterUpdate();
         }
         return new CursorLoader(context,
-                Settings.BUDDY_RESOLVER_URI, null, GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'",
+                Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'" + " AND "
+                        + GlobalProvider.ROSTER_BUDDY_OPERATION + "!=" + GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE,
                 null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 2 ELSE 0 END) DESC, "
                 + "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
                 + " THEN 0 ELSE 1 END" + ") DESC, "

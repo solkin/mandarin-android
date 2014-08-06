@@ -34,6 +34,20 @@
   <init>(...);
 }
 
+-keep public class javax.net.ssl.**
+-keepclassmembers public class javax.net.ssl.** {
+  *;
+}
+
+-keep public class org.apache.http.**
+-keepclassmembers public class org.apache.http.** {
+  *;
+}
+
+-keepclassmembers class net.hockeyapp.android.UpdateFragment {
+  *;
+}
+
 -optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
 -optimizationpasses 5
 -allowaccessmodification

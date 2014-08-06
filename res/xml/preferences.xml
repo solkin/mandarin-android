@@ -32,6 +32,13 @@
                 android:summary="@string/pref_summary_ignore_unknown"
                 android:title="@string/pref_title_ignore_unknown"
                 android:defaultValue="@bool/pref_ignore_unknown_default"/>
+        <ListPreference
+                android:key="@string/pref_roster_mode"
+                android:summary="@string/pref_summary_roster_mode"
+                android:title="@string/pref_title_roster_mode"
+                android:defaultValue="@string/pref_roster_mode_default"
+                android:entries="@array/pref_roster_mode_strings"
+                android:entryValues="@array/pref_roster_mode_values" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_chat_title"

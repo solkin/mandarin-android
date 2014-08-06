@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main;
+package com.tomclaw.mandarin.main.tasks;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
+import com.tomclaw.mandarin.main.AccountInfoActivity;
 
 /**
  * Created by solkin on 12/26/13.

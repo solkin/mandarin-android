@@ -192,7 +192,7 @@ public class HistoryDispatcher {
                     NotificationCompat.Style style;
                     // Checking for required style.
                     if (multipleSenders) {
-                        title = context.getString(R.string.count_new_messages, unread);
+                        title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
                         content = nickNamesBuilder.toString();
                         replyIcon = R.drawable.social_reply_all;
                         inboxStyle.setBigContentTitle(title);

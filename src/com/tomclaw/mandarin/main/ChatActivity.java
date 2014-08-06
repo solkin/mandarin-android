@@ -24,6 +24,7 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
+import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
@@ -443,6 +444,11 @@ public class ChatActivity extends ChiefActivity {
 
         int buddyDbId = getIntentBuddyDbId(intent);
 
+        // Checking for buddy db id is really correct.
+        if (buddyDbId == -1) {
+            return;
+        }
+
         startTitleObservation(buddyDbId);
 
         if (chatHistoryAdapter != null) {
@@ -482,15 +488,6 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
-        // TODO: must be implemented.
-    }
-
-    @Override
     public void onCoreServiceIntent(Intent intent) {
         // TODO: must be implemented.
     }
@@ -499,9 +496,9 @@ public class ChatActivity extends ChiefActivity {
         Bundle bundle = intent.getExtras();
         int buddyDbId = -1;
         // Checking for bundle condition.
-        if (bundle != null && bundle.containsKey(GlobalProvider.HISTORY_BUDDY_DB_ID)) {
+        if (bundle != null) {
             // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         }
         return buddyDbId;
     }

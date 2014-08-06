@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +23,7 @@ import java.util.Collections;
  * Date: 4/5/13
  * Time: 7:57 PM
  */
-public class AccountInfoActivity extends BuddyInfoActivity {
+public class AccountInfoActivity extends AbstractInfoActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +90,11 @@ public class AccountInfoActivity extends BuddyInfoActivity {
             bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             bar.setTitle(R.string.account_info);
         }
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.account_info_activity;
     }
 
     @Override

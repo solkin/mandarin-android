@@ -2,8 +2,12 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 
 /**
@@ -16,6 +20,14 @@ public class AboutActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.about_activity);
+
+        TextView appVersionView = (TextView) findViewById(R.id.app_version);
+        PackageManager manager = getPackageManager();
+        try {
+            PackageInfo info = manager.getPackageInfo(getPackageName(), 0);
+            appVersionView.setText(getString(R.string.app_version, info.versionName, info.versionCode));
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -36,14 +48,6 @@ public class AboutActivity extends ChiefActivity {
     @Override
     public void onBackPressed() {
         finish();
-    }
-
-    @Override
-    public void onCoreServiceReady() {
-    }
-
-    @Override
-    public void onCoreServiceDown() {
     }
 
     @Override

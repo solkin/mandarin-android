@@ -3,12 +3,15 @@ package com.tomclaw.mandarin.util;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -22,7 +25,7 @@ public class StringUtil {
 
     public static final int DEFAULT_ALPHABET_INDEX = '?';
 
-    private static final String NUMERIC_REGEXP = "^[0-9]*$";
+    public static final String UTF8_ENCODING = "UTF-8";
 
     private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
@@ -39,7 +42,7 @@ public class StringUtil {
     }
 
     public static boolean isNumeric(String value) {
-        return value.matches(NUMERIC_REGEXP);
+        return !TextUtils.isEmpty(value) && TextUtils.isDigitsOnly(value);
     }
 
     public static String getHmacSha256Base64(String key, String data)
@@ -67,8 +70,10 @@ public class StringUtil {
 
     public static String fixCyrillicSymbols(String string) {
         String fixed = string;
-        fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
-        fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
+        if (!TextUtils.isEmpty(string)) {
+            fixed = replaceMappedSymbols(fixed, MAPPING_CP1250, MAPPING_ORIGIN);
+            fixed = replaceMappedSymbols(fixed, MAPPING_CP1252, MAPPING_ORIGIN);
+        }
         return fixed;
     }
 
@@ -85,5 +90,23 @@ public class StringUtil {
             builder.append(stringChar);
         }
         return builder.toString();
+    }
+
+    public static String urlEncode(String string) throws UnsupportedEncodingException {
+        return URLEncoder.encode(string, UTF8_ENCODING).replace("+", "%20");
+    }
+
+    public static String appendIfNotEmpty(String where, String what, String divider) {
+        if (!StringUtil.isEmptyOrWhitespace(what)) {
+            if (!StringUtil.isEmptyOrWhitespace(where)) {
+                where += divider;
+            }
+            where += what;
+        }
+        return where;
+    }
+
+    public static boolean isEmptyOrWhitespace(String string) {
+        return TextUtils.isEmpty(string) || TextUtils.isEmpty(string.trim());
     }
 }

@@ -13,4 +13,22 @@
         <item>@string/filter_show_online_only</item>
     </string-array>
 
+    <string-array name="gender_spinner_strings">
+        <item>@string/gender_female</item>
+        <item>@string/gender_male</item>
+        <item>@string/gender_any</item>
+    </string-array>
+
+    <string-array name="pref_roster_mode_strings">
+        <item>@string/group_by_alphabet</item>
+        <item>@string/group_by_groups</item>
+    </string-array>
+
+    <string-array name="pref_roster_mode_values">
+        <item>@string/roster_mode_alphabet</item>
+        <item>@string/roster_mode_groups</item>
+    </string-array>
+
+    <string name="roster_mode_alphabet">alphabet</string>
+    <string name="roster_mode_groups">groups</string>
 </resources>

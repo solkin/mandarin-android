@@ -24,7 +24,7 @@ import com.tomclaw.mandarin.util.StringUtil;
 /**
  * Created by solkin on 12/26/13.
  */
-public abstract class AbstractInfoActivity extends ChiefActivity {
+public abstract class AbstractInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     private int accountDbId;
     private String accountType;
@@ -35,10 +35,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
     private String firstName;
     private String lastName;
 
+    private TextView buddyNickView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Settings.LOG_TAG, "BuddyInfoActivity onCreate");
+        Log.d(Settings.LOG_TAG, "AbstractInfoActivity onCreate");
+        // We want to receive service state notifications.
+        addCoreServiceListener(this);
 
         // Obtain and check basic info about interested buddy.
         Intent intent = getIntent();
@@ -62,13 +66,13 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
         String buddyStatusMessage = intent.getStringExtra(BuddyInfoRequest.BUDDY_STATUS_MESSAGE);
 
         // Initialize info activity layout.
-        setContentView(R.layout.buddy_info_activity);
+        setContentView(getLayout());
 
         TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
         buddyIdView.setText(getBuddyId());
 
-        TextView buddyNickView = (TextView) findViewById(R.id.buddy_nick);
-        buddyNickView.setText(getBuddyNick());
+        buddyNickView = (TextView) findViewById(R.id.buddy_nick);
+        updateBuddyNick();
 
         if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
             int statusImageResource = StatusUtil.getStatusDrawable(getAccountType(), getBuddyStatus());
@@ -102,7 +106,29 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
     }
 
+    protected abstract int getLayout();
+
+    public String getBuddyName() {
+        return buddyNickView.getText().toString();
+    }
+
+    private void updateBuddyNick() {
+        String nick = getBuddyName();
+        if (TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
+            nick = getBuddyNick();
+            if (TextUtils.isEmpty(nick)) {
+                nick = StringUtil.appendIfNotEmpty(nick, getFirstName(), "");
+                nick = StringUtil.appendIfNotEmpty(nick, getLastName(), " ");
+            }
+        }
+        buddyNickView.setText(nick);
+    }
+
     public abstract void onBuddyInfoRequestError();
+
+    private void hideProgressBar() {
+        findViewById(R.id.progress_bar).setVisibility(View.GONE);
+    }
 
     @Override
     public void onCoreServiceReady() {
@@ -125,15 +151,15 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
     public void onCoreServiceIntent(Intent intent) {
         // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
-        Bundle bundle = intent.getExtras();
-        if (isInfoPresent && bundle != null) {
-            int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-            String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
-            Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
-            // Checking for this is info we need.
-            if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
-                // Hide the progress bar.
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+        int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+        String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
+        Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
+        // Checking for this is info we need.
+        if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
+            // Hide the progress bar.
+            hideProgressBar();
+            if (isInfoPresent) {
+                Bundle bundle = intent.getExtras();
                 // Show info blocks.
                 findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
@@ -154,21 +180,22 @@ public abstract class AbstractInfoActivity extends ChiefActivity {
                             }
                             // Correct user-defined values for sharing.
                             if (Integer.valueOf(key) == R.id.friendly_name) {
-                                buddyNick = value;
+                                setBuddyNick(value);
                             } else if (Integer.valueOf(key) == R.id.first_name) {
-                                firstName = value;
+                                setFirstName(value);
                             } else if (Integer.valueOf(key) == R.id.last_name) {
-                                lastName = value;
+                                setLastName(value);
                             }
                         }
                     }
                 }
+                updateBuddyNick();
             } else {
-                Log.d(Settings.LOG_TAG, "Wrong buddy info!");
+                Log.d(Settings.LOG_TAG, "No info case :(");
+                onBuddyInfoRequestError();
             }
         } else {
-            Log.d(Settings.LOG_TAG, "No info case :(");
-            onBuddyInfoRequestError();
+            Log.d(Settings.LOG_TAG, "Wrong buddy info!");
         }
     }
 

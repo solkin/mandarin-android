@@ -81,6 +81,11 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder andOrder() {
+        sort.append(", ");
+        return this;
+    }
+
     public QueryBuilder ascending(String column) {
         return sortOrder(column, " ASC");
     }

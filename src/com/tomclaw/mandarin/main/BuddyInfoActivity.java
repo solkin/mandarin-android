@@ -1,15 +1,20 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
@@ -19,6 +24,8 @@ import com.tomclaw.mandarin.util.StringUtil;
  * Time: 7:57 PM
  */
 public class BuddyInfoActivity extends AbstractInfoActivity {
+
+    private ViewSwitcher buttonSwitcher;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,35 +63,66 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             bar.setTitle(R.string.buddy_info);
         }
+        buttonSwitcher = (ViewSwitcher) findViewById(R.id.button_switcher);
+        Button addBuddyButton = (Button) findViewById(R.id.add_buddy_button);
+        Button openDialogButton = (Button) findViewById(R.id.open_dialog_button);
+
+        addBuddyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addBuddy();
+            }
+        });
+        openDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
+
+        boolean buddyExists = QueryHelper.checkBuddy(getContentResolver(), getAccountDbId(), getBuddyId());
+        if (buddyExists) {
+            buttonSwitcher.setAnimateFirstView(false);
+            buttonSwitcher.showNext();
+        }
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.buddy_info_activity;
     }
 
     public void onBuddyInfoRequestError() {
         Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
     }
 
+    private void addBuddy() {
+        AddBuddyTask addBuddyTask = new AddBuddyTask(this, getAccountDbId(),
+                getBuddyId(), getBuddyName(), getAvatarHash());
+        TaskExecutor.getInstance().execute(addBuddyTask);
+    }
+
+    private void openDialog() {
+        TaskExecutor.getInstance().execute(new OpenDialogTask(this));
+    }
+
     private String getShareString() {
-        StringBuilder shareString = new StringBuilder();
+        String shareString = "";
         // Checking and attaching first and last name.
-        if (!TextUtils.isEmpty(getFirstName())) {
-            shareString.append(getFirstName()).append(" ");
-        }
-        if (!TextUtils.isEmpty(getLastName())) {
-            shareString.append(getLastName()).append(" ");
-        }
+        shareString = StringUtil.appendIfNotEmpty(shareString, getFirstName(), "");
+        shareString = StringUtil.appendIfNotEmpty(shareString, getLastName(), " ");
         // Strong checking for buddy nick.
-        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId()))) {
-            if (TextUtils.isEmpty(shareString)) {
-                shareString.append(getBuddyNick()).append(" ");
-            } else {
-                shareString.append("(").append(getBuddyNick()).append(") ");
+        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId())) &&
+                !TextUtils.equals(shareString, getBuddyNick())) {
+            String buddyNick = getBuddyNick();
+            if (!TextUtils.isEmpty(shareString)) {
+                buddyNick = "(" + buddyNick + ")";
             }
+            shareString = StringUtil.appendIfNotEmpty(shareString, buddyNick, " ");
         }
-        // Something appended? Appending dash.
-        if (!TextUtils.isEmpty(shareString)) {
-            shareString.append("- ");
-        }
-        shareString.append(getBuddyId());
-        return shareString.toString();
+        // Appending user id.
+        shareString = StringUtil.appendIfNotEmpty(shareString, getBuddyId(), " - ");
+        return shareString;
     }
 
     private Intent createShareIntent() {
@@ -92,5 +130,82 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, getShareString());
         return Intent.createChooser(shareIntent, getString(R.string.share_buddy_info_via));
+    }
+
+    private class AddBuddyTask extends WeakObjectTask<Context> {
+
+        private int accountDbId;
+        private String buddyId;
+        private String buddyNick;
+        private String avatarHash;
+
+        private AddBuddyTask(Context context, int accountDbId, String buddyId,
+                             String buddyNick, String avatarHash) {
+            super(context);
+            this.accountDbId = accountDbId;
+            this.buddyId = buddyId;
+            this.buddyNick = buddyNick;
+            this.avatarHash = avatarHash;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                // Default adding attributes. May be corrected.
+                String accountType = QueryHelper.getAccountType(contentResolver, accountDbId);
+                long updateTime = System.currentTimeMillis();
+                String groupName = context.getString(R.string.defaultGroupName);
+                int groupId = 0;
+                String authorizationMsg = context.getString(R.string.authorizationMsg);
+                // Buddy adding procedure.
+                QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
+                QueryHelper.replaceOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
+                        groupId, groupName, buddyId, buddyNick, avatarHash);
+                RequestHelper.requestAdd(contentResolver, accountDbId, buddyId, groupName, authorizationMsg);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            buttonSwitcher.showNext();
+        }
+    }
+
+    private class OpenDialogTask extends WeakObjectTask<Context> {
+
+        private int buddyDbId;
+
+        public OpenDialogTask(Context object) {
+            super(object);
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            buddyDbId = QueryHelper.getBuddyDbId(getContentResolver(), getAccountDbId(), getBuddyId());
+            // Trying to open dialog with this buddy.
+            QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+        }
+
+        @Override
+        public void onSuccessMain() {
+            Context context = getWeakObject();
+            if (context != null) {
+                Intent intent = new Intent(context, ChatActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            Context context = getWeakObject();
+            if (context != null) {
+                Toast.makeText(context, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
+                buttonSwitcher.showPrevious();
+            }
+        }
     }
 }

@@ -36,17 +36,17 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="smileys-mandarin" />
-    <orderEntry type="module" module-name="sticky-list-headers" />
     <orderEntry type="module-library">
-      <library name="Crashlytics">
+      <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/crashlytics.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/HockeySDK-3.0.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="smileys-mandarin" />
+    <orderEntry type="module" module-name="sticky-list-headers" />
   </component>
 </module>
 

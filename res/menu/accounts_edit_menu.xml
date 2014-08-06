@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-            android:id="@+id/remove_account_menu"
-            android:icon="@drawable/content_discard"
-            android:showAsAction="ifRoom|withText"
-            android:title="@string/remove_account">
-    </item>
+    <item android:id="@+id/remove_account_menu"
+          android:icon="@drawable/content_discard"
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/remove_account"/>
 </menu>

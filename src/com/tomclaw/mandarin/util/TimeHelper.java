@@ -36,6 +36,12 @@ public class TimeHelper {
         return getTimeFormat().format(timestamp);
     }
 
+    public static int getYears(long timeStamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis() - timeStamp);
+        return calendar.get(Calendar.YEAR) - 1970;
+    }
+
     public static Calendar clearTimes(Calendar c) {
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);

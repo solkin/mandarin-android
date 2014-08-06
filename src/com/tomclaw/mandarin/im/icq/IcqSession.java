@@ -426,7 +426,7 @@ public class IcqSession {
                     String sendReqId = imState.optString(SEND_REQ_ID);
                     for (int i = 0; i < IM_STATES.length; i++) {
                         if (state.equals(IM_STATES[i])) {
-                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), sendReqId, i);
+                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), i, sendReqId, msgId);
                             break;
                         }
                     }
@@ -437,10 +437,6 @@ public class IcqSession {
         } else if (eventType.equals(PRESENCE)) {
             try {
                 String buddyId = eventData.getString(AIM_ID);
-                String buddyNick = eventData.optString(FRIENDLY);
-                if (TextUtils.isEmpty(buddyNick)) {
-                    buddyNick = eventData.getString(DISPLAY_ID);
-                }
 
                 String buddyStatus = eventData.getString(STATE);
                 String moodIcon = eventData.optString(MOOD_ICON);
@@ -450,7 +446,6 @@ public class IcqSession {
                 int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                 String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
-                String buddyType = eventData.getString(USER_TYPE);
                 String buddyIcon = eventData.optString(BUDDY_ICON);
 
                 long lastSeen = eventData.optLong(LAST_SEEN, -1);

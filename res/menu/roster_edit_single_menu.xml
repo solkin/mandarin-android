@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/rename_buddy_menu"
+          android:icon="@drawable/content_edit"
+          android:showAsAction="ifRoom"
+          android:title="@string/rename_buddy_short"/>
+    <item android:id="@+id/remove_buddy_menu"
+          android:icon="@drawable/content_discard"
+          android:showAsAction="ifRoom"
+          android:title="@string/remove_buddy_short"/>
+</menu>

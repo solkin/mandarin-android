@@ -26,4 +26,11 @@
     <attr name="separator_navbar" format="color|reference"/>
     <attr name="button_navbar_text" format="color|reference"/>
     <attr name="button_navbar_background" format="color|reference"/>
+
+    <declare-styleable name="AgePickerView">
+        <attr name="ageMin" format="integer"/>
+        <attr name="ageMax" format="integer"/>
+        <attr name="valueMin" format="integer"/>
+        <attr name="valueMax" format="integer"/>
+    </declare-styleable>
 </resources>

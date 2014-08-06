@@ -44,7 +44,7 @@
                     android:id="@+id/inc_bubble_back">
                 <TextView
                         style="@style/Chat.Message"
-                        android:id="@+id/inc_text" />
+                        android:id="@+id/inc_text"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -94,8 +94,8 @@
                           android:id="@+id/out_bubble_back"
                           android:layout_gravity="right">
                 <TextView
-                          style="@style/Chat.Message"
-                          android:id="@+id/out_text" />
+                        style="@style/Chat.Message"
+                        android:id="@+id/out_text"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -108,6 +108,6 @@
         <TextView
                 style="@style/Chat.Message"
                 android:text="@string/error_bubble"
-                android:id="@+id/error_text" />
+                android:id="@+id/error_text"/>
     </LinearLayout>
 </LinearLayout>

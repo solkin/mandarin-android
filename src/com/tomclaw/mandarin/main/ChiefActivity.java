@@ -6,13 +6,13 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.Settings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,16 +30,17 @@ public abstract class ChiefActivity extends Activity {
     private boolean isCoreServiceReady;
     private boolean isDarkTheme;
 
+    private List<CoreServiceListener> coreServiceListeners;
+
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Settings.LOG_TAG, "ChiefActivity onCreate");
-        // Release all reports.
-        Crashlytics.start(this);
-
         super.onCreate(savedInstanceState);
+
+        coreServiceListeners = new ArrayList<CoreServiceListener>();
 
         isDarkTheme = PreferenceHelper.isDarkTheme(this);
         setTheme(isDarkTheme ? R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
@@ -202,8 +203,8 @@ public abstract class ChiefActivity extends Activity {
      */
     private void coreServiceReady() {
         if (!isCoreServiceReady) {
-            onCoreServiceReady();
             isCoreServiceReady = true;
+            notifyCoreServiceReady();
         }
     }
 
@@ -212,20 +213,19 @@ public abstract class ChiefActivity extends Activity {
      */
     private void coreServiceDown() {
         if (isCoreServiceReady) {
-            onCoreServiceDown();
             isCoreServiceReady = false;
+            notifyCoreServiceDown();
         }
     }
 
     /**
-     * Activity notification, service if now ready
+     * Returns current service state
+     *
+     * @return boolean - service state
      */
-    public abstract void onCoreServiceReady();
-
-    /**
-     * Activity notification, service going down
-     */
-    public abstract void onCoreServiceDown();
+    public boolean isCoreServiceReady() {
+        return isCoreServiceReady;
+    }
 
     /**
      * Any message from service for this activity
@@ -236,5 +236,38 @@ public abstract class ChiefActivity extends Activity {
 
     public final ServiceInteraction getServiceInteraction() {
         return serviceInteraction;
+    }
+
+    public void addCoreServiceListener(CoreServiceListener listener) {
+        coreServiceListeners.add(listener);
+    }
+
+    public void removeCoreServiceListener(CoreServiceListener listener) {
+        coreServiceListeners.remove(listener);
+    }
+
+    private void notifyCoreServiceReady() {
+        for (CoreServiceListener listener : coreServiceListeners) {
+            listener.onCoreServiceReady();
+        }
+    }
+
+    private void notifyCoreServiceDown() {
+        for (CoreServiceListener listener : coreServiceListeners) {
+            listener.onCoreServiceDown();
+        }
+    }
+
+    public interface CoreServiceListener {
+
+        /**
+         * Activity notification, service if now ready
+         */
+        public void onCoreServiceReady();
+
+        /**
+         * Activity notification, service going down
+         */
+        public void onCoreServiceDown();
     }
 }

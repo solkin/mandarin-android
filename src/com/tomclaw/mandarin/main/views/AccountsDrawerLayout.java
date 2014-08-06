@@ -329,7 +329,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                             statusSpinner.getSelectedItemPosition());
                     String statusTitleString = StatusUtil.getStatusTitle(accountType, selectedStatusIndex);
                     String statusMessageString = statusMessage.getText().toString();
-                    // Trying to connect account.
+                    // Trying to update account status.
                     activity.getServiceInteraction().updateAccountStatus(
                             accountType, userId, selectedStatusIndex,
                             statusTitleString, statusMessageString);

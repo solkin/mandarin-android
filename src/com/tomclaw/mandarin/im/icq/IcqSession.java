@@ -426,7 +426,7 @@ public class IcqSession {
                     String sendReqId = imState.optString(SEND_REQ_ID);
                     for (int i = 0; i < IM_STATES.length; i++) {
                         if (state.equals(IM_STATES[i])) {
-                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), sendReqId, i);
+                            QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), i, sendReqId, msgId);
                             break;
                         }
                     }

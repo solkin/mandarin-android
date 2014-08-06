@@ -408,9 +408,59 @@ public class QueryHelper {
         }
     }
 
-    public static void updateMessageState(ContentResolver contentResolver, String cookie, int messageState) {
+    /**
+     * Will append some more cookie to message.
+     * @param contentResolver
+     * @param cookie
+     * @param cookiesToAdd
+     */
+    public static void addMessageCookie(ContentResolver contentResolver, String cookie, String... cookiesToAdd) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+            if (cursor != null && cursor.moveToFirst()) {
+                String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
+                for(String cookieAdd : cookiesToAdd) {
+                    cookies += " " + cookieAdd;
+                }
+                // Plain message modify by cookies.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
+                queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public static void updateMessageState(ContentResolver contentResolver, int messageState, String... cookies) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        boolean isNotFirstCookie = false;
+        queryBuilder.startComplexExpression();
+        for (String cookie : cookies) {
+            if (TextUtils.isEmpty(cookie)) {
+                continue;
+            }
+            if (isNotFirstCookie) {
+                queryBuilder.or();
+            } else {
+                isNotFirstCookie = true;
+            }
+            queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        }
+        queryBuilder.finishComplexExpression();
+        if (!isNotFirstCookie) {
+            // No one cookie appended.
+            return;
+        }
+        // If this is not unknown or error state, we will update only incrementing state.
+        if (messageState > 1) {
+            queryBuilder.and().less(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
+        }
         // Plain message modify by cookies.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);

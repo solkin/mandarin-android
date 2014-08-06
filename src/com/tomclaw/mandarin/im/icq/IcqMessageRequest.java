@@ -46,10 +46,14 @@ public class IcqMessageRequest extends WimRequest {
             String requestId = responseObject.getString(REQUEST_ID);
             JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
             String state = dataObject.getString(STATE);
+            String msgId = dataObject.getString(MSG_ID);
+            // This will mark message with server-side msgId
+            // to provide message stated in fetch events.
+            QueryHelper.addMessageCookie(getAccountRoot().getContentResolver(), requestId, msgId);
             // Checking for message state.
             for (int i = 0; i < IM_STATES.length; i++) {
                 if (state.equals(IM_STATES[i])) {
-                    QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), requestId, i);
+                    QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), i, requestId, msgId);
                     break;
                 }
             }
@@ -57,7 +61,7 @@ public class IcqMessageRequest extends WimRequest {
         } else if (statusCode >= 460 && statusCode <= 606) {
             // Target error. Mark message as error and delete request from pending operations.
             String requestId = responseObject.getString(REQUEST_ID);
-            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), requestId, 1);
+            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), 1, requestId);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or McDonald's.

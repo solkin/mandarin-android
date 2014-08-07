@@ -111,25 +111,9 @@ public class ChatActivity extends ChiefActivity {
         chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
-        String enteredText;
-        try {
-            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
-        } catch (BuddyNotFoundException ignored) {
-            enteredText = null;
-        }
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        if (!TextUtils.isEmpty(enteredText)) {
-            messageText.setText(enteredText);
-            messageText.setSelection(enteredText.length());
-        }
-        messageText.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                hidePopup();
-            }
-        });
+        setMessageTextFromDraft(buddyDbId);
         messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -370,7 +354,7 @@ public class ChatActivity extends ChiefActivity {
                 messageWatcher.stop();
                 setTypingSync(false);
             }
-            QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
+            saveMessageTextAsDraft();
         }
         buddyObserver.stop();
         super.onDestroy();
@@ -442,6 +426,9 @@ public class ChatActivity extends ChiefActivity {
         super.onNewIntent(intent);
         Log.d(Settings.LOG_TAG, "onNewIntent");
 
+        // Save currently entered text as draft before switching.
+        saveMessageTextAsDraft();
+
         int buddyDbId = getIntentBuddyDbId(intent);
 
         // Checking for buddy db id is really correct.
@@ -456,6 +443,8 @@ public class ChatActivity extends ChiefActivity {
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
         chatList.setAdapter(chatHistoryAdapter);
+
+        setMessageTextFromDraft(buddyDbId);
     }
 
     @Override
@@ -566,6 +555,32 @@ public class ChatActivity extends ChiefActivity {
         } catch (BuddyNotFoundException ignored) {
             Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
         }*/
+    }
+
+    private void setMessageTextFromDraft(int buddyDbId) {
+        String enteredText;
+        try {
+            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
+        } catch (BuddyNotFoundException ignored) {
+            enteredText = null;
+        }
+        if (!TextUtils.isEmpty(enteredText)) {
+            messageText.setText(enteredText);
+            messageText.setSelection(enteredText.length());
+        } else {
+            messageText.setText("");
+        }
+        messageText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                hidePopup();
+            }
+        });
+    }
+
+    private void saveMessageTextAsDraft() {
+        QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
     }
 
     private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {

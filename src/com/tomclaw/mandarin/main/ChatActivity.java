@@ -114,6 +114,13 @@ public class ChatActivity extends ChiefActivity {
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
         setMessageTextFromDraft(buddyDbId);
+        messageText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                hidePopup();
+            }
+        });
         messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -570,13 +577,6 @@ public class ChatActivity extends ChiefActivity {
         } else {
             messageText.setText("");
         }
-        messageText.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                hidePopup();
-            }
-        });
     }
 
     private void saveMessageTextAsDraft() {

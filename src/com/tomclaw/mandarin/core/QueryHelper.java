@@ -291,21 +291,6 @@ public class QueryHelper {
         modifyBuddies(contentResolver, buddyDbIds, contentValues);
     }
 
-    public static boolean checkBuddy(ContentResolver contentResolver, int accountDbId, String buddyId) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain specified buddy. If exist.
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE)
-                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Checking for cursor have at least one entry.
-        boolean buddyExists = cursor.moveToFirst();
-        // Closing cursor.
-        cursor.close();
-        return buddyExists;
-    }
-
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages, int buddyDbId,
                                      int messageType, String cookie, String messageText, boolean activateDialog)
             throws BuddyNotFoundException {
@@ -933,6 +918,17 @@ public class QueryHelper {
             buddyCursor.close();
         }
         throw new BuddyNotFoundException();
+    }
+
+    public static BuddyCursor getRosterBuddyCursor(ContentResolver contentResolver, int accountDbId, String buddyId)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified buddy. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE)
+                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
+        return getBuddyCursor(contentResolver, queryBuilder);
     }
 
     public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)

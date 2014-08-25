@@ -15,6 +15,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
@@ -80,10 +82,16 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             }
         });
 
-        boolean buddyExists = QueryHelper.checkBuddy(getContentResolver(), getAccountDbId(), getBuddyId());
-        if (buddyExists) {
-            buttonSwitcher.setAnimateFirstView(false);
-            buttonSwitcher.showNext();
+        try {
+            BuddyCursor buddyCursor = QueryHelper.getRosterBuddyCursor(getContentResolver(), getAccountDbId(), getBuddyId());
+            if(buddyCursor.getBuddyDialog()) {
+                buttonSwitcher.setVisibility(View.GONE);
+            } else {
+                buttonSwitcher.setAnimateFirstView(false);
+                buttonSwitcher.showNext();
+            }
+        } catch (BuddyNotFoundException ignored) {
+            // No buddy? Button will be ready to add buddy.
         }
     }
 

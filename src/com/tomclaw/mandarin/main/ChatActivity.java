@@ -233,10 +233,17 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void insertSmileyText(String smileyText) {
-        smileyText = " " + smileyText + " ";
+        String message = getMessageText();
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
-        String message = getMessageText();
+        // Checking for spaces needed on the left or right side of this smile.
+        if(selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
+            smileyText = " " + smileyText;
+        }
+        if(selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
+            smileyText += " ";
+        }
+        // Inserting smile into current message.
         message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
         messageText.setText(message);
         messageText.setSelection(selectionStart + smileyText.length());

@@ -42,7 +42,8 @@
                 android:layout_weight="1"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
                 android:maxLines="3"
-                android:imeOptions="actionSend"/>
+                android:imeOptions="actionSend"
+                android:minHeight="45dp"/>
         <ImageButton
                 android:layout_width="50dp"
                 android:layout_height="match_parent"

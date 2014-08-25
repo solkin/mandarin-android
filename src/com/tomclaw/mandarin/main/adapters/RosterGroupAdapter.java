@@ -34,8 +34,8 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        ((TextView) convertView.findViewById(R.id.header_text)).setText(String.valueOf(
-                cursor.getString(COLUMN_ROSTER_BUDDY_GROUP).toUpperCase()));
+        ((TextView) convertView.findViewById(R.id.header_text))
+                .setText(String.valueOf(cursor.getString(COLUMN_ROSTER_BUDDY_GROUP).toUpperCase()));
         return convertView;
     }
 
@@ -57,6 +57,6 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
         queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_GROUP).andOrder()
-                .ascending(GlobalProvider.ROSTER_BUDDY_NICK);
+                .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

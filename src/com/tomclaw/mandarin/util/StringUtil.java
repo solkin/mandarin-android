@@ -34,7 +34,7 @@ public class StringUtil {
     public static int getAlphabetIndex(String nickName) {
         for (int c = 0; c < nickName.length(); c++) {
             char character = nickName.charAt(c);
-            if (Character.isLetter(character)) {
+            if (Character.isLetterOrDigit(character)) {
                 return Character.toUpperCase(character);
             }
         }

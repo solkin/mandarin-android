@@ -82,9 +82,10 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             }
         });
 
+        BuddyCursor buddyCursor = null;
         try {
-            BuddyCursor buddyCursor = QueryHelper.getRosterBuddyCursor(getContentResolver(), getAccountDbId(), getBuddyId());
-            if(buddyCursor.getBuddyDialog()) {
+            buddyCursor = QueryHelper.getRosterBuddyCursor(getContentResolver(), getAccountDbId(), getBuddyId());
+            if (buddyCursor.getBuddyDialog()) {
                 buttonSwitcher.setVisibility(View.GONE);
             } else {
                 buttonSwitcher.setAnimateFirstView(false);
@@ -92,6 +93,10 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             }
         } catch (BuddyNotFoundException ignored) {
             // No buddy? Button will be ready to add buddy.
+        } finally {
+            if(buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
     }
 

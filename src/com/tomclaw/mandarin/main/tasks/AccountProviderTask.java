@@ -34,7 +34,7 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
         if (context != null) {
             Cursor cursor = null;
             try {
-                cursor = QueryHelper.getActiveAccountsCount(context.getContentResolver());
+                cursor = QueryHelper.getActiveAccounts(context.getContentResolver());
                 if (cursor == null || cursor.getCount() == 0 || !cursor.moveToFirst()) {
                     isShowDialog = false;
                 } else if (cursor.getCount() == 1) {

@@ -13,10 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -135,8 +132,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         try {
             String appSession = getServiceInteraction().getAppSession();
             ContentResolver contentResolver = getContentResolver();
-            // Sending protocol buddy info request.
-            RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
+            boolean accountActive = QueryHelper.isAccountActive(contentResolver, accountDbId);
+            if (accountActive) {
+                // Sending protocol buddy info request.
+                RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
+            } else {
+                // Account is not active, so we cannot load more info.
+                hideProgressBar();
+            }
         } catch (Throwable ex) {
             Log.d(Settings.LOG_TAG, "Unable to publish buddy info request due to exception.", ex);
             onBuddyInfoRequestError();

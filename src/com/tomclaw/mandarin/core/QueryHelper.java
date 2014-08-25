@@ -174,7 +174,21 @@ public class QueryHelper {
         return accountExists;
     }
 
-    public static Cursor getActiveAccountsCount(ContentResolver contentResolver) {
+    public static boolean isAccountActive(ContentResolver contentResolver, int accountDbId) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified accounts. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId)
+                .and().columnNotEquals(GlobalProvider.ACCOUNT_STATUS, StatusUtil.STATUS_OFFLINE)
+                .and().columnEquals(GlobalProvider.ACCOUNT_CONNECTING, 0);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        // Checking for condition is satisfied.
+        boolean accountActive = cursor.moveToFirst();
+        cursor.close();
+        // Closing cursor.
+        return accountActive;
+    }
+
+    public static Cursor getActiveAccounts(ContentResolver contentResolver) {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified accounts. If exist.
         queryBuilder.columnNotEquals(GlobalProvider.ACCOUNT_STATUS, StatusUtil.STATUS_OFFLINE)

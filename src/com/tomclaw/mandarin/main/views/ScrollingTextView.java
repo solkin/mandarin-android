@@ -11,7 +11,7 @@ import android.widget.TextView;
  * Date: 11/24/13
  * Time: 6:07 PM
  */
-public class ScrollingTextView extends TextView {
+public class ScrollingTextView extends TightTextView {
 
     public ScrollingTextView(Context context, AttributeSet attrs,
                              int defStyle) {

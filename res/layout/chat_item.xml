@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/chat_inc_bubble"
                     android:id="@+id/inc_bubble_back">
-                <TextView
+                <com.tomclaw.mandarin.main.views.TightTextView
                         style="@style/Chat.Message"
                         android:id="@+id/inc_text"/>
             </LinearLayout>
@@ -93,7 +93,7 @@
                           android:background="?attr/chat_out_bubble"
                           android:id="@+id/out_bubble_back"
                           android:layout_gravity="right">
-                <TextView
+                <com.tomclaw.mandarin.main.views.TightTextView
                         style="@style/Chat.Message"
                         android:id="@+id/out_text"/>
             </LinearLayout>
@@ -105,7 +105,7 @@
             android:layout_height="match_parent"
             android:id="@+id/error_message"
             android:background="?attr/chat_error_bubble">
-        <TextView
+        <com.tomclaw.mandarin.main.views.TightTextView
                 style="@style/Chat.Message"
                 android:text="@string/error_bubble"
                 android:id="@+id/error_text"/>

@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/status_icon"
                 android:padding="8dp"/>
-        <TextView
+        <com.tomclaw.mandarin.main.views.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/status_text"

@@ -4,22 +4,20 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-import com.tomclaw.mandarin.util.QueryBuilder;
+
+import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,19 +36,6 @@ public class HistoryDispatcher {
     private static final int NOTIFICATION_ID = 0x01;
 
     private final int largeIconSize;
-
-    private static final String[] unReadProjection = new String[]{
-            GlobalProvider.HISTORY_BUDDY_DB_ID,
-            GlobalProvider.HISTORY_MESSAGE_TYPE,
-            GlobalProvider.HISTORY_MESSAGE_READ
-    };
-
-    private static final String[] unShownProjection = new String[]{
-            GlobalProvider.HISTORY_BUDDY_DB_ID,
-            GlobalProvider.HISTORY_MESSAGE_TYPE,
-            GlobalProvider.HISTORY_MESSAGE_READ,
-            GlobalProvider.HISTORY_NOTICE_SHOWN
-    };
 
     public HistoryDispatcher(Context context) {
         // Variables.
@@ -93,98 +78,62 @@ public class HistoryDispatcher {
     private class HistoryDispatcherTask extends Task {
 
         @Override
+        @SuppressWarnings("unchecked")
         public void executeBackground() throws Throwable {
             long time = System.currentTimeMillis();
-            // Obtain unique unread buddies. If exist.
-            QueryBuilder queryBuilder = new QueryBuilder();
-            queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
-                    .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0);
-            Cursor unReadCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
-                    unReadProjection);
+            // Obtain last unread for buddy. If exist.
+            Bundle bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_UNREAD, null, null);
+            ArrayList<NotificationData> unreadList =
+                    (ArrayList<NotificationData>) bundle.getSerializable(GlobalProvider.KEY_NOTIFICATION_DATA);
             // Checking for unread messages exist. If no, we must cancel notification.
-            if (unReadCursor.moveToFirst()) {
-                queryBuilder.recycle();
-                queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
-                        .startComplexExpression()
-                        .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
-                        .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
-                        .finishComplexExpression()
-                        .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
-                        .finishComplexExpression();
-                Cursor unShownCursor = queryBuilder.query(contentResolver, Settings.HISTORY_DISTINCT_RESOLVER_URI,
-                        unShownProjection);
+            if (unreadList != null && !unreadList.isEmpty()) {
+                bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_MESSAGES_COUNT, null, null);
+                int unshown = bundle.getInt(GlobalProvider.KEY_UNSHOWN);
+                int justShown = bundle.getInt(GlobalProvider.KEY_JUST_SHOWN);
                 // Checking for non-shown messages exist.
                 // If yes - we must update notification with all unread messages. If no - nothing to do now.
-                if (unShownCursor.moveToFirst()) {
-                    boolean isAlarmRequired = false;
-                    int historyNoticeShownColumn = unShownCursor.getColumnIndex(GlobalProvider.HISTORY_NOTICE_SHOWN);
-                    do {
-                        if (unShownCursor.getInt(historyNoticeShownColumn) != -1) {
-                            isAlarmRequired = true;
-                            break;
-                        }
-                    } while (unShownCursor.moveToNext());
+                if (unshown > 0 || justShown > 0) {
+                    boolean isAlarmRequired = (unshown > 0);
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
                     // Building variables.
                     int unread = 0;
-                    boolean multipleSenders = (unReadCursor.getCount() > 1);
+                    boolean multipleSenders = (unreadList.size() > 1);
                     StringBuilder nickNamesBuilder = new StringBuilder();
                     // Last-message variables.
-                    int buddyDbId;
+                    int buddyDbId = 0;
                     Bitmap largeIcon = null;
                     String message = "";
-                    int HISTORY_BUDDY_DB_ID_COLUMN = unReadCursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-                    do {
-                        buddyDbId = unReadCursor.getInt(HISTORY_BUDDY_DB_ID_COLUMN);
-                        QueryBuilder messageQueryBuilder = new QueryBuilder();
-                        messageQueryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
-                                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
-                                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0);
-                        messageQueryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
-                        Cursor messageCursor = messageQueryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
-                        // Checking for the last message. Yeah, the last, not first.
-                        if (messageCursor.moveToFirst()) {
-                            // Obtaining and collecting message-specific data.
-                            unread += messageCursor.getCount();
-                            message = messageCursor.getString(messageCursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
-                            String nickName;
-                            String avatarHash;
-                            try {
-                                BuddyCursor buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
-                                nickName = buddyCursor.getBuddyNick();
-                                // Check for nick name is empty and use buddy id in this case.
-                                if (TextUtils.isEmpty(nickName)) {
-                                    nickName = buddyCursor.getBuddyId();
-                                }
-                                avatarHash = buddyCursor.getBuddyAvatarHash();
-                                buddyCursor.close();
-                            } catch (BuddyNotFoundException ignored) {
-                                // TODO: check with no-nick and unknown buddies.
-                                nickName = context.getString(R.string.unknown_buddy);
-                                avatarHash = null;
-                            }
-                            if (TextUtils.isEmpty(nickNamesBuilder)) {
-                                // This is first buddy with unread message.
-                                if (!TextUtils.isEmpty(avatarHash)) {
-                                    // Obtain avatar for notification.
-                                    largeIcon = BitmapCache.getInstance().getBitmapSync(
-                                            avatarHash, largeIconSize, largeIconSize, true);
-                                }
-                            } else {
-                                nickNamesBuilder.append(", ");
-                                // There are some buddies with unread - no avatar can be placed.
-                                largeIcon = null;
-                            }
-                            nickNamesBuilder.append(nickName);
-                            // Checking for style type for correct filling.
-                            if (multipleSenders) {
-                                inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
-                            }
+                    for(NotificationData data : unreadList) {
+                        // Obtaining and collecting message-specific data.
+                        unread += data.getUnreadCount();
+                        message = data.getMessageText();
+                        buddyDbId = data.getBuddyDbId();
+                        String nickName = data.getBuddyNick();
+                        String avatarHash = data.getBuddyAvatarHash();
+                        if(TextUtils.isEmpty(nickName)) {
+                            nickName = context.getString(R.string.unknown_buddy);
+                            avatarHash = null;
                         }
-                        messageCursor.close();
-                    } while (unReadCursor.moveToNext());
+                        if (TextUtils.isEmpty(nickNamesBuilder)) {
+                            // This is first buddy with unread message.
+                            if (!TextUtils.isEmpty(avatarHash)) {
+                                // Obtain avatar for notification.
+                                largeIcon = BitmapCache.getInstance().getBitmapSync(
+                                        avatarHash, largeIconSize, largeIconSize, true);
+                            }
+                        } else {
+                            nickNamesBuilder.append(", ");
+                            // There are some buddies with unread - no avatar can be placed.
+                            largeIcon = null;
+                        }
+                        nickNamesBuilder.append(nickName);
+                        // Checking for style type for correct filling.
+                        if (multipleSenders) {
+                            inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
+                        }
+                    }
                     // Common notification variables.
                     String title;
                     String content;
@@ -244,24 +193,19 @@ public class HistoryDispatcher {
                         }
                         onNotificationShown();
                     }
-
                     Notification notification = notificationBuilder.build();
                     // Notify it right now!
                     notificationManager.notify(NOTIFICATION_ID, notification);
                     // Update shown messages flag.
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-                    queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+                    QueryHelper.updateShownMessagesFlag(contentResolver);
                 } else {
                     Log.d(Settings.LOG_TAG, "HistoryObserver: Non-shown messages not found");
                 }
-                unShownCursor.close();
             } else {
                 Log.d(Settings.LOG_TAG, "HistoryObserver: No unread messages found");
                 onNotificationCancel();
                 notificationManager.cancel(NOTIFICATION_ID);
             }
-            unReadCursor.close();
             Log.d(Settings.LOG_TAG, "History dispatching time: " + (System.currentTimeMillis() - time));
             // Call to update unread count.
             contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);

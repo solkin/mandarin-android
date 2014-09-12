@@ -327,7 +327,8 @@ public class QueryHelper {
 
         if (isCollapseMessages) {
             QueryBuilder queryBuilder = new QueryBuilder();
-            queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+            queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                    .ascending(GlobalProvider.ROW_AUTO_ID);
             // Obtaining cursor with message to such buddy, of such type and not later, than two minutes.
             Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
             // Cursor may have no more than only one entry. But we will check one and more.
@@ -1076,5 +1077,19 @@ public class QueryHelper {
             // No opened dialogs.
             throw new BuddyNotFoundException();
         }
+    }
+
+    public static void updateShownMessagesFlag(ContentResolver contentResolver) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
+                .startComplexExpression()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
+                .finishComplexExpression()
+                .or().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, -1)
+                .finishComplexExpression();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 }

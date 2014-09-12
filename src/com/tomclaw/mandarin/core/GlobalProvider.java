@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -138,6 +140,16 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
             + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text" + ");";
 
+    protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +
+            GlobalProvider.CHAT_HISTORY_TABLE + "(" +
+            GlobalProvider.HISTORY_BUDDY_DB_ID + ");";
+
+    protected static final String DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT = "CREATE INDEX Idx2 ON " +
+            GlobalProvider.CHAT_HISTORY_TABLE + "(" +
+            GlobalProvider.HISTORY_BUDDY_DB_ID + "," +
+            GlobalProvider.HISTORY_MESSAGE_READ + "," +
+            GlobalProvider.HISTORY_MESSAGE_TYPE + ");";
+
     private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD =
             new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
                     .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
@@ -151,6 +163,61 @@ public class GlobalProvider extends ContentProvider {
                     .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
                     .append(");");
 
+    private static final String TMP_C1 = "c1";
+    private static final String TMP_C2 = "c2";
+    private static final String TMP_R1 = "r1";
+
+    private static final String HISTORY_GET_UNREAD_SB =
+            new StringBuilder().append("SELECT").append(' ')
+                    .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',')
+                    .append('(')
+                        .append("SELECT").append(' ')
+                        .append(ROSTER_BUDDY_NICK).append(' ')
+                        .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
+                        .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
+                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_NICK).append(',')
+
+                    .append('(')
+                        .append("SELECT").append(' ')
+                        .append(ROSTER_BUDDY_AVATAR_HASH).append(' ')
+                        .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
+                        .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
+                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_AVATAR_HASH).append(',')
+
+                    .append('(')
+                        .append("SELECT").append(' ')
+                        .append("COUNT(*)").append(' ')
+                        .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C2).append(' ')
+                        .append("WHERE").append(' ').append(TMP_C2).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID)
+                        .append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_UNREAD_COUNT).append(' ')
+
+                    .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C1).append(' ')
+                    .append("WHERE").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1).append(' ')
+                    .append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
+                    .append("GROUP BY").append(' ').append(HISTORY_BUDDY_DB_ID).append(' ')
+                    .append("ORDER BY").append(' ').append(ROW_AUTO_ID).append(' ').append("ASC").append(';')
+            .toString();
+
+    private static final String INCOMING_COUNT = "incoming_count";
+    private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
+    private static final String SHOWN_COUNT = "shown_count";
+
+    private static final String COUNT_QUERY = new StringBuilder()
+            .append("SELECT").append(' ')
+            .append('(')
+                .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
+                .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
+                    .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
+                    .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+            .append(')').append(' ').append("AS").append(' ').append(UNREAD_UNSHOWN_COUNT).append(',')
+            .append('(')
+            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
+            .append("WHERE").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(-1).append(' ')
+            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+            .append(')').append(' ').append("AS").append(' ').append(SHOWN_COUNT).append(';')
+            .toString();
+
     public static final int ROW_INVALID = -1;
 
     // Database helper object.
@@ -159,6 +226,12 @@ public class GlobalProvider extends ContentProvider {
 
     // Methods.
     public static String METHOD_UPDATE_UNREAD = "update_unread";
+    public static String METHOD_GET_UNREAD = "get_unread";
+    public static String METHOD_GET_MESSAGES_COUNT = "get_messages_count";
+
+    public static String KEY_NOTIFICATION_DATA = "key_notification_data";
+    public static String KEY_UNSHOWN = "key_unshown";
+    public static String KEY_JUST_SHOWN = "key_just_shown";
 
     // URI id.
     private static final int URI_REQUEST = 1;
@@ -297,6 +370,45 @@ public class GlobalProvider extends ContentProvider {
             }
             Log.d(Settings.LOG_TAG, "Update unread time: " + (System.currentTimeMillis() - time));
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+        } else if(method.equals(METHOD_GET_UNREAD)) {
+            long time = System.currentTimeMillis();
+            Cursor cursor = sqLiteDatabase.rawQuery(HISTORY_GET_UNREAD_SB, null);
+            Bundle bundle = new Bundle();
+            if(cursor.moveToFirst()) {
+                int messageTextColumn = cursor.getColumnIndex(HISTORY_MESSAGE_TEXT);
+                int buddyDbIdColumn = cursor.getColumnIndex(HISTORY_BUDDY_DB_ID);
+                int buddyNickColumn = cursor.getColumnIndex(ROSTER_BUDDY_NICK);
+                int buddyAvatarHashColumn = cursor.getColumnIndex(ROSTER_BUDDY_AVATAR_HASH);
+                int unreadCountColumn = cursor.getColumnIndex(ROSTER_BUDDY_UNREAD_COUNT);
+                ArrayList<NotificationData> data = new ArrayList<NotificationData>();
+                do {
+                    NotificationData row = new NotificationData(
+                            cursor.getString(messageTextColumn),
+                            cursor.getInt(buddyDbIdColumn),
+                            cursor.getString(buddyNickColumn),
+                            cursor.getString(buddyAvatarHashColumn),
+                            cursor.getInt(unreadCountColumn));
+                    data.add(row);
+                } while (cursor.moveToNext());
+                bundle.putSerializable(KEY_NOTIFICATION_DATA, data);
+            }
+            cursor.close();
+            Log.d(Settings.LOG_TAG, "Get unread time: " + (System.currentTimeMillis() - time));
+            return bundle;
+        } else if(method.equals(METHOD_GET_MESSAGES_COUNT)) {
+            Cursor cursor = sqLiteDatabase.rawQuery(COUNT_QUERY, null);
+            Bundle bundle = new Bundle();
+            int unshown = 0, justShown = 0;
+            if(cursor.moveToFirst()) {
+                int unreadUnshownColumn = cursor.getColumnIndex(UNREAD_UNSHOWN_COUNT);
+                int shownColumn = cursor.getColumnIndex(SHOWN_COUNT);
+                unshown = cursor.getInt(unreadUnshownColumn);
+                justShown = cursor.getInt(shownColumn);
+            }
+            cursor.close();
+            bundle.putInt(KEY_UNSHOWN, unshown);
+            bundle.putInt(KEY_JUST_SHOWN, justShown);
+            return bundle;
         }
         return null;
     }

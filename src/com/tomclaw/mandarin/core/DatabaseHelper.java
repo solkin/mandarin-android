@@ -37,6 +37,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(GlobalProvider.DB_CREATE_GROUP_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_BUDDY_TABLE_SCRIPT);
             db.execSQL(GlobalProvider.DB_CREATE_HISTORY_TABLE_SCRIPT);
+
+            db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT);
+            db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT);
+
             if (true) return;
             ContentValues cv0 = new ContentValues();
             ContentValues cv1 = new ContentValues();
@@ -70,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cv1.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_DEFAULT);
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
-                    for (int c = 1; c <= 5 + random.nextInt(5); c++) {
+                    for (int c = 1; c <= 15 + random.nextInt(15); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
                         boolean isDialog = (random.nextInt(10) == 1);
@@ -91,7 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);
                         int unreadCount = 0;
                         if (isDialog) {
-                            for (int j = 0; j < random.nextInt(1500) + 250; j++) {
+                            for (int j = 0; j < random.nextInt(1500) + 1250; j++) {
                                 int messageType = (random.nextInt(3) == 1) ? 2 : 1;
                                 boolean isRead = (messageType != 1);
                                 unreadCount += isRead ? 0 : 1;
@@ -186,6 +190,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
                         + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_OPERATION + " int default "
                         + GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
+            }
+            case 4: {
+                db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT);
+                db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT);
             }
         }
         Log.d(Settings.LOG_TAG, "Database upgrade completed");

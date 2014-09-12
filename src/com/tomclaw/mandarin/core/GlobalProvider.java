@@ -199,7 +199,6 @@ public class GlobalProvider extends ContentProvider {
                     .append("ORDER BY").append(' ').append(ROW_AUTO_ID).append(' ').append("ASC").append(';')
             .toString();
 
-    private static final String INCOMING_COUNT = "incoming_count";
     private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
     private static final String SHOWN_COUNT = "shown_count";
 

@@ -177,7 +177,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
-        boolean messageRead = cursor.getInt(COLUMN_MESSAGE_READ) == 1;
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
@@ -187,8 +186,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
-                ((TextView) view.findViewById(R.id.inc_text))
-                        .setTypeface(null, messageRead ? Typeface.NORMAL : Typeface.BOLD);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }

@@ -20,6 +20,17 @@
             android:lines="1"
             android:maxLines="1"
             android:scrollHorizontally="true"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/city_edit"
+            android:hint="@string/city_search"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:lines="1"
+            android:maxLines="1"
+            android:scrollHorizontally="true"/>
     <TextView
             android:text="@string/age_and_gender_search"
             style="?android:attr/listSeparatorTextViewStyle" android:layout_marginTop="10dp"/>

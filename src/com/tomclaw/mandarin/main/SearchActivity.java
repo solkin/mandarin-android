@@ -24,7 +24,8 @@ public class SearchActivity extends ChiefActivity {
 
     private int accountDbId;
 
-    private TextView keywordName;
+    private TextView keywordEdit;
+    private TextView cityEdit;
     private AgePickerView agePickerView;
     private Spinner genderSpinner;
     private CheckBox onlineBox;
@@ -51,7 +52,8 @@ public class SearchActivity extends ChiefActivity {
         Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
         genderSelector.setAdapter(adapter);
 
-        keywordName = (TextView) findViewById(R.id.keyword_edit);
+        keywordEdit = (TextView) findViewById(R.id.keyword_edit);
+        cityEdit = (TextView) findViewById(R.id.city_edit);
         agePickerView = (AgePickerView) findViewById(R.id.age_range);
         genderSpinner = (Spinner) findViewById(R.id.gender_selector);
         onlineBox = (CheckBox) findViewById(R.id.online_check);
@@ -102,9 +104,13 @@ public class SearchActivity extends ChiefActivity {
 
     private void doSearch() {
         IcqSearchOptionsBuilder builder = new IcqSearchOptionsBuilder(System.currentTimeMillis());
-        String keyword = keywordName.getText().toString();
+        String keyword = keywordEdit.getText().toString();
+        String city = cityEdit.getText().toString();
         // Obtain search builder instance from account.
         builder.keyword(keyword);
+        if(!TextUtils.isEmpty(city)) {
+            builder.city(city);
+        }
         builder.online(onlineBox.isChecked());
         if (!agePickerView.isAnyAge()) {
             builder.age(agePickerView.getValueMin(), agePickerView.getValueMax());

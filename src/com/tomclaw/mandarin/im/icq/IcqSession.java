@@ -182,7 +182,7 @@ public class IcqSession {
                         String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                         // Parsing my info and well-known URL's to send requests.
                         MyInfo myInfo = GsonSingleton.getInstance().fromJson(
-                                dataObject.getJSONObject(MY_INFO).toString(), MyInfo.class);
+                                StringUtil.fixCyrillicSymbols(dataObject.getJSONObject(MY_INFO).toString()), MyInfo.class);
                         WellKnownUrls wellKnownUrls = GsonSingleton.getInstance().fromJson(
                                 dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
                         // Update starts session result in database.
@@ -468,7 +468,8 @@ public class IcqSession {
             }
         } else if (eventType.equals(MY_INFO)) {
             try {
-                MyInfo myInfo = GsonSingleton.getInstance().fromJson(eventData.toString(), MyInfo.class);
+                MyInfo myInfo = GsonSingleton.getInstance().fromJson(
+                        StringUtil.fixCyrillicSymbols(eventData.toString()), MyInfo.class);
                 icqAccountRoot.setMyInfo(myInfo);
             } catch (Throwable ignored) {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");

@@ -62,6 +62,10 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
         appendOption("gender", genderValue(gender));
     }
 
+    public void city(String city) {
+        appendOption("homeAddress.city", city);
+    }
+
     private String genderValue(Gender gender) {
         switch (gender) {
             case Female: {

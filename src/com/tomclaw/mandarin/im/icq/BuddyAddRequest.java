@@ -52,7 +52,7 @@ public class BuddyAddRequest extends WimRequest {
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Move buddy into recycle.
             QueryHelper.moveBuddyIntoRecycle(getAccountRoot().getContentResolver(), getAccountRoot().getResources(),
-                    getAccountRoot().getAccountDbId(), buddyDbId);
+                    buddyDbId);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or McDonald's.

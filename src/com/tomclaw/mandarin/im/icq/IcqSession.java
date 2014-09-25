@@ -47,7 +47,7 @@ public class IcqSession {
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
     private static final String CLIENT_VERSION_VALUE = "1.0";
     private static final String BUILD_NUMBER_VALUE = "12";
-    private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000";
+    private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";
     private static final String DEVICE_ID_VALUE = "mandarin_device_id";
 
     public static final int INTERNAL_ERROR = 1000;
@@ -352,7 +352,7 @@ public class IcqSession {
                                 buddyIcon, lastSeen);
                     }
                 }
-                QueryHelper.moveOutdatedBuddies(contentResolver, icqAccountRoot.getResources(), accountDbId, updateTime);
+                QueryHelper.removeOutdatedBuddies(contentResolver, accountDbId, updateTime);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

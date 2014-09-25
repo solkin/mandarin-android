@@ -717,10 +717,13 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         String avatarHash;
         QueryBuilder queryBuilder = new QueryBuilder();
+        // Get buddy priority - from current group, then from non-recycle, then from recycle.
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID).limit(1);
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+                .descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP + "='" + groupName + "' THEN 2 ELSE 0 END)").andOrder()
+                .descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP_ID + "!=" + GlobalProvider.GROUP_ID_RECYCLE + " THEN 1 ELSE 0 END" + ")")
+                .limit(1);
+
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(contentResolver, queryBuilder);
@@ -792,8 +795,35 @@ public class QueryHelper {
         }
     }
 
+    private static void checkOrCreateRecycleGroup(ContentResolver contentResolver, Resources resources) {
+        String recycleString = resources.getString(R.string.recycle);
+
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM)
+                .and().columnEquals(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+        Cursor recycleCursor = null;
+        try {
+            recycleCursor = queryBuilder.query(contentResolver, Settings.GROUP_RESOLVER_URI);
+            if (!recycleCursor.moveToFirst()) {
+                ContentValues recycleValues = new ContentValues();
+                recycleValues.put(GlobalProvider.ROSTER_GROUP_NAME, recycleString);
+                recycleValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM);
+                recycleValues.put(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+                recycleValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, System.currentTimeMillis());
+                contentResolver.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
+            }
+        } finally {
+            if(recycleCursor != null) {
+                recycleCursor.close();
+            }
+        }
+    }
+
     public static void moveBuddyIntoRecycle(ContentResolver contentResolver, Resources resources,
-                                            int accountDbId, int buddyDbId) {
+                                            int buddyDbId) {
+        // To move buddy into recycle, we must have such recycle.
+        checkOrCreateRecycleGroup(contentResolver, resources);
+        // Now, we can move with pleasure.
         String recycleString = resources.getString(R.string.recycle);
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, recycleString);
@@ -803,51 +833,15 @@ public class QueryHelper {
         modifyBuddy(contentResolver, buddyDbId, contentValues);
     }
 
-    public static void moveOutdatedBuddies(ContentResolver contentResolver, Resources resources,
-                                           int accountDbId, long updateTime) {
-        String recycleString = resources.getString(R.string.recycle);
+    public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        // Move all deleted buddies to recycle.
+        // Remove all deleted buddies.
         queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        Cursor removedCursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        if (removedCursor.moveToFirst()) {
-            // Checking and creating recycle.
-            queryBuilder.recycle();
-            queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM)
-                    .and().columnEquals(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
-            Cursor recycleCursor = queryBuilder.query(contentResolver, Settings.GROUP_RESOLVER_URI);
-            if (!recycleCursor.moveToFirst()) {
-                ContentValues recycleValues = new ContentValues();
-                recycleValues.put(GlobalProvider.ROSTER_GROUP_NAME, recycleString);
-                recycleValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM);
-                recycleValues.put(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
-                recycleValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, updateTime);
-                contentResolver.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
-            }
-            recycleCursor.close();
-            // Move, move, move!
-            ContentValues moveValues = new ContentValues();
-            moveValues.put(GlobalProvider.ROSTER_BUDDY_GROUP, recycleString);
-            moveValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
-            moveValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
-
-            queryBuilder.recycle();
-            queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime)
-                    .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-
-            int movedBuddies = queryBuilder.update(contentResolver, moveValues, Settings.BUDDY_RESOLVER_URI);
-            Log.d(Settings.LOG_TAG, "moved to recycle: " + movedBuddies);
-            // Removing buddies with operation remove in recycle. It's time.
-            // TODO: here we can also erase buddies history.
-            queryBuilder.recycle();
-            queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE).and()
-                    .columnEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
-
-            int removedBuddies = queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
-            Log.d(Settings.LOG_TAG, "removed from recycle: " + removedBuddies);
-        }
-        removedCursor.close();
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_ADD)
+                .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
+        int removedBuddies = queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        Log.d(Settings.LOG_TAG, "outdated removed: " + removedBuddies);
     }
 
     public static void removeBuddy(ContentResolver contentResolver, int buddyDbId) {

@@ -79,18 +79,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="?attr/separator_navbar"/>
-            <Button android:id="@+id/settings_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings"
-                    android:drawableLeft="@drawable/action_settings"
-                    android:drawablePadding="4dp"
-                    android:paddingLeft="4dp"
-                    style="@style/Button.NavBar"/>
-            <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?attr/separator_navbar"/>
             <Button android:id="@+id/connection_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

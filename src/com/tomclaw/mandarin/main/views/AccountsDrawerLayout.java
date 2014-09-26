@@ -112,15 +112,6 @@ public class AccountsDrawerLayout extends DrawerLayout {
                 closeAccountsPanel();
             }
         });
-        Button settingsButton = (Button) findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                activity.startActivity(intent);
-                closeAccountsPanel();
-            }
-        });
         // Accounts list.
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list.

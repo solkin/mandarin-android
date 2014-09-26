@@ -22,6 +22,8 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.main.AccountAddActivity;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.SettingsActivity;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
@@ -41,7 +43,6 @@ public class AccountsDrawerLayout extends DrawerLayout {
     private ChiefActivity activity;
     private AccountsAdapter accountsAdapter;
     private ActionBarDrawerToggle drawerToggle;
-    private LinearLayout drawerContent;
     private CharSequence title;
     private CharSequence drawerTitle;
 
@@ -52,7 +53,6 @@ public class AccountsDrawerLayout extends DrawerLayout {
     public void init(final ChiefActivity activity) {
         this.activity = activity;
         setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
-        drawerContent = (LinearLayout) findViewById(R.id.left_drawer);
 
         final ActionBar actionBar = activity.getActionBar();
         drawerToggle = new ActionBarDrawerToggle(activity, this,
@@ -102,6 +102,16 @@ public class AccountsDrawerLayout extends DrawerLayout {
                 }
             }
         };
+        Button addAccountButton = (Button) findViewById(R.id.add_account_button);
+        addAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent accountAddIntent = new Intent(getContext(), AccountAddActivity.class);
+                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+                activity.startActivity(accountAddIntent);
+                closeAccountsPanel();
+            }
+        });
         Button settingsButton = (Button) findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override

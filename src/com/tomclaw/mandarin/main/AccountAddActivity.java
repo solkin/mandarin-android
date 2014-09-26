@@ -145,9 +145,6 @@ public class AccountAddActivity extends ChiefActivity implements ChiefActivity.C
                 // ... and now will go to the dialogs activity.
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
-            } else {
-                // Creating signal intent.
-                setResult(RESULT_OK);
             }
             finish();
         } catch (AccountAlreadyExistsException ignored) {

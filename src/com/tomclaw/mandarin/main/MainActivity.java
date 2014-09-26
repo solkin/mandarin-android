@@ -29,8 +29,6 @@ public class MainActivity extends ChiefActivity {
     private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
     private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=";
 
-    public static final int ADDING_ACTIVITY_REQUEST_CODE = 1;
-
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
 
@@ -165,11 +163,6 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
                 return true;
             }
-            case R.id.add_account_menu:
-                Intent accountAddIntent = new Intent(this, AccountAddActivity.class);
-                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
-                startActivityForResult(accountAddIntent, ADDING_ACTIVITY_REQUEST_CODE);
-                return true;
             default: {
                 return super.onOptionsItemSelected(item);
             }

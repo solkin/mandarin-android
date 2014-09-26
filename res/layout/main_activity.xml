@@ -67,6 +67,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="?attr/separator_navbar"/>
+            <Button android:id="@+id/add_account_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_account"
+                    android:drawableLeft="@drawable/content_new"
+                    android:drawablePadding="4dp"
+                    android:paddingLeft="4dp"
+                    style="@style/Button.NavBar"/>
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/separator_navbar"/>
             <Button android:id="@+id/settings_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

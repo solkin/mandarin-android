@@ -132,22 +132,26 @@ public class ChatActivity extends ChiefActivity {
                 return false;
             }
         });
-        messageText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_ENTER: {
-                        if (PreferenceHelper.isSendByEnter(ChatActivity.this)) {
-                            sendMessage();
-                            return true;
+        if (PreferenceHelper.isSendByEnter(ChatActivity.this)) {
+            // Send by enter. Single-line input and key handling.
+            messageText.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if(event.getAction() == KeyEvent.ACTION_DOWN) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_ENTER: {
+                                sendMessage();
+                                return true;
+                            }
                         }
                     }
-                    default: {
-                        return false;
-                    }
+                    return false;
                 }
-            }
-        });
+            });
+        } else {
+            // No send by enter? So, we can enable multi-line input.
+            messageText.setInputType(messageText.getInputType() | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+        }
         messageWatcher = new MessageWatcher();
         messageText.addTextChangedListener(messageWatcher);
         sendButton.setOnClickListener(new View.OnClickListener() {

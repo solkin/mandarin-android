@@ -27,6 +27,8 @@ import java.util.ArrayList;
  */
 public class HistoryDispatcher {
 
+    public static String EXTRA_READ_MESSAGES = "read_messages";
+
     private Context context;
     private NotificationManager notificationManager;
     private ContentResolver contentResolver;
@@ -134,45 +136,59 @@ public class HistoryDispatcher {
                             inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
                         }
                     }
-                    // Common notification variables.
-                    String title;
-                    String content;
-                    int replyIcon;
-                    NotificationCompat.Style style;
-                    // Checking for required style.
-                    if (multipleSenders) {
-                        title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
-                        content = nickNamesBuilder.toString();
-                        replyIcon = R.drawable.social_reply_all;
-                        inboxStyle.setBigContentTitle(title);
-                        style = inboxStyle;
-                    } else {
-                        title = nickNamesBuilder.toString();
-                        content = message;
-                        replyIcon = R.drawable.social_reply;
-                        bigTextStyle.bigText(message);
-                        bigTextStyle.setBigContentTitle(title);
-                        style = bigTextStyle;
-                    }
                     // Show chat activity with concrete buddy.
                     PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
                             new Intent(context, ChatActivity.class)
                                     .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
+                    // Mark all messages as read.
+                    PendingIntent readAllIntent = PendingIntent.getService(context, 0,
+                            new Intent(context, CoreService.class)
+                                    .putExtra(EXTRA_READ_MESSAGES, true),
+                            PendingIntent.FLAG_CANCEL_CURRENT);
                     // Simply open chats list.
                     PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
                             new Intent(context, MainActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
+                    // Common notification variables.
+                    String title;
+                    String content;
+                    int actionIcon;
+                    String actionButton;
+                    PendingIntent actionIntent;
+                    String readButton;
+                    NotificationCompat.Style style;
+                    // Checking for required style.
+                    if (multipleSenders) {
+                        title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
+                        content = nickNamesBuilder.toString();
+                        actionIcon = R.drawable.social_reply;
+                        actionButton = context.getString(R.string.reply_now);
+                        actionIntent = replyNowIntent;
+                        inboxStyle.setBigContentTitle(title);
+                        readButton = context.getString(R.string.mark_as_read_all);
+                        style = inboxStyle;
+                    } else {
+                        title = nickNamesBuilder.toString();
+                        content = message;
+                        actionIcon = R.drawable.social_chat;
+                        actionButton = context.getString(R.string.dialogs);
+                        actionIntent = openChatsIntent;
+                        bigTextStyle.bigText(message);
+                        bigTextStyle.setBigContentTitle(title);
+                        readButton = context.getString(R.string.mark_as_read);
+                        style = bigTextStyle;
+                    }
                     // Notification prepare.
                     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                             .setContentTitle(title)
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setStyle(style)
-                            .addAction(replyIcon, context.getString(R.string.reply_now), replyNowIntent)
-                            .addAction(R.drawable.social_chat, context.getString(R.string.open_chats), openChatsIntent)
+                            .addAction(actionIcon, actionButton, actionIntent)
+                            .addAction(R.drawable.ic_action_read, readButton, readAllIntent)
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
                             .setLargeIcon(largeIcon);
                     if (isAlarmRequired && isNotificationCompleted()) {

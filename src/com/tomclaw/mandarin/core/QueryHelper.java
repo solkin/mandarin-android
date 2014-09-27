@@ -467,6 +467,20 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static void readAllMessages(ContentResolver contentResolver) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
+
+        // Plain messages modify by type, read and shown state.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
+
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
     public static void readMessages(ContentResolver contentResolver, int buddyDbId,
                                     long messageDbIdFirst, long messageDbIdLast) {
 
@@ -478,20 +492,12 @@ public class QueryHelper {
                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
                 .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
 
-        // Obtain unread messages count.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
-        // Checking for unread messages.
-        if (cursor.getCount() > 0) {
-            // Plain messages modify by buddy db id and messages db id.
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
-            contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
+        // Plain messages modify by buddy db id and messages db id.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
 
-            queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
-        } else {
-            Log.d(Settings.LOG_TAG, "Marking as read query, but no unread messages found");
-        }
-        cursor.close();
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
     public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {

@@ -295,4 +295,6 @@
     <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
     <string name="app_version">Версия %1$s (%2$s)</string>
     <string name="city_search">Город</string>
+    <string name="mark_as_read">Прочитано</string>
+    <string name="mark_as_read_all">Прочитано всё</string>
 </resources>

@@ -283,4 +283,6 @@
     <string name="pref_summary_roster_mode">Sorting &amp; grouping your buddies</string>
     <string name="app_version">Version %1$s (%2$s)</string>
     <string name="city_search">City</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_as_read_all">Mark all as read</string>
 </resources>

@@ -149,6 +149,11 @@ public class CoreService extends Service {
             requestDispatcher.notifyQueue();
             downloadDispatcher.notifyQueue();
         }
+        // Read messages event maybe?
+        boolean isReadMessages = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
+        if(isReadMessages) {
+            QueryHelper.readAllMessages(getContentResolver());
+        }
     }
 
     @Override

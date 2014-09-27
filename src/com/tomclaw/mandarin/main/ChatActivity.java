@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -67,6 +66,7 @@ public class ChatActivity extends ChiefActivity {
     private BuddyObserver buddyObserver;
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
+    private boolean isSendByEnter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,7 @@ public class ChatActivity extends ChiefActivity {
         if (PreferenceHelper.isShowKeyboard(this)) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
+        isSendByEnter = PreferenceHelper.isSendByEnter(ChatActivity.this);
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
@@ -121,37 +122,6 @@ public class ChatActivity extends ChiefActivity {
                 hidePopup();
             }
         });
-        messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendMessage();
-                    hideKeyboard();
-                    return true;
-                }
-                return false;
-            }
-        });
-        if (PreferenceHelper.isSendByEnter(ChatActivity.this)) {
-            // Send by enter. Single-line input and key handling.
-            messageText.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if(event.getAction() == KeyEvent.ACTION_DOWN) {
-                        switch (keyCode) {
-                            case KeyEvent.KEYCODE_ENTER: {
-                                sendMessage();
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            });
-        } else {
-            // No send by enter? So, we can enable multi-line input.
-            messageText.setInputType(messageText.getInputType() | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
-        }
         messageWatcher = new MessageWatcher();
         messageText.addTextChangedListener(messageWatcher);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -942,6 +912,9 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+            if (isSendByEnter && s.length() > 0 && s.charAt(s.length() - 1) == '\n') {
+                sendMessage();
+            }
             if (isTimerDown) {
                 if (TextUtils.isEmpty(s)) {
                     // There was a text typed, timer is gone and

@@ -40,9 +40,10 @@
                 android:hint="@string/enter_your_message"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:inputType="textCapSentences|textAutoCorrect"
+                android:inputType="textCapSentences|textMultiLine"
+                android:ems="10"
                 android:maxLines="3"
-                android:imeOptions="actionSend"
+                android:imeOptions="flagNoExtractUi"
                 android:minHeight="45dp"/>
         <ImageButton
                 android:layout_width="50dp"

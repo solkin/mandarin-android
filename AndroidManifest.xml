@@ -105,12 +105,17 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name=".main.icq.IcqAccountAddActivity"
+        <activity android:name=".main.icq.IcqIntroActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.icq.IcqUinLoginActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.icq.IcqPhoneLoginActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">

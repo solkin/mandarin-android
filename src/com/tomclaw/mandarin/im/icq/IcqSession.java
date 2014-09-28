@@ -41,7 +41,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class IcqSession {
 
-    private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
+    protected static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
@@ -276,7 +276,6 @@ public class IcqSession {
                             // Something wend wrong. Let's reconnect if status is not offline.
                             // Reset login and session data.
                             Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
-                            icqAccountRoot.resetLoginData();
                             icqAccountRoot.resetSessionData();
                             icqAccountRoot.updateAccount();
                             return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
@@ -475,7 +474,6 @@ public class IcqSession {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");
             }
         } else if (eventType.equals(SESSION_ENDED)) {
-            icqAccountRoot.resetLoginData();
             icqAccountRoot.resetSessionData();
             icqAccountRoot.carriedOff();
         }

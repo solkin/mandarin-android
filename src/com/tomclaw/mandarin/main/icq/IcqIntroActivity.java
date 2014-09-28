@@ -17,7 +17,7 @@ import com.tomclaw.mandarin.main.ChiefActivity;
  * Date: 4/17/13
  * Time: 4:07 PM
  */
-public class IcqAccountAddActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
+public class IcqIntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     public static final String EXTRA_START_HELPER = "start_helper";
     private EditText userIdEditText;
@@ -43,6 +43,12 @@ public class IcqAccountAddActivity extends ChiefActivity implements ChiefActivit
         userIdEditText = ((EditText) findViewById(R.id.user_id_field));
         userPasswordEditText = ((EditText) findViewById(R.id.user_password_field));
 
+        findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getBaseContext(), IcqPhoneLoginActivity.class));
+            }
+        });
         findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

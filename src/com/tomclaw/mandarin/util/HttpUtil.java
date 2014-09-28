@@ -7,6 +7,7 @@ import org.apache.http.HttpStatus;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -21,6 +22,9 @@ public class HttpUtil {
 
     public static final String GET = "GET";
     public static final String POST = "POST";
+
+    private static final int TIMEOUT_SOCKET = 70 * 1000;
+    private static final int TIMEOUT_CONNECTION = 60 * 1000;
 
     public static final String UTF8_ENCODING = "UTF-8";
 
@@ -91,6 +95,34 @@ public class HttpUtil {
         connection.connect();
 
         return getResponse(connection);
+    }
+
+    public static String executePost(String urlString, HttpParamsBuilder params) throws IOException {
+        InputStream responseStream = null;
+        HttpURLConnection connection = null;
+        try {
+            // Create and config connection.
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(TIMEOUT_CONNECTION);
+            connection.setReadTimeout(TIMEOUT_SOCKET);
+
+            // Execute request.
+            responseStream = HttpUtil.executePost(connection, params.build());
+            return HttpUtil.streamToString(responseStream);
+        } catch (IOException ex) {
+            throw new IOException(ex);
+        } finally {
+            try {
+                if (responseStream != null) {
+                    responseStream.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     public static InputStream executeGet(HttpURLConnection connection) throws IOException {

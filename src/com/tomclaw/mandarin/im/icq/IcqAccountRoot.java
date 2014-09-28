@@ -212,7 +212,7 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
-                                     int expiresIn, long hostTime) {
+                                     long expiresIn, long hostTime) {
         // Setup local variables.
         this.tokenA = tokenA;
         this.sessionKey = sessionKey;

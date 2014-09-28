@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ViewSwitcher
+            android:id="@+id/phone_login_view_switcher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp">
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Здесь Вам необходимо собраться с силами и ввести Ваш номер телефона. Это бесплатно."
+                        android:gravity="center_horizontal"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-light"/>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                    <EditText
+                            android:id="@+id/country_code_field"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:fontFamily="sans-serif-light"
+                            android:layout_marginTop="12dp"
+                            android:text="7"/>
+                    <EditText
+                            android:id="@+id/phone_number_field"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Номер телефона"
+                            android:gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:fontFamily="sans-serif-light"
+                            android:layout_marginTop="12dp"
+                            android:text="9645740840"/>
+                </LinearLayout>
+
+                <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/validate_phone_button"
+                        style="@style/Button.Green"
+                        android:text="Продолжить"
+                        android:layout_marginTop="12dp"
+                        android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="А здесь задача усложнаяется. Надо ввести код из входящей СМСки, которая придёт на указанный телефон с минуты на минуту."
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"/>
+            <EditText
+                    android:id="@+id/sms_code_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="СМС-код"
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:layout_marginTop="12dp"/>
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/login_phone_button"
+                    style="@style/Button.Green"
+                    android:text="Готово"
+                    android:layout_marginTop="12dp"/>
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/enter_phone_button"
+                    style="@style/Button.Blue"
+                    android:text="Изменить номер телефона"
+                    android:layout_marginTop="12dp"/>
+        </LinearLayout>
+    </ViewSwitcher>
+</LinearLayout>

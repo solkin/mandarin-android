@@ -134,6 +134,7 @@ public class IcqPhoneLoginActivity extends ChiefActivity {
                     @Override
                     public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime) {
                         final IcqAccountRoot accountRoot = new IcqAccountRoot();
+                        accountRoot.setContext(IcqPhoneLoginActivity.this);
                         accountRoot.setUserId(login);
                         accountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
                         MainExecutor.execute(new Runnable() {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="12dp">
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_icq_account"
+            android:padding="6dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light"/>
+    <EditText
+            android:id="@+id/user_id_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_id"
+            android:inputType="textEmailAddress"/>
+    <EditText
+            android:id="@+id/user_password_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_password"
+            android:inputType="textPassword"/>
+
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_button"
+            style="@style/Button.Green"
+            android:text="Продолжить"
+            android:layout_margin="12dp"
+            android:padding="12dp"
+            android:layout_gravity="center_horizontal"/>
+</LinearLayout>

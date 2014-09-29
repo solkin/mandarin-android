@@ -1,18 +1,11 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Log;
-import android.util.Pair;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.Task;
+import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.*;
@@ -26,8 +19,32 @@ public class RegistrationHelper {
 
     private static final String REQUEST_NUMBER = "1";
 
-    public static void normalizePhone(String countryCode, String phoneNumber, NormalizePhoneCallback callback) {
-        try {
+    public static void normalizePhone(String countryCode, String phoneNumber, RegistrationCallback callback) {
+        TaskExecutor.getInstance().execute(new NormalizePhoneTask(countryCode, phoneNumber, callback));
+    }
+
+    public static void validatePhone(String msisdn, RegistrationCallback callback) {
+        TaskExecutor.getInstance().execute(new ValidatePhoneTask(msisdn, callback));
+    }
+
+    public static void loginPhone(String msisdn, String transId, String smsCode, RegistrationCallback callback) {
+        TaskExecutor.getInstance().execute(new LoginPhoneTask(msisdn, transId, smsCode, callback));
+    }
+
+    private static class NormalizePhoneTask extends Task {
+
+        private String countryCode;
+        private String phoneNumber;
+        private RegistrationCallback callback;
+
+        public NormalizePhoneTask(String countryCode, String phoneNumber, RegistrationCallback callback) {
+            this.countryCode = countryCode;
+            this.phoneNumber = phoneNumber;
+            this.callback = callback;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
             // Specifying normalize data.
             HttpParamsBuilder params = new HttpParamsBuilder()
                     .appendParam(DEV_ID_K, IcqSession.DEV_ID_VALUE)
@@ -47,17 +64,28 @@ public class RegistrationHelper {
                 }
                 default: {
                     callback.onProtocolError();
-                    return;
                 }
             }
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "normalize: " + e.getMessage());
         }
-        callback.onNetworkError();
+
+        @Override
+        public void onFailBackground() {
+            callback.onNetworkError();
+        }
     }
 
-    public static void validatePhone(String msisdn, ValidatePhoneCallback callback) {
-        try {
+    private static class ValidatePhoneTask extends Task {
+
+        private final String msisdn;
+        private final RegistrationCallback callback;
+
+        private ValidatePhoneTask(String msisdn, RegistrationCallback callback) {
+            this.msisdn = msisdn;
+            this.callback = callback;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
             // Specifying normalize data.
             HttpParamsBuilder params = new HttpParamsBuilder()
                     .appendParam(DEV_ID_K, IcqSession.DEV_ID_VALUE)
@@ -74,22 +102,37 @@ public class RegistrationHelper {
                 case RESPONSE_OK: {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     String transId = dataObject.getString(TRANS_ID);
-                    callback.onPhoneValidated(transId);
+                    callback.onPhoneValidated(msisdn, transId);
                     return;
                 }
                 default: {
                     callback.onProtocolError();
-                    return;
                 }
             }
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "validate: " + e.getMessage());
         }
-        callback.onNetworkError();
+
+        @Override
+        public void onFailBackground() {
+            callback.onNetworkError();
+        }
     }
 
-    public static void loginPhone(String msisdn, String transId, String smsCode, LoginPhoneCallback callback) {
-        try {
+    private static class LoginPhoneTask extends Task {
+
+        private final String msisdn;
+        private final String transId;
+        private final String smsCode;
+        private final RegistrationCallback callback;
+
+        public LoginPhoneTask(String msisdn, String transId, String smsCode, RegistrationCallback callback) {
+            this.msisdn = msisdn;
+            this.transId = transId;
+            this.smsCode = smsCode;
+            this.callback = callback;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
             // Specifying normalize data.
             HttpParamsBuilder params = new HttpParamsBuilder()
                     .appendParam(DEV_ID_K, IcqSession.DEV_ID_VALUE)
@@ -117,30 +160,20 @@ public class RegistrationHelper {
                 }
                 default: {
                     callback.onProtocolError();
-                    return;
                 }
             }
-        } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "login phone: " + e.getMessage());
         }
-        callback.onNetworkError();
+
+        @Override
+        public void onFailBackground() {
+            callback.onNetworkError();
+        }
     }
 
-    public interface NormalizePhoneCallback {
+    public interface RegistrationCallback {
         public void onPhoneNormalized(String msisdn);
-        public void onProtocolError();
-        public void onNetworkError();
-    }
-
-    public interface ValidatePhoneCallback {
-        public void onPhoneValidated(String transId);
-        public void onProtocolError();
-        public void onNetworkError();
-    }
-
-    public interface LoginPhoneCallback {
-        public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey,
-                                        long expiresIn, long hostTime);
+        public void onPhoneValidated(String msisdn, String transId);
+        public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime);
         public void onProtocolError();
         public void onNetworkError();
     }

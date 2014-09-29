@@ -2,8 +2,7 @@ package com.tomclaw.mandarin.main.icq;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -16,18 +15,6 @@ import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.AMP;
-import static com.tomclaw.mandarin.im.icq.WimConstants.POST_PREFIX;
-import static com.tomclaw.mandarin.im.icq.WimConstants.START_SESSION_URL;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -43,6 +30,8 @@ public class IcqPhoneLoginActivity extends ChiefActivity {
     String transId;
     String msisdn;
 
+    RegistrationHelper.RegistrationCallback callback;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +44,14 @@ public class IcqPhoneLoginActivity extends ChiefActivity {
         phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
         smsCodeField = (EditText) findViewById(R.id.sms_code_field);
 
+        phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
         findViewById(R.id.validate_phone_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String countryCode = countryCodeField.getText().toString();
                 String phoneNumber = phoneNumberField.getText().toString();
-                normalizePhone(countryCode, phoneNumber);
+                requestSms(countryCode, phoneNumber);
             }
         });
         findViewById(R.id.login_phone_button).setOnClickListener(new View.OnClickListener() {
@@ -70,94 +61,75 @@ public class IcqPhoneLoginActivity extends ChiefActivity {
                 loginPhone(msisdn, transId, smsCode);
             }
         });
-    }
 
-    private void normalizePhone(final String countryCode, final String phoneNumber) {
-        PleaseWaitTask task = new PleaseWaitTask(this) {
+        callback = new RegistrationHelper.RegistrationCallback() {
+            @Override
+            public void onPhoneNormalized(String msisdn) {
+                RegistrationHelper.validatePhone(msisdn, callback);
+            }
 
             @Override
-            public void executeBackground() throws Throwable {
-                RegistrationHelper.normalizePhone(countryCode, phoneNumber, new RegistrationHelper.NormalizePhoneCallback() {
+            public void onPhoneValidated(final String msisdn, final String transId) {
+                MainExecutor.execute(new Runnable() {
                     @Override
-                    public void onPhoneNormalized(final String msisdn) {
-                        RegistrationHelper.validatePhone(msisdn, new RegistrationHelper.ValidatePhoneCallback() {
-                            @Override
-                            public void onPhoneValidated(final String transId) {
-                                MainExecutor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onSmsSent(msisdn, transId);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onProtocolError() {
-
-                            }
-
-                            @Override
-                            public void onNetworkError() {
-
-                            }
-                        });
+                    public void run() {
+                        onSmsSent(msisdn, transId);
                     }
+                });
+            }
 
+            @Override
+            public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime) {
+                final IcqAccountRoot accountRoot = new IcqAccountRoot();
+                accountRoot.setContext(IcqPhoneLoginActivity.this);
+                accountRoot.setUserId(login);
+                accountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
+                MainExecutor.execute(new Runnable() {
                     @Override
-                    public void onProtocolError() {
-
+                    public void run() {
+                        storeAccountRoot(accountRoot);
                     }
+                });
+            }
 
+            @Override
+            public void onProtocolError() {
+                MainExecutor.execute(new Runnable() {
                     @Override
-                    public void onNetworkError() {
+                    public void run() {
+                        onRequestError();
+                    }
+                });
+            }
 
+            @Override
+            public void onNetworkError() {
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        onRequestError();
                     }
                 });
             }
         };
-        TaskExecutor.getInstance().execute(task);
+    }
+
+    private void requestSms(final String countryCode, final String phoneNumber) {
+        RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
     }
 
     private void onSmsSent(String msisdn, String transId) {
         this.msisdn = msisdn;
         this.transId = transId;
-
         loginViewSwitcher.showNext();
     }
 
+    private void onRequestError() {
+        Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
+    }
+
     private void loginPhone(final String msisdn, final String transId, final String smsCode) {
-        PleaseWaitTask task = new PleaseWaitTask(this) {
-
-            @Override
-            public void executeBackground() throws Throwable {
-                RegistrationHelper.loginPhone(msisdn, transId, smsCode, new RegistrationHelper.LoginPhoneCallback() {
-                    @Override
-                    public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime) {
-                        final IcqAccountRoot accountRoot = new IcqAccountRoot();
-                        accountRoot.setContext(IcqPhoneLoginActivity.this);
-                        accountRoot.setUserId(login);
-                        accountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
-                        MainExecutor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                storeAccountRoot(accountRoot);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onProtocolError() {
-
-                    }
-
-                    @Override
-                    public void onNetworkError() {
-
-                    }
-                });
-            }
-        };
-        TaskExecutor.getInstance().execute(task);
+        RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
     }
 
     private void storeAccountRoot(IcqAccountRoot accountRoot) {

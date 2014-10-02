@@ -1,14 +1,17 @@
 package com.tomclaw.mandarin.main.icq;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.MainExecutor;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -17,71 +20,52 @@ import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 
 /**
- * Created by Solkin on 28.09.2014.
+ * Created by Solkin on 02.10.2014.
  */
-public class IcqPhoneLoginActivity extends ChiefActivity {
+public class SmsCodeActivity extends ChiefActivity {
 
-    ViewSwitcher loginViewSwitcher;
+    public static String EXTRA_MSISDN = "msisdn";
+    public static String EXTRA_TRANS_ID = "trans_id";
 
-    EditText countryCodeField;
-    EditText phoneNumberField;
     EditText smsCodeField;
+
+    RegistrationHelper.RegistrationCallback callback;
 
     String transId;
     String msisdn;
-
-    RegistrationHelper.RegistrationCallback callback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.icq_phone_login);
+        setContentView(R.layout.sms_code_activity);
 
-        loginViewSwitcher = (ViewSwitcher) findViewById(R.id.phone_login_view_switcher);
+        // Initialize action bar.
+        ActionBar bar = getActionBar();
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        countryCodeField = (EditText) findViewById(R.id.country_code_field);
-        phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
+        Intent intent = getIntent();
+        msisdn = intent.getStringExtra(EXTRA_MSISDN);
+        transId = intent.getStringExtra(EXTRA_TRANS_ID);
+
         smsCodeField = (EditText) findViewById(R.id.sms_code_field);
-
-        phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-
-        findViewById(R.id.validate_phone_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String countryCode = countryCodeField.getText().toString();
-                String phoneNumber = phoneNumberField.getText().toString();
-                requestSms(countryCode, phoneNumber);
-            }
-        });
-        findViewById(R.id.login_phone_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String smsCode = smsCodeField.getText().toString();
-                loginPhone(msisdn, transId, smsCode);
-            }
-        });
 
         callback = new RegistrationHelper.RegistrationCallback() {
             @Override
             public void onPhoneNormalized(String msisdn) {
-                RegistrationHelper.validatePhone(msisdn, callback);
             }
 
             @Override
             public void onPhoneValidated(final String msisdn, final String transId) {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onSmsSent(msisdn, transId);
-                    }
-                });
             }
 
             @Override
             public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime) {
                 final IcqAccountRoot accountRoot = new IcqAccountRoot();
-                accountRoot.setContext(IcqPhoneLoginActivity.this);
+                accountRoot.setContext(SmsCodeActivity.this);
                 accountRoot.setUserId(login);
                 accountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
                 MainExecutor.execute(new Runnable() {
@@ -114,22 +98,46 @@ public class IcqPhoneLoginActivity extends ChiefActivity {
         };
     }
 
-    private void requestSms(final String countryCode, final String phoneNumber) {
-        RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        inflateMenu(menu, R.menu.sms_code_menu, R.id.sms_code_menu);
+        return true;
     }
 
-    private void onSmsSent(String msisdn, String transId) {
-        this.msisdn = msisdn;
-        this.transId = transId;
-        loginViewSwitcher.showNext();
+    private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
+        getMenuInflater().inflate(menuRes, menu);
+        final MenuItem item = menu.findItem(menuItem);
+        item.getActionView().setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                menu.performIdentifierAction(item.getItemId(), 0);
+            }
+        });
     }
 
-    private void onRequestError() {
-        Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+            case R.id.sms_code_menu: {
+                String smsCode = smsCodeField.getText().toString();
+                loginPhone(msisdn, transId, smsCode);
+                break;
+            }
+        }
+        return true;
     }
 
     private void loginPhone(final String msisdn, final String transId, final String smsCode) {
         RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
+    }
+
+    private void onRequestError() {
+        Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
     }
 
     private void storeAccountRoot(IcqAccountRoot accountRoot) {

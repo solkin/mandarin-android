@@ -24,7 +24,7 @@ import com.tomclaw.mandarin.main.MainActivity;
 /**
  * Created by Solkin on 28.09.2014.
  */
-public class IcqUinLoginActivity extends ChiefActivity {
+public class PlainLoginActivity extends ChiefActivity {
 
     private EditText userIdEditText;
     private EditText userPasswordEditText;
@@ -89,7 +89,7 @@ public class IcqUinLoginActivity extends ChiefActivity {
                         @Override
                         public void run() {
                             progressDialog.dismiss();
-                            Toast.makeText(IcqUinLoginActivity.this, R.string.invalid_credentials,
+                            Toast.makeText(PlainLoginActivity.this, R.string.invalid_credentials,
                                     Toast.LENGTH_SHORT).show();
                         }
                     });

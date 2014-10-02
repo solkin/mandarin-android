@@ -297,4 +297,6 @@
     <string name="city_search">Город</string>
     <string name="mark_as_read">Прочитано</string>
     <string name="mark_as_read_all">Прочитано всё</string>
+    <string name="next">Далее</string>
+    <string name="complete">Готово</string>
 </resources>

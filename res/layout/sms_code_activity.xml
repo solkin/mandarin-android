@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="8dp">
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="А здесь задача усложнаяется. Надо ввести код из входящей СМСки, которая придёт на указанный телефон с минуты на минуту."
+            android:gravity="center_horizontal"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light"/>
+    <EditText
+            android:id="@+id/sms_code_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="СМС-код"
+            android:gravity="center_horizontal"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light"
+            android:layout_marginTop="12dp"
+            android:inputType="number"/>
+</LinearLayout>

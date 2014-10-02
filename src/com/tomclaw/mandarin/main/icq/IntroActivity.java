@@ -3,12 +3,9 @@ package com.tomclaw.mandarin.main.icq;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.ChiefActivity;
 
 /**
@@ -17,7 +14,7 @@ import com.tomclaw.mandarin.main.ChiefActivity;
  * Date: 4/17/13
  * Time: 4:07 PM
  */
-public class IcqIntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
+public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     public static final String EXTRA_START_HELPER = "start_helper";
     private EditText userIdEditText;
@@ -46,13 +43,13 @@ public class IcqIntroActivity extends ChiefActivity implements ChiefActivity.Cor
         findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getBaseContext(), IcqPhoneLoginActivity.class));
+                startActivity(new Intent(getBaseContext(), PhoneLoginActivity.class));
             }
         });
         findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getBaseContext(), IcqUinLoginActivity.class));
+                startActivity(new Intent(getBaseContext(), PlainLoginActivity.class));
             }
         });
     }

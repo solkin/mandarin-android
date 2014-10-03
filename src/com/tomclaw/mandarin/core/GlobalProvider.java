@@ -343,7 +343,9 @@ public class GlobalProvider extends ContentProvider {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
         // Notify ContentResolver about data changes.
-        getContext().getContentResolver().notifyChange(uri, null);
+        if(rows > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return rows;
     }
 
@@ -352,7 +354,9 @@ public class GlobalProvider extends ContentProvider {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
         // Notify ContentResolver about data changes.
-        getContext().getContentResolver().notifyChange(uri, null);
+        if(rows > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return rows;
     }
 

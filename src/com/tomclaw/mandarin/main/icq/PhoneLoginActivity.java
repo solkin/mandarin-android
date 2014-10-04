@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
@@ -23,7 +24,9 @@ import com.tomclaw.mandarin.main.MainActivity;
 /**
  * Created by Solkin on 28.09.2014.
  */
-public class PhoneLoginActivity extends ChiefActivity {
+public class PhoneLoginActivity extends Activity {
+
+    private static int REQUEST_CODE_COUNTRY = 1;
 
     TextView countryCodeField;
     EditText phoneNumberField;
@@ -33,6 +36,9 @@ public class PhoneLoginActivity extends ChiefActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTheme(PreferenceHelper.isDarkTheme(this) ?
+                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
 
         setContentView(R.layout.icq_phone_login);
 
@@ -44,8 +50,15 @@ public class PhoneLoginActivity extends ChiefActivity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         countryCodeField = (TextView) findViewById(R.id.country_code_field);
-        phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
+        countryCodeField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
+                        REQUEST_CODE_COUNTRY);
+            }
+        });
 
+        phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         callback = new RegistrationHelper.RegistrationCallback() {
@@ -140,7 +153,12 @@ public class PhoneLoginActivity extends ChiefActivity {
     }
 
     @Override
-    public void onCoreServiceIntent(Intent intent) {
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_CODE_COUNTRY && resultCode == RESULT_OK) {
+            int code = data.getIntExtra(CountryCodeActivity.EXTRA_COUNTRY_CODE, 0);
+            if(code != 0) {
+                countryCodeField.setText("+" + code);
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@
             android:layout_height="wrap_content">
         <TextView
                 android:id="@+id/country_code_field"
-                style="@android:style/Widget.Holo.Light.Spinner"
+                style="?android:spinnerStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"

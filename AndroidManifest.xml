@@ -107,7 +107,27 @@
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name=".main.AccountAddActivity"
+        <activity android:name=".main.icq.IntroActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.icq.PlainLoginActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.icq.PhoneLoginActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.icq.SmsCodeActivity"
+                  android:label="@string/app_name"
+                  android:windowActionBarOverlay="true"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.icq.CountryCodeActivity"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">

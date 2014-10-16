@@ -276,7 +276,6 @@ public class IcqSession {
                             // Something wend wrong. Let's reconnect if status is not offline.
                             // Reset login and session data.
                             Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
-                            icqAccountRoot.resetLoginData();
                             icqAccountRoot.resetSessionData();
                             icqAccountRoot.updateAccount();
                             return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
@@ -475,7 +474,6 @@ public class IcqSession {
                 Log.d(Settings.LOG_TAG, "error while processing my info.");
             }
         } else if (eventType.equals(SESSION_ENDED)) {
-            icqAccountRoot.resetLoginData();
             icqAccountRoot.resetSessionData();
             icqAccountRoot.carriedOff();
         }

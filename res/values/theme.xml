@@ -20,7 +20,9 @@
     <color name="status_message_color">#FFFAFAFA</color>
     <color name="account_nick_color">#FFFAFAFA</color>
     <color name="tint_color">#70000000</color>
+    <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
+    <color name="flat_text_background_color">#AAffffff</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="header_head_color">#F0CCCCCC</item>
         <item name="header_back_color">#99CCCCCC</item>

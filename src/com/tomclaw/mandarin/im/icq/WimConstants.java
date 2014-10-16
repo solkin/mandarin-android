@@ -10,6 +10,9 @@ public class WimConstants {
 
     public static final String TOKEN_A = "a";
     public static final String CLIENT_LOGIN_URL = "https://api.login.icq.net/auth/clientLogin";
+    public static final String NORMALIZE_PHONE_URL = "https://www.icq.com/smsreg/normalizePhoneNumber.php";
+    public static final String VALIDATE_PHONE_URL = "https://www.icq.com/smsreg/requestPhoneValidation.php";
+    public static final String LOGIN_PHONE_URL = "https://www.icq.com/smsreg/loginWithPhoneNumber.php";
     public static final String CLIENT_NAME = "clientName";
     public static final String CLIENT_VERSION = "clientVersion";
     public static final String DEV_ID = "devId";
@@ -23,6 +26,7 @@ public class WimConstants {
     public static final String HOST_TIME = "hostTime";
     public static final String STATUS_CODE = "statusCode";
     public static final String SESSION_SECRET = "sessionSecret";
+    public static final String SESSION_KEY = "sessionKey";
     public static final String TOKEN_OBJECT = "token";
     public static final String EXPIRES_IN = "expiresIn";
     public static final String ASSERT_CAPS = "assertCaps";
@@ -89,6 +93,17 @@ public class WimConstants {
     public static final String IM_STATES_ARRAY = "imStates";
     public static final String REQUEST_ID = "requestId";
     public static final String FORMAT_JSON = "json";
+    public static final String COUNTRY_CODE = "countryCode";
+    public static final String PHONE_NUMBER = "phoneNumber";
+    public static final String MSISDN = "msisdn";
+    public static final String LOCALE = "locale";
+    public static final String SMS_FORMAT_TYPE = "smsFormatType";
+    public static final String HUMAN = "human";
+    public static final String CLIENT = "client";
+    public static final String ICQ = "icq";
+    public static final String TRANS_ID = "trans_id";
+    public static final String SMS_CODE = "sms_code";
+    public static final String CREATE_ACCOUNT = "create_account";
     public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",

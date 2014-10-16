@@ -22,10 +22,8 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
-import com.tomclaw.mandarin.main.AccountAddActivity;
+import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.main.SettingsActivity;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.main.tasks.AccountInfoTask;
@@ -106,8 +104,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         addAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent accountAddIntent = new Intent(getContext(), AccountAddActivity.class);
-                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+                Intent accountAddIntent = new Intent(getContext(), IntroActivity.class);
                 activity.startActivity(accountAddIntent);
                 closeAccountsPanel();
             }

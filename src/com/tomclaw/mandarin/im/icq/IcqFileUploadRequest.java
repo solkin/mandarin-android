@@ -6,6 +6,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONObject;
@@ -68,20 +69,12 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
 
     @Override
     protected String getUrl(String name, long size) throws Throwable {
-        String params = "a" + "=" + StringUtil.urlEncode(getAccountRoot().getTokenA())
-                + "&" + "aimsid" + "=" + StringUtil.urlEncode(getAccountRoot().getAimSid())
-                + "&" + "client" + "=" + CLIENT_NAME
-                + "&" + "f" + "=" + "json"
-                + "&" + "filename" + "=" + StringUtil.urlEncode(name)
-                + "&" + "k" + "=" + StringUtil.urlEncode(IcqSession.DEV_ID_VALUE)
-                + "&" + "size" + "=" + size
-                + "&" + "ts" + "=" + System.currentTimeMillis() / 1000;
+        HttpParamsBuilder builder = new HttpParamsBuilder();
+        builder.appendParam("client", CLIENT_NAME);
+        builder.appendParam("filename", name);
+        builder.appendParam("size", String.valueOf(size));
 
-        String hash = HttpUtil.GET.concat(WimConstants.AMP).concat(StringUtil.urlEncode(INIT_URL))
-                .concat(WimConstants.AMP).concat(StringUtil.urlEncode(params));
-
-        String url = INIT_URL + "?" + params + "&sig_sha256=" +
-                StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, getAccountRoot().getSessionKey()));
+        String url = getAccountRoot().getSession().signRequest(HttpUtil.GET, INIT_URL, builder);
 
         Log.d(Settings.LOG_TAG, url);
 
@@ -96,22 +89,11 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
             case 200: {
                 JSONObject dataObject = rootObject.getJSONObject("data");
                 String host = dataObject.getString("host");
-                String urlBody = dataObject.getString("url");
+                String body = dataObject.getString("url");
 
-                String uploadUrl = "http://" + host + urlBody;
-                String signParams = "a" + "=" + StringUtil.urlEncode(getAccountRoot().getTokenA())
-                        + "&" + "aimsid" + "=" + StringUtil.urlEncode(getAccountRoot().getAimSid())
-                        + "&" + "client" + "=" + CLIENT_NAME
-                        + "&" + "f" + "=" + "json"
-                        + "&" + "k" + "=" + StringUtil.urlEncode(IcqSession.DEV_ID_VALUE)
-                        + "&" + "ts" + "=" + System.currentTimeMillis() / 1000;
-                hash = HttpUtil.POST.concat(WimConstants.AMP).concat(StringUtil.urlEncode(uploadUrl))
-                        .concat(WimConstants.AMP).concat(StringUtil.urlEncode(signParams));
-
-                url = uploadUrl + "?" + signParams + "&sig_sha256=" +
-                        StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, getAccountRoot().getSessionKey()));
-
-                return url;
+                builder.reset();
+                return getAccountRoot().getSession().signRequest(
+                        HttpUtil.POST, "http://".concat(host).concat(body), builder);
             }
             default: {
                 identifyErrorResponse(status);

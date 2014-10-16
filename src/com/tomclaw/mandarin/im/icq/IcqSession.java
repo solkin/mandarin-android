@@ -13,6 +13,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.apache.http.NameValuePair;
@@ -24,10 +25,13 @@ import org.json.JSONObject;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,7 +166,7 @@ public class IcqSession {
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, HttpUtil.UTF8_ENCODING))
                     .concat(AMP).concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs), HttpUtil.UTF8_ENCODING));
 
-            nameValuePairs.add(new Pair<String, String>("sig_sha256",
+            nameValuePairs.add(new Pair<String, String>(SIG_SHA256,
                     StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
             Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
             try {
@@ -551,5 +555,21 @@ public class IcqSession {
             }
         }
         return moodUrl;
+    }
+
+    public String signRequest(String method, String url, HttpParamsBuilder builder)
+            throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
+        builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA())
+                .appendParam(WimConstants.AIM_SID, icqAccountRoot.getAimSid())
+                .appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
+                .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
+                .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
+        builder.sortParams();
+        String params = builder.build();
+        String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))
+                .concat(WimConstants.AMP).concat(StringUtil.urlEncode(params));
+        return url.concat(WimConstants.QUE).concat(params).concat(WimConstants.AMP)
+                .concat(WimConstants.SIG_SHA256).concat(EQUAL)
+                .concat(StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
     }
 }

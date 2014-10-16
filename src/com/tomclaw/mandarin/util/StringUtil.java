@@ -60,7 +60,6 @@ public class StringUtil {
         return Entities.XML.unescape(string);
     }
 
-
     public static void copyStringToClipboard(Context context, String string, int toastText) {
         ClipboardManager clipboardManager = (ClipboardManager)
                 context.getSystemService(Context.CLIPBOARD_SERVICE);

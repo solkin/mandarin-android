@@ -41,7 +41,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class IcqSession {
 
-    private static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
+    public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";

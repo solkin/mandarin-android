@@ -26,6 +26,7 @@ public class CoreService extends Service {
     private SessionHolder sessionHolder;
     private RequestDispatcher requestDispatcher;
     private RequestDispatcher downloadDispatcher;
+    private RequestDispatcher uploadDispatcher;
     private HistoryDispatcher historyDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
@@ -107,12 +108,14 @@ public class CoreService extends Service {
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_SHORT);
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
+        uploadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_UPLOAD);
         historyDispatcher = new HistoryDispatcher(this);
         Log.d(Settings.LOG_TAG, "CoreService serviceInit");
         // Loading all data for this application session.
         sessionHolder.load();
         requestDispatcher.startObservation();
         downloadDispatcher.startObservation();
+        uploadDispatcher.startObservation();
         historyDispatcher.startObservation();
         // Service is now ready.
         updateState(STATE_UP);
@@ -148,6 +151,7 @@ public class CoreService extends Service {
         if (networkEvent && isConnected) {
             requestDispatcher.notifyQueue();
             downloadDispatcher.notifyQueue();
+            uploadDispatcher.notifyQueue();
         }
         // Read messages event maybe?
         boolean isReadMessages = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);

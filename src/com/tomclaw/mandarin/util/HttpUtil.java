@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.util;
 
 import android.util.Pair;
+import android.webkit.MimeTypeMap;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 import org.apache.http.HttpStatus;
 
@@ -124,5 +125,15 @@ public class HttpUtil {
             byteArrayOutputStream.write(buffer, 0, read);
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            type = mime.getMimeTypeFromExtension(extension);
+        }
+        return type;
     }
 }

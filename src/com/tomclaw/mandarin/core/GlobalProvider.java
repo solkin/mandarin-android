@@ -97,6 +97,12 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_MESSAGE_READ = "message_read";
     public static final String HISTORY_NOTICE_SHOWN = "notice_shown";
     public static final String HISTORY_SEARCH_FIELD = "search_field";
+    public static final String HISTORY_CONTENT_TYPE = "content_type";
+    public static final String HISTORY_CONTENT_SIZE = "content_size";
+    public static final String HISTORY_CONTENT_STATE = "content_state";
+    public static final String HISTORY_CONTENT_PROGRESS = "content_progress";
+    public static final String HISTORY_CONTENT_PATH = "content_path";
+    public static final String HISTORY_PREVIEW_HASH = "preview_hash";
 
     // Database create scripts.
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
@@ -138,7 +144,10 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
-            + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text" + ");";
+            + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text, "
+            + HISTORY_CONTENT_TYPE + " int, " + HISTORY_CONTENT_SIZE + " bigint, "
+            + HISTORY_CONTENT_STATE + " int, " + HISTORY_CONTENT_PROGRESS + " int, "
+            + HISTORY_CONTENT_PATH + " text, " + HISTORY_PREVIEW_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +

@@ -10,6 +10,10 @@
           android:icon="@drawable/social_person"
           android:showAsAction="ifRoom"
           android:title="@string/buddy_info"/>
+    <item android:id="@+id/send_file_menu"
+          android:icon="@drawable/ic_action_new_attachment"
+          android:showAsAction="ifRoom"
+          android:title="@string/send_file"/>
     <item android:id="@+id/close_chat_menu"
           android:icon="@drawable/content_remove"
           android:showAsAction="never"

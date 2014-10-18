@@ -6,4 +6,5 @@
     <dimen name="indicator_height">20dp</dimen>
     <dimen name="smiley_size">50dp</dimen>
     <dimen name="chat_date_size">17sp</dimen>
+    <dimen name="progress_radius">4sp</dimen>
 </resources>

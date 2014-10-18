@@ -17,10 +17,14 @@ public class BitmapTask extends WeakObjectTask<ImageView> {
     private int width, height;
 
     public BitmapTask(ImageView imageView, String hash) {
+        this(imageView, hash, imageView.getWidth(), imageView.getHeight());
+    }
+
+    public BitmapTask(ImageView imageView, String hash, int width, int height) {
         super(imageView);
         this.hash = hash;
-        this.width = imageView.getWidth();
-        this.height = imageView.getHeight();
+        this.width = width;
+        this.height = height;
     }
 
     public static String getImageTag(ImageView imageView) {

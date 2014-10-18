@@ -100,7 +100,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
 
         // Buddy avatar.
         ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar, false);
     }
 
     protected abstract int getLayout();

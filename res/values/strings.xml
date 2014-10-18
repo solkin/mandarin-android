@@ -299,4 +299,6 @@
     <string name="mark_as_read_all">Прочитано всё</string>
     <string name="next">Далее</string>
     <string name="complete">Готово</string>
+    <string name="send_file">Отправить файл</string>
+    <string name="out_file_error">Ошибка передачи файла</string>
 </resources>

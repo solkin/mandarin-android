@@ -151,7 +151,7 @@ public class AccountsAdapter extends CursorAdapter implements
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
         QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
 
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override

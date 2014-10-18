@@ -38,6 +38,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
     @Override
     public int executeRequest() {
         try {
+            onStarted();
             File file = new File(path);
             if(!file.exists()) {
                 throw new FileNotFoundException();
@@ -150,6 +151,8 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             }
         }
     }
+
+    protected abstract void onStarted() throws Throwable;
 
     protected abstract void onSuccess(String response) throws Throwable;
 

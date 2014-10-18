@@ -4,17 +4,14 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.FilterQueryProvider;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -23,6 +20,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
+import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 /**
@@ -61,6 +59,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
     private static int COLUMN_MESSAGE_READ;
     private static int COLUMN_ROW_AUTO_ID;
+    private static int COLUMN_CONTENT_TYPE;
+    private static int COLUMN_CONTENT_SIZE;
+    private static int COLUMN_CONTENT_STATE;
+    private static int COLUMN_CONTENT_PROGRESS;
+    private static int COLUMN_PREVIEW_HASH;
 
     private Context context;
     private LayoutInflater inflater;
@@ -108,6 +111,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
         COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
         COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
+        COLUMN_CONTENT_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE);
+        COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
+        COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
+        COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
+        COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -175,6 +183,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
+        // Content message data
+        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+        long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
+        int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
+        int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
+        String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         // Select message type.
@@ -195,9 +209,58 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
                 view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
-                ((TextView) view.findViewById(R.id.out_text)).setText(messageText);
                 ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
                 ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
+                // Updating content-specific data.
+                TextView outText = (TextView) view.findViewById(R.id.out_text);
+                View outFile = view.findViewById(R.id.out_file);
+                ImageView outPicture = (ImageView) view.findViewById(R.id.out_preview);
+                View outError = view.findViewById(R.id.out_error);
+                View outProgressContainer = view.findViewById(R.id.out_progress_container);
+                ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
+                TextView outSize = (TextView) view.findViewById(R.id.out_size);
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
+                        outText.setVisibility(View.VISIBLE);
+                        outFile.setVisibility(View.GONE);
+                        outText.setText(messageText);
+                        outPicture.setImageResource(android.R.color.transparent);
+                        outProgress.setProgress(0);
+                        outSize.setText("");
+                        break;
+                    }
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
+                        outText.setVisibility(View.GONE);
+                        outFile.setVisibility(View.VISIBLE);
+                        outText.setText("");
+                        BitmapCache.getInstance().getBitmapAsync(outPicture, previewHash, R.drawable.ic_action_time, true);
+                        switch (contentState) {
+                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                outProgressContainer.setVisibility(View.VISIBLE);
+                                outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                outError.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                outError.setVisibility(View.GONE);
+                                break;
+                            }
+                        }
+                        outProgress.setProgress(contentProgress);
+                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        break;
+                    }
+                }
                 break;
             }
             default: {

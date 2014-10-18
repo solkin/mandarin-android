@@ -104,6 +104,17 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_CONTENT_PATH = "content_path";
     public static final String HISTORY_PREVIEW_HASH = "preview_hash";
 
+    public static final int HISTORY_CONTENT_TYPE_TEXT = 0;
+    public static final int HISTORY_CONTENT_TYPE_PICTURE = 1;
+    public static final int HISTORY_CONTENT_TYPE_VIDEO = 2;
+    public static final int HISTORY_CONTENT_TYPE_AUDIO = 3;
+    public static final int HISTORY_CONTENT_TYPE_FILE = 4;
+
+    public static final int HISTORY_CONTENT_STATE_STABLE = 0;
+    public static final int HISTORY_CONTENT_STATE_WAITING = 1;
+    public static final int HISTORY_CONTENT_STATE_RUNNING = 2;
+    public static final int HISTORY_CONTENT_STATE_FAILED = 3;
+
     // Database create scripts.
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
@@ -145,8 +156,10 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
             + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text, "
-            + HISTORY_CONTENT_TYPE + " int, " + HISTORY_CONTENT_SIZE + " bigint, "
-            + HISTORY_CONTENT_STATE + " int, " + HISTORY_CONTENT_PROGRESS + " int, "
+            + HISTORY_CONTENT_TYPE + " int default " + HISTORY_CONTENT_TYPE_TEXT + ", "
+            + HISTORY_CONTENT_SIZE + " bigint default 0, "
+            + HISTORY_CONTENT_STATE + " int default " + HISTORY_CONTENT_STATE_STABLE + ", "
+            + HISTORY_CONTENT_PROGRESS + " int default 0, "
             + HISTORY_CONTENT_PATH + " text, " + HISTORY_PREVIEW_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +

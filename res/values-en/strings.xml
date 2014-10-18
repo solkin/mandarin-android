@@ -287,4 +287,6 @@
     <string name="mark_as_read_all">Mark all as read</string>
     <string name="next">Next</string>
     <string name="complete">Complete</string>
+    <string name="send_file">Send file</string>
+    <string name="out_file_error">File sending error</string>
 </resources>

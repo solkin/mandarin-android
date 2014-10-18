@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.util;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
@@ -107,5 +108,13 @@ public class StringUtil {
 
     public static boolean isEmptyOrWhitespace(String string) {
         return TextUtils.isEmpty(string) || TextUtils.isEmpty(string.trim());
+    }
+
+    public static String formatBytes(Resources resources, long bytes) {
+        int unit = 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = "KMGTPE".charAt(exp - 1) + "i";
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 }

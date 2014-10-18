@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.util;
 
+import android.text.TextUtils;
 import android.util.Pair;
 import android.webkit.MimeTypeMap;
 import com.tomclaw.mandarin.im.icq.WimConstants;
@@ -159,9 +160,20 @@ public class HttpUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static String getMimeType(String url) {
+    public static String getFileExtensionFromPath(String path) {
+        String suffix = "";
+        if(!TextUtils.isEmpty(path)) {
+            int index = path.lastIndexOf(".");
+            if (index != -1) {
+                suffix = path.substring(index + 1);
+            }
+        }
+        return suffix;
+    }
+
+    public static String getMimeType(String path) {
         String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        String extension = getFileExtensionFromPath(path);
         if (extension != null) {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             type = mime.getMimeTypeFromExtension(extension);

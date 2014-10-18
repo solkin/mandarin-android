@@ -23,6 +23,12 @@
     <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
     <color name="flat_text_background_color">#AAffffff</color>
+    <color name="preview_progress_background">#70000000</color>
+    <color name="progress_background_color">#70ffffff</color>
+    <color name="progress_fore_color">#36D7B7</color>
+    <color name="file_size_text_color">#fafafa</color>
+    <color name="failed_preview_tint">#70000000</color>
+    <color name="out_error_text_color">#fafafa</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="header_head_color">#F0CCCCCC</item>
         <item name="header_back_color">#99CCCCCC</item>

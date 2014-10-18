@@ -1,8 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Log;
-import com.tomclaw.mandarin.core.RangedUploadRequest;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
@@ -22,11 +21,23 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     private static final String CLIENT_NAME = "ICQ";
     private final String INIT_URL = "http://files.icq.com/files/init";
 
+    private String buddyId;
+    private String cookie;
+
     public IcqFileUploadRequest() {
     }
 
-    public IcqFileUploadRequest(String path) {
+    public IcqFileUploadRequest(String path, String buddyId, String cookie) {
         super(path);
+        this.buddyId = buddyId;
+        this.cookie = cookie;
+    }
+
+    @Override
+    protected void onStarted() throws Throwable {
+        Log.d(Settings.LOG_TAG, "onStarted: " + getPath());
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, cookie);
     }
 
     @Override
@@ -43,6 +54,10 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
                 String mime = dataObject.getString("mime");
                 String staticUrl = dataObject.getString("static_url");
                 Log.d(Settings.LOG_TAG, "onSuccess: " + staticUrl);
+                QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                        GlobalProvider.HISTORY_CONTENT_STATE_STABLE, cookie);
+                RequestHelper.requestMessage(getAccountRoot().getContentResolver(),
+                        getAccountRoot().getAccountDbId(), buddyId, cookie, staticUrl);
                 break;
             }
             default: {
@@ -54,17 +69,21 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     @Override
     protected void onFail() {
         Log.d(Settings.LOG_TAG, "onFail");
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_FAILED, cookie);
     }
 
     @Override
     public void onFileNotFound() {
         Log.d(Settings.LOG_TAG, "onFileNotFound: " + getPath());
-
+        onFail();
     }
 
     @Override
     protected void onBufferReleased(long sent, long size) {
         Log.d(Settings.LOG_TAG, "onBufferReleased " + sent + "/" + size);
+        int progress = (int) (100 * sent / size);
+        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
     }
 
     @Override

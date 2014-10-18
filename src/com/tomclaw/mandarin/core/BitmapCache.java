@@ -57,9 +57,18 @@ public class BitmapCache {
      * @param imageView       - image view to show image
      * @param hash            - required image hash
      * @param defaultResource - default resource to show while original image being loaded and scaled
+     * @param original        - if false, image will be cached with specified imageView size,
+     *                          if true original size image will be used
      */
-    public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
-        Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+    public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource, boolean original) {
+        int width, height;
+        if(original) {
+            width = height = BITMAP_SIZE_ORIGINAL;
+        } else {
+            width = imageView.getWidth();
+            height = imageView.getHeight();
+        }
+        Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
         // Checking for there is no cached bitmap and reset is really required.
         if (bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
             imageView.setImageResource(defaultResource);
@@ -68,7 +77,7 @@ public class BitmapCache {
         if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
             if (bitmap == null) {
-                TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
+                TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash, width, height));
             } else {
                 imageView.setImageBitmap(bitmap);
             }
@@ -132,7 +141,8 @@ public class BitmapCache {
         File file = getBitmapFile(hash);
         try {
             OutputStream os = new FileOutputStream(file);
-            bitmap.compress(COMPRESS_FORMAT, 95, os);
+            bitmap.compress(COMPRESS_FORMAT, 85, os);
+            os.flush();
             os.close();
             return true;
         } catch (IOException e) {

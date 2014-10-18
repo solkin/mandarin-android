@@ -31,14 +31,16 @@ public class RequestHelper {
             if (cursor.moveToFirst()) {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
-                // insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
-
-
-                RequestHelper.requestFileUpload(contentResolver, accountDbId, message);
+                requestMessage(contentResolver, accountDbId, buddyId, cookie, message);
             }
             cursor.close();
         }
+    }
+
+    public static void requestMessage(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                      String cookie, String message) {
+        IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
     }
 
     public static void endSession(ContentResolver contentResolver, int accountDbId) {
@@ -62,9 +64,23 @@ public class RequestHelper {
         }
     }
 
-    public static void requestFileUpload(ContentResolver contentResolver, int accountDbId, String path) {
-        RangedUploadRequest uploadRequest = new IcqFileUploadRequest(path);
-        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadRequest);
+    public static void requestFile(ContentResolver contentResolver, int buddyDbId, String cookie, String path) {
+        // Obtain account db id.
+        // TODO: out this method.
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Oh, cursor may be null sometimes.
+        if (cursor != null) {
+            // Cursor may have more than only one entry.
+            // TODO: check for at least one buddy present.
+            if (cursor.moveToFirst()) {
+                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
+                RangedUploadRequest uploadRequest = new IcqFileUploadRequest(path, buddyId, cookie);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadRequest);
+            }
+            cursor.close();
+        }
     }
 
     public static void requestAccountAvatar(ContentResolver contentResolver, int accountDbId, String url) {

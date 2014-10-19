@@ -940,12 +940,6 @@ public class ChatActivity extends ChiefActivity {
                 long size = uriFile.getSize();
                 String hash = "";
                 int contentType = uriFile.getContentType();
-                Bitmap bitmap = uriFile.getThumbnail(activity);
-                // Check and store bitmap in bitmap cache.
-                if(bitmap != null) {
-                    hash = HttpUtil.getUrlHash(uriFile.toString());
-                    BitmapCache.getInstance().saveBitmapSync(hash, bitmap);
-                }
                 QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
                         contentType, size, hash);
                 // Sending protocol message request.

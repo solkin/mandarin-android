@@ -16,6 +16,7 @@ import android.os.CancellationSignal;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 /**
  * Created by Solkin on 18.10.2014.
@@ -72,12 +74,17 @@ public class UriFile extends VirtualFile {
     public Bitmap getThumbnail(Context context) {
         float sizeDp = context.getResources().getDimension(R.dimen.preview_size);
         int sizePx = (int) convertDpToPixel(sizeDp, context);
+        long time = System.currentTimeMillis();
+        Bitmap bitmap;
         if (mimeType.startsWith("image")) {
-            return BitmapHelper.decodeSampledBitmapFromUri(context, getUri(), sizePx, sizePx);
+            bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, getUri(), sizePx, sizePx);
         } else if (mimeType.startsWith("video")) {
-            return BitmapHelper.createVideoThumbnail(context, getUri(), sizePx);
+            bitmap = BitmapHelper.createVideoThumbnail(context, getUri(), sizePx);
+        } else {
+            bitmap = null;
         }
-        return null;
+        Log.d(Settings.LOG_TAG, "preview sampling: " + (System.currentTimeMillis() - time));
+        return bitmap;
     }
 
     /**

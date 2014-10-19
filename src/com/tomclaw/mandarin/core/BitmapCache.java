@@ -138,10 +138,14 @@ public class BitmapCache {
     }
 
     public boolean saveBitmapSync(String hash, Bitmap bitmap) {
+        return saveBitmapSync(hash, bitmap, COMPRESS_FORMAT);
+    }
+
+    public boolean saveBitmapSync(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
         File file = getBitmapFile(hash);
         try {
             OutputStream os = new FileOutputStream(file);
-            bitmap.compress(COMPRESS_FORMAT, 85, os);
+            bitmap.compress(compressFormat, 85, os);
             os.flush();
             os.close();
             return true;

@@ -32,6 +32,10 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int[] ITEM_LAYOUTS = new int[]{
+            R.layout.chat_item_error,
+            R.layout.chat_item_text_inc,
+            R.layout.chat_item_text_out};
     private static final int[] MESSAGE_TYPES = new int[]{
             R.id.error_message,
             R.id.incoming_message,
@@ -147,19 +151,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             bindView(view, context, cursor);
         } catch (Throwable ex) {
-            if (convertView == null) {
-                view = inflater.inflate(R.layout.chat_item, parent, false);
-                Log.d(Settings.LOG_TAG, "create new error view");
-            } else {
-                view = convertView;
-                Log.d(Settings.LOG_TAG, "using existing view for error bubble");
-            }
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
-            view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
-            view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
-            view.findViewById(R.id.error_message).setVisibility(View.VISIBLE);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
+            view = inflater.inflate(R.layout.chat_item_error, parent, false);
+            ex.printStackTrace();
         }
         return view;
     }
@@ -172,7 +166,28 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return inflater.inflate(R.layout.chat_item, parent, false);
+        int type = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        return inflater.inflate(ITEM_LAYOUTS[type], parent, false);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Cursor cursor = getCursor();
+        int type;
+        try {
+            if (cursor == null || !cursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+            type = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        } catch (Throwable ex) {
+            type = 0;
+        }
+        return type;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 3;
     }
 
     @Override
@@ -194,20 +209,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         // Select message type.
         switch (MESSAGE_TYPES[messageType]) {
             case R.id.incoming_message: {
-                // Update visibility.
-                view.findViewById(R.id.incoming_message).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
-                view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }
             case R.id.outgoing_message: {
-                // Update visibility.
-                view.findViewById(R.id.outgoing_message).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
-                view.findViewById(R.id.error_message).setVisibility(View.GONE);
                 // Updating data.
                 ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
                 ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);

@@ -229,6 +229,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outSize.setText("");
                         break;
                     }
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
                     case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
                         outText.setVisibility(View.GONE);
                         outFile.setVisibility(View.VISIBLE);

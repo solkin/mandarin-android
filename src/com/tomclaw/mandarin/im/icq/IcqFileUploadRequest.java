@@ -24,18 +24,21 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     private String buddyId;
     private String cookie;
 
+    private UriFile uriFile;
+
     public IcqFileUploadRequest() {
     }
 
-    public IcqFileUploadRequest(String path, String buddyId, String cookie) {
-        super(path);
+    public IcqFileUploadRequest(UriFile uriFile, String buddyId, String cookie) {
+        super();
+        this.uriFile = uriFile;
         this.buddyId = buddyId;
         this.cookie = cookie;
     }
 
     @Override
     protected void onStarted() throws Throwable {
-        Log.d(Settings.LOG_TAG, "onStarted: " + getPath());
+        Log.d(Settings.LOG_TAG, "onStarted");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, cookie);
     }
@@ -54,8 +57,10 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
                 String mime = dataObject.getString("mime");
                 String staticUrl = dataObject.getString("static_url");
                 Log.d(Settings.LOG_TAG, "onSuccess: " + staticUrl);
-                QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                        GlobalProvider.HISTORY_CONTENT_STATE_STABLE, cookie);
+                String text = fileName + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
+                        + "\n" + staticUrl;
+                QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
+                        GlobalProvider.HISTORY_CONTENT_STATE_STABLE, text, cookie);
                 RequestHelper.requestMessage(getAccountRoot().getContentResolver(),
                         getAccountRoot().getAccountDbId(), buddyId, cookie, staticUrl);
                 break;
@@ -75,7 +80,7 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
 
     @Override
     public void onFileNotFound() {
-        Log.d(Settings.LOG_TAG, "onFileNotFound: " + getPath());
+        Log.d(Settings.LOG_TAG, "onFileNotFound");
         onFail();
     }
 
@@ -84,6 +89,11 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
         Log.d(Settings.LOG_TAG, "onBufferReleased " + sent + "/" + size);
         int progress = (int) (100 * sent / size);
         QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
+    }
+
+    @Override
+    public VirtualFile getVirtualFile() {
+        return uriFile;
     }
 
     @Override

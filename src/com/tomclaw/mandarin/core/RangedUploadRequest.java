@@ -1,12 +1,13 @@
 package com.tomclaw.mandarin.core;
 
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.util.HttpUtil;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -26,36 +27,27 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     private final transient HttpClient httpClient = new DefaultHttpClient();
 
-    private String path;
-
     public RangedUploadRequest() {
-    }
-
-    public RangedUploadRequest(String path) {
-        this.path = path;
     }
 
     @Override
     public int executeRequest() {
         try {
             onStarted();
-            File file = new File(path);
-            if(!file.exists()) {
-                throw new FileNotFoundException();
-            }
-            long size = file.length();
+            VirtualFile virtualFile = getVirtualFile();
+            long size = virtualFile.getSize();
             long sent = 0;
             int cache;
             byte[] buffer = new byte[getBufferSize()];
-            String contentType = HttpUtil.getMimeType(path);
+            String contentType = virtualFile.getMimeType();
             boolean completed = false;
             // Obtain uploading Url.
-            String url = getUrl(file.getName(), file.length());
+            String url = getUrl(virtualFile.getName(), virtualFile.getSize());
             // Starting upload.
             do {
                 InputStream input = null;
                 try {
-                    input = new FileInputStream(file);
+                    input = virtualFile.openInputStream(getAccountRoot().getContext());
                     sent = input.skip(sent);
 
                     HttpPost post = new HttpPost(url);
@@ -180,12 +172,10 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
     }
 
     /**
-     * Returns uploading absolute file path.
-     * @return uploading file path
+     * Returns uploading virtual file.
+     * @return uploading virtual file
      */
-    public String getPath() {
-        return path;
-    }
+    public abstract VirtualFile getVirtualFile();
 
     /**
      * Returns request-specific upload Url.

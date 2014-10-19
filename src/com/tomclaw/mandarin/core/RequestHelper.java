@@ -64,7 +64,8 @@ public class RequestHelper {
         }
     }
 
-    public static void requestFile(ContentResolver contentResolver, int buddyDbId, String cookie, String path) {
+    public static void requestFile(ContentResolver contentResolver, int buddyDbId,
+                                   String cookie, UriFile uriFile) {
         // Obtain account db id.
         // TODO: out this method.
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
@@ -76,7 +77,7 @@ public class RequestHelper {
             if (cursor.moveToFirst()) {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                RangedUploadRequest uploadRequest = new IcqFileUploadRequest(path, buddyId, cookie);
+                RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
                 insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadRequest);
             }
             cursor.close();

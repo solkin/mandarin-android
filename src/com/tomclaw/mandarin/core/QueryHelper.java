@@ -531,6 +531,14 @@ public class QueryHelper {
         modifyFile(contentResolver, contentValues, cookie);
     }
 
+    public static void updateFileStateAndText(ContentResolver contentResolver, int state,
+                                              String text, String cookie) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, text);
+        modifyFile(contentResolver, contentValues, cookie);
+    }
+
     public static void readAllMessages(ContentResolver contentResolver) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)

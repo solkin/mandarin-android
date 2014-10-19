@@ -467,7 +467,7 @@ public class ChatActivity extends ChiefActivity {
     
     private void pickFile() {
         Intent intent = new Intent();
-        intent.setType("image/*");
+        intent.setType("image/* video/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent,
                 "Select Picture"), PICK_FILE_RESULT_CODE);
@@ -479,7 +479,6 @@ public class ChatActivity extends ChiefActivity {
             case PICK_FILE_RESULT_CODE:
                 if(resultCode == RESULT_OK) {
                     try {
-                        String path = getMediaPath(data.getData());
                         int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                         MessageCallback callback = new MessageCallback() {
 
@@ -492,8 +491,9 @@ public class ChatActivity extends ChiefActivity {
                                 Log.d(Settings.LOG_TAG, "sending file failed");
                             }
                         };
+                        UriFile uriFile = UriFile.create(this, data.getData());
                         TaskExecutor.getInstance().execute(
-                                new SendFileTask(this, buddyDbId, path, callback));
+                                new SendFileTask(this, buddyDbId, uriFile, callback));
                     } catch (Throwable ex) {
                         ex.printStackTrace();
                     }
@@ -501,26 +501,6 @@ public class ChatActivity extends ChiefActivity {
                 break;
 
         }
-    }
-
-    public String getMediaPath(Uri uri) throws FileNotFoundException {
-        String path = null;
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(uri, projection, null, null, null);
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-            cursor.moveToFirst();
-            path = cursor.getString(columnIndex);
-            if (path == null) {
-                throw new FileNotFoundException();
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return path;
     }
 
     @Override
@@ -940,13 +920,13 @@ public class ChatActivity extends ChiefActivity {
     private class SendFileTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
-        private String path;
+        private UriFile uriFile;
         private final MessageCallback callback;
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, String path, MessageCallback callback) {
+        public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
             super(activity);
             this.buddyDbId = buddyDbId;
-            this.path = path;
+            this.uriFile = uriFile;
             this.callback = callback;
         }
 
@@ -956,14 +936,12 @@ public class ChatActivity extends ChiefActivity {
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
-                // Detecting file type, size and other required information.
-                File file = new File(path);
-                long size = file.length();
-                String mimeType = HttpUtil.getMimeType(path);
+                // Checking file type, size and other required information.
+                long size = uriFile.getSize();
                 String hash = "";
-                int contentType;
-                Bitmap bitmap;
-                if(mimeType.startsWith("image")) {
+                int contentType = uriFile.getContentType();
+                Bitmap bitmap = uriFile.getThumbnail(activity);
+                /*if(mimeType.startsWith("image")) {
                     bitmap = BitmapHelper.decodeSampledBitmapFromFile(path, 320, 320); // TODO: real size!
                     bitmap = ThumbnailUtils.extractThumbnail(bitmap, 320, 320);
                     contentType = GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
@@ -976,16 +954,16 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     bitmap = null;
                     contentType = GlobalProvider.HISTORY_CONTENT_TYPE_FILE;
-                }
+                }*/
                 // Check and store bitmap in bitmap cache.
                 if(bitmap != null) {
-                    hash = HttpUtil.getUrlHash(path);
+                    hash = HttpUtil.getUrlHash(uriFile.toString());
                     BitmapCache.getInstance().saveBitmapSync(hash, bitmap);
                 }
-                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, path,
+                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
                         contentType, size, hash);
                 // Sending protocol message request.
-                RequestHelper.requestFile(contentResolver, buddyDbId, cookie, path);
+                RequestHelper.requestFile(contentResolver, buddyDbId, cookie, uriFile);
             }
         }
 

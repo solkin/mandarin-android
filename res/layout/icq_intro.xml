@@ -30,6 +30,7 @@
                     android:text="Tiny ICQ client"
                     android:textColor="#ffffff"
                     android:textSize="16dp"
+                    android:fontFamily="sans-serif-light"
                     android:padding="8dp"
                     android:includeFontPadding="false"/>
         </LinearLayout>

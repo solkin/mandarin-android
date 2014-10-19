@@ -214,7 +214,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 // Updating content-specific data.
                 TextView outText = (TextView) view.findViewById(R.id.out_text);
                 View outFile = view.findViewById(R.id.out_file);
-                ImageView outPicture = (ImageView) view.findViewById(R.id.out_preview);
+                View outPreviewProgress = view.findViewById(R.id.out_preview_progress);
+                ImageView outPreviewImage = (ImageView) view.findViewById(R.id.out_preview_image);
                 View outError = view.findViewById(R.id.out_error);
                 View outProgressContainer = view.findViewById(R.id.out_progress_container);
                 ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
@@ -224,7 +225,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outText.setVisibility(View.VISIBLE);
                         outFile.setVisibility(View.GONE);
                         outText.setText(messageText);
-                        outPicture.setImageResource(android.R.color.transparent);
+                        outPreviewImage.setImageResource(android.R.color.transparent);
                         outProgress.setProgress(0);
                         outSize.setText("");
                         break;
@@ -234,26 +235,30 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outText.setVisibility(View.GONE);
                         outFile.setVisibility(View.VISIBLE);
                         outText.setText("");
-                        BitmapCache.getInstance().getBitmapAsync(outPicture, previewHash, R.drawable.ic_action_time, true);
+                        BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash, android.R.color.transparent, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 outError.setVisibility(View.GONE);
+                                outPreviewProgress.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                                 outProgressContainer.setVisibility(View.VISIBLE);
                                 outError.setVisibility(View.GONE);
+                                outPreviewProgress.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 outError.setVisibility(View.VISIBLE);
+                                outPreviewProgress.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 outError.setVisibility(View.GONE);
+                                outPreviewProgress.setVisibility(View.VISIBLE);
                                 break;
                             }
                         }

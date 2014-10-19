@@ -86,9 +86,9 @@ public class BitmapHelper {
         // Scale down the bitmap if it's too large.
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        int max = Math.max(width, height);
-        if (max > size) {
-            float scale = ((float) size) / max;
+        int min = Math.min(width, height);
+        if (min > size) {
+            float scale = ((float) size) / min;
             int w = Math.round(scale * width);
             int h = Math.round(scale * height);
             bitmap = Bitmap.createScaledBitmap(bitmap, w, h, true);

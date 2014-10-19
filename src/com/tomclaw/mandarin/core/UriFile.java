@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -14,6 +15,8 @@ import android.os.Build;
 import android.os.CancellationSignal;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.io.File;
@@ -67,12 +70,27 @@ public class UriFile extends VirtualFile {
 
     @Override
     public Bitmap getThumbnail(Context context) {
+        float sizeDp = context.getResources().getDimension(R.dimen.preview_size);
+        int sizePx = (int) convertDpToPixel(sizeDp, context);
         if (mimeType.startsWith("image")) {
-            return BitmapHelper.decodeSampledBitmapFromUri(context, getUri(), 240, 240);
+            return BitmapHelper.decodeSampledBitmapFromUri(context, getUri(), sizePx, sizePx);
         } else if (mimeType.startsWith("video")) {
-            return BitmapHelper.createVideoThumbnail(context, getUri(), 240);
+            return BitmapHelper.createVideoThumbnail(context, getUri(), sizePx);
         }
         return null;
+    }
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return dp * (metrics.densityDpi / 160f);
     }
 
     @Override

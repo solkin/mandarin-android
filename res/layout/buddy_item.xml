@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/counter_text" android:padding="4dp"
-                android:layout_margin="6dp" android:background="@drawable/blue_indicator"
+                android:layout_margin="6dp" android:background="@drawable/orange_indicator"
                 android:textColor="#ffffff" android:textStyle="bold"
                 android:gravity="center" android:visibility="visible" android:minWidth="25dp"/>
     </LinearLayout>

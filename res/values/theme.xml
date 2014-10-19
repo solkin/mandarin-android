@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_action_bar">#FFFF9E16</color>
+    <color name="background_action_bar">#ff6600</color>
     <color name="background_split_action_bar">#FF555555</color>
     <color name="item_background_action_bar">#FFFFFFFF</color>
     <color name="chat_gradient_light_start">#FFDBDBDB</color>
@@ -10,7 +10,7 @@
     <color name="smiley_selected_background">#aabababa</color>
     <color name="smiley_selected_stroke">#aa888899</color>
     <color name="draft_indicator_color">#ff95a5a6</color>
-    <color name="blue_indicator_color">#ff3498db</color>
+    <color name="orange_indicator_color">#ff6600</color>
     <color name="green_indicator_color">#ff5cb85c</color>
     <color name="red_indicator_color">#ffe74c3c</color>
     <color name="button_navbar_normal">#11000000</color>
@@ -119,6 +119,15 @@
     </style>
     <style name="Button.Blue" parent="Button.Flat">
         <item name="android:background">@drawable/blue_button_selector</item>
+    </style>
+    <style name="Button.Orange" parent="Button.Flat">
+        <item name="android:background">@drawable/orange_button_selector</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="Button.White" parent="Button.Flat">
+        <item name="android:background">@drawable/white_button_selector</item>
+        <item name="android:textColor">#454545</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
     <style name="Chat.Message" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>

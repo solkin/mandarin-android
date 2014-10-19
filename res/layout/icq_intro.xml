@@ -6,48 +6,56 @@
     <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/background"
+            android:src="@drawable/first_screen_bg"
             android:contentDescription="@string/app_name"
             android:scaleType="centerCrop"/>
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:background="@color/intro_tint_color">
-        <TextView
+            android:gravity="center_vertical">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/login"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tiny ICQ client"
+                    android:textColor="#ffffff"
+                    android:textSize="16dp"
+                    android:padding="8dp"
+                    android:includeFontPadding="false"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Добро пожаловать в Mandarin IM!"
-                android:textColor="#ffffff"
-                android:textSize="32dp"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal"
-                android:paddingBottom="18dp"/>
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Выберите способ входа в ICQ"
-                android:textColor="#ffffff"
-                android:textSize="22dp"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal"/>
-        <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/phone_login_button"
-                style="@style/Button.Blue"
-                android:text="Войти по номеру телефона"
-                android:layout_margin="12dp"/>
+                android:layout_gravity="bottom"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:paddingBottom="48dp">
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/phone_login_button"
+                    style="@style/Button.Orange"
+                    android:text="Войти по номеру телефона"
+                    android:layout_marginBottom="12dp"/>
 
-        <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/uin_login_button"
-                style="@style/Button.Green"
-                android:text="У меня есть логин и пароль"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"/>
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/uin_login_button"
+                    style="@style/Button.White"
+                    android:text="У меня есть логин и пароль"/>
+        </LinearLayout>
     </LinearLayout>
 
 

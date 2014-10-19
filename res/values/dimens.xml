@@ -7,5 +7,5 @@
     <dimen name="smiley_size">50dp</dimen>
     <dimen name="chat_date_size">17sp</dimen>
     <dimen name="progress_radius">4sp</dimen>
-    <dimen name="preview_size">300dp</dimen>
+    <dimen name="preview_size">250dp</dimen>
 </resources>

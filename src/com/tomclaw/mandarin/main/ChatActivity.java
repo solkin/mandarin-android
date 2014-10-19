@@ -941,20 +941,6 @@ public class ChatActivity extends ChiefActivity {
                 String hash = "";
                 int contentType = uriFile.getContentType();
                 Bitmap bitmap = uriFile.getThumbnail(activity);
-                /*if(mimeType.startsWith("image")) {
-                    bitmap = BitmapHelper.decodeSampledBitmapFromFile(path, 320, 320); // TODO: real size!
-                    bitmap = ThumbnailUtils.extractThumbnail(bitmap, 320, 320);
-                    contentType = GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
-                } else if(mimeType.startsWith("video")) {
-                    bitmap = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
-                    contentType = GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO;
-                } else if(mimeType.startsWith("audio")) {
-                    bitmap = null;
-                    contentType = GlobalProvider.HISTORY_CONTENT_TYPE_AUDIO;
-                } else {
-                    bitmap = null;
-                    contentType = GlobalProvider.HISTORY_CONTENT_TYPE_FILE;
-                }*/
                 // Check and store bitmap in bitmap cache.
                 if(bitmap != null) {
                     hash = HttpUtil.getUrlHash(uriFile.toString());

@@ -26,6 +26,8 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
 
     private UriFile uriFile;
 
+    private transient int progressShown = 0;
+
     public IcqFileUploadRequest() {
     }
 
@@ -88,7 +90,10 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     protected void onBufferReleased(long sent, long size) {
         Log.d(Settings.LOG_TAG, "onBufferReleased " + sent + "/" + size);
         int progress = (int) (100 * sent / size);
-        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
+        if((progressShown == 0 && progress > 0) || (progress - progressShown) > 10) {
+            QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
+            progressShown = progress;
+        }
     }
 
     @Override

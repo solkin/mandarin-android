@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
@@ -42,7 +43,7 @@ public class SmsCodeActivity extends ChiefActivity {
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -107,7 +108,9 @@ public class SmsCodeActivity extends ChiefActivity {
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
-        item.getActionView().setOnClickListener(new View.OnClickListener() {
+        TextView actionView = ((TextView) item.getActionView());
+        actionView.setText(actionView.getText().toString().toUpperCase());
+        actionView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {

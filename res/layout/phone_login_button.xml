@@ -5,7 +5,9 @@
           android:layout_height="wrap_content"
           android:text="@string/next"
           android:drawableLeft="@drawable/ic_action_forward"
-          android:drawablePadding="5dp"
+          android:drawablePadding="4dp"
+          android:paddingLeft="6dp"
+          android:paddingRight="10dp"
           style="?android:attr/actionButtonStyle"
-          android:textSize="18sp"
-          android:fontFamily="sans-serif-light"/>
+          android:textSize="14sp"
+          android:textStyle="bold"/>

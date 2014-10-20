@@ -44,7 +44,7 @@ public class PhoneLoginActivity extends Activity {
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -113,7 +113,9 @@ public class PhoneLoginActivity extends Activity {
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
-        item.getActionView().setOnClickListener(new View.OnClickListener() {
+        TextView actionView = ((TextView) item.getActionView());
+        actionView.setText(actionView.getText().toString().toUpperCase());
+        actionView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {

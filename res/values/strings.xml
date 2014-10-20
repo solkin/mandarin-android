@@ -8,11 +8,6 @@
     <string name="add_account">Добавить профиль</string>
     <string name="edit_account">Редактировать</string>
     <string name="remove_account">Удалить</string>
-    <string name="save_account">Сохранить</string>
-    <string name="user_id_empty">Пожалуйста, введите логин</string>
-    <string name="user_password_empty">Пожалуйста, введите пароль</string>
-    <string name="user_id">Логин</string>
-    <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
     <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить в список контактов</string>
@@ -187,9 +182,6 @@
     <string name="status_icq_diary">Дневник</string>
     <string name="no_dialogs_opened">Нажмите на кнопку создания диалога сверху, чтобы начать общаться!</string>
     <string name="pref_title_chat_background">Фоновая заставка</string>
-    <string name="add_icq_account">Введите, пожалуйста, ваши логин (UIN) и пароль для входа в ICQ и нажмите
-        \"Сохранить\"
-    </string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
@@ -301,4 +293,13 @@
     <string name="complete">Готово</string>
     <string name="send_file">Отправить файл</string>
     <string name="out_file_error">Ошибка передачи файла</string>
+
+    <string name="fill_the_fields_below">Заполните поля ниже</string>
+    <string name="email_or_uin_empty">Пожалуйста, введите Ваши e-mail или UIN и пароль</string>
+    <string name="password_empty">Пожалуйста, введите пароль</string>
+    <string name="email_or_uin_hint">E-mail или UIN</string>
+    <string name="password_hint">Пароль</string>
+    <string name="tiny_icq_client">Лёгкий ICQ клиент</string>
+    <string name="plain_login">Логин и пароль</string>
+    <string name="save_account">Сохранить</string>
 </resources>

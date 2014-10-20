@@ -8,11 +8,6 @@
     <string name="add_account">Add an account</string>
     <string name="edit_account">Edit</string>
     <string name="remove_account">Delete</string>
-    <string name="save_account">Save</string>
-    <string name="user_id_empty">Please enter your login or ID</string>
-    <string name="user_password_empty">Please enter your password</string>
-    <string name="user_id">Login or ID</string>
-    <string name="user_password">Password</string>
     <string name="account_add_fail">Sorry! Account adding failed.</string>
     <string name="account_already_exists">Account with the same ID already exists!</string>
     <string name="add_buddy">Add to buddylist</string>
@@ -183,8 +178,6 @@
     <string name="status_icq_diary">Diary</string>
     <string name="no_dialogs_opened">No dialogs yet. Open one!</string>
     <string name="pref_title_chat_background">Background</string>
-    <string name="add_icq_account">Please enter your UIN and password and press the \"Save\" button
-    </string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client; I developed it due to high demand and some personal interest.
@@ -289,4 +282,13 @@
     <string name="complete">Complete</string>
     <string name="send_file">Send file</string>
     <string name="out_file_error">File sending error</string>
+
+    <string name="fill_the_fields_below">Fill the fields below</string>
+    <string name="email_or_uin_empty">Please enter your e-mail or UIN and password</string>
+    <string name="password_empty">Please enter your password</string>
+    <string name="email_or_uin_hint">E-mail or UIN</string>
+    <string name="password_hint">Password</string>
+    <string name="tiny_icq_client">Tiny ICQ client</string>
+    <string name="plain_login">Login and password</string>
+    <string name="save_account">Save</string>
 </resources>

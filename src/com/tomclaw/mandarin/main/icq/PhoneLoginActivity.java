@@ -48,6 +48,7 @@ public class PhoneLoginActivity extends Activity {
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setIcon(R.drawable.ic_ab_logo);
 
         countryCodeField = (TextView) findViewById(R.id.country_code_field);
         countryCodeField.setOnClickListener(new View.OnClickListener() {

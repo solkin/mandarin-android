@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
@@ -43,7 +44,8 @@ public abstract class ChiefActivity extends Activity {
         coreServiceListeners = new ArrayList<CoreServiceListener>();
 
         isDarkTheme = PreferenceHelper.isDarkTheme(this);
-        setTheme(isDarkTheme ? R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        updateTheme();
+        updateIcon();
 
         setContentView(R.layout.progress);
         /** Starting service **/
@@ -51,6 +53,17 @@ public abstract class ChiefActivity extends Activity {
         isCoreServiceReady = false;
 
         startCoreService();
+    }
+
+    public void updateTheme() {
+        setTheme(isDarkTheme ? R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+    }
+
+    public void updateIcon() {
+        ActionBar actionBar = getActionBar();
+        if(actionBar != null) {
+            actionBar.setIcon(R.drawable.ic_ab_logo);
+        }
     }
 
     @Override

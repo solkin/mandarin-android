@@ -277,6 +277,4 @@ public abstract class AccountRoot implements Unobfuscatable {
     public abstract void updateStatus();
 
     public abstract String getAccountType();
-
-    public abstract int getAccountLayout();
 }

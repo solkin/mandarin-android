@@ -206,11 +206,6 @@ public class IcqAccountRoot extends AccountRoot {
         return R.integer.music_status;
     }
 
-    @Override
-    public int getAccountLayout() {
-        return R.layout.account_add_icq;
-    }
-
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
                                      long expiresIn, long hostTime) {
         // Setup local variables.

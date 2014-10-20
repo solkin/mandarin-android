@@ -1,13 +1,18 @@
 package com.tomclaw.mandarin.main.icq;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
@@ -38,15 +43,48 @@ public class PlainLoginActivity extends ChiefActivity {
 
         setContentView(R.layout.icq_uin_login);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+
         userIdEditText = (EditText) findViewById(R.id.user_id_field);
         userPasswordEditText = (EditText) findViewById(R.id.user_password_field);
+    }
 
-        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.login_activity_menu, menu);
+        final MenuItem item = menu.findItem(R.id.save_action_menu);
+        TextView actionView = ((TextView) item.getActionView());
+        actionView.setText(actionView.getText().toString().toUpperCase());
+        actionView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                checkAccount();
+                menu.performIdentifierAction(item.getItemId(), 0);
             }
         });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+            case R.id.save_action_menu: {
+                checkAccount();
+                break;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void updateTheme() {
     }
 
     @Override
@@ -59,9 +97,9 @@ public class PlainLoginActivity extends ChiefActivity {
         String userPassword = userPasswordEditText.getText().toString();
         // Check for credentials are filed correctly
         if (TextUtils.isEmpty(userId)) {
-            Toast.makeText(this, R.string.user_id_empty, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.email_or_uin_empty, Toast.LENGTH_LONG).show();
         } else if (TextUtils.isEmpty(userPassword)) {
-            Toast.makeText(this, R.string.user_password_empty, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.password_empty, Toast.LENGTH_LONG).show();
         } else {
             hideKeyboard();
             final ProgressDialog progressDialog = ProgressDialog.show(this, null,

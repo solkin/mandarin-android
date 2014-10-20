@@ -60,8 +60,8 @@
                                 android:layout_gravity="center"/>
                         <com.tomclaw.mandarin.main.views.PreviewImageView
                                 android:id="@+id/out_preview_image"
-                                android:layout_width="@dimen/preview_size"
-                                android:layout_height="@dimen/preview_size"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:padding="0dp"
                                 android:scaleType="centerCrop"/>
                     </FrameLayout>

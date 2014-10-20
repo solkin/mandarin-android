@@ -72,7 +72,7 @@ public class UriFile extends VirtualFile {
 
     @Override
     public Bitmap getThumbnail(Context context) {
-        float sizeDp = context.getResources().getDimension(R.dimen.preview_size);
+        float sizeDp = context.getResources().getDimension(R.dimen.preview_bitmap);
         int sizePx = (int) convertDpToPixel(sizeDp, context);
         long time = System.currentTimeMillis();
         Bitmap bitmap;
@@ -83,7 +83,7 @@ public class UriFile extends VirtualFile {
         } else {
             bitmap = null;
         }
-        Log.d(Settings.LOG_TAG, "preview sampling: " + (System.currentTimeMillis() - time));
+        Log.d(Settings.LOG_TAG, "preview sampling (" + sizePx + "): " + (System.currentTimeMillis() - time));
         return bitmap;
     }
 

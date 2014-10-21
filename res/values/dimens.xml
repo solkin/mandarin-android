@@ -8,5 +8,5 @@
     <dimen name="chat_date_size">17sp</dimen>
     <dimen name="progress_radius">4sp</dimen>
     <dimen name="preview_size">250dp</dimen>
-    <dimen name="preview_bitmap">120dp</dimen>
+    <dimen name="preview_bitmap">180dp</dimen>
 </resources>

@@ -291,4 +291,6 @@
     <string name="tiny_icq_client">Tiny ICQ client</string>
     <string name="plain_login">Login and password</string>
     <string name="save_account">Save</string>
+    <string name="enter_phone_number">Enter your phone number</string>
+    <string name="phone_number_hint">Phone number</string>
 </resources>

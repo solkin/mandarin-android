@@ -43,10 +43,9 @@ public class SmsCodeActivity extends ChiefActivity {
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setDisplayShowHomeEnabled(true);
+        bar.setDisplayShowTitleEnabled(false);
 
         Intent intent = getIntent();
         msisdn = intent.getStringExtra(EXTRA_MSISDN);
@@ -97,6 +96,10 @@ public class SmsCodeActivity extends ChiefActivity {
                 });
             }
         };
+    }
+
+    @Override
+    public void updateTheme() {
     }
 
     @Override

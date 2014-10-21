@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,29 +38,27 @@ public class PhoneLoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTheme(PreferenceHelper.isDarkTheme(this) ?
-                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
-
         setContentView(R.layout.icq_phone_login);
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        bar.setDisplayShowHomeEnabled(true);
+        bar.setDisplayShowTitleEnabled(false);
         bar.setIcon(R.drawable.ic_ab_logo);
 
-        countryCodeField = (TextView) findViewById(R.id.country_code_field);
+        /*countryCodeField = (TextView) findViewById(R.id.country_code_field);
         countryCodeField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
                         REQUEST_CODE_COUNTRY);
             }
-        });
+        });*/
 
         phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
+        phoneNumberField.setText("+7"); // TODO: detect country code automatically
+        phoneNumberField.setSelection(phoneNumberField.getText().length());
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         callback = new RegistrationHelper.RegistrationCallback() {

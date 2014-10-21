@@ -119,11 +119,13 @@
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.icq.PhoneLoginActivity"
+                  android:theme="@style/Theme.Mandarin.Intro"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".main.icq.SmsCodeActivity"
+                  android:theme="@style/Theme.Mandarin.Intro"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
                   android:configChanges="orientation|screenSize">

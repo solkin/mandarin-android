@@ -302,4 +302,6 @@
     <string name="tiny_icq_client">Лёгкий ICQ клиент</string>
     <string name="plain_login">Логин и пароль</string>
     <string name="save_account">Сохранить</string>
+    <string name="enter_phone_number">Введите номер Вашего телефона</string>
+    <string name="phone_number_hint">Номер телефона</string>
 </resources>

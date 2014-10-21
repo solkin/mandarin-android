@@ -127,7 +127,7 @@ public class BitmapCache {
                 if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
                     bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
                 }
-                bitmapLruCache.put(cacheKey, bitmap);
+                cacheBitmap(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Bitmap '" + hash + "' not found!");
             } catch (Throwable ex) {
@@ -157,6 +157,18 @@ public class BitmapCache {
         return false;
     }
 
+    public void saveBitmapAsync(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
+        TaskExecutor.getInstance().execute(new SaveBitmapTask(hash, bitmap, compressFormat));
+    }
+
+    public void cacheBitmapOriginal(String hash, Bitmap bitmap) {
+        String cacheKey = getCacheKey(hash, BITMAP_SIZE_ORIGINAL, BITMAP_SIZE_ORIGINAL);
+        cacheBitmap(cacheKey, bitmap);
+    }
+    public void cacheBitmap(String cacheKey, Bitmap bitmap) {
+        bitmapLruCache.put(cacheKey, bitmap);
+    }
+
     public void removeBitmap(String hash) {
         File file = getBitmapFile(hash);
         file.delete();
@@ -177,5 +189,23 @@ public class BitmapCache {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return (int) (dp * metrics.density);
+    }
+
+    public class SaveBitmapTask extends Task {
+
+        private String hash;
+        private Bitmap bitmap;
+        private Bitmap.CompressFormat compressFormat;
+
+        public SaveBitmapTask(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
+            this.hash = hash;
+            this.bitmap = bitmap;
+            this.compressFormat = compressFormat;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            saveBitmapSync(hash, bitmap, compressFormat);
+        }
     }
 }

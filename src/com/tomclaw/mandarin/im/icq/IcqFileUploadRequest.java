@@ -42,17 +42,8 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     @Override
     protected void onStarted() throws Throwable {
         Log.d(Settings.LOG_TAG, "onStarted");
-        String hash = "";
-        Bitmap bitmap = uriFile.getThumbnail(getAccountRoot().getContext());
-        // Check and store bitmap in bitmap cache.
-        if(bitmap != null) {
-            hash = HttpUtil.getUrlHash(uriFile.toString());
-            BitmapCache.getInstance().saveBitmapSync(hash, bitmap, Bitmap.CompressFormat.JPEG);
-        }
-        long time = System.currentTimeMillis();
-        QueryHelper.updateFileStateAndHash(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, hash, cookie);
-        Log.d(Settings.LOG_TAG, "updating state and hash: " + (System.currentTimeMillis() - time));
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, cookie);
     }
 
     @Override

@@ -9,7 +9,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/first_screen_bg"
             android:scaleType="centerCrop"/>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
                   android:orientation="vertical"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
@@ -18,14 +18,8 @@
                   android:paddingTop="32dp"
                   android:layout_marginTop="?android:attr/actionBarSize">
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="@string/fill_the_fields_below"
-                android:padding="3dp"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#ffffff"/>
+                style="@style/IntroHeaderView"/>
         <EditText
                 android:id="@+id/user_id_field"
                 android:hint="@string/email_or_uin_hint"

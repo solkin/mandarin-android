@@ -4,14 +4,10 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -30,13 +26,10 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
-import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -88,7 +81,7 @@ public class ChatActivity extends ChiefActivity {
         if (PreferenceHelper.isShowKeyboard(this)) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
-        isSendByEnter = PreferenceHelper.isSendByEnter(ChatActivity.this);
+        isSendByEnter = PreferenceHelper.isSendByEnter(this);
 
         // Initialize action bar.
         ActionBar bar = getActionBar();
@@ -917,7 +910,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendFileTask extends WeakObjectTask<ChiefActivity> {
+    private class SendFileTask extends PleaseWaitTask {
 
         private final int buddyDbId;
         private UriFile uriFile;
@@ -932,14 +925,30 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = getWeakObject();
-            if (activity != null) {
-                ContentResolver contentResolver = activity.getContentResolver();
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
                 // Checking file type, size and other required information.
                 long size = uriFile.getSize();
-                String hash = "";
                 int contentType = uriFile.getContentType();
+                String hash = HttpUtil.getUrlHash(uriFile.toString());
+                // Check for image in bitmap cache first.
+                Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true);
+                if(bitmap == null) {
+                    // Try to create thumbnail from selected Uri.
+                    bitmap = uriFile.getThumbnail(context);
+                }
+                // Check and store bitmap in bitmap cache.
+                if(bitmap == null) {
+                    // No bitmap - no hash.
+                    hash = "";
+                } else {
+                    // Cache bitmap in Ram immediately
+                    BitmapCache.getInstance().cacheBitmapOriginal(hash, bitmap);
+                    // ... and async saving in storage.
+                    BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
+                }
                 QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
                         contentType, size, hash);
                 // Sending protocol message request.
@@ -954,10 +963,10 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            ChiefActivity activity = getWeakObject();
-            if (activity != null) {
+            Context context = getWeakObject();
+            if (context != null) {
                 // Show error.
-                Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
             callback.onFailed();
         }

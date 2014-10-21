@@ -1,7 +1,12 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
@@ -17,7 +22,7 @@ import java.net.URL;
 /**
  * Created by Solkin on 14.10.2014.
  */
-public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
+public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot> {
 
     private static final String CLIENT_NAME = "ICQ";
     private final String INIT_URL = "http://files.icq.com/files/init";
@@ -26,8 +31,6 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     private String cookie;
 
     private UriFile uriFile;
-
-    private transient int progressShown = 0;
 
     public IcqFileUploadRequest() {
     }
@@ -40,14 +43,35 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     }
 
     @Override
-    protected void onStarted() throws Throwable {
+    protected String getDescription() {
+        String buddyNick = "";
+        Context context = getAccountRoot().getContext();
+        try {
+            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
+                    getAccountRoot().getAccountDbId(), buddyId);
+            buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
+        } catch (Throwable ignored) {
+        }
+        if(TextUtils.isEmpty(buddyNick)) {
+            buddyNick = buddyId;
+        }
+        return context.getString(R.string.file_for, buddyNick);
+    }
+
+    @Override
+    protected Bitmap getLargeIcon() {
+        return uriFile.getThumbnail(getAccountRoot().getContext());
+    }
+
+    @Override
+    protected void onStartedDelegate() throws Throwable {
         Log.d(Settings.LOG_TAG, "onStarted");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, cookie);
     }
 
     @Override
-    protected void onSuccess(String response) throws Throwable {
+    protected void onSuccessDelegate(String response) throws Throwable {
         JSONObject rootObject = new JSONObject(response);
         int status = rootObject.getInt("status");
         switch(status) {
@@ -75,26 +99,20 @@ public class IcqFileUploadRequest extends RangedUploadRequest<IcqAccountRoot> {
     }
 
     @Override
-    protected void onFail() {
+    protected void onFailDelegate() {
         Log.d(Settings.LOG_TAG, "onFail");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_FAILED, cookie);
     }
 
     @Override
-    public void onFileNotFound() {
-        Log.d(Settings.LOG_TAG, "onFileNotFound");
-        onFail();
+    protected void onProgressUpdated(int progress) {
+        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
     }
 
     @Override
-    protected void onBufferReleased(long sent, long size) {
-        Log.d(Settings.LOG_TAG, "onBufferReleased " + sent + "/" + size);
-        int progress = (int) (100 * sent / size);
-        if((progressShown == 0 && progress > 0) || (progress - progressShown) > 10) {
-            QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
-            progressShown = progress;
-        }
+    protected int getProgressStep() {
+        return 9;
     }
 
     @Override

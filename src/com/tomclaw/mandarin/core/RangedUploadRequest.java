@@ -95,7 +95,9 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                             }
                         }
                         sent += cache;
-                        onBufferReleased(sent, size);
+                        if(!completed) {
+                            onBufferReleased(sent, size);
+                        }
                     }
                 } catch (IOException ex) {
                     // Pretty network exception.
@@ -150,7 +152,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     protected abstract void onFail();
 
-    public abstract void onFileNotFound();
+    protected abstract void onFileNotFound();
 
     private InputStream getInputStream(int responseCode, HttpURLConnection connection)
             throws IOException {

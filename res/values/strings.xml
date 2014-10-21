@@ -304,4 +304,7 @@
     <string name="save_account">Сохранить</string>
     <string name="enter_phone_number">Введите номер Вашего телефона</string>
     <string name="phone_number_hint">Номер телефона</string>
+    <string name="upload_failed">Отправка не удалась</string>
+    <string name="file_upload_title">Отправка файла</string>
+    <string name="file_for">для %s</string>
 </resources>

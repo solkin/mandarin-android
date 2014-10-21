@@ -293,4 +293,7 @@
     <string name="save_account">Save</string>
     <string name="enter_phone_number">Enter your phone number</string>
     <string name="phone_number_hint">Phone number</string>
+    <string name="upload_failed">File sending failed</string>
+    <string name="file_upload_title">Sending file</string>
+    <string name="file_for">for %s</string>
 </resources>

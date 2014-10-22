@@ -193,25 +193,25 @@ public class GlobalProvider extends ContentProvider {
             new StringBuilder().append("SELECT").append(' ')
                     .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',')
                     .append('(')
-                        .append("SELECT").append(' ')
-                        .append(ROSTER_BUDDY_NICK).append(' ')
-                        .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
-                        .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
+                    .append("SELECT").append(' ')
+                    .append(ROSTER_BUDDY_NICK).append(' ')
+                    .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
+                    .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
                     .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_NICK).append(',')
 
                     .append('(')
-                        .append("SELECT").append(' ')
-                        .append(ROSTER_BUDDY_AVATAR_HASH).append(' ')
-                        .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
-                        .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
+                    .append("SELECT").append(' ')
+                    .append(ROSTER_BUDDY_AVATAR_HASH).append(' ')
+                    .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
+                    .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
                     .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_AVATAR_HASH).append(',')
 
                     .append('(')
-                        .append("SELECT").append(' ')
-                        .append("COUNT(*)").append(' ')
-                        .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C2).append(' ')
-                        .append("WHERE").append(' ').append(TMP_C2).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID)
-                        .append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+                    .append("SELECT").append(' ')
+                    .append("COUNT(*)").append(' ')
+                    .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C2).append(' ')
+                    .append("WHERE").append(' ').append(TMP_C2).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID)
+                    .append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
                     .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_UNREAD_COUNT).append(' ')
 
                     .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C1).append(' ')
@@ -219,7 +219,7 @@ public class GlobalProvider extends ContentProvider {
                     .append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
                     .append("GROUP BY").append(' ').append(HISTORY_BUDDY_DB_ID).append(' ')
                     .append("ORDER BY").append(' ').append(ROW_AUTO_ID).append(' ').append("ASC").append(';')
-            .toString();
+                    .toString();
 
     private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
     private static final String SHOWN_COUNT = "shown_count";
@@ -227,10 +227,10 @@ public class GlobalProvider extends ContentProvider {
     private static final String COUNT_QUERY = new StringBuilder()
             .append("SELECT").append(' ')
             .append('(')
-                .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
-                .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
-                    .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
-                    .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
+            .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
+            .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
+            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
             .append(')').append(' ').append("AS").append(' ').append(UNREAD_UNSHOWN_COUNT).append(',')
             .append('(')
             .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
@@ -365,7 +365,7 @@ public class GlobalProvider extends ContentProvider {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
         // Notify ContentResolver about data changes.
-        if(rows > 0) {
+        if (rows > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return rows;
@@ -376,7 +376,7 @@ public class GlobalProvider extends ContentProvider {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
         // Notify ContentResolver about data changes.
-        if(rows > 0) {
+        if (rows > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return rows;
@@ -395,11 +395,11 @@ public class GlobalProvider extends ContentProvider {
             }
             Log.d(Settings.LOG_TAG, "Update unread time: " + (System.currentTimeMillis() - time));
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
-        } else if(method.equals(METHOD_GET_UNREAD)) {
+        } else if (method.equals(METHOD_GET_UNREAD)) {
             long time = System.currentTimeMillis();
             Cursor cursor = sqLiteDatabase.rawQuery(HISTORY_GET_UNREAD_SB, null);
             Bundle bundle = new Bundle();
-            if(cursor.moveToFirst()) {
+            if (cursor.moveToFirst()) {
                 int messageTextColumn = cursor.getColumnIndex(HISTORY_MESSAGE_TEXT);
                 int buddyDbIdColumn = cursor.getColumnIndex(HISTORY_BUDDY_DB_ID);
                 int buddyNickColumn = cursor.getColumnIndex(ROSTER_BUDDY_NICK);
@@ -420,11 +420,11 @@ public class GlobalProvider extends ContentProvider {
             cursor.close();
             Log.d(Settings.LOG_TAG, "Get unread time: " + (System.currentTimeMillis() - time));
             return bundle;
-        } else if(method.equals(METHOD_GET_MESSAGES_COUNT)) {
+        } else if (method.equals(METHOD_GET_MESSAGES_COUNT)) {
             Cursor cursor = sqLiteDatabase.rawQuery(COUNT_QUERY, null);
             Bundle bundle = new Bundle();
             int unshown = 0, justShown = 0;
-            if(cursor.moveToFirst()) {
+            if (cursor.moveToFirst()) {
                 int unreadUnshownColumn = cursor.getColumnIndex(UNREAD_UNSHOWN_COUNT);
                 int shownColumn = cursor.getColumnIndex(SHOWN_COUNT);
                 unshown = cursor.getInt(unreadUnshownColumn);

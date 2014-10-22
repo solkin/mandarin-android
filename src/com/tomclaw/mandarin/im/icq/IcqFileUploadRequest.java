@@ -1,16 +1,11 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
-import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
-import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -52,7 +47,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
             buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
         } catch (Throwable ignored) {
         }
-        if(TextUtils.isEmpty(buddyNick)) {
+        if (TextUtils.isEmpty(buddyNick)) {
             buddyNick = buddyId;
         }
         return context.getString(R.string.file_for, buddyNick);
@@ -74,7 +69,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     protected void onSuccessDelegate(String response) throws Throwable {
         JSONObject rootObject = new JSONObject(response);
         int status = rootObject.getInt("status");
-        switch(status) {
+        switch (status) {
             case 200: {
                 JSONObject dataObject = rootObject.getJSONObject("data");
                 int previewable = dataObject.getInt("is_previewable");
@@ -138,7 +133,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
         JSONObject rootObject = new JSONObject(response);
         int status = rootObject.getInt("status");
-        switch(status) {
+        switch (status) {
             case 200: {
                 JSONObject dataObject = rootObject.getJSONObject("data");
                 String host = dataObject.getString("host");

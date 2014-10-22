@@ -5,22 +5,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
-import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
+import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
-import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -156,9 +149,9 @@ public class PhoneLoginActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_CODE_COUNTRY && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_COUNTRY && resultCode == RESULT_OK) {
             int code = data.getIntExtra(CountryCodeActivity.EXTRA_COUNTRY_CODE, 0);
-            if(code != 0) {
+            if (code != 0) {
                 countryCodeField.setText("+" + code);
             }
         }

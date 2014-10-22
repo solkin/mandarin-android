@@ -172,9 +172,13 @@ public class RegistrationHelper {
 
     public interface RegistrationCallback {
         public void onPhoneNormalized(String msisdn);
+
         public void onPhoneValidated(String msisdn, String transId);
+
         public void onPhoneLoginSuccess(String login, String tokenA, String sessionKey, long expiresIn, long hostTime);
+
         public void onProtocolError();
+
         public void onNetworkError();
     }
 }

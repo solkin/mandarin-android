@@ -155,7 +155,7 @@ public class CoreService extends Service {
         }
         // Read messages event maybe?
         boolean isReadMessages = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
-        if(isReadMessages) {
+        if (isReadMessages) {
             QueryHelper.readAllMessages(getContentResolver());
         }
     }

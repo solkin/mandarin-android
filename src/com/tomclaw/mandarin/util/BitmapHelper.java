@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CancellationSignal;
-import android.provider.MediaStore;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * Created by Solkin on 17.10.2014.
@@ -61,7 +61,7 @@ public class BitmapHelper {
      * corrupt or the format is not supported.
      *
      * @param context application context
-     * @param uri the uri of video file
+     * @param uri     the uri of video file
      */
     public static Bitmap createVideoThumbnail(Context context, Uri uri, int size) {
         Bitmap bitmap = null;

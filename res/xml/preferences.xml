@@ -38,7 +38,7 @@
                 android:title="@string/pref_title_roster_mode"
                 android:defaultValue="@string/pref_roster_mode_default"
                 android:entries="@array/pref_roster_mode_strings"
-                android:entryValues="@array/pref_roster_mode_values" />
+                android:entryValues="@array/pref_roster_mode_values"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_chat_title"

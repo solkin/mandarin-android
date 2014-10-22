@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -146,12 +145,12 @@ public class PlainLoginActivity extends ChiefActivity {
             getServiceInteraction().updateAccountStatusIndex(
                     accountRoot.getAccountType(), accountRoot.getUserId(), connectStatus);
             //if (isStartHelper()) {
-                // We are started as start helper and now
-                // mission is complete, switch off the flag...
-                PreferenceHelper.setShowStartHelper(this, false);
-                // ... and now will go to the dialogs activity.
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+            // We are started as start helper and now
+            // mission is complete, switch off the flag...
+            PreferenceHelper.setShowStartHelper(this, false);
+            // ... and now will go to the dialogs activity.
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
             //}
             finish();
         } catch (AccountAlreadyExistsException ignored) {

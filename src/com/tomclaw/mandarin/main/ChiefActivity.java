@@ -61,7 +61,7 @@ public abstract class ChiefActivity extends Activity {
 
     public void updateIcon() {
         ActionBar actionBar = getActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setIcon(R.drawable.ic_ab_logo);
         }
     }

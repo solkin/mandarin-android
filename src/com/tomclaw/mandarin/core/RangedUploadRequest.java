@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
@@ -17,7 +14,9 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 /**
@@ -79,23 +78,23 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                         try {
                             int responseCode = httpResponse.getStatusLine().getStatusCode();
                             String response = EntityUtils.toString(entity);
-                            if(responseCode == 200) {
+                            if (responseCode == 200) {
                                 // Uploading completed successfully.
                                 onSuccess(response);
                                 completed = true;
-                            } else if(responseCode == 206) {
+                            } else if (responseCode == 206) {
                                 // Server is still hungry. Next chunk, please...
                             } else {
                                 // Seems to be error code. Sadly.
                                 identifyErrorResponse(responseCode);
                             }
                         } finally {
-                            if(entity != null) {
+                            if (entity != null) {
                                 entity.consumeContent();
                             }
                         }
                         sent += cache;
-                        if(!completed) {
+                        if (!completed) {
                             onBufferReleased(sent, size);
                         }
                     }
@@ -104,11 +103,11 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     Log.d(Settings.LOG_TAG, "Io exception while uploading", ex);
                     Thread.sleep(3000);
                 } finally {
-                    if(input != null) {
+                    if (input != null) {
                         input.close();
                     }
                 }
-            } while(!completed);
+            } while (!completed);
             return REQUEST_DELETE;
         } catch (UnauthorizedException ex) {
             Log.d(Settings.LOG_TAG, "Unauthorized exception while uploading", ex);
@@ -133,7 +132,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
     }
 
     protected void identifyErrorResponse(int responseCode) throws Throwable {
-        switch(responseCode) {
+        switch (responseCode) {
             case 401: {
                 throw new UnauthorizedException();
             }
@@ -167,6 +166,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     /**
      * Returns uploading range block size.
+     *
      * @return int - buffer size.
      */
     private int getBufferSize() {
@@ -175,12 +175,14 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     /**
      * Returns uploading virtual file.
+     *
      * @return uploading virtual file
      */
     public abstract VirtualFile getVirtualFile();
 
     /**
      * Returns request-specific upload Url.
+     *
      * @param name - uploading file name
      * @param size - uploading file size
      * @return Request-specific Url

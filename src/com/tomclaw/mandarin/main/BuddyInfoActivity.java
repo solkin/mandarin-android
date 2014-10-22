@@ -94,7 +94,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         } catch (BuddyNotFoundException ignored) {
             // No buddy? Button will be ready to add buddy.
         } finally {
-            if(buddyCursor != null) {
+            if (buddyCursor != null) {
                 buddyCursor.close();
             }
         }

@@ -1,28 +1,18 @@
 package com.tomclaw.mandarin.core;
 
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
-import android.os.CancellationSignal;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 
-import java.io.*;
-import java.util.Set;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by Solkin on 18.10.2014.
@@ -88,11 +78,11 @@ public class UriFile extends VirtualFile {
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * (metrics.densityDpi / 160f);
@@ -111,7 +101,7 @@ public class UriFile extends VirtualFile {
         Cursor cursor = null;
         try {
             cursor = context.getApplicationContext().getContentResolver().query(uri, projection, null, null, null);
-            if(cursor.moveToFirst()) {
+            if (cursor.moveToFirst()) {
                 return new UriFile(uri.toString(),
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)),
                         cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)),

@@ -162,7 +162,7 @@ public class HttpUtil {
 
     public static String getFileExtensionFromPath(String path) {
         String suffix = "";
-        if(!TextUtils.isEmpty(path)) {
+        if (!TextUtils.isEmpty(path)) {
             int index = path.lastIndexOf(".");
             if (index != -1) {
                 suffix = path.substring(index + 1);

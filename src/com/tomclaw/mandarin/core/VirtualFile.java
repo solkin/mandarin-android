@@ -26,11 +26,11 @@ public abstract class VirtualFile {
 
     public int getContentType() {
         String mimeType = getMimeType();
-        if(mimeType.startsWith("image")) {
+        if (mimeType.startsWith("image")) {
             return GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
-        } else if(mimeType.startsWith("video")) {
+        } else if (mimeType.startsWith("video")) {
             return GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO;
-        } else if(mimeType.startsWith("audio")) {
+        } else if (mimeType.startsWith("audio")) {
             return GlobalProvider.HISTORY_CONTENT_TYPE_AUDIO;
         } else {
             return GlobalProvider.HISTORY_CONTENT_TYPE_FILE;

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
     <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/first_screen_bg"
             android:scaleType="centerCrop"/>
     <LinearLayout
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:paddingLeft="32dp"
-                  android:paddingRight="32dp"
-                  android:paddingTop="32dp"
-                  android:layout_marginTop="?android:attr/actionBarSize">
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="32dp"
+            android:layout_marginTop="?android:attr/actionBarSize">
         <TextView
                 android:text="@string/fill_the_fields_below"
                 style="@style/IntroHeaderView"/>

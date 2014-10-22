@@ -58,11 +58,11 @@ public class BitmapCache {
      * @param hash            - required image hash
      * @param defaultResource - default resource to show while original image being loaded and scaled
      * @param original        - if false, image will be cached with specified imageView size,
-     *                          if true original size image will be used
+     *                        if true original size image will be used
      */
     public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource, boolean original) {
         int width, height;
-        if(original) {
+        if (original) {
             width = height = BITMAP_SIZE_ORIGINAL;
         } else {
             width = imageView.getWidth();
@@ -165,6 +165,7 @@ public class BitmapCache {
         String cacheKey = getCacheKey(hash, BITMAP_SIZE_ORIGINAL, BITMAP_SIZE_ORIGINAL);
         cacheBitmap(cacheKey, bitmap);
     }
+
     public void cacheBitmap(String cacheKey, Bitmap bitmap) {
         bitmapLruCache.put(cacheKey, bitmap);
     }

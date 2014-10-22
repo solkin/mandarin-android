@@ -42,7 +42,7 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
     @Override
     protected final void onBufferReleased(long sent, long size) {
         int progress = (int) (100 * sent / size);
-        if((progressShown == 0 && progress > 0) || (progress - progressShown) > getProgressStep()) {
+        if ((progressShown == 0 && progress > 0) || (progress - progressShown) > getProgressStep()) {
             mBuilder.setProgress(100, progress, false);
             mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
             progressShown = progress;

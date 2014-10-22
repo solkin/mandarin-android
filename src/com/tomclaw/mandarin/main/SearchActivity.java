@@ -110,7 +110,7 @@ public class SearchActivity extends ChiefActivity {
         String city = cityEdit.getText().toString();
         // Obtain search builder instance from account.
         builder.keyword(keyword);
-        if(!TextUtils.isEmpty(city)) {
+        if (!TextUtils.isEmpty(city)) {
             builder.city(city);
         }
         builder.online(onlineBox.isChecked());

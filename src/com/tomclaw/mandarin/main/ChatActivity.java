@@ -214,10 +214,10 @@ public class ChatActivity extends ChiefActivity {
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
         // Checking for spaces needed on the left or right side of this smile.
-        if(selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
+        if (selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
             smileyText = " " + smileyText;
         }
-        if(selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
+        if (selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
             smileyText += " ";
         }
         // Inserting smile into current message.
@@ -457,7 +457,7 @@ public class ChatActivity extends ChiefActivity {
         startActivity(intent);
         finish();
     }
-    
+
     private void pickFile() {
         Intent intent = new Intent();
         intent.setType("image/* video/*");
@@ -468,9 +468,9 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode){
+        switch (requestCode) {
             case PICK_FILE_RESULT_CODE:
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     try {
                         int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                         MessageCallback callback = new MessageCallback() {
@@ -935,12 +935,12 @@ public class ChatActivity extends ChiefActivity {
                 String hash = HttpUtil.getUrlHash(uriFile.toString());
                 // Check for image in bitmap cache first.
                 Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true);
-                if(bitmap == null) {
+                if (bitmap == null) {
                     // Try to create thumbnail from selected Uri.
                     bitmap = uriFile.getThumbnail(context);
                 }
                 // Check and store bitmap in bitmap cache.
-                if(bitmap == null) {
+                if (bitmap == null) {
                     // No bitmap - no hash.
                     hash = "";
                 } else {

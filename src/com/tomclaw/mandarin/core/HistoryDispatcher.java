@@ -107,14 +107,14 @@ public class HistoryDispatcher {
                     int buddyDbId = 0;
                     Bitmap largeIcon = null;
                     String message = "";
-                    for(NotificationData data : unreadList) {
+                    for (NotificationData data : unreadList) {
                         // Obtaining and collecting message-specific data.
                         unread += data.getUnreadCount();
                         message = data.getMessageText();
                         buddyDbId = data.getBuddyDbId();
                         String nickName = data.getBuddyNick();
                         String avatarHash = data.getBuddyAvatarHash();
-                        if(TextUtils.isEmpty(nickName)) {
+                        if (TextUtils.isEmpty(nickName)) {
                             nickName = context.getString(R.string.unknown_buddy);
                             avatarHash = null;
                         }

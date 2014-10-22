@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.main.views;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 /**
  * Created with IntelliJ IDEA.

@@ -338,10 +338,10 @@ public class QueryHelper {
                 if (cursor.moveToLast()
                         && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE)) == messageType
                         && cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME)) >=
-                            (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)
+                        (messageTime - Settings.MESSAGES_COLLAPSE_DELAY)
                         && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE)) != 1
                         && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE)) ==
-                            GlobalProvider.HISTORY_CONTENT_TYPE_TEXT) {
+                        GlobalProvider.HISTORY_CONTENT_TYPE_TEXT) {
                     Log.d(Settings.LOG_TAG, "We have cookies!");
                     // We have cookies!
                     long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
@@ -455,6 +455,7 @@ public class QueryHelper {
 
     /**
      * Will append some more cookie to message.
+     *
      * @param contentResolver
      * @param cookie
      * @param cookiesToAdd
@@ -467,7 +468,7 @@ public class QueryHelper {
             cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
             if (cursor != null && cursor.moveToFirst()) {
                 String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
-                for(String cookieAdd : cookiesToAdd) {
+                for (String cookieAdd : cookiesToAdd) {
                     cookies += " " + cookieAdd;
                 }
                 // Plain message modify by cookies.
@@ -909,7 +910,7 @@ public class QueryHelper {
                 contentResolver.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
             }
         } finally {
-            if(recycleCursor != null) {
+            if (recycleCursor != null) {
                 recycleCursor.close();
             }
         }

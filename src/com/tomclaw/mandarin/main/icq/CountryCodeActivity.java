@@ -134,7 +134,7 @@ public class CountryCodeActivity extends Activity {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
             }
-            TextView textView = (TextView)convertView.findViewById(R.id.header_text);
+            TextView textView = (TextView) convertView.findViewById(R.id.header_text);
             textView.setText(Character.toString((char) getItem(position).alphabetIndex));
             return convertView;
         }
@@ -164,8 +164,8 @@ public class CountryCodeActivity extends Activity {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.country_item, parent, false);
             }
-            TextView textView = (TextView)convertView.findViewById(R.id.settings_row_text);
-            TextView detailTextView = (TextView)convertView.findViewById(R.id.settings_row_text_detail);
+            TextView textView = (TextView) convertView.findViewById(R.id.settings_row_text);
+            TextView detailTextView = (TextView) convertView.findViewById(R.id.settings_row_text_detail);
 
             Country c = getItem(position);
             textView.setText(c.name);
@@ -197,8 +197,8 @@ public class CountryCodeActivity extends Activity {
 
         private List<Country> getFilteredResults(CharSequence constraint) {
             List<Country> filtered = new ArrayList<Country>();
-            for(Country country : originalCountries) {
-                if(country.contains(constraint)) {
+            for (Country country : originalCountries) {
+                if (country.contains(constraint)) {
                     filtered.add(country);
                 }
             }
@@ -217,7 +217,7 @@ public class CountryCodeActivity extends Activity {
             Locale locale = new Locale("", shortName);
             this.name = locale.getDisplayCountry();
             // Check for county not found.
-            if(TextUtils.equals(this.name, shortName)) {
+            if (TextUtils.equals(this.name, shortName)) {
                 this.name = name;
             }
             this.code = code;

@@ -116,13 +116,15 @@
                   android:theme="@style/Theme.Mandarin.Intro"
                   android:label="@string/plain_login"
                   android:windowActionBarOverlay="true"
-                  android:configChanges="orientation|screenSize">
+                  android:configChanges="orientation|screenSize"
+                  android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
         <activity android:name=".main.icq.PhoneLoginActivity"
                   android:theme="@style/Theme.Mandarin.Intro"
                   android:label="@string/app_name"
                   android:windowActionBarOverlay="true"
-                  android:configChanges="orientation|screenSize">
+                  android:configChanges="orientation|screenSize"
+                  android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
         <activity android:name=".main.icq.SmsCodeActivity"
                   android:theme="@style/Theme.Mandarin.Intro"

@@ -5,6 +5,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.PhoneNumberUtils;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +18,10 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
+import com.tomclaw.mandarin.util.CountriesProvider;
+import com.tomclaw.mandarin.util.Country;
+
+import java.util.Locale;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -22,10 +30,12 @@ public class PhoneLoginActivity extends Activity {
 
     private static int REQUEST_CODE_COUNTRY = 1;
 
-    TextView countryCodeField;
-    EditText phoneNumberField;
+    private TextView countryCodeView;
+    private EditText phoneNumberField;
 
-    RegistrationHelper.RegistrationCallback callback;
+    private TextView actionView;
+
+    private RegistrationHelper.RegistrationCallback callback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,19 +50,41 @@ public class PhoneLoginActivity extends Activity {
         bar.setDisplayShowTitleEnabled(false);
         bar.setIcon(R.drawable.ic_ab_logo);
 
-        /*countryCodeField = (TextView) findViewById(R.id.country_code_field);
-        countryCodeField.setOnClickListener(new View.OnClickListener() {
+        Country country;
+        try {
+            country = CountriesProvider.getInstance().getCountryByCurrentLocale(this, getString(R.string.default_locale));
+        } catch (CountriesProvider.CountryNotFoundException ignored) {
+            // This is rather strange situation. No current or event default locale?
+            country = null;
+        }
+
+        countryCodeView = (TextView) findViewById(R.id.country_code_view);
+        countryCodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
                         REQUEST_CODE_COUNTRY);
             }
-        });*/
+        });
 
         phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
-        phoneNumberField.setText("+7"); // TODO: detect country code automatically
-        phoneNumberField.setSelection(phoneNumberField.getText().length());
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        phoneNumberField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkActionVisibility();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        updateCountryCodeView(country);
 
         callback = new RegistrationHelper.RegistrationCallback() {
             @Override
@@ -96,6 +128,24 @@ public class PhoneLoginActivity extends Activity {
         };
     }
 
+    private void checkActionVisibility() {
+        if(actionView != null) {
+            String phoneNumber = phoneNumberField.getText().toString();
+            if (phoneNumber.startsWith("+") && phoneNumber.replaceAll(" ", "").length() > 7) {
+                actionView.setVisibility(View.VISIBLE);
+            } else {
+                actionView.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+    private void updateCountryCodeView(Country country) {
+        countryCodeView.setText(country.getName() + " (+" + country.getCode() + ")");
+        phoneNumberField.setText("");
+        phoneNumberField.setText("+" + country.getCode());
+        phoneNumberField.setSelection(phoneNumberField.getText().length());
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         inflateMenu(menu, R.menu.phone_enter_menu, R.id.phone_enter_menu);
@@ -105,7 +155,7 @@ public class PhoneLoginActivity extends Activity {
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
-        TextView actionView = ((TextView) item.getActionView());
+        actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
         actionView.setOnClickListener(new View.OnClickListener() {
 
@@ -124,8 +174,8 @@ public class PhoneLoginActivity extends Activity {
                 break;
             }
             case R.id.phone_enter_menu: {
-                String countryCode = countryCodeField.getText().toString();
                 String phoneNumber = phoneNumberField.getText().toString();
+                String countryCode = String.valueOf(PhoneNumberUtils.toaFromString(phoneNumberField.getText().toString()));
                 requestSms(countryCode, phoneNumber);
                 break;
             }
@@ -150,9 +200,15 @@ public class PhoneLoginActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_COUNTRY && resultCode == RESULT_OK) {
-            int code = data.getIntExtra(CountryCodeActivity.EXTRA_COUNTRY_CODE, 0);
-            if (code != 0) {
-                countryCodeField.setText("+" + code);
+            String countryShortName = data.getStringExtra(CountryCodeActivity.EXTRA_COUNTRY_SHORT_NAME);
+            if (!TextUtils.isEmpty(countryShortName)) {
+                try {
+                    Country country = CountriesProvider.getInstance().getCountryByLocale(
+                            this, countryShortName, countryShortName);
+                    updateCountryCodeView(country);
+                } catch (CountriesProvider.CountryNotFoundException ignored) {
+                    // No any case. This code is coming from this country provider list.
+                }
             }
         }
     }

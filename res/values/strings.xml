@@ -307,4 +307,5 @@
     <string name="upload_failed">Отправка не удалась</string>
     <string name="file_upload_title">Отправка файла</string>
     <string name="file_for">для %s</string>
+    <string name="default_locale">RU</string>
 </resources>

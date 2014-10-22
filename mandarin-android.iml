@@ -47,6 +47,15 @@
     </orderEntry>
     <orderEntry type="module" module-name="smileys-mandarin" />
     <orderEntry type="module" module-name="sticky-list-headers" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/libphonenumber-6.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

@@ -12,6 +12,8 @@ import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.CountriesProvider;
+import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.StringUtil;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -29,7 +31,7 @@ import java.util.Locale;
  */
 public class CountryCodeActivity extends Activity {
 
-    public static String EXTRA_COUNTRY_CODE = "country_code";
+    public static String EXTRA_COUNTRY_SHORT_NAME = "country_short_name";
 
     private SearchView.OnQueryTextListener onQueryTextListener;
     private CountryCodeAdapter countryCodeAdapter;
@@ -51,14 +53,14 @@ public class CountryCodeActivity extends Activity {
 
         setContentView(R.layout.country_code_activity);
 
-        countryCodeAdapter = new CountryCodeAdapter(this, getCountries());
+        countryCodeAdapter = new CountryCodeAdapter(this, CountriesProvider.getInstance().getCountries(this));
         StickyListHeadersListView listView = (StickyListHeadersListView) findViewById(R.id.countries_list_view);
         listView.setAdapter(countryCodeAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Country country = countryCodeAdapter.getItem(position);
-                setResult(RESULT_OK, new Intent().putExtra(EXTRA_COUNTRY_CODE, country.getCode()));
+                setResult(RESULT_OK, new Intent().putExtra(EXTRA_COUNTRY_SHORT_NAME, country.getShortName()));
                 finish();
             }
         });
@@ -95,26 +97,6 @@ public class CountryCodeActivity extends Activity {
             }
         }
         return false;
-    }
-
-    private List<Country> getCountries() {
-        List<Country> countries = new ArrayList<Country>();
-        try {
-            InputStream stream = getApplicationContext().getResources().getAssets().open("countries.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] args = line.split(";");
-                Country c = new Country(args[2], Integer.parseInt(args[0]), args[1]);
-                countries.add(c);
-            }
-            reader.close();
-            stream.close();
-        } catch (Exception ex) {
-            Log.d(Settings.LOG_TAG, ex.getMessage());
-        }
-        Collections.sort(countries);
-        return countries;
     }
 
     private class CountryCodeAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable {
@@ -203,59 +185,6 @@ public class CountryCodeActivity extends Activity {
                 }
             }
             return filtered;
-        }
-    }
-
-    public static class Country implements Comparable<Country> {
-
-        public String name;
-        public int code;
-        public String shortName;
-        public int alphabetIndex;
-
-        public Country(String name, int code, String shortName) {
-            Locale locale = new Locale("", shortName);
-            this.name = locale.getDisplayCountry();
-            // Check for county not found.
-            if (TextUtils.equals(this.name, shortName)) {
-                this.name = name;
-            }
-            this.code = code;
-            this.shortName = shortName;
-            this.alphabetIndex = StringUtil.getAlphabetIndex(this.name);
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public String getShortName() {
-            return shortName;
-        }
-
-        public int getAlphabetIndex() {
-            return alphabetIndex;
-        }
-
-        @Override
-        public int compareTo(Country another) {
-            return name.compareTo(another.name);
-        }
-
-        @Override
-        public String toString() {
-            return "Country{" +
-                    "name='" + name + '\'' +
-                    ", code='+" + code + '\'' +
-                    '}';
-        }
-
-        public boolean contains(CharSequence constraint) {
-            return toString().toLowerCase().contains(constraint.toString().toLowerCase());
         }
     }
 }

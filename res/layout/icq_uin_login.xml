@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:orientation="vertical"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
@@ -8,15 +8,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/first_screen_bg"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"/>
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:paddingTop="32dp"
-            android:layout_marginTop="?android:attr/actionBarSize">
+            android:layout_marginTop="?android:attr/actionBarSize"
+            android:layout_centerVertical="true">
         <TextView
                 android:text="@string/fill_the_fields_below"
                 style="@style/IntroHeaderView"/>
@@ -32,4 +34,4 @@
                 android:inputType="textPassword"
                 style="@style/IntroEditField"/>
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

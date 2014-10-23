@@ -5,7 +5,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +51,29 @@ public class PlainLoginActivity extends ChiefActivity {
 
         userIdEditText = (EditText) findViewById(R.id.user_id_field);
         userPasswordEditText = (EditText) findViewById(R.id.user_password_field);
+
+        TextWatcher checkActionTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkActionVisibility();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
+        userIdEditText.addTextChangedListener(checkActionTextWatcher);
+        userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
+
+        checkActionVisibility();
+    }
+
+    private void checkActionVisibility() {
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -64,6 +89,14 @@ public class PlainLoginActivity extends ChiefActivity {
                 menu.performIdentifierAction(item.getItemId(), 0);
             }
         });
+
+        String userId = userIdEditText.getText().toString();
+        String password = userPasswordEditText.getText().toString();
+        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(password)) {
+            item.setVisible(false);
+        } else {
+            item.setVisible(true);
+        }
         return true;
     }
 

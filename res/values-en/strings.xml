@@ -298,7 +298,7 @@
     <string name="password_hint">Password</string>
     <string name="tiny_icq_client">Tiny ICQ client</string>
     <string name="plain_login">Login and password</string>
-    <string name="save_account">Save</string>
+    <string name="login_account">Login</string>
     <string name="enter_phone_number">Enter your phone number</string>
     <string name="upload_failed">File sending failed</string>
     <string name="file_upload_title">Sending file</string>

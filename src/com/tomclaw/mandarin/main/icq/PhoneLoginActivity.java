@@ -2,16 +2,16 @@ package com.tomclaw.mandarin.main.icq;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
+import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
 
 import java.util.Locale;
 
@@ -33,8 +34,6 @@ public class PhoneLoginActivity extends Activity {
     private TextView countryCodeView;
     private TextView countryNameView;
     private EditText phoneNumberField;
-
-    private TextView actionView;
 
     private RegistrationHelper.RegistrationCallback callback;
 
@@ -132,17 +131,11 @@ public class PhoneLoginActivity extends Activity {
                 });
             }
         };
+        checkActionVisibility();
     }
 
     private void checkActionVisibility() {
-        if(actionView != null) {
-            String phoneNumber = getPhoneNumber();
-            if (phoneNumber.length() >= 6) {
-                actionView.setVisibility(View.VISIBLE);
-            } else {
-                actionView.setVisibility(View.INVISIBLE);
-            }
-        }
+        invalidateOptionsMenu();
     }
 
     private void updateCountryViews(Country country) {
@@ -159,7 +152,7 @@ public class PhoneLoginActivity extends Activity {
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
-        actionView = ((TextView) item.getActionView());
+        TextView actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
         actionView.setOnClickListener(new View.OnClickListener() {
 
@@ -168,6 +161,13 @@ public class PhoneLoginActivity extends Activity {
                 menu.performIdentifierAction(item.getItemId(), 0);
             }
         });
+
+        String phoneNumber = getPhoneNumber();
+        if (phoneNumber.length() >= 6) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
     }
 
     @Override
@@ -207,6 +207,12 @@ public class PhoneLoginActivity extends Activity {
         Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
     }
 
+    private void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(phoneNumberField, 0);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_COUNTRY && resultCode == RESULT_OK) {
@@ -216,6 +222,7 @@ public class PhoneLoginActivity extends Activity {
                     Country country = CountriesProvider.getInstance().getCountryByLocale(
                             this, countryShortName, countryShortName);
                     updateCountryViews(country);
+                    showKeyboard();
                 } catch (CountriesProvider.CountryNotFoundException ignored) {
                     // No any case. This code is coming from this country provider list.
                 }

@@ -13,13 +13,11 @@
             android:layout_alignParentBottom="true"/>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp"
-            android:paddingTop="32dp"
             android:layout_marginTop="?android:attr/actionBarSize"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
         <TextView
                 android:text="@string/enter_phone_number"
                 style="@style/IntroHeaderView"/>
@@ -27,20 +25,19 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
                 android:layout_marginBottom="4dp"
                 android:layout_marginTop="2dp"
-                style="@style/IntroEditField">
+                android:padding="4dp"
+                style="@style/PhoneNumberBlock">
             <TextView
                     android:id="@+id/country_code_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingStart="0dp"
                     android:paddingRight="4dp"
-                    android:gravity="center_horizontal"
-                    android:textSize="26sp"
-                    android:fontFamily="sans-serif-thin"
-                    android:background="@android:color/transparent"/>
+                    android:paddingEnd="4dp"
+                    style="@style/CountryCodeView"/>
             <EditText
                     android:id="@+id/phone_number_field"
                     android:layout_width="match_parent"
@@ -48,9 +45,7 @@
                     android:layout_weight="1"
                     android:inputType="phone"
                     android:gravity="left"
-                    android:textSize="26sp"
-                    android:fontFamily="sans-serif-thin"
-                    android:background="@android:color/transparent"/>
+                    style="@style/PhoneNumberView"/>
         </LinearLayout>
         <TextView
                 android:id="@+id/country_name_view"

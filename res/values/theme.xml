@@ -25,7 +25,7 @@
     <color name="flat_text_background_color">#AAffffff</color>
     <color name="preview_progress_background">#70000000</color>
     <color name="progress_background_color">#70ffffff</color>
-    <color name="progress_fore_color">#36D7B7</color>
+    <color name="progress_fore_color">#ff6600</color>
     <color name="file_size_text_color">#fafafa</color>
     <color name="failed_preview_tint">#70000000</color>
     <color name="out_error_text_color">#fafafa</color>
@@ -154,6 +154,11 @@
         <item name="android:titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
         <item name="android:subtitleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle</item>
     </style>
+    <style name="PhoneNumberBlock">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/text_view_focused</item>
+    </style>
     <style name="IntroEditField">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -173,12 +178,15 @@
         <item name="android:textColor">#ffffff</item>
     </style>
     <style name="CountryCodeView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">6dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">26dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">#959595</item>
+    </style>
+    <style name="PhoneNumberView">
+        <item name="android:textSize">26dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">#ffffff</item>
     </style>
 </resources>

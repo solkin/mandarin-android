@@ -31,6 +31,7 @@ public class PhoneLoginActivity extends Activity {
     private static int REQUEST_CODE_COUNTRY = 1;
 
     private TextView countryCodeView;
+    private TextView countryNameView;
     private EditText phoneNumberField;
 
     private TextView actionView;
@@ -58,14 +59,19 @@ public class PhoneLoginActivity extends Activity {
             country = null;
         }
 
-        countryCodeView = (TextView) findViewById(R.id.country_code_view);
-        countryCodeView.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener showCountryListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
                         REQUEST_CODE_COUNTRY);
             }
-        });
+        };
+
+        countryCodeView = (TextView) findViewById(R.id.country_code_view);
+        countryCodeView.setOnClickListener(showCountryListener);
+
+        countryNameView = (TextView) findViewById(R.id.country_name_view);
+        countryNameView.setOnClickListener(showCountryListener);
 
         phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
@@ -84,7 +90,7 @@ public class PhoneLoginActivity extends Activity {
             }
         });
 
-        updateCountryCodeView(country);
+        updateCountryViews(country);
 
         callback = new RegistrationHelper.RegistrationCallback() {
             @Override
@@ -130,8 +136,8 @@ public class PhoneLoginActivity extends Activity {
 
     private void checkActionVisibility() {
         if(actionView != null) {
-            String phoneNumber = phoneNumberField.getText().toString();
-            if (phoneNumber.startsWith("+") && phoneNumber.replaceAll(" ", "").length() > 7) {
+            String phoneNumber = getPhoneNumber();
+            if (phoneNumber.length() >= 6) {
                 actionView.setVisibility(View.VISIBLE);
             } else {
                 actionView.setVisibility(View.INVISIBLE);
@@ -139,11 +145,9 @@ public class PhoneLoginActivity extends Activity {
         }
     }
 
-    private void updateCountryCodeView(Country country) {
-        countryCodeView.setText(country.getName() + " (+" + country.getCode() + ")");
-        phoneNumberField.setText("");
-        phoneNumberField.setText("+" + country.getCode());
-        phoneNumberField.setSelection(phoneNumberField.getText().length());
+    private void updateCountryViews(Country country) {
+        countryCodeView.setText("+" + country.getCode());
+        countryNameView.setText(country.getName() + " (+" + country.getCode() + ")");
     }
 
     @Override
@@ -174,13 +178,19 @@ public class PhoneLoginActivity extends Activity {
                 break;
             }
             case R.id.phone_enter_menu: {
-                String phoneNumber = phoneNumberField.getText().toString();
-                String countryCode = String.valueOf(PhoneNumberUtils.toaFromString(phoneNumberField.getText().toString()));
-                requestSms(countryCode, phoneNumber);
+                requestSms(getCountryCode(), getPhoneNumber());
                 break;
             }
         }
         return true;
+    }
+
+    private String getCountryCode() {
+        return countryCodeView.getText().toString().substring(1);
+    }
+
+    private String getPhoneNumber() {
+        return phoneNumberField.getText().toString().replace(" ", "");
     }
 
     private void requestSms(final String countryCode, final String phoneNumber) {
@@ -205,7 +215,7 @@ public class PhoneLoginActivity extends Activity {
                 try {
                     Country country = CountriesProvider.getInstance().getCountryByLocale(
                             this, countryShortName, countryShortName);
-                    updateCountryCodeView(country);
+                    updateCountryViews(country);
                 } catch (CountriesProvider.CountryNotFoundException ignored) {
                     // No any case. This code is coming from this country provider list.
                 }

@@ -10,23 +10,21 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
-
-import java.util.Locale;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -88,11 +86,23 @@ public class PhoneLoginActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                checkActionVisibility();
+                updateActionVisibility();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+            }
+        });
+        phoneNumberField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_NEXT) {
+                    if(isActionVisible()) {
+                        requestSms();
+                    }
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -142,11 +152,15 @@ public class PhoneLoginActivity extends Activity {
                 });
             }
         };
-        checkActionVisibility();
+        updateActionVisibility();
     }
 
-    private void checkActionVisibility() {
+    private void updateActionVisibility() {
         invalidateOptionsMenu();
+    }
+
+    private boolean isActionVisible() {
+        return getPhoneNumber().length() >= MIN_PHONE_BODY_LENGTH;
     }
 
     private void updateCountryViews(Country country) {
@@ -173,8 +187,7 @@ public class PhoneLoginActivity extends Activity {
             }
         });
 
-        String phoneNumber = getPhoneNumber();
-        if (phoneNumber.length() >= MIN_PHONE_BODY_LENGTH) {
+        if (isActionVisible()) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -189,14 +202,18 @@ public class PhoneLoginActivity extends Activity {
                 break;
             }
             case R.id.phone_enter_menu: {
-                // Now, take the rest, hide keyboard...
-                hideKeyboard();
-                // ... and wait for Sms code.
-                requestSms(getCountryCode(), getPhoneNumber());
+                requestSms();
                 break;
             }
         }
         return true;
+    }
+
+    private void requestSms() {
+        // Now, take the rest, hide keyboard...
+        hideKeyboard();
+        // ... and wait for Sms code.
+        requestSms(getCountryCode(), getPhoneNumber());
     }
 
     /**

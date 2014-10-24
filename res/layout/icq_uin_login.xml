@@ -27,11 +27,13 @@
                 android:hint="@string/email_or_uin_hint"
                 android:inputType="textEmailAddress"
                 android:layout_marginBottom="8dp"
+                android:imeOptions="actionDone"
                 style="@style/IntroEditField"/>
         <EditText
                 android:id="@+id/user_password_field"
                 android:hint="@string/password_hint"
                 android:inputType="textPassword"
+                android:imeOptions="actionDone"
                 style="@style/IntroEditField"/>
     </LinearLayout>
 </RelativeLayout>

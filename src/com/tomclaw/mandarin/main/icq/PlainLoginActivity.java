@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,7 +27,6 @@ import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -59,21 +60,43 @@ public class PlainLoginActivity extends ChiefActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                checkActionVisibility();
+                updateActionVisibility();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
             }
         };
-        userIdEditText.addTextChangedListener(checkActionTextWatcher);
-        userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
 
-        checkActionVisibility();
+        TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                    if(isActionVisible()) {
+                        checkAccount();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        };
+        userIdEditText.addTextChangedListener(checkActionTextWatcher);
+        userIdEditText.setOnEditorActionListener(editorActionListener);
+
+        userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
+        userPasswordEditText.setOnEditorActionListener(editorActionListener);
+
+        updateActionVisibility();
     }
 
-    private void checkActionVisibility() {
+    private void updateActionVisibility() {
         invalidateOptionsMenu();
+    }
+
+    private boolean isActionVisible() {
+        String userId = userIdEditText.getText().toString();
+        String password = userPasswordEditText.getText().toString();
+        return !(TextUtils.isEmpty(userId) || TextUtils.isEmpty(password));
     }
 
     @Override
@@ -90,12 +113,10 @@ public class PlainLoginActivity extends ChiefActivity {
             }
         });
 
-        String userId = userIdEditText.getText().toString();
-        String password = userPasswordEditText.getText().toString();
-        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(password)) {
-            item.setVisible(false);
-        } else {
+        if (isActionVisible()) {
             item.setVisible(true);
+        } else {
+            item.setVisible(false);
         }
         return true;
     }

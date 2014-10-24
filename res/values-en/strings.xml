@@ -305,4 +305,5 @@
     <string name="file_for">for %s</string>
     <string name="default_locale">US</string>
     <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a></string>
+    <string name="select_country">Select country</string>
 </resources>

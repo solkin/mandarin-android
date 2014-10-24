@@ -27,7 +27,7 @@
                 android:hint="@string/email_or_uin_hint"
                 android:inputType="textEmailAddress"
                 android:layout_marginBottom="8dp"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 style="@style/IntroEditField"/>
         <EditText
                 android:id="@+id/user_password_field"

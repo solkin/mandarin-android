@@ -68,7 +68,10 @@ public class PlainLoginActivity extends ChiefActivity {
             }
         };
 
-        TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        userIdEditText.addTextChangedListener(checkActionTextWatcher);
+
+        userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
+        userPasswordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_DONE) {
@@ -79,12 +82,7 @@ public class PlainLoginActivity extends ChiefActivity {
                 }
                 return false;
             }
-        };
-        userIdEditText.addTextChangedListener(checkActionTextWatcher);
-        userIdEditText.setOnEditorActionListener(editorActionListener);
-
-        userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
-        userPasswordEditText.setOnEditorActionListener(editorActionListener);
+        });
 
         updateActionVisibility();
     }

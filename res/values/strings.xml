@@ -307,4 +307,5 @@
     <string name="file_upload_title">Отправка файла</string>
     <string name="file_for">для %s</string>
     <string name="default_locale">RU</string>
+    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a></string>
 </resources>

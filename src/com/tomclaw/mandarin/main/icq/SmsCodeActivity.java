@@ -155,14 +155,11 @@ public class SmsCodeActivity extends ChiefActivity {
             int connectStatus = StatusUtil.getDefaultOnlineStatus(accountRoot.getAccountType());
             getServiceInteraction().updateAccountStatusIndex(
                     accountRoot.getAccountType(), accountRoot.getUserId(), connectStatus);
-            //if (isStartHelper()) {
             // We are started as start helper and now
             // mission is complete, switch off the flag...
             PreferenceHelper.setShowStartHelper(this, false);
             // ... and now will go to the dialogs activity.
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            //}
+            setResult(RESULT_OK);
             finish();
         } catch (AccountAlreadyExistsException ignored) {
             Toast.makeText(this, R.string.account_already_exists, Toast.LENGTH_LONG).show();

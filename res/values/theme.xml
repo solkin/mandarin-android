@@ -158,6 +158,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/text_view_focused</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
     </style>
     <style name="IntroEditField">
         <item name="android:layout_width">match_parent</item>
@@ -188,5 +192,15 @@
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">#ffffff</item>
+    </style>
+    <style name="PrivacyPolicyView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorLink">#ffffff</item>
     </style>
 </resources>

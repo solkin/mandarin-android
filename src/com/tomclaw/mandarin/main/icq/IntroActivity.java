@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChiefActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +18,7 @@ import com.tomclaw.mandarin.main.ChiefActivity;
 public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     public static final String EXTRA_START_HELPER = "start_helper";
-    private EditText userIdEditText;
-    private EditText userPasswordEditText;
+    public static final int RESULT_LOGIN_COMPLETED = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,19 +37,17 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());
         // Initialize add account activity.
         setContentView(R.layout.icq_intro);
-        userIdEditText = ((EditText) findViewById(R.id.user_id_field));
-        userPasswordEditText = ((EditText) findViewById(R.id.user_password_field));
 
         findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getBaseContext(), PhoneLoginActivity.class));
+                startActivityForResult(new Intent(getBaseContext(), PhoneLoginActivity.class), RESULT_LOGIN_COMPLETED);
             }
         });
         findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getBaseContext(), PlainLoginActivity.class));
+                startActivityForResult(new Intent(getBaseContext(), PlainLoginActivity.class), RESULT_LOGIN_COMPLETED);
             }
         });
     }
@@ -64,5 +62,18 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
 
     private boolean isStartHelper() {
         return getIntent().getBooleanExtra(EXTRA_START_HELPER, false);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RESULT_LOGIN_COMPLETED) {
+            if(resultCode == RESULT_OK) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+        }
     }
 }

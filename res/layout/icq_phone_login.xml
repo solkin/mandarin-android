@@ -13,7 +13,7 @@
             android:layout_alignParentBottom="true"/>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="240dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="?android:attr/actionBarSize"
             android:layout_centerVertical="true"
@@ -23,11 +23,10 @@
                 style="@style/IntroHeaderView"/>
         <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:layout_marginTop="2dp"
-                android:padding="4dp"
                 style="@style/PhoneNumberBlock">
             <TextView
                     android:id="@+id/country_code_view"
@@ -40,9 +39,8 @@
                     style="@style/CountryCodeView"/>
             <EditText
                     android:id="@+id/phone_number_field"
-                    android:layout_width="match_parent"
+                    android:layout_width="156dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:inputType="phone"
                     android:gravity="left"
                     style="@style/PhoneNumberView"/>
@@ -54,4 +52,9 @@
                 android:layout_gravity="center_horizontal"
                 android:padding="8dp"/>
     </LinearLayout>
+    <TextView
+            android:id="@+id/privacy_policy_view"
+            android:layout_alignParentBottom="true"
+            android:text="@string/privacy_policy"
+            style="@style/PrivacyPolicyView"/>
 </RelativeLayout>

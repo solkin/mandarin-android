@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.util;
 
 import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.core.Settings;
@@ -52,7 +53,19 @@ public class CountriesProvider {
     }
 
     public Country getCountryByCurrentLocale(Context context, String defaultLocale) throws CountryNotFoundException {
-        return getCountryByLocale(context, Locale.getDefault().getCountry(), defaultLocale);
+        TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String simCountryIso = manager.getSimCountryIso().toUpperCase();
+        String networkCountryIso = manager.getNetworkCountryIso().toUpperCase();
+        String localeCountryIso = Locale.getDefault().getCountry().toUpperCase();
+        String countryIso;
+        if(!TextUtils.isEmpty(simCountryIso)) {
+            countryIso = simCountryIso;
+        } else if(!TextUtils.isEmpty(simCountryIso)) {
+            countryIso = networkCountryIso;
+        } else {
+            countryIso = localeCountryIso;
+        }
+        return getCountryByLocale(context, countryIso, defaultLocale);
     }
 
     public Country getCountryByLocale(Context context, String locale, String defaultLocale) throws CountryNotFoundException {

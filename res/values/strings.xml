@@ -307,6 +307,9 @@
     <string name="file_upload_title">Отправка файла</string>
     <string name="file_for">для %s</string>
     <string name="default_locale">RU</string>
-    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a></string>
+    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a>.</string>
     <string name="select_country">Выберите страну</string>
+    <string name="phone_number_faq"><u>Для чего Мандарину мой номер телефона?</u></string>
+    <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ для доступа к Вашей новой или существующей учётной записи.</string>
+    <string name="got_it">Понятно</string>
 </resources>

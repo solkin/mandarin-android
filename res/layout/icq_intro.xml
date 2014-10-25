@@ -29,9 +29,9 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tiny_icq_client"
                     android:textColor="#ffffff"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:fontFamily="sans-serif-light"
-                    android:padding="8dp"
+                    android:padding="5dp"
                     android:includeFontPadding="false"/>
         </LinearLayout>
         <LinearLayout
@@ -48,8 +48,7 @@
                     android:id="@+id/phone_login_button"
                     style="@style/Button.Orange"
                     android:text="Войти по номеру телефона"
-                    android:layout_marginBottom="12dp"/>
-
+                    android:layout_marginBottom="16dp"/>
             <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

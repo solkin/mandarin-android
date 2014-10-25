@@ -72,7 +72,8 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
         mBuilder.setContentText(context.getString(R.string.upload_failed))
                 // Removes the progress bar
                 .setProgress(0, 0, false)
-                .setSmallIcon(android.R.drawable.stat_sys_upload_done);
+                .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+                .setOngoing(false);
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onFailDelegate();

@@ -304,6 +304,9 @@
     <string name="file_upload_title">Sending file</string>
     <string name="file_for">for %s</string>
     <string name="default_locale">US</string>
-    <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a></string>
+    <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a>.</string>
     <string name="select_country">Select country</string>
+    <string name="phone_number_faq"><u>Why does Mandarin use my phone number?</u></string>
+    <string name="phone_number_faq_message">Mandarin uses your phone number as your \"identity\". Once you\'ve entered your phone number, you will receive an access code via SMS to activate your account. This is the best way to get fast, secure and simple access to your new or existing account.</string>
+    <string name="got_it">Got it</string>
 </resources>

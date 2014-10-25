@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.icq;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -106,6 +107,14 @@ public class PhoneLoginActivity extends Activity {
             }
         });
 
+        View view = findViewById(R.id.phone_number_faq_view);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPhoneNumberFaq();
+            }
+        });
+
         TextView privacyPolicyView = (TextView) findViewById(R.id.privacy_policy_view);
         privacyPolicyView.setMovementMethod(LinkMovementMethod.getInstance());
         privacyPolicyView.setFocusable(true);
@@ -166,6 +175,14 @@ public class PhoneLoginActivity extends Activity {
     private void updateCountryViews(Country country) {
         countryCodeView.setText("+" + country.getCode());
         countryNameView.setText(country.getName() + " (+" + country.getCode() + ")");
+    }
+
+    private void showPhoneNumberFaq() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.phone_number_faq_message)
+                .setCancelable(true)
+                .setNeutralButton(R.string.got_it, null)
+                .show();
     }
 
     @Override

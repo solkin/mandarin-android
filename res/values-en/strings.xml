@@ -122,8 +122,8 @@
     </string>
     <string name="unable_to_setup_status">Failed to change your status. Restarting the app may help.
     </string>
-    <string name="status_message_hint">Change status message...</string>
-    <string name="status_message_change_hint">Status message...</string>
+    <string name="status_message_hint">Change status message…</string>
+    <string name="status_message_change_hint">Status message…</string>
     <string name="click_to_connect_hint">Click here to connect</string>
     <string name="apply">Apply</string>
     <string name="not_now">Not now</string>
@@ -189,10 +189,10 @@
         high demand and some personal interest.
     </string>
     <string name="app_year">2014</string>
-    <string name="disconnecting">Disconnecting...</string>
-    <string name="connecting">Connecting...</string>
+    <string name="disconnecting">Disconnecting…</string>
+    <string name="connecting">Connecting…</string>
     <string name="invalid_credentials">Sorry, your password or ID is invalid. Please review them again.</string>
-    <string name="checking_credentials">Connecting, please wait a while...</string>
+    <string name="checking_credentials">Connecting, please wait a while…</string>
     <string name="pref_summary_chat_show_keyboard">Show keyboard when I open a dialog</string>
     <string name="pref_title_chat_show_keyboard">Show keyboard</string>
     <string name="pref_title_send_by_enter">Use Enter to send</string>
@@ -225,7 +225,7 @@
     <string name="yesterday">yesterday</string>
     <string name="last_seen_date" formatted="false">Last seen %1$s at %2$s</string>
     <string name="last_seen_time" formatted="false">Last seen at %s</string>
-    <string name="typing">is typing...</string>
+    <string name="typing">is typing…</string>
     <string name="unknown_buddy">Unknown buddy</string>
     <string name="pref_title_dark_theme">Dark theme</string>
     <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
@@ -236,7 +236,7 @@
     <string name="rename_buddy_short">Rename</string>
     <string name="edit_buddy_name_title">Renaming buddy</string>
     <string name="rename_buddy_description">Desired name:</string>
-    <string name="buddy_name_hint">Buddy name...</string>
+    <string name="buddy_name_hint">Buddy name…</string>
     <string name="no_buddy_in_roster">Not present in your buddylist</string>
     <string name="remove_buddy_title">Delete this buddy?</string>
     <string name="remove_buddies_title">Delete these buddies?</string>
@@ -251,7 +251,7 @@
     <string name="search_buddy">Buddy search</string>
     <string name="no_active_accounts">Connect at least one account to add buddies</string>
     <string name="search_buddy_error">Failed to perform search. Please try again later.</string>
-    <string name="buddy_search_progress">Search in progress...</string>
+    <string name="buddy_search_progress">Search in progress…</string>
     <string name="buddy_search_no_result">No buddies found.</string>
     <string name="select_age">Age</string>
     <string name="range_from">from</string>
@@ -309,4 +309,7 @@
     <string name="phone_number_faq"><u>Why does Mandarin use my phone number?</u></string>
     <string name="phone_number_faq_message">Mandarin uses your phone number as your \"identity\". Once you\'ve entered your phone number, you will receive an access code via SMS to activate your account. This is the best way to get fast, secure and simple access to your new or existing account.</string>
     <string name="got_it">Got it</string>
+    <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code below.</string>
+    <string name="resend_code_time">Resend code (%1$s)</string>
+    <string name="resend_code">Resend code</string>
 </resources>

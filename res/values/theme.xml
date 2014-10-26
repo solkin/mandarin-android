@@ -30,6 +30,8 @@
     <color name="out_error_text_color">#fafafa</color>
     <color name="orange_normal">#ff6600</color>
     <color name="orange_pressed">#e55400</color>
+    <color name="resend_code_disabled">#bababa</color>
+    <color name="resend_code_enabled">#ffffff</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 
@@ -166,9 +168,23 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/text_view_selector</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">24sp</item>
+    </style>
+    <style name="IntroSmsCodeField">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/text_view_selector</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">40sp</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:inputType">number</item>
     </style>
     <style name="IntroHeaderView">
         <item name="android:layout_width">match_parent</item>
@@ -209,5 +225,13 @@
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:textColorLink">#ffffff</item>
+    </style>
+    <style name="ResendCodeView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@drawable/resend_code_color</item>
     </style>
 </resources>

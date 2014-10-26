@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.DocumentsProvider;
 
 import java.io.BufferedInputStream;
 import java.io.FileDescriptor;
@@ -27,14 +29,10 @@ public class BitmapHelper {
     public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri, int reqWidth, int reqHeight) {
         Bitmap bitmap;
         try {
-            final Bundle openOpts = new Bundle();
-            AssetFileDescriptor afd = context.getContentResolver().openTypedAssetFileDescriptor(uri, "image/*",
-                    openOpts);
-            final FileDescriptor fd = afd.getFileDescriptor();
-            InputStream inputStream = new BufferedInputStream(new FileInputStream(fd), THUMBNAIL_BUFFER_SIZE);
+            InputStream inputStream = new BufferedInputStream(
+                    context.getContentResolver().openInputStream(uri), THUMBNAIL_BUFFER_SIZE);
             inputStream.mark(THUMBNAIL_BUFFER_SIZE);
 
-            // MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
             // First decode with inJustDecodeBounds=true to check dimensions
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;

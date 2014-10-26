@@ -1,11 +1,18 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.telephony.PhoneNumberUtils;
+import android.text.*;
+import android.text.style.UnderlineSpan;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +25,9 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.TimeHelper;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Solkin on 02.10.2014.
@@ -28,12 +37,18 @@ public class SmsCodeActivity extends ChiefActivity {
     public static String EXTRA_MSISDN = "msisdn";
     public static String EXTRA_TRANS_ID = "trans_id";
 
+    private static final long SMS_WAIT_INTERVAL = 60 * 1000;
+    private static final int MIN_SMS_CODE_LENGTH = 4;
+
     EditText smsCodeField;
+    TextView resendCodeView;
 
     RegistrationHelper.RegistrationCallback callback;
 
     String transId;
     String msisdn;
+
+    SmsTimer timer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +67,48 @@ public class SmsCodeActivity extends ChiefActivity {
         transId = intent.getStringExtra(EXTRA_TRANS_ID);
 
         smsCodeField = (EditText) findViewById(R.id.sms_code_field);
+        smsCodeField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateActionVisibility();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        smsCodeField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                    if(isActionVisible()) {
+                        loginPhone();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        String phoneFormatted = PhoneNumberUtils.formatNumber('+' + msisdn);
+        TextView smsCodeHeader = (TextView) findViewById(R.id.sms_code_header_view);
+        String text = String.format(getResources().getString(R.string.sms_code_header), phoneFormatted);
+        smsCodeHeader.setText(Html.fromHtml(text));
+
+        resendCodeView = (TextView) findViewById(R.id.resend_code_view);
+        resendCodeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(v.isEnabled()) {
+                    RegistrationHelper.validatePhone(msisdn, callback);
+                }
+            }
+        });
+        startTimer();
 
         callback = new RegistrationHelper.RegistrationCallback() {
             @Override
@@ -60,6 +117,13 @@ public class SmsCodeActivity extends ChiefActivity {
 
             @Override
             public void onPhoneValidated(final String msisdn, final String transId) {
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTransId(transId);
+                        startTimer();
+                    }
+                });
             }
 
             @Override
@@ -98,6 +162,22 @@ public class SmsCodeActivity extends ChiefActivity {
         };
     }
 
+    private void startTimer() {
+        if(timer != null) {
+            timer.cancel();
+        }
+        timer = new SmsTimer(resendCodeView);
+        timer.start();
+    }
+
+    private void updateActionVisibility() {
+        invalidateOptionsMenu();
+    }
+
+    private boolean isActionVisible() {
+        return getSmsCode().length() >= MIN_SMS_CODE_LENGTH;
+    }
+
     @Override
     public void updateTheme() {
     }
@@ -120,6 +200,12 @@ public class SmsCodeActivity extends ChiefActivity {
                 menu.performIdentifierAction(item.getItemId(), 0);
             }
         });
+
+        if (isActionVisible()) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
     }
 
     @Override
@@ -130,12 +216,27 @@ public class SmsCodeActivity extends ChiefActivity {
                 break;
             }
             case R.id.sms_code_menu: {
-                String smsCode = smsCodeField.getText().toString();
-                loginPhone(msisdn, transId, smsCode);
+                loginPhone();
                 break;
             }
         }
         return true;
+    }
+
+    /**
+     * Check and return entered Sms code
+     * @return String - digits phone number
+     */
+    private String getSmsCode() {
+        String smsCode = "";
+        if(!TextUtils.isEmpty(smsCodeField.getText())) {
+            smsCode = String.valueOf(smsCodeField.getText());
+        }
+        return smsCode;
+    }
+
+    private void loginPhone() {
+        loginPhone(msisdn, transId, getSmsCode());
     }
 
     private void loginPhone(final String msisdn, final String transId, final String smsCode) {
@@ -171,5 +272,51 @@ public class SmsCodeActivity extends ChiefActivity {
     @Override
     public void onCoreServiceIntent(Intent intent) {
 
+    }
+
+    public void setTransId(String transId) {
+        this.transId = transId;
+    }
+
+    public static class SmsTimer extends CountDownTimer {
+
+        private TimeHelper timeHelper;
+        private WeakReference<TextView> weakResendCode;
+
+        public SmsTimer(TextView resendCodeView) {
+            super(SMS_WAIT_INTERVAL, 1000);
+            timeHelper = new TimeHelper(resendCodeView.getContext());
+            weakResendCode = new WeakReference<TextView>(resendCodeView);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            TextView resendCodeView = weakResendCode.get();
+            if(resendCodeView != null) {
+                if (resendCodeView.isEnabled()) {
+                    resendCodeView.setEnabled(false);
+                }
+                String time = timeHelper.getTime(millisUntilFinished);
+                setUnderlinedString(resendCodeView.getResources().getString(R.string.resend_code_time, time));
+            }
+        }
+
+        @Override
+        public void onFinish() {
+            TextView resendCodeView = weakResendCode.get();
+            if(resendCodeView != null) {
+                resendCodeView.setEnabled(true);
+                setUnderlinedString(resendCodeView.getResources().getString(R.string.resend_code));
+            }
+        }
+
+        private void setUnderlinedString(String text) {
+            TextView resendCodeView = weakResendCode.get();
+            if(resendCodeView != null) {
+                SpannableString content = new SpannableString(text);
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                resendCodeView.setText(content);
+            }
+        }
     }
 }

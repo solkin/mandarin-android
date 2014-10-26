@@ -312,4 +312,7 @@
     <string name="phone_number_faq"><u>Для чего Мандарину мой номер телефона?</u></string>
     <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ для доступа к Вашей новой или существующей учётной записи.</string>
     <string name="got_it">Понятно</string>
+    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код ниже.</string>
+    <string name="resend_code_time">Переотправить код (%s)</string>
+    <string name="resend_code">Переотправить код</string>
 </resources>

@@ -94,7 +94,8 @@ public class SmsCodeActivity extends ChiefActivity {
             }
         });
 
-        String phoneFormatted = PhoneNumberUtils.formatNumber('+' + msisdn);
+        Editable phoneFormatted = new SpannableStringBuilder('+' + msisdn);
+        PhoneNumberUtils.formatNumber(phoneFormatted, PhoneNumberUtils.FORMAT_NANP);
         TextView smsCodeHeader = (TextView) findViewById(R.id.sms_code_header_view);
         String text = String.format(getResources().getString(R.string.sms_code_header), phoneFormatted);
         smsCodeHeader.setText(Html.fromHtml(text));

@@ -260,6 +260,10 @@ public class PhoneLoginActivity extends Activity {
         return phoneNumber;
     }
 
+    private String getPhoneFormatted() {
+        return TextUtils.concat(countryCodeView.getText(), " ", phoneNumberField.getText()).toString();
+    }
+
     private void requestSms(final String countryCode, final String phoneNumber) {
         RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
     }
@@ -267,7 +271,8 @@ public class PhoneLoginActivity extends Activity {
     private void onSmsSent(String msisdn, String transId) {
         startActivityForResult(new Intent(this, SmsCodeActivity.class)
                 .putExtra(SmsCodeActivity.EXTRA_MSISDN, msisdn)
-                .putExtra(SmsCodeActivity.EXTRA_TRANS_ID, transId), REQUEST_SMS_NUMBER);
+                .putExtra(SmsCodeActivity.EXTRA_TRANS_ID, transId)
+                .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()), REQUEST_SMS_NUMBER);
     }
 
     private void onRequestError() {

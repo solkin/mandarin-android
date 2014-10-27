@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class SmsCodeActivity extends ChiefActivity {
 
     public static String EXTRA_MSISDN = "msisdn";
     public static String EXTRA_TRANS_ID = "trans_id";
+    public static String EXTRA_PHONE_FORMATTED = "phone_formatted";
 
     private static final long SMS_WAIT_INTERVAL = 60 * 1000;
     private static final int MIN_SMS_CODE_LENGTH = 4;
@@ -47,6 +49,7 @@ public class SmsCodeActivity extends ChiefActivity {
 
     String transId;
     String msisdn;
+    String phoneFormatted;
 
     SmsTimer timer;
 
@@ -65,6 +68,7 @@ public class SmsCodeActivity extends ChiefActivity {
         Intent intent = getIntent();
         msisdn = intent.getStringExtra(EXTRA_MSISDN);
         transId = intent.getStringExtra(EXTRA_TRANS_ID);
+        phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
 
         smsCodeField = (EditText) findViewById(R.id.sms_code_field);
         smsCodeField.addTextChangedListener(new TextWatcher() {
@@ -94,8 +98,6 @@ public class SmsCodeActivity extends ChiefActivity {
             }
         });
 
-        Editable phoneFormatted = new SpannableStringBuilder('+' + msisdn);
-        PhoneNumberUtils.formatNumber(phoneFormatted, PhoneNumberUtils.FORMAT_NANP);
         TextView smsCodeHeader = (TextView) findViewById(R.id.sms_code_header_view);
         String text = String.format(getResources().getString(R.string.sms_code_header), phoneFormatted);
         smsCodeHeader.setText(Html.fromHtml(text));
@@ -237,6 +239,9 @@ public class SmsCodeActivity extends ChiefActivity {
     }
 
     private void loginPhone() {
+        // Now, take the rest, hide keyboard...
+        hideKeyboard();
+        // ... and wait for account activation.
         loginPhone(msisdn, transId, getSmsCode());
     }
 
@@ -273,6 +278,12 @@ public class SmsCodeActivity extends ChiefActivity {
     @Override
     public void onCoreServiceIntent(Intent intent) {
 
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(smsCodeField.getWindowToken(), 0);
     }
 
     public void setTransId(String transId) {

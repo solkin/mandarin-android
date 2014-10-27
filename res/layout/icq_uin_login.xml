@@ -21,12 +21,13 @@
             android:layout_centerVertical="true">
         <TextView
                 android:text="@string/fill_the_fields_below"
+                android:paddingBottom="7dp"
                 style="@style/IntroHeaderView"/>
         <EditText
                 android:id="@+id/user_id_field"
                 android:hint="@string/email_or_uin_hint"
                 android:inputType="textEmailAddress"
-                android:layout_marginBottom="3dp"
+                android:layout_marginBottom="16dp"
                 android:imeOptions="actionNext"
                 style="@style/IntroEditField"/>
         <EditText

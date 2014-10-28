@@ -32,10 +32,11 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] ITEM_LAYOUTS = new int[]{
-            R.layout.chat_item_error,
-            R.layout.chat_item_text_inc,
-            R.layout.chat_item_text_out};
+    private static final int[][] ITEM_LAYOUTS = new int[][]{
+            new int[]{R.layout.chat_item_error},
+            new int[]{R.layout.chat_item_text_inc},
+            new int[]{R.layout.chat_item_text_out, R.layout.chat_item_image_out, R.layout.chat_item_image_out}
+    };
     private static final int[] MESSAGE_TYPES = new int[]{
             R.id.error_message,
             R.id.incoming_message,
@@ -166,8 +167,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int type = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        return inflater.inflate(ITEM_LAYOUTS[type], parent, false);
+        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+        return inflater.inflate(ITEM_LAYOUTS[messageType][contentType], parent, false);
     }
 
     @Override
@@ -219,29 +221,20 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
                 ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
                 // Updating content-specific data.
-                TextView outText = (TextView) view.findViewById(R.id.out_text);
-                View outFile = view.findViewById(R.id.out_file);
-                View outPreviewProgress = view.findViewById(R.id.out_preview_progress);
-                ImageView outPreviewImage = (ImageView) view.findViewById(R.id.out_preview_image);
-                View outError = view.findViewById(R.id.out_error);
-                View outProgressContainer = view.findViewById(R.id.out_progress_container);
-                ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
-                TextView outSize = (TextView) view.findViewById(R.id.out_size);
                 switch (contentType) {
                     case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
-                        outText.setVisibility(View.VISIBLE);
-                        outFile.setVisibility(View.GONE);
+                        TextView outText = (TextView) view.findViewById(R.id.out_text);
                         outText.setText(messageText);
-                        outPreviewImage.setImageResource(android.R.color.transparent);
-                        outProgress.setProgress(0);
-                        outSize.setText("");
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
                     case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
-                        outText.setVisibility(View.GONE);
-                        outFile.setVisibility(View.VISIBLE);
-                        outText.setText("");
+                        View outPreviewProgress = view.findViewById(R.id.out_preview_progress);
+                        ImageView outPreviewImage = (ImageView) view.findViewById(R.id.out_preview_image);
+                        View outError = view.findViewById(R.id.out_error);
+                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
+                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
+                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
                         BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash, android.R.color.transparent, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {

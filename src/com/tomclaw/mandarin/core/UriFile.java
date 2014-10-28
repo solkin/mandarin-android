@@ -1,16 +1,20 @@
 package com.tomclaw.mandarin.core;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.mandarin.util.HttpUtil;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -93,23 +97,44 @@ public class UriFile extends VirtualFile {
     }
 
     public static UriFile create(Context context, Uri uri) throws FileNotFoundException {
-        String[] projection = {
-                MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.SIZE,
-                MediaStore.MediaColumns.DISPLAY_NAME};
-        Cursor cursor = null;
-        try {
-            cursor = context.getApplicationContext().getContentResolver().query(uri, projection, null, null, null);
-            if (cursor.moveToFirst()) {
-                return new UriFile(uri.toString(),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)),
-                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)));
+        String uriScheme = uri.getScheme();
+        if(TextUtils.equals(uriScheme, ContentResolver.SCHEME_CONTENT)) {
+            String[] projection = {
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.DISPLAY_NAME};
+            Cursor cursor = null;
+            try {
+                cursor = context.getContentResolver().query(uri, projection, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    // Size detection.
+                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
+                    // Try to detect name.
+                    String name;
+                    int nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
+                    if (nameColumn == -1) {
+                        name = String.valueOf(System.currentTimeMillis());
+                    } else {
+                        name = cursor.getString(nameColumn);
+                    }
+                    // Try to detect mime-type.
+                    String mimeType;
+                    int mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
+                    if (mimeTypeColumn == -1) {
+                        mimeType = HttpUtil.getMimeType(name);
+                    } else {
+                        mimeType = cursor.getString(mimeTypeColumn);
+                    }
+                    return new UriFile(uri.toString(), mimeType, size, name);
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        } else if(TextUtils.equals(uriScheme, ContentResolver.SCHEME_FILE)) {
+            File file = new File(uri.getPath());
+            return new UriFile(uri.toString(), HttpUtil.getMimeType(file.getName()), file.length(), file.getName());
         }
         throw new FileNotFoundException();
     }

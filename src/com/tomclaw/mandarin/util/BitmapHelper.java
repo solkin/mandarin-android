@@ -1,19 +1,18 @@
 package com.tomclaw.mandarin.util;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.provider.DocumentsProvider;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 
-import java.io.BufferedInputStream;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Created by Solkin on 17.10.2014.
@@ -48,6 +47,16 @@ public class BitmapHelper {
             // Decode bitmap with inSampleSize set
             inputStream.reset();
             bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+
+            int orientation = getOrientation(context, uri);
+            if (orientation != 0) {
+                final int width = bitmap.getWidth();
+                final int height = bitmap.getHeight();
+
+                final Matrix m = new Matrix();
+                m.setRotate(orientation, width / 2, height / 2);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+            }
         } catch (Throwable ignored) {
             bitmap = null;
         }
@@ -94,20 +103,6 @@ public class BitmapHelper {
         return bitmap;
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(path, options);
-    }
-
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -128,5 +123,83 @@ public class BitmapHelper {
         }
 
         return inSampleSize;
+    }
+
+    public static int getOrientation(Context context, Uri uri) {
+        final String scheme = uri.getScheme();
+        final String authority = uri.getAuthority();
+        int rotation = 0;
+        String path;
+        if(TextUtils.equals(uri.getScheme(), ContentResolver.SCHEME_CONTENT)) {
+            path = getMediaPath(context, uri);
+        } else {
+            path = uri.getPath();
+        }
+        if(!TextUtils.isEmpty(path)) {
+            int exifOrientation = obtainFileOrientation(path);
+            switch(exifOrientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    rotation = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    rotation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    rotation = 270;
+                    break;
+                default:
+                    rotation = 0;
+                    break;
+            }
+            if(exifOrientation != ExifInterface.ORIENTATION_UNDEFINED) {
+                return rotation;
+            }
+        }
+        // No file access, let's check in media store.
+        if(ContentResolver.SCHEME_CONTENT.equals(scheme) && MediaStore.AUTHORITY.equals(authority) && context != null) {
+            final String[] projection = new String[]{MediaStore.Images.Media.ORIENTATION};
+            final Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+            if(cursor != null) {
+                final int orientationColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+                if(cursor.moveToFirst()) {
+                    rotation = cursor.isNull(orientationColumnIndex) ? 0 : cursor.getInt(orientationColumnIndex);
+                }
+                cursor.close();
+            }
+        }
+        return rotation;
+    }
+
+    private static int obtainFileOrientation(String fileName) {
+        if (TextUtils.isEmpty(fileName)) {
+            return ExifInterface.ORIENTATION_UNDEFINED;
+        }
+        try {
+            ExifInterface exifInterface = new ExifInterface(fileName);
+            return exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        } catch(IOException e) {
+            return ExifInterface.ORIENTATION_UNDEFINED;
+        }
+    }
+
+    public static String getMediaPath(Context context, Uri uri) {
+        String path = null;
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+            if(cursor != null && cursor.moveToFirst()) {
+                int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                path = cursor.getString(dataColumnIndex);
+            }
+        } catch(Throwable ignore) {
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        return path;
     }
 }

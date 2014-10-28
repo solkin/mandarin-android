@@ -28,7 +28,8 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
         mBuilder.setContentTitle(context.getString(R.string.file_upload_title))
                 .setContentText(getDescription())
                 .setSmallIcon(android.R.drawable.stat_sys_upload)
-                .setOngoing(true);
+                .setOngoing(true)
+                .setProgress(0, 100, true);
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onStartedDelegate();

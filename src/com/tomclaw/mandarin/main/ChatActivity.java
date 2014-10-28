@@ -950,7 +950,7 @@ public class ChatActivity extends ChiefActivity {
                     BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
                 }
                 QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
-                        contentType, size, hash);
+                        uriFile.getName(), contentType, size, hash);
                 // Sending protocol message request.
                 RequestHelper.requestFile(contentResolver, buddyDbId, cookie, uriFile);
             }

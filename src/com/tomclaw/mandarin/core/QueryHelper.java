@@ -386,18 +386,18 @@ public class QueryHelper {
     }
 
     public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 String path, int contentType, long contentSize, String previewHash)
+                                                 String path, String name, int contentType, long contentSize, String previewHash)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 2, 2, cookie, 0, "", false, contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                path, previewHash);
+                path, name, previewHash);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
                                          int messageType, int messageState, String cookie,
                                          long messageTime, String messageText, boolean activateDialog,
                                          int contentType, long contentSize, int contentState, String contentPath,
-                                         String previewHash) {
+                                         String contentName, String previewHash) {
         // Checking for dialog activate needed.
         if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
             modifyDialog(contentResolver, buddyDbId, true);
@@ -422,6 +422,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, contentSize);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, contentState);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_PATH, contentPath);
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
         contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
     }

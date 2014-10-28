@@ -34,8 +34,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     private static final int[][] ITEM_LAYOUTS = new int[][]{
             new int[]{R.layout.chat_item_error},
-            new int[]{R.layout.chat_item_text_inc},
-            new int[]{R.layout.chat_item_text_out, R.layout.chat_item_image_out, R.layout.chat_item_image_out}
+            new int[]{R.layout.chat_item_inc_text},
+            new int[]{R.layout.chat_item_out_text, R.layout.chat_item_out_image, R.layout.chat_item_out_image, 0, R.layout.chat_item_out_file}
     };
     private static final int[] MESSAGE_TYPES = new int[]{
             R.id.error_message,
@@ -68,6 +68,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_CONTENT_SIZE;
     private static int COLUMN_CONTENT_STATE;
     private static int COLUMN_CONTENT_PROGRESS;
+    private static int COLUMN_CONTENT_NAME;
     private static int COLUMN_PREVIEW_HASH;
 
     private Context context;
@@ -120,6 +121,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
         COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
         COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
+        COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
         COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
         // Changing current cursor.
         swapCursor(cursor);
@@ -205,6 +207,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
         int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
         int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
+        String contentName = cursor.getString(COLUMN_CONTENT_NAME);
         String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
@@ -264,6 +267,40 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         outProgress.setProgress(contentProgress);
                         outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        break;
+                    }
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
+                        TextView outName = (TextView) view.findViewById(R.id.out_name);
+                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
+                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
+                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
+
+                        switch (contentState) {
+                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                // outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                outProgressContainer.setVisibility(View.VISIBLE);
+                                // outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                // outError.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                // outError.setVisibility(View.GONE);
+                                break;
+                            }
+                        }
+
+                        outName.setText(contentName);
+                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        outProgress.setProgress(contentProgress);
                         break;
                     }
                 }

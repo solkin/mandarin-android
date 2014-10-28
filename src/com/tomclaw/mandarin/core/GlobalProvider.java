@@ -102,6 +102,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_CONTENT_STATE = "content_state";
     public static final String HISTORY_CONTENT_PROGRESS = "content_progress";
     public static final String HISTORY_CONTENT_PATH = "content_path";
+    public static final String HISTORY_CONTENT_NAME = "content_name";
     public static final String HISTORY_PREVIEW_HASH = "preview_hash";
 
     public static final int HISTORY_CONTENT_TYPE_TEXT = 0;
@@ -160,7 +161,8 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_CONTENT_SIZE + " bigint default 0, "
             + HISTORY_CONTENT_STATE + " int default " + HISTORY_CONTENT_STATE_STABLE + ", "
             + HISTORY_CONTENT_PROGRESS + " int default 0, "
-            + HISTORY_CONTENT_PATH + " text, " + HISTORY_PREVIEW_HASH + " text" + ");";
+            + HISTORY_CONTENT_PATH + " text, " + HISTORY_CONTENT_NAME + " text, "
+            + HISTORY_PREVIEW_HASH + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +

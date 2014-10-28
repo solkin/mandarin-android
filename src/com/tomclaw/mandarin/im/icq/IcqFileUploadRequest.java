@@ -106,8 +106,8 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     }
 
     @Override
-    protected int getProgressStep() {
-        return 9;
+    protected long getProgressStepDelay() {
+        return 1000;
     }
 
     @Override

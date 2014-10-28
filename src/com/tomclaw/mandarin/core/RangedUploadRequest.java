@@ -55,7 +55,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     post.setHeader("Accept-Ranges", "bytes");
 
                     while ((cache = input.read(buffer)) != -1 || sent < size) {
-                        // Checking for continous stream.
+                        // Checking for continuous stream.
                         if (sent + cache > size) {
                             // ... and stop at the specified size.
                             cache = (int) (size - sent);

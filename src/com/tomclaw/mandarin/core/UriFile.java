@@ -60,8 +60,7 @@ public class UriFile extends VirtualFile {
 
     @Override
     public Bitmap getThumbnail(Context context) {
-        float sizeDp = context.getResources().getDimension(R.dimen.preview_bitmap);
-        int sizePx = (int) convertDpToPixel(sizeDp, context);
+        int sizePx = context.getResources().getDimensionPixelSize(R.dimen.preview_bitmap);
         long time = System.currentTimeMillis();
         Bitmap bitmap;
         if (mimeType.startsWith("image")) {

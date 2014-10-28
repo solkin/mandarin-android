@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,7 +18,7 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
     private NotificationCompat.Builder mBuilder;
     private NotificationManager mNotifyManager;
 
-    private transient int progressShown = 0;
+    private transient long progressUpdateTime = 0;
 
     @Override
     protected final void onStarted() throws Throwable {
@@ -27,8 +28,8 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
         mBuilder.setContentTitle(context.getString(R.string.file_upload_title))
                 .setContentText(getDescription())
                 .setSmallIcon(android.R.drawable.stat_sys_upload)
-                .setLargeIcon(getLargeIcon())
                 .setOngoing(true);
+        mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onStartedDelegate();
     }
@@ -41,17 +42,18 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
 
     @Override
     protected final void onBufferReleased(long sent, long size) {
-        int progress = (int) (100 * sent / size);
-        if ((progressShown == 0 && progress > 0) || (progress - progressShown) > getProgressStep()) {
+        final int progress = (int) (100 * sent / size);
+        if (System.currentTimeMillis() - progressUpdateTime >= getProgressStepDelay()) {
             mBuilder.setProgress(100, progress, false);
-            mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
-            progressShown = progress;
+            Notification notification = mBuilder.build();
+            mNotifyManager.notify(NOTIFICATION_ID, notification);
+            progressUpdateTime = System.currentTimeMillis();
             // Delegate invocation.
             onProgressUpdated(progress);
         }
     }
 
-    protected abstract int getProgressStep();
+    protected abstract long getProgressStepDelay();
 
     protected abstract void onProgressUpdated(int progress);
 

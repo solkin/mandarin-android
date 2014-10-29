@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,16 +44,18 @@ public class SmsCodeActivity extends ChiefActivity {
     private static final long SMS_WAIT_INTERVAL = 60 * 1000;
     private static final int MIN_SMS_CODE_LENGTH = 4;
 
-    EditText smsCodeField;
-    TextView resendCodeView;
+    private EditText smsCodeField;
+    private TextView resendCodeView;
 
-    RegistrationHelper.RegistrationCallback callback;
+    private RegistrationHelper.RegistrationCallback callback;
 
-    String transId;
-    String msisdn;
-    String phoneFormatted;
+    private String transId;
+    private String msisdn;
+    private String phoneFormatted;
 
-    SmsTimer timer;
+    private SmsTimer timer;
+
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +111,7 @@ public class SmsCodeActivity extends ChiefActivity {
             @Override
             public void onClick(View v) {
                 if(v.isEnabled()) {
+                    showProgress(R.string.requesting_sms_code);
                     RegistrationHelper.validatePhone(msisdn, callback);
                 }
             }
@@ -123,6 +128,7 @@ public class SmsCodeActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
+                        hideProgress();
                         setTransId(transId);
                         startTimer();
                     }
@@ -148,7 +154,7 @@ public class SmsCodeActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        onRequestError();
+                        onRequestError(R.string.checking_sms_error);
                     }
                 });
             }
@@ -158,7 +164,7 @@ public class SmsCodeActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        onRequestError();
+                        onRequestError(R.string.checking_sms_error);
                     }
                 });
             }
@@ -246,14 +252,26 @@ public class SmsCodeActivity extends ChiefActivity {
     }
 
     private void loginPhone(final String msisdn, final String transId, final String smsCode) {
+        showProgress(R.string.checking_sms_code);
         RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
     }
 
-    private void onRequestError() {
-        Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
+    private void onRequestError(int message) {
+        hideProgress();
+        showError(message);
+    }
+
+    private void showError(int message) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.phone_auth_error)
+                .setMessage(message)
+                .setCancelable(true)
+                .setNeutralButton(R.string.got_it, null)
+                .show();
     }
 
     private void storeAccountRoot(IcqAccountRoot accountRoot) {
+        hideProgress();
         try {
             // Store account into database.
             int accountDbId = QueryHelper.insertAccount(this, accountRoot);
@@ -269,9 +287,9 @@ public class SmsCodeActivity extends ChiefActivity {
             setResult(RESULT_OK);
             finish();
         } catch (AccountAlreadyExistsException ignored) {
-            Toast.makeText(this, R.string.account_already_exists, Toast.LENGTH_LONG).show();
+            showError(R.string.account_already_exists);
         } catch (Throwable ignored) {
-            Toast.makeText(this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
+            showError(R.string.account_add_fail);
         }
     }
 
@@ -284,6 +302,16 @@ public class SmsCodeActivity extends ChiefActivity {
         InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(smsCodeField.getWindowToken(), 0);
+    }
+
+    private void showProgress(int message) {
+        progressDialog = ProgressDialog.show(this, null, getString(message));
+    }
+
+    private void hideProgress() {
+        if(progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     public void setTransId(String transId) {

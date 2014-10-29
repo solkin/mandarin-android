@@ -312,4 +312,11 @@
     <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code below.</string>
     <string name="resend_code_time">Resend code (%1$s)</string>
     <string name="resend_code">Resend code</string>
+    <string name="checking_phone_number">Checking entered phone number…</string>
+    <string name="phone_auth_error">Error</string>
+    <string name="checking_phone_protocol_error">Incorrect phone number. Please, check country code, entered number and try again.</string>
+    <string name="phone_auth_network_error">Network error. Check the internet connection and try again.</string>
+    <string name="checking_sms_code">Checking entered code…</string>
+    <string name="checking_sms_error">Unable to validate phone number. Check entered code, internet connection and try again.</string>
+    <string name="requesting_sms_code">Requesting activation code…</string>
 </resources>

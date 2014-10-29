@@ -143,7 +143,8 @@ public class RegistrationHelper {
                     .appendParam(CREATE_ACCOUNT, "1")
                     .appendParam(CLIENT, ICQ);
             // Execute normalize request.
-            JSONObject jsonObject = new JSONObject(HttpUtil.executePost(LOGIN_PHONE_URL, params));
+            String loginPhoneResult = HttpUtil.executePost(LOGIN_PHONE_URL, params);
+            JSONObject jsonObject = new JSONObject(loginPhoneResult);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
             switch (statusCode) {

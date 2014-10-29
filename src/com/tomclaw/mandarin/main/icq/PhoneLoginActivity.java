@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.icq;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
@@ -40,6 +40,8 @@ public class PhoneLoginActivity extends Activity {
     private TextView countryCodeView;
     private TextView countryNameView;
     private EditText phoneNumberField;
+
+    private ProgressDialog progressDialog;
 
     private RegistrationHelper.RegistrationCallback callback;
 
@@ -146,7 +148,7 @@ public class PhoneLoginActivity extends Activity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        onRequestError();
+                        onRequestError(R.string.checking_phone_protocol_error);
                     }
                 });
             }
@@ -156,7 +158,7 @@ public class PhoneLoginActivity extends Activity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        onRequestError();
+                        onRequestError(R.string.phone_auth_network_error);
                     }
                 });
             }
@@ -265,24 +267,42 @@ public class PhoneLoginActivity extends Activity {
     }
 
     private void requestSms(final String countryCode, final String phoneNumber) {
+        showProgress();
         RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
     }
 
     private void onSmsSent(String msisdn, String transId) {
+        hideProgress();
         startActivityForResult(new Intent(this, SmsCodeActivity.class)
                 .putExtra(SmsCodeActivity.EXTRA_MSISDN, msisdn)
                 .putExtra(SmsCodeActivity.EXTRA_TRANS_ID, transId)
                 .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()), REQUEST_SMS_NUMBER);
     }
 
-    private void onRequestError() {
-        Toast.makeText(this, "Error. Try again.", Toast.LENGTH_SHORT).show();
+    private void onRequestError(int message) {
+        hideProgress();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.phone_auth_error)
+                .setMessage(message)
+                .setCancelable(true)
+                .setNeutralButton(R.string.got_it, null)
+                .show();
     }
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(phoneNumberField.getWindowToken(), 0);
+    }
+
+    private void showProgress() {
+        progressDialog = ProgressDialog.show(this, null, getString(R.string.checking_phone_number));
+    }
+
+    private void hideProgress() {
+        if(progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override

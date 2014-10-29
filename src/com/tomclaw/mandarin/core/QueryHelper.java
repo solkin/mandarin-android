@@ -389,8 +389,8 @@ public class QueryHelper {
                                                  String path, String name, int contentType, long contentSize, String previewHash)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                2, 2, cookie, 0, "", false, contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                path, name, previewHash);
+                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", false, contentType, contentSize,
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
@@ -551,7 +551,7 @@ public class QueryHelper {
 
     public static void readAllMessages(ContentResolver contentResolver) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
                 .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
 
@@ -570,7 +570,7 @@ public class QueryHelper {
         queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                 .and().moreOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdFirst)
                 .and().lessOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdLast)
-                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1)
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
                 .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
                 .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
 
@@ -588,14 +588,14 @@ public class QueryHelper {
 
     public static boolean isIncomingMessagesPresent(ContentResolver contentResolver, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
-        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1);
+        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
         Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
         return cursor.getCount() > 0;
     }
 
     public static void unreadMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
-        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1);
+        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
@@ -605,7 +605,7 @@ public class QueryHelper {
 
     public static void updateMessage(ContentResolver contentResolver, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
-        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1);
+        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
@@ -1173,7 +1173,8 @@ public class QueryHelper {
 
     public static void updateShownMessagesFlag(ContentResolver contentResolver) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, 1).and().startComplexExpression()
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
+                .and().startComplexExpression()
                 .startComplexExpression()
                 .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
                 .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)

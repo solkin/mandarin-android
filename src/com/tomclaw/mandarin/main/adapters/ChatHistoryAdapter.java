@@ -32,16 +32,18 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[][] ITEM_LAYOUTS = new int[][]{
-            new int[]{R.layout.chat_item_error},
-            new int[]{R.layout.chat_item_inc_text},
-            new int[]{R.layout.chat_item_out_text, R.layout.chat_item_out_image, R.layout.chat_item_out_image, 0, R.layout.chat_item_out_file}
+    private static final int[] ITEM_LAYOUTS = new int[] {
+            R.layout.chat_item_error,
+            R.layout.chat_item_inc_text,
+            0,
+            0,
+            0,
+            R.layout.chat_item_out_text,
+            R.layout.chat_item_out_image,
+            R.layout.chat_item_out_image,
+            R.layout.chat_item_out_file
     };
-    private static final int[] MESSAGE_TYPES = new int[]{
-            R.id.error_message,
-            R.id.incoming_message,
-            R.id.outgoing_message};
-    private static final int[] MESSAGE_STATES = new int[]{
+    private static final int[] MESSAGE_STATES = new int[] {
             R.drawable.ic_dot,
             R.drawable.ic_error,
             R.drawable.ic_dot,
@@ -171,7 +173,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
-        return inflater.inflate(ITEM_LAYOUTS[messageType][contentType], parent, false);
+        return inflater.inflate(ITEM_LAYOUTS[getItemType(messageType, contentType)], parent, false);
     }
 
     @Override
@@ -182,16 +184,66 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
-            type = cursor.getInt(COLUMN_MESSAGE_TYPE);
+            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+            int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+            type = getItemType(messageType, contentType);
         } catch (Throwable ex) {
             type = 0;
         }
         return type;
     }
 
+    private int getItemType(int messageType, int contentType) {
+        int type;
+        switch (messageType) {
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_ERROR:
+                type = 0;
+                break;
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING:
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT:
+                        type = 1;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE:
+                        type = 2;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                        type = 3;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE:
+                        type = 4;
+                        break;
+                    default:
+                        return 0;
+                }
+                break;
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING:
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT:
+                        type = 5;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE:
+                        type = 6;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                        type = 7;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE:
+                        type = 8;
+                        break;
+                    default:
+                        return 0;
+                }
+                break;
+            default:
+                return 0;
+        }
+        return type;
+    }
+
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 9;
     }
 
     @Override
@@ -212,14 +264,14 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         // Select message type.
-        switch (MESSAGE_TYPES[messageType]) {
-            case R.id.incoming_message: {
+        switch (messageType) {
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
                 break;
             }
-            case R.id.outgoing_message: {
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
                 // Updating data.
                 ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
                 ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
@@ -348,12 +400,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             String buddyNick = "unknown";
             try {
                 // Select message type.
-                switch (MESSAGE_TYPES[messageType]) {
-                    case R.id.incoming_message: {
+                switch (messageType) {
+                    case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                         buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
                         break;
                     }
-                    case R.id.outgoing_message: {
+                    case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
                         buddyNick = QueryHelper.getAccountName(context.getContentResolver(), accountDbId);
                         break;
                     }

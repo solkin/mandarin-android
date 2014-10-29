@@ -30,8 +30,6 @@ public abstract class VirtualFile {
             return GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
         } else if (mimeType.startsWith("video")) {
             return GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO;
-        } else if (mimeType.startsWith("audio")) {
-            return GlobalProvider.HISTORY_CONTENT_TYPE_AUDIO;
         } else {
             return GlobalProvider.HISTORY_CONTENT_TYPE_FILE;
         }

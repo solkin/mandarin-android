@@ -105,11 +105,14 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_CONTENT_NAME = "content_name";
     public static final String HISTORY_PREVIEW_HASH = "preview_hash";
 
+    public static final int HISTORY_MESSAGE_TYPE_ERROR = 0;
+    public static final int HISTORY_MESSAGE_TYPE_INCOMING = 1;
+    public static final int HISTORY_MESSAGE_TYPE_OUTGOING = 2;
+
     public static final int HISTORY_CONTENT_TYPE_TEXT = 0;
     public static final int HISTORY_CONTENT_TYPE_PICTURE = 1;
     public static final int HISTORY_CONTENT_TYPE_VIDEO = 2;
-    public static final int HISTORY_CONTENT_TYPE_AUDIO = 3;
-    public static final int HISTORY_CONTENT_TYPE_FILE = 4;
+    public static final int HISTORY_CONTENT_TYPE_FILE = 3;
 
     public static final int HISTORY_CONTENT_STATE_STABLE = 0;
     public static final int HISTORY_CONTENT_STATE_WAITING = 1;

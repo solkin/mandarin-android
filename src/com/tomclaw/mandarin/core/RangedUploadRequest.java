@@ -43,17 +43,15 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             // Obtain uploading Url.
             String url = getUrl(virtualFile.getName(), virtualFile.getSize());
             // Starting upload.
+            HttpPost post = new HttpPost(url);
+            post.setHeader("Connection", "Keep-Alive");
+            post.setHeader("Content-Type", contentType);
+            post.setHeader("Accept-Ranges", "bytes");
             do {
                 InputStream input = null;
                 try {
                     input = virtualFile.openInputStream(getAccountRoot().getContext());
                     sent = input.skip(sent);
-
-                    HttpPost post = new HttpPost(url);
-                    post.setHeader("Connection", "Keep-Alive");
-                    post.setHeader("Content-Type", contentType);
-                    post.setHeader("Accept-Ranges", "bytes");
-
                     while ((cache = input.read(buffer)) != -1 || sent < size) {
                         // Checking for continuous stream.
                         if (sent + cache > size) {

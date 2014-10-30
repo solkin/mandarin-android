@@ -952,7 +952,7 @@ public class ChatActivity extends ChiefActivity {
                 QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
                         uriFile.getName(), contentType, size, hash);
                 // Sending protocol message request.
-                RequestHelper.requestFile(contentResolver, buddyDbId, cookie, uriFile);
+                RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);
             }
         }
 

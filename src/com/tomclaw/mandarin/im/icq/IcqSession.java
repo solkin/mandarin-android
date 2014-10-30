@@ -5,10 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -34,6 +31,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.*;
 
@@ -399,9 +397,21 @@ public class IcqSession {
                 boolean isProcessed = false;
                 do {
                     try {
-                        QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                                PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                                icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+                        Matcher matcher = URL_REGEX.matcher(messageText);
+                        while (matcher.find() && matcher.groupCount() == 1) {
+                            String url = matcher.group();
+                            String fileId = matcher.group(1);
+                            int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
+                                    icqAccountRoot.getAccountDbId(), buddyId);
+                            RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
+                                    buddyDbId, cookie, messageTime * 1000, url, fileId);
+                            isProcessed = true;
+                        }
+                        if(!isProcessed) {
+                            QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+                                    PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
+                                    icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+                        }
                         isProcessed = true;
                     } catch (BuddyNotFoundException ignored) {
                         if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {

@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import com.tomclaw.mandarin.RangedDownloadRequest;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
@@ -63,21 +64,33 @@ public class RequestHelper {
         }
     }
 
-    public static void requestFile(ContentResolver contentResolver, int buddyDbId,
-                                   String cookie, UriFile uriFile) {
-        // Obtain account db id.
-        // TODO: out this method.
+    public static void requestFileSend(ContentResolver contentResolver, int buddyDbId,
+                                       String cookie, UriFile uriFile) {
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
         if (cursor != null) {
-            // Cursor may have more than only one entry.
-            // TODO: check for at least one buddy present.
             if (cursor.moveToFirst()) {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
                 insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadRequest);
+            }
+            cursor.close();
+        }
+    }
+
+    public static void requestFileReceive(ContentResolver contentResolver, int buddyDbId,
+                                          String cookie, long time, String url, String fileId) {
+        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+        // Oh, cursor may be null sometimes.
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
+                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
+                RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(buddyId, cookie, time, url, fileId);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, downloadRequest);
             }
             cursor.close();
         }

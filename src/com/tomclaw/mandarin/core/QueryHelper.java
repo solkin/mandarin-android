@@ -522,39 +522,40 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
-    private static void modifyFile(ContentResolver contentResolver, ContentValues contentValues, String cookie) {
+    private static void modifyFile(ContentResolver contentResolver, ContentValues contentValues, int messageType, String cookie) {
         // Plain message modify by cookies.
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
+                .and().like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
-    public static void updateFileState(ContentResolver contentResolver, int state, String cookie) {
+    public static void updateFileState(ContentResolver contentResolver, int state, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
-        modifyFile(contentResolver, contentValues, cookie);
+        modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 
-    public static void updateFileProgress(ContentResolver contentResolver, int progress, String cookie) {
+    public static void updateFileProgress(ContentResolver contentResolver, int progress, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_PROGRESS, progress);
-        modifyFile(contentResolver, contentValues, cookie);
+        modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 
     public static void updateFileStateAndText(ContentResolver contentResolver, int state,
-                                              String text, String cookie) {
+                                              String text, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, text);
-        modifyFile(contentResolver, contentValues, cookie);
+        modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 
     public static void updateFileStateAndHash(ContentResolver contentResolver, int state,
-                                              String hash, String cookie) {
+                                              String hash, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, hash);
-        modifyFile(contentResolver, contentValues, cookie);
+        modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 
     public static void readAllMessages(ContentResolver contentResolver) {

@@ -35,9 +35,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static final int[] ITEM_LAYOUTS = new int[] {
             R.layout.chat_item_error,
             R.layout.chat_item_inc_text,
-            0,
-            0,
-            0,
+            R.layout.chat_item_inc_image,
+            R.layout.chat_item_inc_image,
+            R.layout.chat_item_inc_file,
             R.layout.chat_item_out_text,
             R.layout.chat_item_out_image,
             R.layout.chat_item_out_image,
@@ -267,8 +267,78 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         switch (messageType) {
             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                 // Updating data.
-                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
+                // Updating content-specific data.
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
+                        ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
+                        break;
+                    }
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
+                        View incPreviewProgress = view.findViewById(R.id.inc_preview_progress);
+                        ImageView incPreviewImage = (ImageView) view.findViewById(R.id.inc_preview_image);
+                        View incProgressContainer = view.findViewById(R.id.inc_progress_container);
+                        ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
+                        TextView incSize = (TextView) view.findViewById(R.id.inc_size);
+                        BitmapCache.getInstance().getBitmapAsync(incPreviewImage, previewHash, android.R.color.transparent, true);
+                        switch (contentState) {
+                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                incPreviewProgress.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                incProgressContainer.setVisibility(View.VISIBLE);
+                                incPreviewProgress.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                incPreviewProgress.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                incPreviewProgress.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                        }
+                        incProgress.setProgress(contentProgress);
+                        incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        break;
+                    }
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
+                        TextView outName = (TextView) view.findViewById(R.id.out_name);
+                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
+                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
+                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
+
+                        switch (contentState) {
+                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                outProgressContainer.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                        }
+
+                        outName.setText(contentName);
+                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        outProgress.setProgress(contentProgress);
+                        break;
+                    }
+                }
                 break;
             }
             case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {

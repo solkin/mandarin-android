@@ -303,8 +303,8 @@
     <string name="plain_login">Логин и пароль</string>
     <string name="login_account">Войти</string>
     <string name="enter_phone_number">Введите номер Вашего телефона</string>
-    <string name="upload_failed">Отправка не удалась</string>
     <string name="file_upload_title">Отправка файла</string>
+    <string name="upload_failed">Отправка файла не удалась</string>
     <string name="file_for">для %s</string>
     <string name="default_locale">RU</string>
     <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a>.</string>
@@ -324,4 +324,7 @@
     <string name="checking_sms_code">Проверка введённого кода подтверждения…</string>
     <string name="checking_sms_error">Не удалось проверить номер телефона. Проверьте правильность введённого кода подтверждения, интернет-соединение и повторите попытку.</string>
     <string name="requesting_sms_code">Запрос кода подтверждения…</string>
+    <string name="file_download_title">Получение файла</string>
+    <string name="download_failed">Получение файла не удалось</string>
+    <string name="file_from">от %s</string>
 </resources>

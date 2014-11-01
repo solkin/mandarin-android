@@ -1,12 +1,15 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.RangedDownloadRequest;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONArray;
@@ -23,7 +26,7 @@ import java.net.URL;
 /**
  * Created by solkin on 30.10.14.
  */
-public class IcqFileDownloadRequest extends RangedDownloadRequest<IcqAccountRoot> {
+public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccountRoot> {
 
     private final String buddyId;
     private final String cookie;
@@ -68,7 +71,7 @@ public class IcqFileDownloadRequest extends RangedDownloadRequest<IcqAccountRoot
                     String mimeType = file.getString("mime");
                     // Downloading preview.
                     String previewHash = "";
-                    if(isPreviewable == 1 && TextUtils.isEmpty(previewUrl)) {
+                    if(isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
                         Bitmap previewBitmap = getPreviewBitmap(previewUrl);
                         if(previewBitmap != null) {
                             previewHash = HttpUtil.getUrlHash(previewUrl);
@@ -86,10 +89,10 @@ public class IcqFileDownloadRequest extends RangedDownloadRequest<IcqAccountRoot
                 }
             }
             default: {
-                fallbackOnError();
+                // TODO: create fallback message
+                throw new DownloadException();
             }
         }
-        return null;
     }
 
     private Bitmap getPreviewBitmap(String url) throws IOException {
@@ -123,10 +126,6 @@ public class IcqFileDownloadRequest extends RangedDownloadRequest<IcqAccountRoot
         }
     }
 
-    private void fallbackOnError() {
-        // TODO: return fallback message.
-    }
-
     @Override
     public long getSize() {
         return fileSize;
@@ -138,7 +137,52 @@ public class IcqFileDownloadRequest extends RangedDownloadRequest<IcqAccountRoot
     }
 
     @Override
-    protected void onBufferReleased(long sent, long size) {
-        Log.d(Settings.LOG_TAG, "buffer released: " + sent + "/" + size);
+    protected String getDescription() {
+        String buddyNick = "";
+        Context context = getAccountRoot().getContext();
+        try {
+            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
+                    getAccountRoot().getAccountDbId(), buddyId);
+            buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
+        } catch (Throwable ignored) {
+        }
+        if (TextUtils.isEmpty(buddyNick)) {
+            buddyNick = buddyId;
+        }
+        return context.getString(R.string.file_from, buddyNick);
+    }
+
+    @Override
+    protected void onStartedDelegate() {
+        Log.d(Settings.LOG_TAG, "onStarted");
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+    }
+
+    @Override
+    protected long getProgressStepDelay() {
+        return 1000;
+    }
+
+    @Override
+    protected void onProgressUpdated(int progress) {
+        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+    }
+
+    @Override
+    protected void onSuccessDelegate() {
+        QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_STABLE, fallbackMessage,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+    }
+
+    @Override
+    protected void onFailDelegate() {
+        Log.d(Settings.LOG_TAG, "onFail");
+        // TODO: update failed message, return fallback
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_FAILED,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 }

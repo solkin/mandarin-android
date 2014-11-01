@@ -300,8 +300,8 @@
     <string name="plain_login">Login and password</string>
     <string name="login_account">Login</string>
     <string name="enter_phone_number">Enter your phone number</string>
-    <string name="upload_failed">File sending failed</string>
     <string name="file_upload_title">Sending file</string>
+    <string name="upload_failed">File sending failed</string>
     <string name="file_for">for %s</string>
     <string name="default_locale">US</string>
     <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a>.</string>
@@ -319,4 +319,7 @@
     <string name="checking_sms_code">Checking entered code…</string>
     <string name="checking_sms_error">Unable to validate phone number. Check entered code, internet connection and try again.</string>
     <string name="requesting_sms_code">Requesting activation code…</string>
+    <string name="file_download_title">Receiving file</string>
+    <string name="download_failed">File receiving failed</string>
+    <string name="file_from">from %s</string>
 </resources>

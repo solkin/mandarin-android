@@ -35,6 +35,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             long read = outputStream.getChannel().size();
             byte[] buffer = new byte[getBufferSize()];
             boolean completed = false;
+            onStarted(); // TODO: maybe, not here?
             do {
                 outputStream.getChannel().position(read);
                 String range = "bytes=" + read + "-" + (size - 1);
@@ -84,7 +85,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             Log.d(Settings.LOG_TAG, "Server is temporary unavailable.");
             return REQUEST_PENDING;
         } catch (DownloadException ex) {
-            onError();
+            onFail();
             Log.d(Settings.LOG_TAG, "Server returned strange error.");
             return REQUEST_DELETE;
         } catch (Throwable ex) {
@@ -120,11 +121,13 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
         return 51200;
     }
 
+    protected abstract void onStarted();
+
     protected abstract void onBufferReleased(long sent, long size);
 
     protected abstract void onFileNotFound();
 
-    protected abstract void onError();
+    protected abstract void onFail();
 
     protected abstract void onSuccess();
 }

@@ -54,15 +54,10 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     }
 
     @Override
-    protected Bitmap getLargeIcon() {
-        return uriFile.getThumbnail(getAccountRoot().getContext());
-    }
-
-    @Override
     protected void onStartedDelegate() throws Throwable {
         Log.d(Settings.LOG_TAG, "onStarted");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, cookie);
+                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 
     @Override
@@ -82,7 +77,8 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
                 String text = fileName + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                         + "\n" + staticUrl;
                 QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
-                        GlobalProvider.HISTORY_CONTENT_STATE_STABLE, text, cookie);
+                        GlobalProvider.HISTORY_CONTENT_STATE_STABLE, text,
+                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
                 RequestHelper.requestMessage(getAccountRoot().getContentResolver(),
                         getAccountRoot().getAccountDbId(), buddyId, cookie, staticUrl);
                 break;
@@ -97,12 +93,14 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     protected void onFailDelegate() {
         Log.d(Settings.LOG_TAG, "onFail");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_FAILED, cookie);
+                GlobalProvider.HISTORY_CONTENT_STATE_FAILED,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 
     @Override
     protected void onProgressUpdated(int progress) {
-        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress, cookie);
+        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 
     @Override

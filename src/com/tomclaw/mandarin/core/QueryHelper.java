@@ -393,6 +393,14 @@ public class QueryHelper {
                 GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
     }
 
+    public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
+                                                 String path, String name, int contentType, long contentSize, String previewHash)
+            throws BuddyNotFoundException {
+        insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, 0, "", false, contentType, contentSize,
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
+    }
+
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
                                          int messageType, int messageState, String cookie,
                                          long messageTime, String messageText, boolean activateDialog,

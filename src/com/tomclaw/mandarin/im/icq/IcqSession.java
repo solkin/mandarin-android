@@ -399,12 +399,13 @@ public class IcqSession {
                     try {
                         Matcher matcher = URL_REGEX.matcher(messageText);
                         while (matcher.find() && matcher.groupCount() == 1) {
+                            // TODO: also show message body.
                             String url = matcher.group();
                             String fileId = matcher.group(1);
                             int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
                                     icqAccountRoot.getAccountDbId(), buddyId);
                             RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                    buddyDbId, cookie, messageTime * 1000, url, fileId);
+                                    buddyDbId, cookie, messageTime * 1000, fileId, messageText);
                             isProcessed = true;
                         }
                         if(!isProcessed) {

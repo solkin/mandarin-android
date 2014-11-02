@@ -6,8 +6,6 @@ import android.text.Selection;
 import android.text.TextWatcher;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 /**
  * Watches a {@link TextView} and if a phone number is entered will format it using
  * {@link PhoneNumberUtils#formatNumber(Editable, int)}. The formatting is based on

@@ -99,8 +99,8 @@ public class PhoneLoginActivity extends Activity {
         phoneNumberField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_NEXT) {
-                    if(isActionVisible()) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    if (isActionVisible()) {
                         requestSms();
                     }
                     return true;
@@ -237,11 +237,12 @@ public class PhoneLoginActivity extends Activity {
 
     /**
      * Returns only country code digits without "+"
+     *
      * @return String - country code digits
      */
     private String getCountryCode() {
         String countryCode = "";
-        if(!TextUtils.isEmpty(countryCodeView.getText())) {
+        if (!TextUtils.isEmpty(countryCodeView.getText())) {
             countryCode = String.valueOf(countryCodeView.getText());
             countryCode = countryCode.replace("+", "");
         }
@@ -250,11 +251,12 @@ public class PhoneLoginActivity extends Activity {
 
     /**
      * Convert keypad letters to digits and strip separators
+     *
      * @return String - digits phone number
      */
     private String getPhoneNumber() {
         String phoneNumber = "";
-        if(!TextUtils.isEmpty(phoneNumberField.getText())) {
+        if (!TextUtils.isEmpty(phoneNumberField.getText())) {
             phoneNumber = String.valueOf(phoneNumberField.getText());
             phoneNumber = PhoneNumberUtils.convertKeypadLettersToDigits(phoneNumber);
             phoneNumber = PhoneNumberUtils.stripSeparators(phoneNumber);
@@ -300,14 +302,14 @@ public class PhoneLoginActivity extends Activity {
     }
 
     private void hideProgress() {
-        if(progressDialog != null) {
+        if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_COUNTRY) {
                 String countryShortName = data.getStringExtra(CountryCodeActivity.EXTRA_COUNTRY_SHORT_NAME);
                 if (!TextUtils.isEmpty(countryShortName)) {

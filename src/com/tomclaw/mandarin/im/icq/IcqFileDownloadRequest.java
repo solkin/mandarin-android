@@ -58,7 +58,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             case 200: {
                 int fileCount = rootObject.getInt("file_count");
                 JSONArray fileList = rootObject.getJSONArray("file_list");
-                if(fileCount > 0 && fileList.length() > 0) {
+                if (fileCount > 0 && fileList.length() > 0) {
                     // No multi-file support. It's really
                     // rare case and a lot of strange logic.
                     JSONObject file = fileList.getJSONObject(0);
@@ -70,9 +70,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     String mimeType = file.getString("mime");
                     // Downloading preview.
                     String previewHash = "";
-                    if(isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
+                    if (isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
                         Bitmap previewBitmap = getPreviewBitmap(previewUrl);
-                        if(previewBitmap != null) {
+                        if (previewBitmap != null) {
                             previewHash = HttpUtil.getUrlHash(previewUrl);
                             saveBitmap(previewBitmap, previewHash);
                         }
@@ -86,7 +86,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
                             time, originalMessage, storeFile.getPath(), fileName, contentType, fileSize, previewHash);
                     // Check to download file now.
-                    if(!isStartDownload()) {
+                    if (!isStartDownload()) {
                         throw new DownloadCancelledException();
                     }
                     return downloadLink;
@@ -120,7 +120,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             return Environment.DIRECTORY_PICTURES;
         } else if (mimeType.startsWith("video")) {
             return Environment.DIRECTORY_MOVIES;
-        }  else if (mimeType.startsWith("audio")) {
+        } else if (mimeType.startsWith("audio")) {
             return Environment.DIRECTORY_MUSIC;
         } else {
             return Environment.DIRECTORY_DOWNLOADS;

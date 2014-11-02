@@ -6,11 +6,6 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -75,7 +70,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                     Log.d(Settings.LOG_TAG, "Io exception while downloading", ex);
                     Thread.sleep(3000);
                 }
-            } while(!completed);
+            } while (!completed);
             onSuccess();
             Log.d(Settings.LOG_TAG, "Download completed successfully.");
         } catch (FileNotFoundException ex) {
@@ -102,18 +97,21 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
 
     /**
      * Returns remote content Url, needs to be downloaded.
+     *
      * @return String - download Url.
      */
     public abstract String getUrl() throws Throwable;
 
     /**
      * Returns remote content size. It may be resolved right now.
+     *
      * @return long - remote content size.
      */
     public abstract long getSize();
 
     /**
      * Output stream to store downloaded data.
+     *
      * @return FileOutputStream to store data.
      */
     public abstract FileOutputStream getOutputStream() throws FileNotFoundException;

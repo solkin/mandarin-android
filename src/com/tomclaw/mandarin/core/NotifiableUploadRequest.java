@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.core;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;

@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;

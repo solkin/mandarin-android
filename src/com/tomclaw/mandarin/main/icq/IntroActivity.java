@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -67,8 +66,8 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RESULT_LOGIN_COMPLETED) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == RESULT_LOGIN_COMPLETED) {
+            if (resultCode == RESULT_OK) {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

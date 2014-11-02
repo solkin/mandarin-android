@@ -408,7 +408,7 @@ public class IcqSession {
                                     buddyDbId, cookie, messageTime * 1000, fileId, messageText);
                             isProcessed = true;
                         }
-                        if(!isProcessed) {
+                        if (!isProcessed) {
                             QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                                     PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
                                     icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);

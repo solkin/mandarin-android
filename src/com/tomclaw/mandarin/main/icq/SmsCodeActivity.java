@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.telephony.PhoneNumberUtils;
 import android.text.*;
 import android.text.style.UnderlineSpan;
 import android.view.KeyEvent;
@@ -18,7 +17,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -92,8 +90,8 @@ public class SmsCodeActivity extends ChiefActivity {
         smsCodeField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(isActionVisible()) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (isActionVisible()) {
                         loginPhone();
                     }
                     return true;
@@ -110,7 +108,7 @@ public class SmsCodeActivity extends ChiefActivity {
         resendCodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(v.isEnabled()) {
+                if (v.isEnabled()) {
                     showProgress(R.string.requesting_sms_code);
                     RegistrationHelper.validatePhone(msisdn, callback);
                 }
@@ -172,7 +170,7 @@ public class SmsCodeActivity extends ChiefActivity {
     }
 
     private void startTimer() {
-        if(timer != null) {
+        if (timer != null) {
             timer.cancel();
         }
         timer = new SmsTimer(resendCodeView);
@@ -234,11 +232,12 @@ public class SmsCodeActivity extends ChiefActivity {
 
     /**
      * Check and return entered Sms code
+     *
      * @return String - digits phone number
      */
     private String getSmsCode() {
         String smsCode = "";
-        if(!TextUtils.isEmpty(smsCodeField.getText())) {
+        if (!TextUtils.isEmpty(smsCodeField.getText())) {
             smsCode = String.valueOf(smsCodeField.getText());
         }
         return smsCode;
@@ -309,7 +308,7 @@ public class SmsCodeActivity extends ChiefActivity {
     }
 
     private void hideProgress() {
-        if(progressDialog != null) {
+        if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
@@ -332,7 +331,7 @@ public class SmsCodeActivity extends ChiefActivity {
         @Override
         public void onTick(long millisUntilFinished) {
             TextView resendCodeView = weakResendCode.get();
-            if(resendCodeView != null) {
+            if (resendCodeView != null) {
                 if (resendCodeView.isEnabled()) {
                     resendCodeView.setEnabled(false);
                 }
@@ -344,7 +343,7 @@ public class SmsCodeActivity extends ChiefActivity {
         @Override
         public void onFinish() {
             TextView resendCodeView = weakResendCode.get();
-            if(resendCodeView != null) {
+            if (resendCodeView != null) {
                 resendCodeView.setEnabled(true);
                 setUnderlinedString(resendCodeView.getResources().getString(R.string.resend_code));
             }
@@ -352,7 +351,7 @@ public class SmsCodeActivity extends ChiefActivity {
 
         private void setUnderlinedString(String text) {
             TextView resendCodeView = weakResendCode.get();
-            if(resendCodeView != null) {
+            if (resendCodeView != null) {
                 SpannableString content = new SpannableString(text);
                 content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
                 resendCodeView.setText(content);

@@ -31,7 +31,7 @@ public class CountriesProvider {
     private List<Country> countries = new ArrayList<Country>();
 
     public List<Country> getCountries(Context context) {
-        if(countries.isEmpty()) {
+        if (countries.isEmpty()) {
             try {
                 InputStream stream = context.getApplicationContext().getResources().getAssets()
                         .open("countries.txt");
@@ -58,9 +58,9 @@ public class CountriesProvider {
         String networkCountryIso = manager.getNetworkCountryIso().toUpperCase();
         String localeCountryIso = Locale.getDefault().getCountry().toUpperCase();
         String countryIso;
-        if(!TextUtils.isEmpty(simCountryIso)) {
+        if (!TextUtils.isEmpty(simCountryIso)) {
             countryIso = simCountryIso;
-        } else if(!TextUtils.isEmpty(simCountryIso)) {
+        } else if (!TextUtils.isEmpty(simCountryIso)) {
             countryIso = networkCountryIso;
         } else {
             countryIso = localeCountryIso;
@@ -71,15 +71,15 @@ public class CountriesProvider {
     public Country getCountryByLocale(Context context, String locale, String defaultLocale) throws CountryNotFoundException {
         List<Country> countries = getCountries(context);
         Country defaultCountry = null;
-        for(Country country : countries) {
-            if(TextUtils.equals(country.getShortName(), defaultLocale)) {
+        for (Country country : countries) {
+            if (TextUtils.equals(country.getShortName(), defaultLocale)) {
                 defaultCountry = country;
             }
-            if(TextUtils.equals(country.getShortName(), locale)) {
+            if (TextUtils.equals(country.getShortName(), locale)) {
                 return country;
             }
         }
-        if(defaultCountry != null) {
+        if (defaultCountry != null) {
             return defaultCountry;
         }
         throw new CountryNotFoundException();
@@ -87,8 +87,8 @@ public class CountriesProvider {
 
     public Country getCountryByCode(Context context, int code) throws CountryNotFoundException {
         List<Country> countries = getCountries(context);
-        for(Country country : countries) {
-            if(country.getCode() == code) {
+        for (Country country : countries) {
+            if (country.getCode() == code) {
                 return country;
             }
         }

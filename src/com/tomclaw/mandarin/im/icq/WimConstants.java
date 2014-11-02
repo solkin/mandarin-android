@@ -116,10 +116,10 @@ public class WimConstants {
     };
     private static final String DOMAINS_REGEX =
             "files\\.mail\\.ru" + "|" +
-            "api\\.icq\\.net"   + "|" +
-            "files\\.icq\\.net" + "|" +
-            "files\\.icq\\.com" + "|" +
-            "(?:files\\.)?chat\\.my\\.com";
+                    "api\\.icq\\.net" + "|" +
+                    "files\\.icq\\.net" + "|" +
+                    "files\\.icq\\.com" + "|" +
+                    "(?:files\\.)?chat\\.my\\.com";
     public static final Pattern URL_REGEX = Pattern.compile(
             "http://(?:" + DOMAINS_REGEX + ")/(?:get/|files/(?:get\\?fileId=)?)?([0-9a-zA-Z_\\-]+)");
 }

@@ -12,7 +12,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Solkin on 17.10.2014.
@@ -130,14 +132,14 @@ public class BitmapHelper {
         final String authority = uri.getAuthority();
         int rotation = 0;
         String path;
-        if(TextUtils.equals(uri.getScheme(), ContentResolver.SCHEME_CONTENT)) {
+        if (TextUtils.equals(uri.getScheme(), ContentResolver.SCHEME_CONTENT)) {
             path = getMediaPath(context, uri);
         } else {
             path = uri.getPath();
         }
-        if(!TextUtils.isEmpty(path)) {
+        if (!TextUtils.isEmpty(path)) {
             int exifOrientation = obtainFileOrientation(path);
-            switch(exifOrientation) {
+            switch (exifOrientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
                 case ExifInterface.ORIENTATION_TRANSPOSE:
                     rotation = 90;
@@ -154,17 +156,17 @@ public class BitmapHelper {
                     rotation = 0;
                     break;
             }
-            if(exifOrientation != ExifInterface.ORIENTATION_UNDEFINED) {
+            if (exifOrientation != ExifInterface.ORIENTATION_UNDEFINED) {
                 return rotation;
             }
         }
         // No file access, let's check in media store.
-        if(ContentResolver.SCHEME_CONTENT.equals(scheme) && MediaStore.AUTHORITY.equals(authority) && context != null) {
+        if (ContentResolver.SCHEME_CONTENT.equals(scheme) && MediaStore.AUTHORITY.equals(authority) && context != null) {
             final String[] projection = new String[]{MediaStore.Images.Media.ORIENTATION};
             final Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
-            if(cursor != null) {
+            if (cursor != null) {
                 final int orientationColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-                if(cursor.moveToFirst()) {
+                if (cursor.moveToFirst()) {
                     rotation = cursor.isNull(orientationColumnIndex) ? 0 : cursor.getInt(orientationColumnIndex);
                 }
                 cursor.close();
@@ -180,7 +182,7 @@ public class BitmapHelper {
         try {
             ExifInterface exifInterface = new ExifInterface(fileName);
             return exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        } catch(IOException e) {
+        } catch (IOException e) {
             return ExifInterface.ORIENTATION_UNDEFINED;
         }
     }
@@ -190,13 +192,13 @@ public class BitmapHelper {
         Cursor cursor = null;
         try {
             cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
-            if(cursor != null && cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
                 int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 path = cursor.getString(dataColumnIndex);
             }
-        } catch(Throwable ignore) {
+        } catch (Throwable ignore) {
         } finally {
-            if(cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }

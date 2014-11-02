@@ -98,7 +98,7 @@ public class UriFile extends VirtualFile {
 
     public static UriFile create(Context context, Uri uri) throws FileNotFoundException {
         String uriScheme = uri.getScheme();
-        if(TextUtils.equals(uriScheme, ContentResolver.SCHEME_CONTENT)) {
+        if (TextUtils.equals(uriScheme, ContentResolver.SCHEME_CONTENT)) {
             String[] projection = {
                     MediaStore.MediaColumns.MIME_TYPE,
                     MediaStore.MediaColumns.SIZE,
@@ -132,7 +132,7 @@ public class UriFile extends VirtualFile {
                     cursor.close();
                 }
             }
-        } else if(TextUtils.equals(uriScheme, ContentResolver.SCHEME_FILE)) {
+        } else if (TextUtils.equals(uriScheme, ContentResolver.SCHEME_FILE)) {
             File file = new File(uri.getPath());
             return new UriFile(uri.toString(), HttpUtil.getMimeType(file.getName()), file.length(), file.getName());
         }

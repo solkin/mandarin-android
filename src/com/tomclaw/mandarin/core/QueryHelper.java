@@ -430,7 +430,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
         // Try to modify message or create it.
-        if(modifyFile(contentResolver, contentValues, messageType, cookie) == 0) {
+        if (modifyFile(contentResolver, contentValues, messageType, cookie) == 0) {
             contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
             contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 0);
             contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);

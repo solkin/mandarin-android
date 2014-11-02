@@ -81,7 +81,7 @@ public class RequestHelper {
     }
 
     public static void requestFileReceive(ContentResolver contentResolver, int buddyDbId,
-                                          String cookie, long time, String fileId, String fallbackMessage) {
+                                          String cookie, long time, String fileId, String originalMessage) {
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
@@ -90,7 +90,7 @@ public class RequestHelper {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
-                        buddyId, cookie, time, fileId, fallbackMessage);
+                        buddyId, cookie, time, fileId, originalMessage);
                 insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, downloadRequest);
             }
             cursor.close();

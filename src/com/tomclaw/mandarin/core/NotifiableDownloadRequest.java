@@ -86,6 +86,16 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
     protected abstract void onFailDelegate();
 
     @Override
+    protected void onCancel() {
+        // Closing notification.
+        mNotifyManager.cancel(NOTIFICATION_ID);
+        // Delegate invocation.
+        onCancelDelegate();
+    }
+
+    protected abstract void onCancelDelegate();
+
+    @Override
     protected final void onFileNotFound() {
         onFail();
     }

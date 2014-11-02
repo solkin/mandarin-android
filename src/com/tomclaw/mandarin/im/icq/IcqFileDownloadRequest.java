@@ -3,14 +3,14 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.RangedDownloadRequest;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
-import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -32,17 +31,17 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String cookie;
     private final long time;
     private final String fileId;
-    private final String fallbackMessage;
+    private final String originalMessage;
 
     private transient long fileSize;
     private transient File storeFile;
 
-    public IcqFileDownloadRequest(String buddyId, String cookie, long time, String fileId, String fallbackMessage) {
+    public IcqFileDownloadRequest(String buddyId, String cookie, long time, String fileId, String originalMessage) {
         this.buddyId = buddyId;
         this.cookie = cookie;
         this.time = time;
         this.fileId = fileId;
-        this.fallbackMessage = fallbackMessage;
+        this.originalMessage = originalMessage;
     }
 
     @Override
@@ -79,20 +78,32 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                         }
                     }
                     // Saving obtained data to the history table.
-                    storeFile = new File(Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType)), fileName);
+                    storeFile = new File(
+                            Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType)), fileName);
                     int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                             getAccountRoot().getAccountDbId(), buddyId);
                     int contentType = getContentType(mimeType);
                     QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                            storeFile.getPath(), fileName, contentType, fileSize, previewHash);
+                            time, originalMessage, storeFile.getPath(), fileName, contentType, fileSize, previewHash);
+                    // Check to download file now.
+                    if(!isStartDownload()) {
+                        throw new DownloadCancelledException();
+                    }
                     return downloadLink;
                 }
             }
             default: {
-                // TODO: create fallback message
+                QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
+                        PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
+                        getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage, true);
                 throw new DownloadException();
             }
         }
+    }
+
+    private boolean isStartDownload() {
+        // TODO: check specified constructor flag and preferences.
+        return true;
     }
 
     private Bitmap getPreviewBitmap(String url) throws IOException {
@@ -154,7 +165,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onStartedDelegate() {
-        Log.d(Settings.LOG_TAG, "onStarted");
+    }
+
+    @Override
+    protected void onDownload() {
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
@@ -173,16 +187,24 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     @Override
     protected void onSuccessDelegate() {
         QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_STABLE, fallbackMessage,
+                GlobalProvider.HISTORY_CONTENT_STATE_STABLE, originalMessage,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+        // Update file in system gallery.
+        MediaScannerConnection.scanFile(getAccountRoot().getContext(), new String[]{storeFile.getPath()}, null, null);
     }
 
     @Override
     protected void onFailDelegate() {
-        Log.d(Settings.LOG_TAG, "onFail");
-        // TODO: update failed message, return fallback
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_FAILED,
+        QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+        // Remove file fragment.
+        storeFile.delete();
+    }
+
+    @Override
+    protected void onCancelDelegate() {
+        // Update message to be in waiting state.
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 }

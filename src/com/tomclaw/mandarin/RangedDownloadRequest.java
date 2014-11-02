@@ -3,6 +3,7 @@ package com.tomclaw.mandarin;
 import android.util.Log;
 import com.tomclaw.mandarin.core.Request;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import org.apache.http.HttpEntity;
@@ -29,13 +30,14 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
     @Override
     public int executeRequest() {
         try {
+            onStarted();
             URL url = new URL(getUrl());
             long size = getSize();
             FileOutputStream outputStream = getOutputStream();
             long read = outputStream.getChannel().size();
             byte[] buffer = new byte[getBufferSize()];
             boolean completed = false;
-            onStarted(); // TODO: maybe, not here?
+            onDownload();
             do {
                 outputStream.getChannel().position(read);
                 String range = "bytes=" + read + "-" + (size - 1);
@@ -88,6 +90,10 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             onFail();
             Log.d(Settings.LOG_TAG, "Server returned strange error.");
             return REQUEST_DELETE;
+        } catch (DownloadCancelledException ex) {
+            // No need to process task this time.
+            onCancel();
+            return REQUEST_DELETE;
         } catch (Throwable ex) {
             return REQUEST_PENDING;
         }
@@ -123,11 +129,15 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
 
     protected abstract void onStarted();
 
+    protected abstract void onDownload();
+
     protected abstract void onBufferReleased(long sent, long size);
 
     protected abstract void onFileNotFound();
 
     protected abstract void onFail();
+
+    protected abstract void onCancel();
 
     protected abstract void onSuccess();
 }

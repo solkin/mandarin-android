@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,16 +32,19 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String cookie;
     private final long time;
     private final String fileId;
+    private final String fileUrl;
     private final String originalMessage;
 
     private transient long fileSize;
     private transient File storeFile;
 
-    public IcqFileDownloadRequest(String buddyId, String cookie, long time, String fileId, String originalMessage) {
+    public IcqFileDownloadRequest(String buddyId, String cookie, long time,
+                                  String fileId, String fileUrl, String originalMessage) {
         this.buddyId = buddyId;
         this.cookie = cookie;
         this.time = time;
         this.fileId = fileId;
+        this.fileUrl = fileUrl;
         this.originalMessage = originalMessage;
     }
 
@@ -53,51 +57,45 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         Log.d(Settings.LOG_TAG, response);
 
         JSONObject rootObject = new JSONObject(response);
-        int status = rootObject.getInt("status");
-        switch (status) {
-            case 200: {
-                int fileCount = rootObject.getInt("file_count");
-                JSONArray fileList = rootObject.getJSONArray("file_list");
-                if (fileCount > 0 && fileList.length() > 0) {
-                    // No multi-file support. It's really
-                    // rare case and a lot of strange logic.
-                    JSONObject file = fileList.getJSONObject(0);
-                    fileSize = file.getLong("filesize");
-                    String fileName = file.getString("filename");
-                    String downloadLink = file.getString("dlink");
-                    int isPreviewable = file.getInt("is_previewable");
-                    String previewUrl = file.optString("static");
-                    String mimeType = file.getString("mime");
-                    // Downloading preview.
-                    String previewHash = "";
-                    if (isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
-                        Bitmap previewBitmap = getPreviewBitmap(previewUrl);
-                        if (previewBitmap != null) {
-                            previewHash = HttpUtil.getUrlHash(previewUrl);
-                            saveBitmap(previewBitmap, previewHash);
-                        }
-                    }
-                    // Saving obtained data to the history table.
-                    storeFile = new File(
-                            Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType)), fileName);
-                    int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
-                            getAccountRoot().getAccountDbId(), buddyId);
-                    int contentType = getContentType(mimeType);
-                    QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                            time, originalMessage, storeFile.getPath(), fileName, contentType, fileSize, previewHash);
-                    // Check to download file now.
-                    if (!isStartDownload()) {
-                        throw new DownloadCancelledException();
-                    }
-                    return downloadLink;
+        int fileCount = rootObject.getInt("file_count");
+        JSONArray fileList = rootObject.getJSONArray("file_list");
+        if (fileCount > 0 && fileList.length() > 0) {
+            // No multi-file support. It's really
+            // rare case and a lot of strange logic.
+            JSONObject file = fileList.getJSONObject(0);
+            fileSize = file.getLong("filesize");
+            String fileName = file.getString("filename");
+            String downloadLink = file.getString("dlink");
+            int isPreviewable = file.getInt("is_previewable");
+            String previewUrl = file.optString("static");
+            String mimeType = file.getString("mime");
+            // Downloading preview.
+            String previewHash = "";
+            if (isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
+                Bitmap previewBitmap = getPreviewBitmap(previewUrl);
+                if (previewBitmap != null) {
+                    previewHash = HttpUtil.getUrlHash(previewUrl);
+                    saveBitmap(previewBitmap, previewHash);
                 }
             }
-            default: {
-                QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
-                        PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
-                        getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage, true);
-                throw new DownloadException();
+            // Saving obtained data to the history table.
+            storeFile = new File(
+                    Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType)), fileName);
+            int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
+                    getAccountRoot().getAccountDbId(), buddyId);
+            int contentType = getContentType(mimeType);
+            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
+                    time, getUrlMessage(), storeFile.getPath(), fileName, contentType, fileSize, previewHash);
+            // Check to download file now.
+            if (!isStartDownload()) {
+                throw new DownloadCancelledException();
             }
+            return downloadLink;
+        } else {
+            QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
+                    PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
+                    getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage, true);
+            throw new DownloadException();
         }
     }
 
@@ -187,7 +185,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     @Override
     protected void onSuccessDelegate() {
         QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_STABLE, originalMessage,
+                GlobalProvider.HISTORY_CONTENT_STATE_STABLE, getUrlMessage(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
         // Update file in system gallery.
         MediaScannerConnection.scanFile(getAccountRoot().getContext(), new String[]{storeFile.getPath()}, null, null);
@@ -196,7 +194,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     @Override
     protected void onFailDelegate() {
         QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, originalMessage, cookie);
         // Remove file fragment.
         storeFile.delete();
     }
@@ -206,5 +204,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         // Update message to be in waiting state.
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_WAITING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+    }
+
+    private String getUrlMessage() {
+        return storeFile.getName() + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
+                + "\n" + fileUrl;
     }
 }

@@ -553,8 +553,10 @@ public class QueryHelper {
         modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 
-    public static void revertFileToMessage(ContentResolver contentResolver, int messageType, String cookie) {
+    public static void revertFileToMessage(ContentResolver contentResolver, int messageType,
+                                           String originalMessage, String cookie) {
         ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, originalMessage);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, 0);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, GlobalProvider.HISTORY_CONTENT_STATE_STABLE);

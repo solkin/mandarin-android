@@ -405,7 +405,7 @@ public class IcqSession {
                             int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
                                     icqAccountRoot.getAccountDbId(), buddyId);
                             RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                    buddyDbId, cookie, messageTime * 1000, fileId, messageText);
+                                    buddyDbId, cookie, messageTime * 1000, fileId, url, messageText);
                             isProcessed = true;
                         }
                         if (!isProcessed) {

@@ -40,7 +40,8 @@
                         android:id="@+id/inc_progress_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@color/preview_progress_background">
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"

@@ -309,33 +309,33 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
-                        TextView outName = (TextView) view.findViewById(R.id.out_name);
-                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
-                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
-                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
+                        TextView incName = (TextView) view.findViewById(R.id.inc_name);
+                        TextView incSize = (TextView) view.findViewById(R.id.inc_size);
+                        ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
+                        View incProgressContainer = view.findViewById(R.id.inc_progress_container);
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
-                                outProgressContainer.setVisibility(View.GONE);
+                                incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                outProgressContainer.setVisibility(View.VISIBLE);
+                                incProgressContainer.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
-                                outProgressContainer.setVisibility(View.GONE);
+                                incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                outProgressContainer.setVisibility(View.GONE);
+                                incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
                         }
 
-                        outName.setText(contentName);
-                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
-                        outProgress.setProgress(contentProgress);
+                        incName.setText(contentName);
+                        incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        incProgress.setProgress(contentProgress);
                         break;
                     }
                 }

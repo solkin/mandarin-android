@@ -21,7 +21,6 @@
     <color name="tint_color">#70000000</color>
     <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
-    <color name="flat_text_background_color">#AAffffff</color>
     <color name="preview_progress_background">#70000000</color>
     <color name="progress_background_color">#70ffffff</color>
     <color name="progress_fore_color">@color/orange_normal</color>

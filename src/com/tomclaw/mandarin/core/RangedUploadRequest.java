@@ -95,6 +95,9 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                             onBufferReleased(sent, size);
                         }
                     }
+                } catch (FileNotFoundException ex) {
+                    // Where is my file?! :'(
+                    throw ex;
                 } catch (IOException ex) {
                     // Pretty network exception.
                     Log.d(Settings.LOG_TAG, "Io exception while uploading", ex);

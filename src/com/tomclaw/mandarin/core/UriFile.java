@@ -54,7 +54,7 @@ public class UriFile extends VirtualFile {
     }
 
     public Uri getUri() {
-        return Uri.parse(uri);
+        return Uri.parse(getFixedUri());
     }
 
     private String getFixedUri() {

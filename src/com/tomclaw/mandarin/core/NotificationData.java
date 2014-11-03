@@ -16,14 +16,14 @@ public class NotificationData implements Serializable {
     private String previewHash;
 
     public NotificationData(String messageText, int buddyDbId, String buddyNick, String buddyAvatarHash,
-                            int contentType, String previewHash, int unreadCount) {
+                            int unreadCount, int contentType, String previewHash) {
         this.messageText = messageText;
         this.buddyDbId = buddyDbId;
         this.buddyNick = buddyNick;
         this.buddyAvatarHash = buddyAvatarHash;
+        this.unreadCount = unreadCount;
         this.contentType = contentType;
         this.previewHash = previewHash;
-        this.unreadCount = unreadCount;
     }
 
     public String getMessageText() {

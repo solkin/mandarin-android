@@ -10,12 +10,14 @@ import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.util.ArrayList;
 
@@ -38,6 +40,7 @@ public class HistoryDispatcher {
     private static final int NOTIFICATION_ID = 0x01;
 
     private final int largeIconSize;
+    private final int previewSize;
 
     public HistoryDispatcher(Context context) {
         // Variables.
@@ -47,6 +50,7 @@ public class HistoryDispatcher {
         // Creating observers.
         historyObserver = new HistoryObserver();
         largeIconSize = BitmapCache.convertDpToPixel(64, context);
+        previewSize = BitmapCache.BITMAP_SIZE_ORIGINAL;
     }
 
     public void startObservation() {
@@ -108,6 +112,8 @@ public class HistoryDispatcher {
                     int buddyDbId = 0;
                     Bitmap largeIcon = null;
                     String message = "";
+                    int contentType = GlobalProvider.HISTORY_CONTENT_TYPE_TEXT;
+                    String previewHash = "";
                     for (NotificationData data : unreadList) {
                         // Obtaining and collecting message-specific data.
                         unread += data.getUnreadCount();
@@ -115,6 +121,8 @@ public class HistoryDispatcher {
                         buddyDbId = data.getBuddyDbId();
                         String nickName = data.getBuddyNick();
                         String avatarHash = data.getBuddyAvatarHash();
+                        contentType = data.getContentType();
+                        previewHash = data.getPreviewHash();
                         if (TextUtils.isEmpty(nickName)) {
                             nickName = context.getString(R.string.unknown_buddy);
                             avatarHash = null;
@@ -177,10 +185,19 @@ public class HistoryDispatcher {
                         actionIcon = R.drawable.social_chat;
                         actionButton = context.getString(R.string.dialogs);
                         actionIntent = openChatsIntent;
-                        bigTextStyle.bigText(message);
-                        bigTextStyle.setBigContentTitle(title);
                         readButton = context.getString(R.string.mark_as_read);
-                        style = bigTextStyle;
+                        if((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
+                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO) &&
+                                !TextUtils.isEmpty(previewHash)) {
+                            Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true);
+                            bigPictureStyle.bigPicture(previewFull);
+                            bigPictureStyle.setSummaryText(message);
+                            style = bigPictureStyle;
+                        } else {
+                            bigTextStyle.bigText(message);
+                            bigTextStyle.setBigContentTitle(title);
+                            style = bigTextStyle;
+                        }
                     }
                     // Notification prepare.
                     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)

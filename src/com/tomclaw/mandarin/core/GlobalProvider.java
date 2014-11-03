@@ -196,7 +196,7 @@ public class GlobalProvider extends ContentProvider {
 
     private static final String HISTORY_GET_UNREAD_SB =
             new StringBuilder().append("SELECT").append(' ')
-                    .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',')
+                    .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',').append(HISTORY_CONTENT_TYPE).append(',').append(HISTORY_PREVIEW_HASH).append(',')
                     .append('(')
                     .append("SELECT").append(' ')
                     .append(ROSTER_BUDDY_NICK).append(' ')
@@ -410,6 +410,8 @@ public class GlobalProvider extends ContentProvider {
                 int buddyNickColumn = cursor.getColumnIndex(ROSTER_BUDDY_NICK);
                 int buddyAvatarHashColumn = cursor.getColumnIndex(ROSTER_BUDDY_AVATAR_HASH);
                 int unreadCountColumn = cursor.getColumnIndex(ROSTER_BUDDY_UNREAD_COUNT);
+                int contentTypeColumn = cursor.getColumnIndex(HISTORY_CONTENT_TYPE);
+                int previewHashColumn = cursor.getColumnIndex(HISTORY_PREVIEW_HASH);
                 ArrayList<NotificationData> data = new ArrayList<NotificationData>();
                 do {
                     NotificationData row = new NotificationData(
@@ -417,8 +419,9 @@ public class GlobalProvider extends ContentProvider {
                             cursor.getInt(buddyDbIdColumn),
                             cursor.getString(buddyNickColumn),
                             cursor.getString(buddyAvatarHashColumn),
-                            0, "",
-                            cursor.getInt(unreadCountColumn));
+                            cursor.getInt(unreadCountColumn),
+                            cursor.getInt(contentTypeColumn),
+                            cursor.getString(previewHashColumn));
                     data.add(row);
                 } while (cursor.moveToNext());
                 bundle.putSerializable(KEY_NOTIFICATION_DATA, data);

@@ -75,10 +75,9 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                         }
                         try {
                             int responseCode = httpResponse.getStatusLine().getStatusCode();
-                            String response = EntityUtils.toString(entity);
                             if (responseCode == 200) {
                                 // Uploading completed successfully.
-                                onSuccess(response);
+                                onSuccess(EntityUtils.toString(entity));
                                 completed = true;
                             } else if (responseCode == 206) {
                                 // Server is still hungry. Next chunk, please...
@@ -168,7 +167,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
      * @return int - buffer size.
      */
     private int getBufferSize() {
-        return 51200;
+        return 76800;
     }
 
     /**

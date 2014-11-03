@@ -2,7 +2,7 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/create_dialog"
-          android:icon="@drawable/social_new_chat"
+          android:icon="@drawable/ic_add_chat"
           android:showAsAction="ifRoom"
           android:title="@string/create_dialog"/>
     <item android:id="@+id/accounts"

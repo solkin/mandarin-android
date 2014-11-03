@@ -25,12 +25,10 @@
             android:layout_gravity="center"
             android:background="?attr/chat_input_background">
         <ImageButton
-                android:layout_width="50dp"
+                android:layout_width="56dp"
                 android:layout_height="match_parent"
                 android:id="@+id/smileys_button"
                 android:layout_gravity="center_horizontal|bottom"
-                android:paddingLeft="7dp"
-                android:paddingRight="0dp"
                 android:src="@drawable/ic_insert_emoticon"
                 android:tint="?chat_buttons_tint"
                 style="?android:attr/borderlessButtonStyle"/>
@@ -38,21 +36,27 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/message_text"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:hint="@string/enter_your_message"
+                android:background="@drawable/chat_edit_background"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:inputType="textCapSentences|textMultiLine"
                 android:ems="10"
-                android:maxLines="3"
+                android:maxLines="4"
+                android:textSize="17sp"
                 android:imeOptions="flagNoExtractUi"
-                android:minHeight="45dp"/>
+                android:minHeight="32dp"/>
         <ImageButton
-                android:layout_width="50dp"
+                android:layout_width="56dp"
                 android:layout_height="match_parent"
                 android:id="@+id/send_button"
                 android:layout_gravity="center_horizontal|bottom"
-                android:paddingLeft="0dp"
-                android:paddingRight="7dp"
                 android:src="@drawable/ic_send"
                 android:tint="?chat_buttons_tint"
                 style="?android:attr/borderlessButtonStyle"/>

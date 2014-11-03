@@ -460,14 +460,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void pickFile() {
-        Intent intent;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-        } else {
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-        }
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.setFlags(intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(Intent.createChooser(intent,

@@ -31,13 +31,16 @@
     <color name="orange_pressed">#e55400</color>
     <color name="resend_code_disabled">#bababa</color>
     <color name="resend_code_enabled">#ffffff</color>
+    <color name="light_back_color">#f0f0f0</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 
-        <item name="header_head_color">#F0CCCCCC</item>
-        <item name="header_back_color">#99CCCCCC</item>
-        <item name="header_font_color">#AA000000</item>
-        <item name="header_line_color">#E0CCCCCC</item>
+        <item name="android:windowBackground">@color/light_back_color</item>
+
+        <item name="header_head_color">#d9d9d9</item>
+        <item name="header_back_color">#e6e6e6</item>
+        <item name="header_font_color">#ff6600</item>
+        <item name="header_line_color">#d9d9d9</item>
 
         <item name="chat_date_color">#FF111111</item>
         <item name="chat_time_color">#FF111111</item>

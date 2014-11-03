@@ -12,12 +12,17 @@ public class NotificationData implements Serializable {
     private String buddyNick;
     private String buddyAvatarHash;
     private int unreadCount;
+    private int contentType;
+    private String previewHash;
 
-    public NotificationData(String messageText, int buddyDbId, String buddyNick, String buddyAvatarHash, int unreadCount) {
+    public NotificationData(String messageText, int buddyDbId, String buddyNick, String buddyAvatarHash,
+                            int contentType, String previewHash, int unreadCount) {
         this.messageText = messageText;
         this.buddyDbId = buddyDbId;
         this.buddyNick = buddyNick;
         this.buddyAvatarHash = buddyAvatarHash;
+        this.contentType = contentType;
+        this.previewHash = previewHash;
         this.unreadCount = unreadCount;
     }
 
@@ -39,5 +44,13 @@ public class NotificationData implements Serializable {
 
     public int getUnreadCount() {
         return unreadCount;
+    }
+
+    public int getContentType() {
+        return contentType;
+    }
+
+    public String getPreviewHash() {
+        return previewHash;
     }
 }

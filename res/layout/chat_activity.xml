@@ -30,8 +30,9 @@
                 android:id="@+id/smileys_button"
                 android:layout_gravity="center_horizontal|bottom"
                 android:paddingLeft="7dp"
-                android:src="@drawable/icon_smiley"
-                android:tint="?chat_icons_tint"
+                android:paddingRight="0dp"
+                android:src="@drawable/ic_insert_emoticon"
+                android:tint="?chat_buttons_tint"
                 style="?android:attr/borderlessButtonStyle"/>
         <EditText
                 android:layout_width="0dp"
@@ -50,9 +51,10 @@
                 android:layout_height="match_parent"
                 android:id="@+id/send_button"
                 android:layout_gravity="center_horizontal|bottom"
+                android:paddingLeft="0dp"
                 android:paddingRight="7dp"
-                android:src="@drawable/social_send_now"
-                android:tint="?chat_icons_tint"
+                android:src="@drawable/ic_send"
+                android:tint="?chat_buttons_tint"
                 style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 

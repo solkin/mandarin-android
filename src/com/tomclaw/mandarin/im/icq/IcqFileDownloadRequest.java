@@ -67,7 +67,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             String fileName = file.getString("filename");
             String downloadLink = file.getString("dlink");
             int isPreviewable = file.getInt("is_previewable");
-            String previewUrl = file.optString("static");
+            String previewUrl = file.optString("static600");
             String mimeType = file.getString("mime");
             // Downloading preview.
             String previewHash = "";

@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <array name="default_icons">
-        <item>@drawable/rating_important</item>
-        <item>@drawable/social_chat</item>
-        <item>@drawable/social_person</item>
-        <item>@drawable/social_group</item>
-    </array>
-
     <string-array name="roster_filter_strings">
         <item>@string/filter_show_all_buddies</item>
         <item>@string/filter_show_online_only</item>

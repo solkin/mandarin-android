@@ -417,6 +417,7 @@ public class GlobalProvider extends ContentProvider {
                             cursor.getInt(buddyDbIdColumn),
                             cursor.getString(buddyNickColumn),
                             cursor.getString(buddyAvatarHashColumn),
+                            0, "",
                             cursor.getInt(unreadCountColumn));
                     data.add(row);
                 } while (cursor.moveToNext());

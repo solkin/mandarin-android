@@ -99,6 +99,7 @@ public class HistoryDispatcher {
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+                    NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
                     // Building variables.
                     int unread = 0;
                     boolean multipleSenders = (unreadList.size() > 1);

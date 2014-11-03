@@ -397,7 +397,7 @@ public class QueryHelper {
                                                  long time, String originalMessage, String path, String name, int contentType,
                                                  long contentSize, String previewHash) throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, false, contentType, contentSize,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, true, contentType, contentSize,
                 GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
     }
 

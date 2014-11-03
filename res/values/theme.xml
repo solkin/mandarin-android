@@ -49,6 +49,7 @@
         <item name="chat_out_bubble">@drawable/ic_out_bubble_light</item>
         <item name="chat_error_bubble">@drawable/ic_error_bubble_light</item>
 
+        <item name="chat_buttons_tint">#FF6B6B6B</item>
         <item name="chat_icons_tint">#FF151515</item>
         <item name="chat_input_background">#FFEEEEEE</item>
         <item name="chat_separator">#aaaaaa</item>
@@ -84,6 +85,7 @@
         <item name="chat_out_bubble">@drawable/ic_out_bubble_dark</item>
         <item name="chat_error_bubble">@drawable/ic_error_bubble_dark</item>
 
+        <item name="chat_buttons_tint">#FFD6D6D6</item>
         <item name="chat_icons_tint">#FFDADADA</item>
         <item name="chat_input_background">#FF151515</item>
         <item name="chat_separator">#FF252525</item>

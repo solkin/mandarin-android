@@ -31,7 +31,6 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             FileOutputStream outputStream = getOutputStream();
             long read = outputStream.getChannel().size();
             byte[] buffer = new byte[getBufferSize()];
-            boolean completed = false;
             onDownload();
             do {
                 outputStream.getChannel().position(read);
@@ -41,36 +40,29 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                 connection.setRequestProperty("Range", range);
                 Log.d(Settings.LOG_TAG, "Range: " + range);
                 try {
-                    while (read < size) {
-                        int statusCode = connection.getResponseCode();
-                        Log.d(Settings.LOG_TAG, "Server returns " + statusCode);
-                        try {
-                            if (statusCode == 200) {
-                                completed = true;
-                            } else if (statusCode == 503) {
-                                throw new IllegalStateException();
-                            } else if (statusCode != 206) {
-                                throw new DownloadException();
-                            }
-                            InputStream input = connection.getInputStream();
-                            int cache;
-                            while ((cache = input.read(buffer)) != -1) {
-                                outputStream.write(buffer, 0, cache);
-                                outputStream.flush();
-                                read += cache;
-                                onBufferReleased(read, size);
-                            }
-                        } finally {
-                            connection.disconnect();
-                        }
+                    int statusCode = connection.getResponseCode();
+                    Log.d(Settings.LOG_TAG, "Server returns " + statusCode);
+                    if (statusCode == 503) {
+                        throw new IllegalStateException();
+                    } else if (statusCode != 200 && statusCode != 206) {
+                        throw new DownloadException();
+                    }
+                    InputStream input = connection.getInputStream();
+                    int cache;
+                    while ((cache = input.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, cache);
+                        outputStream.flush();
+                        read += cache;
+                        onBufferReleased(read, size);
                     }
                 } catch (IOException ex) {
-                    completed = false;
                     // Pretty network exception.
                     Log.d(Settings.LOG_TAG, "Io exception while downloading", ex);
                     Thread.sleep(3000);
+                } finally {
+                    connection.disconnect();
                 }
-            } while (!completed);
+            } while (read < size);
             onSuccess();
             Log.d(Settings.LOG_TAG, "Download completed successfully.");
         } catch (FileNotFoundException ex) {

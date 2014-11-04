@@ -322,4 +322,7 @@
     <string name="file_download_title">Receiving file</string>
     <string name="download_failed">File receiving failed</string>
     <string name="file_from">from %s</string>
+    <string name="send_picture">Picture</string>
+    <string name="send_video">Video</string>
+    <string name="send_document">Document</string>
 </resources>

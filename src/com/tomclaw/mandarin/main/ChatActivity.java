@@ -407,8 +407,22 @@ public class ChatActivity extends ChiefActivity {
                 builder.show();
                 return true;
             }
-            case R.id.send_file_menu: {
-                pickFile();
+            case R.id.send_picture_menu: {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                return true;
+            }
+            case R.id.send_video_menu: {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("video/*");
+                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                return true;
+            }
+            case R.id.send_document_menu: {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("*/*");
+                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
                 return true;
             }
             default: {
@@ -457,14 +471,6 @@ public class ChatActivity extends ChiefActivity {
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
-    }
-
-    private void pickFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.setFlags(intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), PICK_FILE_RESULT_CODE);
     }
 
     @Override
@@ -581,14 +587,6 @@ public class ChatActivity extends ChiefActivity {
                 });
             }
         };
-        /*try {
-            ActionBar actionBar = getActionBar();
-            // This will provide buddy nick by db id.
-            actionBar.setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
-
-        } catch (BuddyNotFoundException ignored) {
-            Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
-        }*/
     }
 
     private void setMessageTextFromDraft(int buddyDbId) {

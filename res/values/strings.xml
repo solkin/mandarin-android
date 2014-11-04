@@ -327,4 +327,7 @@
     <string name="file_download_title">Получение файла</string>
     <string name="download_failed">Получение файла не удалось</string>
     <string name="file_from">от %s</string>
+    <string name="send_picture">Изображение</string>
+    <string name="send_video">Видео</string>
+    <string name="send_document">Документ</string>
 </resources>

@@ -54,30 +54,7 @@ public class UriFile extends VirtualFile {
     }
 
     public Uri getUri() {
-        return Uri.parse(getFixedUri());
-    }
-
-    private String getFixedUri() {
-        // Seriously dirty workaround of file picker bug.
-        if (uri.startsWith("content://com.android")) {
-            int index = uri.indexOf("%3A");
-            Uri baseUri;
-            if (mimeType.startsWith("image")) {
-                baseUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-            } else if (mimeType.startsWith("video")) {
-                baseUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-            } else if (mimeType.startsWith("audio")) {
-                baseUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            } else {
-                baseUri = null;
-            }
-            if(baseUri != null) {
-                String fixedUri = baseUri.toString() + "/" + uri.substring(index + 3);
-                Log.d(Settings.LOG_TAG, "fixed uri: " + fixedUri);
-                return fixedUri;
-            }
-        }
-        return uri;
+        return Uri.parse(uri);
     }
 
     @Override
@@ -116,7 +93,7 @@ public class UriFile extends VirtualFile {
 
     @Override
     public String getPath() {
-        return getFixedUri();
+        return uri;
     }
 
     public static UriFile create(Context context, Uri uri) throws FileNotFoundException {

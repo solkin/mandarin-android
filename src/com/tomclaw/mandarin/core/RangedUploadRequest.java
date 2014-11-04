@@ -121,6 +121,10 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             Log.d(Settings.LOG_TAG, "Unknown response exception while uploading", ex);
             onFail();
             return REQUEST_DELETE;
+        } catch (SecurityException ex) {
+            Log.d(Settings.LOG_TAG, "Security exception while uploading", ex);
+            onFail();
+            return REQUEST_DELETE;
         } catch (FileNotFoundException ex) {
             Log.d(Settings.LOG_TAG, "File is missing while uploading", ex);
             onFileNotFound();

@@ -325,4 +325,8 @@
     <string name="send_picture">Picture</string>
     <string name="send_video">Video</string>
     <string name="send_document">Document</string>
+    <string name="gallery">Gallery</string>
+    <string name="all_pictures">All pictures</string>
+    <string name="cancel">Cancel</string>
+    <string name="send">Send</string>
 </resources>

@@ -32,6 +32,8 @@
     <color name="resend_code_disabled">#bababa</color>
     <color name="resend_code_enabled">#ffffff</color>
     <color name="light_back_color">#f0f0f0</color>
+    <color name="check_selected_color">@color/orange_normal</color>
+    <color name="check_unselected_color">#501c1c1c</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 

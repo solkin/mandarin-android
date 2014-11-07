@@ -408,9 +408,10 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.send_picture_menu: {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                startActivity(new Intent(this, PhotoPickerActivity.class));
+                /*Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);*/
                 return true;
             }
             case R.id.send_video_menu: {

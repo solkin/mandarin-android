@@ -84,6 +84,26 @@ public class BitmapCache {
         }
     }
 
+    public void getThumbnailAsync(ImageView imageView, long imageId, int placeholder) {
+        String hash = ThumbnailTask.getHash(imageId);
+        int width = imageView.getWidth();
+        int height = imageView.getHeight();
+        Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
+        // Checking for there is no cached bitmap and reset is really required.
+        if (bitmap == null && ThumbnailTask.isResetRequired(imageView, hash)) {
+            imageView.setImageResource(placeholder);
+        }
+        imageView.setTag(hash);
+        if (!TextUtils.isEmpty(hash)) {
+            // Checking for bitmap cached or not.
+            if (bitmap == null) {
+                TaskExecutor.getInstance().execute(new ThumbnailTask(imageView, imageId, width, height));
+            } else {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    }
+
     public Bitmap getBitmapSyncFromCache(String hash, int width, int height) {
         String cacheKey = getCacheKey(hash, width, height);
         return bitmapLruCache.get(cacheKey);
@@ -173,6 +193,18 @@ public class BitmapCache {
     public void removeBitmap(String hash) {
         File file = getBitmapFile(hash);
         file.delete();
+    }
+
+    public void invalidateCacheForPrefix(final String prefix) {
+        File[] files = path.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().startsWith(prefix);
+            }
+        });
+        for(File file : files) {
+            file.delete();
+        }
     }
 
     private File getBitmapFile(String hash) {

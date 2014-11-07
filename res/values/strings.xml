@@ -330,4 +330,8 @@
     <string name="send_picture">Изображение</string>
     <string name="send_video">Видео</string>
     <string name="send_document">Документ</string>
+    <string name="gallery">Галерея</string>
+    <string name="all_pictures">Все изображения</string>
+    <string name="cancel">Отмена</string>
+    <string name="send">Отправить</string>
 </resources>

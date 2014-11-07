@@ -28,6 +28,8 @@ import java.net.URL;
  */
 public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccountRoot> {
 
+    private static transient int MAX_META_TRY_COUNT = 5;
+
     private final String buddyId;
     private final String cookie;
     private final long time;
@@ -37,6 +39,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     private transient long fileSize;
     private transient File storeFile;
+
+    private transient int metaTryCount;
 
     public IcqFileDownloadRequest(String buddyId, String cookie, long time,
                                   String fileId, String fileUrl, String originalMessage) {
@@ -69,13 +73,29 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             int isPreviewable = file.getInt("is_previewable");
             String previewUrl = file.optString("static600");
             String mimeType = file.getString("mime");
+            // Checking for download link is empty because file is not ready yet.
+            if(TextUtils.isEmpty(downloadLink)) {
+                Thread.sleep(1000);
+                return getUrl();
+            }
             // Downloading preview.
             String previewHash = "";
-            if (isPreviewable == 1 && !TextUtils.isEmpty(previewUrl)) {
-                Bitmap previewBitmap = getPreviewBitmap(previewUrl);
-                if (previewBitmap != null) {
-                    previewHash = HttpUtil.getUrlHash(previewUrl);
-                    saveBitmap(previewBitmap, previewHash);
+            if (isPreviewable == 1) {
+                // Check for preview is ready now or try again after short delay.
+                if(TextUtils.isEmpty(previewUrl)) {
+                    if(metaTryCount < MAX_META_TRY_COUNT) {
+                        // No preview this time. Sleep a while and try again.
+                        metaTryCount++;
+                        Thread.sleep(1000);
+                        return getUrl();
+                    }
+                } else {
+                    // Preview Url is ready - let's download it and cache.
+                    Bitmap previewBitmap = getPreviewBitmap(previewUrl);
+                    if (previewBitmap != null) {
+                        previewHash = HttpUtil.getUrlHash(previewUrl);
+                        saveBitmap(previewBitmap, previewHash);
+                    }
                 }
             }
             // Saving obtained data to the history table.

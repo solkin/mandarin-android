@@ -43,8 +43,8 @@
                          android:id="@+id/out_bubble_back"
                          android:layout_gravity="right">
                 <FrameLayout
-                        android:layout_width="@dimen/preview_size"
-                        android:layout_height="@dimen/preview_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/out_preview_container">
                     <ProgressBar
                             android:id="@+id/out_preview_progress"
@@ -53,10 +53,11 @@
                             android:layout_gravity="center"/>
                     <com.tomclaw.mandarin.main.views.PreviewImageView
                             android:id="@+id/out_preview_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/preview_height"
                             android:padding="0dp"
-                            android:scaleType="centerCrop"/>
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"/>
                 </FrameLayout>
                 <LinearLayout
                         android:id="@+id/out_error"

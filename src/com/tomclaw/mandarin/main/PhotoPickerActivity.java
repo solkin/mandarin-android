@@ -62,8 +62,6 @@ public class PhotoPickerActivity extends Activity {
             bar.setIcon(R.drawable.ic_ab_logo);
         }
 
-        BitmapCache.getInstance().invalidateCacheForPrefix("thumb");
-
         albums = loadGalleryPhotosAlbums();
 
         Button cancelButton = (Button) findViewById(R.id.cancel_button);

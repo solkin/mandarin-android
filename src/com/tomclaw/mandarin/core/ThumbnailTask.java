@@ -41,8 +41,10 @@ public class ThumbnailTask extends WeakObjectTask<ImageView> {
         if (image != null) {
             bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
             if(bitmap == null) {
-                Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(image.getContext().getContentResolver(),
-                        imageId, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                int thumbnailKind = BitmapCache.isLowMemory() ?
+                        MediaStore.Images.Thumbnails.MICRO_KIND : MediaStore.Images.Thumbnails.MINI_KIND;
+                Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        image.getContext().getContentResolver(), imageId, thumbnailKind, null);
                 if(thumbnail != null) {
                     BitmapCache.getInstance().saveBitmapSync(hash, thumbnail, Bitmap.CompressFormat.JPEG);
                     thumbnail.recycle();

@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
+import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.io.*;
 
@@ -38,7 +39,7 @@ public class BitmapCache {
     public BitmapCache() {
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         // Use 1/8th of the available memory for this memory cache.
-        int cacheSize = maxMemory / 10;
+        int cacheSize = maxMemory / 12;
         bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
     }
 
@@ -126,13 +127,17 @@ public class BitmapCache {
             File file = getBitmapFile(hash);
             try {
                 FileInputStream inputStream = new FileInputStream(file);
-                bitmap = BitmapFactory.decodeStream(inputStream);
-                // Check and set original size.
-                if (width == BITMAP_SIZE_ORIGINAL) {
-                    width = bitmap.getWidth();
-                }
-                if (height == BITMAP_SIZE_ORIGINAL) {
-                    height = bitmap.getHeight();
+                if (width != BITMAP_SIZE_ORIGINAL && height != BITMAP_SIZE_ORIGINAL) {
+                    bitmap = BitmapHelper.decodeSampledBitmapFromStream(inputStream, width, height);
+                } else {
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    // Check and set original size.
+                    if (width == BITMAP_SIZE_ORIGINAL) {
+                        width = bitmap.getWidth();
+                    }
+                    if (height == BITMAP_SIZE_ORIGINAL) {
+                        height = bitmap.getHeight();
+                    }
                 }
                 // Resize bitmap for the largest size.
                 if (isProportional) {
@@ -196,18 +201,6 @@ public class BitmapCache {
         file.delete();
     }
 
-    public void invalidateCacheForPrefix(final String prefix) {
-        File[] files = path.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().startsWith(prefix);
-            }
-        });
-        for(File file : files) {
-            file.delete();
-        }
-    }
-
     private File getBitmapFile(String hash) {
         return new File(path, hash.concat(".").concat(COMPRESS_FORMAT.name()));
     }
@@ -223,6 +216,10 @@ public class BitmapCache {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return (int) (dp * metrics.density);
+    }
+
+    public static boolean isLowMemory() {
+        return Runtime.getRuntime().freeMemory() <= 2 * 1024 * 1024;
     }
 
     public class SaveBitmapTask extends Task {

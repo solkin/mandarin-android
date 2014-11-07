@@ -30,8 +30,28 @@ public class BitmapHelper {
     public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri, int reqWidth, int reqHeight) {
         Bitmap bitmap;
         try {
-            InputStream inputStream = new BufferedInputStream(
-                    context.getContentResolver().openInputStream(uri), THUMBNAIL_BUFFER_SIZE);
+            bitmap = decodeSampledBitmapFromStream(
+                    context.getContentResolver().openInputStream(uri), reqWidth, reqHeight);
+
+            int orientation = getOrientation(context, uri);
+            if (orientation != 0) {
+                final int width = bitmap.getWidth();
+                final int height = bitmap.getHeight();
+
+                final Matrix m = new Matrix();
+                m.setRotate(orientation, width / 2, height / 2);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+            }
+        } catch (Throwable ignored) {
+            bitmap = null;
+        }
+        return bitmap;
+    }
+
+    public static Bitmap decodeSampledBitmapFromStream(InputStream stream, int reqWidth, int reqHeight) {
+        Bitmap bitmap;
+        try {
+            InputStream inputStream = new BufferedInputStream(stream, THUMBNAIL_BUFFER_SIZE);
             inputStream.mark(THUMBNAIL_BUFFER_SIZE);
 
             // First decode with inJustDecodeBounds=true to check dimensions
@@ -49,16 +69,6 @@ public class BitmapHelper {
             // Decode bitmap with inSampleSize set
             inputStream.reset();
             bitmap = BitmapFactory.decodeStream(inputStream, null, options);
-
-            int orientation = getOrientation(context, uri);
-            if (orientation != 0) {
-                final int width = bitmap.getWidth();
-                final int height = bitmap.getHeight();
-
-                final Matrix m = new Matrix();
-                m.setRotate(orientation, width / 2, height / 2);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
-            }
         } catch (Throwable ignored) {
             bitmap = null;
         }

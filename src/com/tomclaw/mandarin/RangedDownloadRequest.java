@@ -6,6 +6,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.VariableBuffer;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,7 +31,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             long size = getSize();
             FileOutputStream outputStream = getOutputStream();
             long read = outputStream.getChannel().size();
-            byte[] buffer = new byte[getBufferSize()];
+            VariableBuffer buffer = new VariableBuffer();
             onDownload();
             do {
                 outputStream.getChannel().position(read);
@@ -49,11 +50,14 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                     }
                     InputStream input = connection.getInputStream();
                     int cache;
-                    while ((cache = input.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, cache);
+                    buffer.onExecuteStart();
+                    while ((cache = input.read(buffer.calculateBuffer())) != -1) {
+                        buffer.onExecuteCompleted(cache);
+                        outputStream.write(buffer.getBuffer(), 0, cache);
                         outputStream.flush();
                         read += cache;
                         onBufferReleased(read, size);
+                        buffer.onExecuteStart();
                     }
                 } catch (IOException ex) {
                     // Pretty network exception.

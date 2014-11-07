@@ -5,6 +5,7 @@ import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.VariableBuffer;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -37,7 +38,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             long size = virtualFile.getSize();
             long sent = 0;
             int cache;
-            byte[] buffer = new byte[getBufferSize()];
+            VariableBuffer buffer = new VariableBuffer();
             String contentType = virtualFile.getMimeType();
             boolean completed = false;
             // Obtain uploading Url.
@@ -52,14 +53,14 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                 try {
                     input = virtualFile.openInputStream(getAccountRoot().getContext());
                     sent = input.skip(sent);
-                    while ((cache = input.read(buffer)) != -1 || sent < size) {
+                    while ((cache = input.read(buffer.calculateBuffer())) != -1 || sent < size) {
                         // Checking for continuous stream.
                         if (sent + cache > size) {
                             // ... and stop at the specified size.
                             cache = (int) (size - sent);
                         }
                         byte[] entityData = new byte[cache];
-                        System.arraycopy(buffer, 0, entityData, 0, cache);
+                        System.arraycopy(buffer.getBuffer(), 0, entityData, 0, cache);
                         ByteArrayEntity arrayEntity = new ByteArrayEntity(entityData);
 
                         // Setup content range.
@@ -68,8 +69,10 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                         post.setHeader("Content-Range", range);
                         post.setEntity(arrayEntity);
 
+                        buffer.onExecuteStart();
                         HttpResponse httpResponse = httpClient.execute(post);
                         HttpEntity entity = httpResponse.getEntity();
+                        buffer.onExecuteCompleted(cache);
                         if (entity == null) {
                             throw new IOException();
                         }

@@ -176,7 +176,7 @@ public class HttpUtil {
         String extension = getFileExtensionFromPath(path);
         if (extension != null) {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
-            type = mime.getMimeTypeFromExtension(extension);
+            type = mime.getMimeTypeFromExtension(extension.toLowerCase());
         }
         return type;
     }

@@ -117,4 +117,13 @@ public class StringUtil {
         String pre = "KMGTPE".charAt(exp - 1) + "i";
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+
+    public static String formatSpeed(float bytesPerSecond) {
+        float bitsPerSecond = bytesPerSecond * 8;
+        int unit = 1000;
+        if (bitsPerSecond < unit) return bitsPerSecond + " bits/sec";
+        int exp = (int) (Math.log(bitsPerSecond) / Math.log(unit));
+        String pre = String.valueOf("kmgtpe".charAt(exp - 1));
+        return String.format("%.1f %sB/sec", bitsPerSecond / Math.pow(unit, exp), pre);
+    }
 }

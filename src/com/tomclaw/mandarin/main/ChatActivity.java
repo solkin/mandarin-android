@@ -6,6 +6,7 @@ import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -31,9 +32,9 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
+import java.io.File;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,6 +46,7 @@ public class ChatActivity extends ChiefActivity {
 
     private static final int TYPING_DELAY = 5 * 1000;
     private static final int PICK_FILE_RESULT_CODE = 1;
+    private static final int PICK_GALLERY_RESULT_CODE = 2;
 
     private LinearLayout chatRoot;
     private ChatListView chatList;
@@ -408,7 +410,7 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.send_picture_menu: {
-                startActivity(new Intent(this, PhotoPickerActivity.class));
+                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
                 /*Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);*/
@@ -476,11 +478,11 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
         switch (requestCode) {
-            case PICK_FILE_RESULT_CODE:
+            case PICK_FILE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
                     try {
-                        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                         MessageCallback callback = new MessageCallback() {
 
                             @Override
@@ -500,7 +502,21 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
                 break;
-
+            }
+            case PICK_GALLERY_RESULT_CODE: {
+                if (resultCode == RESULT_OK) {
+                    if(data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
+                        Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
+                        if(bundle != null) {
+                            List<PhotoEntry> photoEntries = new ArrayList<PhotoEntry>();
+                            for (String key : bundle.keySet()) {
+                                photoEntries.add((PhotoEntry) bundle.getSerializable(key));
+                            }
+                            TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -907,6 +923,44 @@ public class ChatActivity extends ChiefActivity {
                 Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
             callback.onFailed();
+        }
+    }
+
+    private class SendPhotosTask extends PleaseWaitTask {
+
+        private final int buddyDbId;
+        private final List<PhotoEntry> selectedPhotos;
+
+        public SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
+            super(context);
+            this.buddyDbId = buddyDbId;
+            this.selectedPhotos = photoEntries;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if(context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                int counter = 0;
+                for (PhotoEntry photoEntry : selectedPhotos) {
+                    String cookie = System.currentTimeMillis() + "/" + counter + ":" + photoEntry.hash;
+                    File file = new File(photoEntry.path);
+                    if(file.exists() && file.length() > 0) {
+                        UriFile uriFile = UriFile.create(context, Uri.fromFile(file));
+                        // Checking file type, size and other required information.
+                        long size = uriFile.getSize();
+                        int contentType = uriFile.getContentType();
+                        String hash = photoEntry.hash;
+                        // Create outgoing file message.s
+                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
+                                uriFile.getName(), contentType, size, hash);
+                        // Sending protocol message request.
+                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);
+                        counter++;
+                    }
+                }
+            }
         }
     }
 

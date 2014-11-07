@@ -84,8 +84,7 @@ public class BitmapCache {
         }
     }
 
-    public void getThumbnailAsync(ImageView imageView, long imageId, int placeholder) {
-        String hash = ThumbnailTask.getHash(imageId);
+    public void getThumbnailAsync(ImageView imageView, String hash, long imageId, int placeholder) {
         int width = imageView.getWidth();
         int height = imageView.getHeight();
         Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
@@ -97,7 +96,7 @@ public class BitmapCache {
         if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
             if (bitmap == null) {
-                TaskExecutor.getInstance().execute(new ThumbnailTask(imageView, imageId, width, height));
+                TaskExecutor.getInstance().execute(new ThumbnailTask(imageView, hash, imageId, width, height));
             } else {
                 imageView.setImageBitmap(bitmap);
             }

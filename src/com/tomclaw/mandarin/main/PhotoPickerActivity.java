@@ -3,14 +3,10 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,19 +14,19 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.*;
 import android.widget.*;
-import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.Settings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Solkin on 04.11.2014.
  */
 public class PhotoPickerActivity extends Activity {
+
+    public static final String SELECTED_ENTRIES = "selected_entries";
 
     private static final String[] projectionPhotos = {
             MediaStore.Images.Media._ID,
@@ -81,7 +77,7 @@ public class PhotoPickerActivity extends Activity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // sendSelectedPhotos();
+                sendSelectedPhotos();
             }
         });
 
@@ -117,6 +113,17 @@ public class PhotoPickerActivity extends Activity {
         updateSelectedCount();
 
         Log.d(Settings.LOG_TAG, "albums: " + albums.size());
+    }
+
+    private void sendSelectedPhotos() {
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        for (PhotoEntry photoEntry : selectedPhotos.values()) {
+            bundle.putSerializable(photoEntry.path, photoEntry);
+        }
+        intent.putExtra(SELECTED_ENTRIES, bundle);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -175,39 +182,6 @@ public class PhotoPickerActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         fixLayoutInternal();
-    }
-
-    public static class AlbumEntry {
-        public int bucketId;
-        public String bucketName;
-        public PhotoEntry coverPhoto;
-        public ArrayList<PhotoEntry> photos = new ArrayList<PhotoEntry>();
-
-        public AlbumEntry(int bucketId, String bucketName, PhotoEntry coverPhoto) {
-            this.bucketId = bucketId;
-            this.bucketName = bucketName;
-            this.coverPhoto = coverPhoto;
-        }
-
-        public void addPhoto(PhotoEntry photoEntry) {
-            photos.add(photoEntry);
-        }
-    }
-
-    public static class PhotoEntry {
-        public int bucketId;
-        public int imageId;
-        public long dateTaken;
-        public String path;
-        public int orientation;
-
-        public PhotoEntry(int bucketId, int imageId, long dateTaken, String path, int orientation) {
-            this.bucketId = bucketId;
-            this.imageId = imageId;
-            this.dateTaken = dateTaken;
-            this.path = path;
-            this.orientation = orientation;
-        }
     }
 
     public ArrayList<AlbumEntry> loadGalleryPhotosAlbums() {
@@ -317,11 +291,7 @@ public class PhotoPickerActivity extends Activity {
 
             AlbumEntry albumEntry = getItem(position);
             ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
-            if (albumEntry.coverPhoto != null && albumEntry.coverPhoto.path != null && albumEntry.coverPhoto.imageId != 0) {
-                BitmapCache.getInstance().getThumbnailAsync(imageView, albumEntry.coverPhoto.imageId, R.drawable.ic_gallery);
-            } else {
-                imageView.setImageResource(R.drawable.ic_gallery);
-            }
+            showThumbnail(imageView, albumEntry.coverPhoto);
             TextView textView = (TextView)view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
             textView = (TextView)view.findViewById(R.id.album_count);
@@ -385,11 +355,7 @@ public class PhotoPickerActivity extends Activity {
             ImageView imageView = (ImageView)view.findViewById(R.id.media_photo_image);
             // imageView.setTag(position);
             view.setTag(position);
-            if (photoEntry.path != null && photoEntry.imageId != 0) {
-                BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.imageId, R.drawable.ic_gallery);
-            } else {
-                imageView.setImageResource(R.drawable.ic_gallery);
-            }
+            showThumbnail(imageView, photoEntry);
             updateSelectedPhoto(view, photoEntry);
             boolean showing = false;//PhotoViewer.getInstance().isShowingImage(photoEntry.path);
             //imageView.imageReceiver.setVisible(!showing, false);
@@ -398,6 +364,14 @@ public class PhotoPickerActivity extends Activity {
             ImageView checkImageView = (ImageView)view.findViewById(R.id.photo_check);
             checkImageView.setVisibility(showing ? View.GONE : View.VISIBLE);
             return view;
+        }
+    }
+
+    private void showThumbnail(ImageView imageView, PhotoEntry photoEntry) {
+        if (photoEntry != null && photoEntry.path != null && photoEntry.imageId != 0) {
+            BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.hash, photoEntry.imageId, R.drawable.ic_gallery);
+        } else {
+            imageView.setImageResource(R.drawable.ic_gallery);
         }
     }
 

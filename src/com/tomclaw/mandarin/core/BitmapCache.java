@@ -38,7 +38,7 @@ public class BitmapCache {
     public BitmapCache() {
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         // Use 1/8th of the available memory for this memory cache.
-        int cacheSize = maxMemory / 8;
+        int cacheSize = maxMemory / 10;
         bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
     }
 
@@ -145,7 +145,9 @@ public class BitmapCache {
                 }
                 // Check for bitmap needs to be resized.
                 if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                    bitmap.recycle();
+                    bitmap = scaledBitmap;
                 }
                 cacheBitmap(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {

@@ -318,9 +318,9 @@ public class PhotoPickerActivity extends Activity {
             AlbumEntry albumEntry = getItem(position);
             ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
             if (albumEntry.coverPhoto != null && albumEntry.coverPhoto.path != null && albumEntry.coverPhoto.imageId != 0) {
-                BitmapCache.getInstance().getThumbnailAsync(imageView, albumEntry.coverPhoto.imageId, R.drawable.ic_attach_file);
+                BitmapCache.getInstance().getThumbnailAsync(imageView, albumEntry.coverPhoto.imageId, R.drawable.ic_gallery);
             } else {
-                imageView.setImageResource(R.drawable.ic_attach_file);
+                imageView.setImageResource(R.drawable.ic_gallery);
             }
             TextView textView = (TextView)view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
@@ -386,9 +386,9 @@ public class PhotoPickerActivity extends Activity {
             // imageView.setTag(position);
             view.setTag(position);
             if (photoEntry.path != null && photoEntry.imageId != 0) {
-                BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.imageId, R.drawable.ic_attach_file);
+                BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.imageId, R.drawable.ic_gallery);
             } else {
-                imageView.setImageResource(R.drawable.ic_attach_file);
+                imageView.setImageResource(R.drawable.ic_gallery);
             }
             updateSelectedPhoto(view, photoEntry);
             boolean showing = false;//PhotoViewer.getInstance().isShowingImage(photoEntry.path);

@@ -411,9 +411,6 @@ public class ChatActivity extends ChiefActivity {
             }
             case R.id.send_picture_menu: {
                 startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
-                /*Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);*/
                 return true;
             }
             case R.id.send_video_menu: {
@@ -424,9 +421,6 @@ public class ChatActivity extends ChiefActivity {
             }
             case R.id.send_document_menu: {
                 startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
-                //Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                //photoPickerIntent.setType("*/*");
-                //startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
                 return true;
             }
             default: {
@@ -479,33 +473,16 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
-                    try {
-                        MessageCallback callback = new MessageCallback() {
-
-                            @Override
-                            public void onSuccess() {
-                            }
-
-                            @Override
-                            public void onFailed() {
-                                Log.d(Settings.LOG_TAG, "sending file failed");
-                            }
-                        };
-                        UriFile uriFile = UriFile.create(this, data.getData());
-                        TaskExecutor.getInstance().execute(
-                                new SendFileTask(this, buddyDbId, uriFile, callback));
-                    } catch (Throwable ex) {
-                        ex.printStackTrace();
-                    }
+                    onFilePicked(data.getData());
                 }
                 break;
             }
             case PICK_GALLERY_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
+                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                     if(data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
                         Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
                         if(bundle != null) {
@@ -515,9 +492,32 @@ public class ChatActivity extends ChiefActivity {
                             }
                             TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
                         }
+                    } else if(data.getData() != null) {
+                        onFilePicked(data.getData());
                     }
                 }
             }
+        }
+    }
+
+    private void onFilePicked(Uri uri) {
+        try {
+            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            MessageCallback callback = new MessageCallback() {
+
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onFailed() {
+                    Log.d(Settings.LOG_TAG, "sending file failed");
+                }
+            };
+            UriFile uriFile = UriFile.create(this, uri);
+            TaskExecutor.getInstance().execute(
+                    new SendFileTask(this, buddyDbId, uriFile, callback));
+        } catch (Throwable ignored) {
         }
     }
 

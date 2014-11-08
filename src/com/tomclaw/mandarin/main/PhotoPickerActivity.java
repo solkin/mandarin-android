@@ -26,6 +26,7 @@ import java.util.HashMap;
  */
 public class PhotoPickerActivity extends Activity {
 
+    private static final int PICK_IMAGE_RESULT_CODE = 4;
     public static final String SELECTED_ENTRIES = "selected_entries";
 
     private static final String[] projectionPhotos = {
@@ -125,11 +126,23 @@ public class PhotoPickerActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.photo_picker_activity_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
                 return true;
+            }
+            case R.id.system_picker_menu: {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, PICK_IMAGE_RESULT_CODE);
+                break;
             }
         }
         return false;
@@ -145,6 +158,16 @@ public class PhotoPickerActivity extends Activity {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_IMAGE_RESULT_CODE: {
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        }
     }
 
     private void fixLayoutInternal() {

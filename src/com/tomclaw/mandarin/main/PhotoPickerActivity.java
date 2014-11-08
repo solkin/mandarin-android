@@ -164,7 +164,7 @@ public class PhotoPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_IMAGE_RESULT_CODE: {
-                setResult(RESULT_OK, data);
+                setResult(resultCode, data);
                 finish();
             }
         }

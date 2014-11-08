@@ -223,7 +223,7 @@ public class DocumentPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
-                setResult(RESULT_OK, data);
+                setResult(resultCode, data);
                 finish();
             }
         }
@@ -405,8 +405,14 @@ public class DocumentPickerActivity extends Activity {
 
     private String getRootSubtitle(String path) {
         StatFs stat = new StatFs(path);
-        long total = (long) stat.getBlockCount() * (long) stat.getBlockSize();
-        long free = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
+        long total, free;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            total = stat.getTotalBytes();
+            free = stat.getAvailableBytes();
+        } else {
+            total = (long) stat.getBlockCount() * (long) stat.getBlockSize();
+            free = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
+        }
         if (total == 0) {
             return "";
         }

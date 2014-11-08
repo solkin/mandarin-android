@@ -178,6 +178,9 @@ public class HttpUtil {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             type = mime.getMimeTypeFromExtension(extension.toLowerCase());
         }
+        if(TextUtils.isEmpty(type)) {
+            type = "application/octet-stream";
+        }
         return type;
     }
 }

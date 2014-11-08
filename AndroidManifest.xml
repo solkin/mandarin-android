@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tomclaw.mandarin"
-          android:versionCode="37"
+          android:versionCode="38"
           android:versionName="1.7"
           android:installLocation="auto">
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
@@ -159,6 +159,12 @@
         </activity>
         <activity android:name=".main.PhotoPickerActivity"
                   android:label="@string/gallery"
+                  android:windowActionBarOverlay="true"
+                  android:windowSoftInputMode="adjustResize"
+                  android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".main.DocumentPickerActivity"
+                  android:label="@string/select_file"
                   android:windowActionBarOverlay="true"
                   android:windowSoftInputMode="adjustResize"
                   android:configChanges="orientation|screenSize">

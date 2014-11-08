@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
+import com.tomclaw.mandarin.R;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -111,11 +112,15 @@ public class StringUtil {
     }
 
     public static String formatBytes(Resources resources, long bytes) {
-        int unit = 1024;
-        if (bytes < unit) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = "KMGTPE".charAt(exp - 1) + "i";
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+        if (bytes < 1024) {
+            return resources.getString(R.string.bytes, bytes);
+        } else if (bytes < 1024 * 1024) {
+            return resources.getString(R.string.kibibytes, bytes / 1024.0f);
+        } else if (bytes < 1024 * 1024 * 1024) {
+            return resources.getString(R.string.mibibytes, bytes / 1024.0f / 1024.0f);
+        } else {
+            return resources.getString(R.string.gigibytes, bytes / 1024.0f / 1024.0f / 1024.0f);
+        }
     }
 
     public static String formatSpeed(float bytesPerSecond) {

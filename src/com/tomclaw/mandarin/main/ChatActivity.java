@@ -423,9 +423,10 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.send_document_menu: {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("*/*");
-                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                //Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                //photoPickerIntent.setType("*/*");
+                //startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
                 return true;
             }
             default: {

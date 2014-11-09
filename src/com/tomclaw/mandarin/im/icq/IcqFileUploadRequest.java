@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -19,7 +20,7 @@ import java.net.URL;
 public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot> {
 
     private static final String CLIENT_NAME = "ICQ";
-    private final String INIT_URL = "http://files.icq.com/files/init";
+    private static final String INIT_URL = "http://files.icq.com/files/init";
 
     private String buddyId;
     private String cookie;

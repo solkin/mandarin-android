@@ -31,6 +31,8 @@ public class DocumentPickerActivity extends Activity {
 
     private static final int PICK_FILE_RESULT_CODE = 4;
 
+    private ActionBar actionBar;
+
     private ListView listView;
     private ListAdapter listAdapter;
     private File currentDir;
@@ -97,7 +99,7 @@ public class DocumentPickerActivity extends Activity {
             registerReceiver(receiver, filter);
         }
 
-        ActionBar actionBar = getActionBar();
+        actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getString(R.string.select_file));
         actionBar.setIcon(R.drawable.ic_ab_logo);
@@ -133,7 +135,7 @@ public class DocumentPickerActivity extends Activity {
                     entry.scrollItem = listView.getFirstVisiblePosition();
                     entry.scrollOffset = listView.getChildAt(0).getTop();
                     entry.dir = currentDir;
-                    entry.title = getActivityTitle().toString();
+                    entry.title = getActivityTitle();
                     if (!listFiles(file)) {
                         return;
                     }
@@ -165,11 +167,11 @@ public class DocumentPickerActivity extends Activity {
     }
 
     public void setActivityTitle(CharSequence title) {
-        getActionBar().setTitle(title);
+        actionBar.setTitle(title);
     }
 
     public String getActivityTitle() {
-        return getActionBar().getTitle().toString();
+        return actionBar.getTitle().toString();
     }
 
     @Override

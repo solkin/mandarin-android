@@ -18,6 +18,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.main.views.LazyImageView;
+import com.tomclaw.mandarin.main.views.ThumbnailView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -317,7 +319,7 @@ public class PhotoPickerActivity extends Activity {
             view.setLayoutParams(params);
 
             AlbumEntry albumEntry = getItem(position);
-            ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
+            ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
             showThumbnail(imageView, albumEntry.coverPhoto);
             TextView textView = (TextView)view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
@@ -379,7 +381,7 @@ public class PhotoPickerActivity extends Activity {
             params.height = itemHeight;
             view.setLayoutParams(params);
             PhotoEntry photoEntry = selectedAlbum.photos.get(position);
-            ImageView imageView = (ImageView)view.findViewById(R.id.media_photo_image);
+            ThumbnailView imageView = (ThumbnailView)view.findViewById(R.id.media_photo_image);
             // imageView.setTag(position);
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
@@ -394,11 +396,11 @@ public class PhotoPickerActivity extends Activity {
         }
     }
 
-    private void showThumbnail(ImageView imageView, PhotoEntry photoEntry) {
+    private void showThumbnail(LazyImageView imageView, PhotoEntry photoEntry) {
         if (photoEntry != null && photoEntry.path != null && photoEntry.imageId != 0) {
             BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.hash, photoEntry.imageId, R.drawable.ic_gallery);
         } else {
-            imageView.setImageResource(R.drawable.ic_gallery);
+            imageView.setPlaceholder(R.drawable.ic_gallery);
         }
     }
 

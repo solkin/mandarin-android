@@ -4,22 +4,23 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import com.tomclaw.mandarin.main.views.LazyImageView;
 
 /**
  * Created by Solkin on 05.11.2014.
  */
-public class ThumbnailTask extends WeakObjectTask<ImageView> {
+public class ThumbnailTask extends WeakObjectTask<LazyImageView> {
 
     private Bitmap bitmap;
     private final String hash;
     private long imageId;
     private int width, height;
 
-    public ThumbnailTask(ImageView imageView, String hash, long imageId) {
+    public ThumbnailTask(LazyImageView imageView, String hash, long imageId) {
         this(imageView, hash, imageId, imageView.getWidth(), imageView.getHeight());
     }
 
-    public ThumbnailTask(ImageView imageView, String hash, long imageId, int width, int height) {
+    public ThumbnailTask(LazyImageView imageView, String hash, long imageId, int width, int height) {
         super(imageView);
         this.hash = hash;
         this.imageId = imageId;
@@ -27,17 +28,17 @@ public class ThumbnailTask extends WeakObjectTask<ImageView> {
         this.height = height;
     }
 
-    public static String getImageTag(ImageView imageView) {
-        return (String) imageView.getTag();
+    public static String getImageTag(LazyImageView imageView) {
+        return imageView.getHash();
     }
 
-    public static boolean isResetRequired(ImageView imageView, String hash) {
-        return !TextUtils.equals(getImageTag(imageView), hash);
+    public static boolean isResetRequired(LazyImageView imageView, String hash) {
+        return !TextUtils.equals(imageView.getHash(), hash);
     }
 
     @Override
     public void executeBackground() throws Throwable {
-        ImageView image = getWeakObject();
+        LazyImageView image = getWeakObject();
         if (image != null) {
             bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
             if(bitmap == null) {
@@ -56,10 +57,10 @@ public class ThumbnailTask extends WeakObjectTask<ImageView> {
 
     @Override
     public void onSuccessMain() {
-        ImageView image = getWeakObject();
+        LazyImageView image = getWeakObject();
         // Hash may be changed in another task.
-        if (image != null && bitmap != null && TextUtils.equals(getImageTag(image), hash)) {
-            image.setImageBitmap(bitmap);
+        if (image != null && bitmap != null && TextUtils.equals(image.getHash(), hash)) {
+            image.setBitmap(bitmap);
         }
     }
 }

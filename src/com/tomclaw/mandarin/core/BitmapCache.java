@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
+import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.io.*;
@@ -87,21 +88,21 @@ public class BitmapCache {
         }
     }
 
-    public void getThumbnailAsync(ImageView imageView, String hash, long imageId, int placeholder) {
+    public void getThumbnailAsync(LazyImageView imageView, String hash, long imageId, int placeholder) {
         int width = imageView.getWidth();
         int height = imageView.getHeight();
         Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
         // Checking for there is no cached bitmap and reset is really required.
         if (bitmap == null && ThumbnailTask.isResetRequired(imageView, hash)) {
-            imageView.setImageResource(placeholder);
+            imageView.setPlaceholder(placeholder);
         }
-        imageView.setTag(hash);
+        imageView.setHash(hash);
         if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
             if (bitmap == null) {
                 TaskExecutor.getInstance().execute(new ThumbnailTask(imageView, hash, imageId, width, height));
             } else {
-                imageView.setImageBitmap(bitmap);
+                imageView.setBitmap(bitmap);
             }
         }
     }

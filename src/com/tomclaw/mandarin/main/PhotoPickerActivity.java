@@ -16,6 +16,7 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 
 import java.util.ArrayList;
@@ -50,6 +51,9 @@ public class PhotoPickerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTheme(PreferenceHelper.isDarkTheme(this) ?
+                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
 
         setContentView(R.layout.photo_picker_activity);
 
@@ -164,8 +168,10 @@ public class PhotoPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_IMAGE_RESULT_CODE: {
-                setResult(resultCode, data);
-                finish();
+                if(resultCode == RESULT_OK) {
+                    setResult(resultCode, data);
+                    finish();
+                }
             }
         }
     }

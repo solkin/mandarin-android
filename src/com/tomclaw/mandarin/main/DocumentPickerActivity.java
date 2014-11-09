@@ -223,8 +223,10 @@ public class DocumentPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
-                setResult(resultCode, data);
-                finish();
+                if(resultCode == RESULT_OK) {
+                    setResult(resultCode, data);
+                    finish();
+                }
             }
         }
     }
@@ -329,7 +331,8 @@ public class DocumentPickerActivity extends Activity {
         } else {
             ext.title = getString(R.string.internal_storage);
         }
-        ext.icon = Build.VERSION.SDK_INT < 9 || Environment.isExternalStorageRemovable() ? R.drawable.ic_external_storage : R.drawable.ic_storage;
+        ext.icon = Build.VERSION.SDK_INT < 9 || Environment.isExternalStorageRemovable() ?
+                R.drawable.ic_external_storage : R.drawable.files_storage;
         ext.subtitle = getRootSubtitle(extStorage);
         ext.file = Environment.getExternalStorageDirectory();
         items.add(ext);

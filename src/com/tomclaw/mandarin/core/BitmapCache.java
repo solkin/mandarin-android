@@ -35,6 +35,7 @@ public class BitmapCache {
     private static final String BITMAP_CACHE_FOLDER = "bitmaps";
     private File path;
     private LruCache<String, Bitmap> bitmapLruCache;
+    private int densityDpi;
 
     public BitmapCache() {
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
@@ -43,8 +44,9 @@ public class BitmapCache {
         bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
     }
 
-    public void initStorage(Context context) {
+    public void init(Context context) {
         path = context.getDir(BITMAP_CACHE_FOLDER, Context.MODE_PRIVATE);
+        densityDpi = context.getResources().getDisplayMetrics().densityDpi;
     }
 
     private static String getCacheKey(String hash, int width, int height) {
@@ -218,8 +220,9 @@ public class BitmapCache {
         return (int) (dp * metrics.density);
     }
 
-    public static boolean isLowMemory() {
-        return Runtime.getRuntime().freeMemory() <= 2 * 1024 * 1024;
+    public boolean isLowDensity() {
+        return densityDpi == DisplayMetrics.DENSITY_LOW ||
+                densityDpi == DisplayMetrics.DENSITY_MEDIUM;
     }
 
     public class SaveBitmapTask extends Task {

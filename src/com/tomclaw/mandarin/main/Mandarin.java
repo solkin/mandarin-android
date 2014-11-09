@@ -17,7 +17,7 @@ public class Mandarin extends Application {
     @Override
     public void onCreate() {
         StatusUtil.include(IcqAccountRoot.class.getName(), new IcqStatusCatalogue(this));
-        BitmapCache.getInstance().initStorage(this);
+        BitmapCache.getInstance().init(this);
         super.onCreate();
     }
 }

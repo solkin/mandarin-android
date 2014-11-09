@@ -27,6 +27,8 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     private UriFile uriFile;
 
+    private transient VirtualFile virtualFile;
+
     public IcqFileUploadRequest() {
     }
 
@@ -58,6 +60,14 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
         Log.d(Settings.LOG_TAG, "onStarted");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
+        // Try to compress outgoing file.
+        try {
+            virtualFile = BitmapFile.create(getAccountRoot().getContext(), uriFile);
+            QueryHelper.updateFileSize(getAccountRoot().getContentResolver(), virtualFile.getSize(),
+                    GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
+        } catch (BitmapFile.UnsupportedFileTypeException ignored) {
+            virtualFile = uriFile;
+        }
     }
 
     @Override
@@ -110,7 +120,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     public VirtualFile getVirtualFile() {
-        return uriFile;
+        return virtualFile;
     }
 
     @Override

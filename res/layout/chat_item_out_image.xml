@@ -97,7 +97,7 @@
                         android:layout_alignRight="@id/out_preview_container"
                         android:layout_alignEnd="@id/out_preview_container">
                     <TextView
-                            android:id="@+id/out_size"
+                            android:id="@+id/out_percent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/file_size_text_color"
@@ -116,7 +116,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/out_size"
+                            android:layout_toRightOf="@id/out_percent"
+                            android:layout_toEndOf="@id/out_percent"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:padding="8dp"

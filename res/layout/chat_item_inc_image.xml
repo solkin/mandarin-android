@@ -55,7 +55,7 @@
                         android:layout_alignRight="@id/inc_preview_container"
                         android:layout_alignEnd="@id/inc_preview_container">
                     <TextView
-                            android:id="@+id/inc_size"
+                            android:id="@+id/inc_percent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/file_size_text_color"
@@ -74,8 +74,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/inc_size"
-                            android:layout_toEndOf="@id/inc_size"
+                            android:layout_toRightOf="@id/inc_percent"
+                            android:layout_toEndOf="@id/inc_percent"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:padding="8dp"

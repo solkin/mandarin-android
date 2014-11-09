@@ -32,7 +32,7 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] ITEM_LAYOUTS = new int[]{
+    private static final int[] ITEM_LAYOUTS = new int[] {
             R.layout.chat_item_error,
             R.layout.chat_item_inc_text,
             R.layout.chat_item_inc_image,
@@ -43,7 +43,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.layout.chat_item_out_image,
             R.layout.chat_item_out_file
     };
-    private static final int[] MESSAGE_STATES = new int[]{
+    private static final int[] MESSAGE_STATES = new int[] {
             R.drawable.ic_dot,
             R.drawable.ic_error,
             R.drawable.ic_dot,
@@ -280,7 +280,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         ImageView incPreviewImage = (ImageView) view.findViewById(R.id.inc_preview_image);
                         View incProgressContainer = view.findViewById(R.id.inc_progress_container);
                         ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
-                        TextView incSize = (TextView) view.findViewById(R.id.inc_size);
+                        TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
                         BitmapCache.getInstance().getBitmapAsync(incPreviewImage, previewHash, android.R.color.transparent, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
@@ -305,7 +305,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                             }
                         }
                         incProgress.setProgress(contentProgress);
-                        incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        incPercent.setText(contentProgress + "%");
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
@@ -359,7 +359,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         View outError = view.findViewById(R.id.out_error);
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
-                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
+                        TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
                         BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash, android.R.color.transparent, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
@@ -388,7 +388,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                             }
                         }
                         outProgress.setProgress(contentProgress);
-                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
+                        outPercent.setText(contentProgress + "%");
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {

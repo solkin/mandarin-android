@@ -35,6 +35,8 @@
     <color name="check_selected_color">@color/orange_normal</color>
     <color name="check_unselected_color">#501c1c1c</color>
     <color name="thumbnail_back">#333333</color>
+    <color name="photo_border_body_color">#33ff6600</color>
+    <color name="photo_border_stroke_color">@color/orange_normal</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 

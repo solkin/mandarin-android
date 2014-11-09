@@ -68,7 +68,7 @@ public class BitmapFile extends VirtualFile {
         try {
             File file = File.createTempFile(
                     HttpUtil.getFileBaseFromName(fileName),
-                    HttpUtil.getFileExtensionFromPath(fileName));
+                    "." + HttpUtil.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
             os.flush();

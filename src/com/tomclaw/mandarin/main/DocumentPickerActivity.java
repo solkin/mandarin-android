@@ -299,6 +299,13 @@ public class DocumentPickerActivity extends Activity {
                     item.icon = R.drawable.files_zip;
                 } else if(mimeType.contains("android") && mimeType.contains("package")) {
                     item.icon = R.drawable.files_apk;
+                } else if(mimeType.contains("text") || mimeType.contains("document") ||
+                        mimeType.contains("pdf") || mimeType.contains("html") || mimeType.contains("latex")) {
+                    item.icon = R.drawable.files_text;
+                } else if(mimeType.contains("audio")) {
+                    item.icon = R.drawable.files_music;
+                } else if(mimeType.contains("video") || mimeType.contains("flash")) {
+                    item.icon = R.drawable.files_video;
                 } else {
                     item.icon = R.drawable.files_unknown;
                 }
@@ -334,7 +341,7 @@ public class DocumentPickerActivity extends Activity {
             ext.title = getString(R.string.internal_storage);
         }
         ext.icon = Build.VERSION.SDK_INT < 9 || Environment.isExternalStorageRemovable() ?
-                R.drawable.ic_external_storage : R.drawable.files_storage;
+                R.drawable.files_sd_storage : R.drawable.files_storage;
         ext.subtitle = getRootSubtitle(extStorage);
         ext.file = Environment.getExternalStorageDirectory();
         items.add(ext);
@@ -369,7 +376,7 @@ public class DocumentPickerActivity extends Activity {
                         } else {
                             item.title = getString(R.string.external_storage);
                         }
-                        item.icon = R.drawable.ic_external_storage;
+                        item.icon = R.drawable.files_sd_storage;
                         item.subtitle = getRootSubtitle(path);
                         item.file = new File(path);
                         items.add(item);

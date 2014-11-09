@@ -16,10 +16,7 @@ import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -99,8 +96,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 }
             }
             // Saving obtained data to the history table.
-            storeFile = new File(
-                    Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType)), fileName);
+            storeFile = getUniqueFile(mimeType, fileName);
             int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
@@ -117,6 +113,21 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage, true);
             throw new DownloadException();
         }
+    }
+
+    private File getUniqueFile(String mimeType, String fileName) {
+        final String base = HttpUtil.getFileBaseFromName(fileName);
+        final String extension = HttpUtil.getFileExtensionFromPath(fileName);
+        File directory = Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType));
+        File[] files = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File file, String name) {
+                return HttpUtil.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
+                        HttpUtil.getFileExtensionFromPath(name).toLowerCase().equals(extension);
+            }});
+        if(files.length > 0) {
+            fileName = base + "-" + files.length + "." + extension;
+        }
+        return new File(directory, fileName);
     }
 
     private boolean isStartDownload() {

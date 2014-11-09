@@ -160,6 +160,17 @@ public class HttpUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
+    public static String getFileBaseFromName(String name) {
+        String base = name;
+        if (!TextUtils.isEmpty(name)) {
+            int index = name.lastIndexOf(".");
+            if (index != -1) {
+                base = name.substring(0, index);
+            }
+        }
+        return base;
+    }
+
     public static String getFileExtensionFromPath(String path) {
         String suffix = "";
         if (!TextUtils.isEmpty(path)) {

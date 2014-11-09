@@ -14,10 +14,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-            <ImageView
+            <com.tomclaw.mandarin.main.views.ContactImage
                     android:layout_width="72dp"
                     android:layout_height="72dp"
-                    android:id="@+id/buddy_badge"
+                    android:id="@+id/buddy_image"
                     android:layout_gravity="center_horizontal|top"
                     android:src="@drawable/ic_default_avatar"/>
         </LinearLayout>
@@ -27,7 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp">
+                android:paddingLeft="10dp"
+                android:paddingRight="0dp">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

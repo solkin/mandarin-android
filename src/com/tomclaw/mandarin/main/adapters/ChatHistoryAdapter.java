@@ -18,6 +18,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.main.views.PreviewImageView;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -277,7 +278,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                     case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
                     case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
                         View incPreviewProgress = view.findViewById(R.id.inc_preview_progress);
-                        ImageView incPreviewImage = (ImageView) view.findViewById(R.id.inc_preview_image);
+                        PreviewImageView incPreviewImage = (PreviewImageView) view.findViewById(R.id.inc_preview_image);
                         View incProgressContainer = view.findViewById(R.id.inc_progress_container);
                         ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
                         TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
@@ -355,7 +356,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                     case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
                     case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
                         View outPreviewProgress = view.findViewById(R.id.out_preview_progress);
-                        ImageView outPreviewImage = (ImageView) view.findViewById(R.id.out_preview_image);
+                        PreviewImageView outPreviewImage = (PreviewImageView) view.findViewById(R.id.out_preview_image);
                         View outError = view.findViewById(R.id.out_error);
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);

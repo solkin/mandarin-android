@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.views.ContactBadge;
 
 /**
  * Created with IntelliJ IDEA.
@@ -150,7 +151,7 @@ public class AccountsAdapter extends CursorAdapter implements
 
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
-        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.user_badge));
+        ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.user_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
 
         contactBadge.setOnClickListener(new View.OnClickListener() {

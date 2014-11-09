@@ -64,7 +64,7 @@ public class BitmapCache {
      * @param original        - if false, image will be cached with specified imageView size,
      *                        if true original size image will be used
      */
-    public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource, boolean original) {
+    public void getBitmapAsync(LazyImageView imageView, final String hash, int defaultResource, boolean original) {
         int width, height;
         if (original) {
             width = height = BITMAP_SIZE_ORIGINAL;
@@ -75,15 +75,15 @@ public class BitmapCache {
         Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
         // Checking for there is no cached bitmap and reset is really required.
         if (bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
-            imageView.setImageResource(defaultResource);
+            imageView.setPlaceholder(defaultResource);
         }
-        imageView.setTag(hash);
+        imageView.setHash(hash);
         if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
             if (bitmap == null) {
                 TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash, width, height));
             } else {
-                imageView.setImageBitmap(bitmap);
+                imageView.setBitmap(bitmap);
             }
         }
     }

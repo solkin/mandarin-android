@@ -4,26 +4,23 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import com.tomclaw.mandarin.core.BitmapCache;
 
 /**
- * Created by Solkin on 18.10.2014.
+ * Created by Solkin on 10.11.2014.
  */
-public class PreviewImageView extends ImageView implements LazyImageView {
+public class ContactImage extends ImageView implements LazyImageView {
 
-    public PreviewImageView(Context context, AttributeSet attrs) {
+    public ContactImage(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     public void setPlaceholder(int resource) {
-        setScaleType(ScaleType.CENTER);
         setImageResource(resource);
     }
 
     @Override
     public void setBitmap(Bitmap bitmap) {
-        setScaleType(ScaleType.CENTER_CROP);
         setImageBitmap(bitmap);
     }
 

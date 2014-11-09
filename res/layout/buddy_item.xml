@@ -12,7 +12,7 @@
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:orientation="horizontal">
-        <QuickContactBadge
+        <com.tomclaw.mandarin.main.views.ContactBadge
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:id="@+id/buddy_badge"

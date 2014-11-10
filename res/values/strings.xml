@@ -343,7 +343,7 @@
     <string name="file_upload_limit">Размер файла должен быть не более %1$s</string>
     <string name="not_mounted">Накопитель не подключен</string>
     <string name="usb_active">USB передача данных активна</string>
-    <string name="internal_storage">Внетреннее хранилище</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
     <string name="external_storage">Внешнее хранилище</string>
     <string name="system_root">Системный корень</string>
     <string name="sd_card">SD карта</string>

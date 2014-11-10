@@ -36,7 +36,7 @@ public class BitmapTask extends WeakObjectTask<LazyImageView> {
     public void executeBackground() throws Throwable {
         LazyImageView image = getWeakObject();
         if (image != null) {
-            bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
+            bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true, true);
         }
     }
 

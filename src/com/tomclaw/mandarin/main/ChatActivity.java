@@ -989,7 +989,7 @@ public class ChatActivity extends ChiefActivity {
                 int contentType = uriFile.getContentType();
                 String hash = HttpUtil.getUrlHash(uriFile.toString());
                 // Check for image in bitmap cache first.
-                Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true);
+                Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false);
                 if (bitmap == null) {
                     // Try to create thumbnail from selected Uri.
                     bitmap = uriFile.getThumbnail(context);

@@ -40,7 +40,7 @@ public class ThumbnailTask extends WeakObjectTask<LazyImageView> {
     public void executeBackground() throws Throwable {
         LazyImageView image = getWeakObject();
         if (image != null) {
-            bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
+            bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true, false);
             if(bitmap == null) {
                 int thumbnailKind = BitmapCache.getInstance().isLowDensity() ?
                         MediaStore.Images.Thumbnails.MICRO_KIND : MediaStore.Images.Thumbnails.MINI_KIND;
@@ -49,7 +49,7 @@ public class ThumbnailTask extends WeakObjectTask<LazyImageView> {
                 if(thumbnail != null) {
                     BitmapCache.getInstance().saveBitmapSync(hash, thumbnail, Bitmap.CompressFormat.JPEG);
                     thumbnail.recycle();
-                    bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true);
+                    bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true, false);
                 }
             }
         }

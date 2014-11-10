@@ -39,10 +39,14 @@ public class BitmapCache {
     private int densityDpi;
 
     public BitmapCache() {
-        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory());
+        // Use 1/12th of the available memory for this memory cache.
         int cacheSize = maxMemory / 12;
-        bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
+        bitmapLruCache = new LruCache<String, Bitmap>(cacheSize) {
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
     }
 
     public void init(Context context) {
@@ -121,15 +125,15 @@ public class BitmapCache {
      * @param width          - required width
      * @param height         - required height
      * @param isProportional - proportional scale flag
+     * @param isAccurate     - bitmap may be sampled size or exact width and height
      * @return Bitmap or null if such image not found.
      */
-    public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional) {
+    public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional, boolean isAccurate) {
         String cacheKey = getCacheKey(hash, width, height);
         Bitmap bitmap = bitmapLruCache.get(cacheKey);
         if (bitmap == null) {
-            File file = getBitmapFile(hash);
             try {
-                FileInputStream inputStream = new FileInputStream(file);
+                FileInputStream inputStream = new FileInputStream(getBitmapFilePath(hash));
                 if (width != BITMAP_SIZE_ORIGINAL && height != BITMAP_SIZE_ORIGINAL) {
                     bitmap = BitmapHelper.decodeSampledBitmapFromStream(inputStream, width, height);
                 } else {
@@ -142,19 +146,22 @@ public class BitmapCache {
                         height = bitmap.getHeight();
                     }
                 }
-                // Resize bitmap for the largest size.
-                if (isProportional) {
-                    if (bitmap.getWidth() > bitmap.getHeight()) {
-                        height = width * bitmap.getHeight() / bitmap.getWidth();
-                    } else if (bitmap.getHeight() > bitmap.getWidth()) {
-                        width = height * bitmap.getWidth() / bitmap.getHeight();
+                // Checking for exact size is needed.
+                if(isAccurate) {
+                    // Resize bitmap for the largest size.
+                    if (isProportional) {
+                        if (bitmap.getWidth() > bitmap.getHeight()) {
+                            height = width * bitmap.getHeight() / bitmap.getWidth();
+                        } else if (bitmap.getHeight() > bitmap.getWidth()) {
+                            width = height * bitmap.getWidth() / bitmap.getHeight();
+                        }
                     }
-                }
-                // Check for bitmap needs to be resized.
-                if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
-                    bitmap.recycle();
-                    bitmap = scaledBitmap;
+                    // Check for bitmap needs to be resized.
+                    if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                        bitmap.recycle();
+                        bitmap = scaledBitmap;
+                    }
                 }
                 cacheBitmap(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {
@@ -171,9 +178,8 @@ public class BitmapCache {
     }
 
     public boolean saveBitmapSync(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
-        File file = getBitmapFile(hash);
         try {
-            OutputStream os = new FileOutputStream(file);
+            OutputStream os = new FileOutputStream(getBitmapFilePath(hash));
             bitmap.compress(compressFormat, 85, os);
             os.flush();
             os.close();
@@ -181,7 +187,7 @@ public class BitmapCache {
         } catch (IOException e) {
             // Unable to create file, likely because external storage is
             // not currently mounted.
-            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + file, e);
+            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + hash, e);
         }
         return false;
     }
@@ -199,13 +205,8 @@ public class BitmapCache {
         bitmapLruCache.put(cacheKey, bitmap);
     }
 
-    public void removeBitmap(String hash) {
-        File file = getBitmapFile(hash);
-        file.delete();
-    }
-
-    private File getBitmapFile(String hash) {
-        return new File(path, hash.concat(".").concat(COMPRESS_FORMAT.name()));
+    private String getBitmapFilePath(String hash) {
+        return path.getPath().concat("/").concat(hash).concat(".").concat(COMPRESS_FORMAT.name());
     }
 
     /**

@@ -132,7 +132,7 @@ public class HistoryDispatcher {
                             if (!TextUtils.isEmpty(avatarHash)) {
                                 // Obtain avatar for notification.
                                 largeIcon = BitmapCache.getInstance().getBitmapSync(
-                                        avatarHash, largeIconSize, largeIconSize, true);
+                                        avatarHash, largeIconSize, largeIconSize, true, true);
                             }
                         } else {
                             nickNamesBuilder.append(", ");
@@ -189,7 +189,7 @@ public class HistoryDispatcher {
                         if((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
                                 contentType == GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO) &&
                                 !TextUtils.isEmpty(previewHash)) {
-                            Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true);
+                            Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true, false);
                             bigPictureStyle.bigPicture(previewFull);
                             bigPictureStyle.setSummaryText(message);
                             style = bigPictureStyle;

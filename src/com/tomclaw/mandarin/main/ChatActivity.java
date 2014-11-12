@@ -80,12 +80,6 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
-        // Checking for we must show keyboard automatically.
-        if (PreferenceHelper.isShowKeyboard(this)) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        }
-        isSendByEnter = PreferenceHelper.isSendByEnter(this);
-
         // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
@@ -202,6 +196,13 @@ public class ChatActivity extends ChiefActivity {
                     }
             );
         }
+
+        // Checking for we must show keyboard automatically.
+        if (PreferenceHelper.isShowKeyboard(this)) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            messageText.requestFocus();
+        }
+        isSendByEnter = PreferenceHelper.isSendByEnter(this);
     }
 
     private String getMessageText() {

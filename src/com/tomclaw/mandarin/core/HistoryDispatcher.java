@@ -10,14 +10,12 @@ import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.telephony.gsm.GsmCellLocation;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.util.ArrayList;
 
@@ -186,7 +184,7 @@ public class HistoryDispatcher {
                         actionButton = context.getString(R.string.dialogs);
                         actionIntent = openChatsIntent;
                         readButton = context.getString(R.string.mark_as_read);
-                        if((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
+                        if ((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
                                 contentType == GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO) &&
                                 !TextUtils.isEmpty(previewHash)) {
                             Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true, false);

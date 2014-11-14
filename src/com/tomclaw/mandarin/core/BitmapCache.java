@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
-import android.widget.ImageView;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
 
@@ -147,7 +146,7 @@ public class BitmapCache {
                     }
                 }
                 // Checking for exact size is needed.
-                if(isAccurate) {
+                if (isAccurate) {
                     // Resize bitmap for the largest size.
                     if (isProportional) {
                         if (bitmap.getWidth() > bitmap.getHeight()) {

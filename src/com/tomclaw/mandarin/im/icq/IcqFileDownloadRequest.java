@@ -72,7 +72,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             String previewUrl = file.optString("static600");
             String mimeType = file.getString("mime");
             // Checking for download link is empty because file is not ready yet.
-            if(TextUtils.isEmpty(downloadLink)) {
+            if (TextUtils.isEmpty(downloadLink)) {
                 Thread.sleep(1000);
                 return getUrl();
             }
@@ -80,8 +80,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             String previewHash = "";
             if (isPreviewable == 1) {
                 // Check for preview is ready now or try again after short delay.
-                if(TextUtils.isEmpty(previewUrl)) {
-                    if(metaTryCount < MAX_META_TRY_COUNT) {
+                if (TextUtils.isEmpty(previewUrl)) {
+                    if (metaTryCount < MAX_META_TRY_COUNT) {
                         // No preview this time. Sleep a while and try again.
                         metaTryCount++;
                         Thread.sleep(1000);
@@ -125,8 +125,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             public boolean accept(File file, String name) {
                 return HttpUtil.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
                         HttpUtil.getFileExtensionFromPath(name).toLowerCase().equals(extension);
-            }});
-        if(files.length > 0) {
+            }
+        });
+        if (files.length > 0) {
             fileName = base + "-" + files.length + "." + extension;
         }
         return new File(directory, fileName);

@@ -5,8 +5,8 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import java.io.Serializable;
 
 /**
-* Created by solkin on 07.11.14.
-*/
+ * Created by solkin on 07.11.14.
+ */
 public class PhotoEntry implements Serializable {
     public int bucketId;
     public int imageId;

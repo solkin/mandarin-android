@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
@@ -33,8 +32,10 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -484,16 +485,16 @@ public class ChatActivity extends ChiefActivity {
             case PICK_GALLERY_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
                     int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    if(data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
+                    if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
                         Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
-                        if(bundle != null) {
+                        if (bundle != null) {
                             List<PhotoEntry> photoEntries = new ArrayList<PhotoEntry>();
                             for (String key : bundle.keySet()) {
                                 photoEntries.add((PhotoEntry) bundle.getSerializable(key));
                             }
                             TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
                         }
-                    } else if(data.getData() != null) {
+                    } else if (data.getData() != null) {
                         onFilePicked(data.getData());
                     }
                 }
@@ -942,13 +943,13 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeBackground() throws Throwable {
             Context context = getWeakObject();
-            if(context != null) {
+            if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
                 int counter = 0;
                 for (PhotoEntry photoEntry : selectedPhotos) {
                     String cookie = System.currentTimeMillis() + "/" + counter + ":" + photoEntry.hash;
                     File file = new File(photoEntry.path);
-                    if(file.exists() && file.length() > 0) {
+                    if (file.exists() && file.length() > 0) {
                         Uri uri = Uri.fromFile(file);
                         UriFile uriFile = UriFile.create(context, uri);
                         // Checking file type, size and other required information.

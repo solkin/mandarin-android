@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import com.tomclaw.mandarin.core.BitmapCache;
 
 /**
  * Created by Solkin on 18.10.2014.

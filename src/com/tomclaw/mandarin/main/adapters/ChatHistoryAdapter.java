@@ -33,7 +33,7 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] ITEM_LAYOUTS = new int[] {
+    private static final int[] ITEM_LAYOUTS = new int[]{
             R.layout.chat_item_error,
             R.layout.chat_item_inc_text,
             R.layout.chat_item_inc_image,
@@ -44,7 +44,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.layout.chat_item_out_image,
             R.layout.chat_item_out_file
     };
-    private static final int[] MESSAGE_STATES = new int[] {
+    private static final int[] MESSAGE_STATES = new int[]{
             R.drawable.ic_dot,
             R.drawable.ic_error,
             R.drawable.ic_dot,

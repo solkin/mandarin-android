@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.core;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.widget.ImageView;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 
 /**

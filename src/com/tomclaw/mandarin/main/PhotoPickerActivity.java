@@ -87,9 +87,9 @@ public class PhotoPickerActivity extends Activity {
         });
 
         cancelButton.setText(getString(R.string.cancel).toUpperCase());
-        doneButtonTextView = (TextView)doneButton.findViewById(R.id.done_button_text);
+        doneButtonTextView = (TextView) doneButton.findViewById(R.id.done_button_text);
         doneButtonTextView.setText(getString(R.string.send).toUpperCase());
-        doneButtonBadgeTextView = (TextView)doneButton.findViewById(R.id.done_button_badge);
+        doneButtonBadgeTextView = (TextView) doneButton.findViewById(R.id.done_button_badge);
 
         mediaGrid = (GridView) findViewById(R.id.media_grid);
         mediaGrid.setAdapter(new AlbumsAdapter(this, albums));
@@ -170,7 +170,7 @@ public class PhotoPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_IMAGE_RESULT_CODE: {
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     setResult(resultCode, data);
                     finish();
                 }
@@ -321,9 +321,9 @@ public class PhotoPickerActivity extends Activity {
             AlbumEntry albumEntry = getItem(position);
             ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
             showThumbnail(imageView, albumEntry.coverPhoto);
-            TextView textView = (TextView)view.findViewById(R.id.album_name);
+            TextView textView = (TextView) view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
-            textView = (TextView)view.findViewById(R.id.album_count);
+            textView = (TextView) view.findViewById(R.id.album_count);
             textView.setText("" + albumEntry.photos.size());
             return view;
         }
@@ -371,7 +371,7 @@ public class PhotoPickerActivity extends Activity {
                         } else {
                             selectedPhotos.put(photoEntry.imageId, photoEntry);
                         }
-                        updateSelectedPhoto((View)v.getParent(), photoEntry);
+                        updateSelectedPhoto((View) v.getParent(), photoEntry);
                         updateSelectedCount();
                     }
                 });
@@ -381,7 +381,7 @@ public class PhotoPickerActivity extends Activity {
             params.height = itemHeight;
             view.setLayoutParams(params);
             PhotoEntry photoEntry = selectedAlbum.photos.get(position);
-            ThumbnailView imageView = (ThumbnailView)view.findViewById(R.id.media_photo_image);
+            ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
             // imageView.setTag(position);
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
@@ -390,7 +390,7 @@ public class PhotoPickerActivity extends Activity {
             //imageView.imageReceiver.setVisible(!showing, false);
             View frameView = view.findViewById(R.id.photo_frame);
             frameView.setVisibility(showing ? View.GONE : View.VISIBLE);
-            ImageView checkImageView = (ImageView)view.findViewById(R.id.photo_check);
+            ImageView checkImageView = (ImageView) view.findViewById(R.id.photo_check);
             checkImageView.setVisibility(showing ? View.GONE : View.VISIBLE);
             return view;
         }
@@ -406,7 +406,7 @@ public class PhotoPickerActivity extends Activity {
 
     private void updateSelectedPhoto(View view, PhotoEntry photoEntry) {
         View frameView = view.findViewById(R.id.photo_frame);
-        ImageView checkImageView = (ImageView)view.findViewById(R.id.photo_check);
+        ImageView checkImageView = (ImageView) view.findViewById(R.id.photo_check);
         if (selectedPhotos.containsKey(photoEntry.imageId)) {
             frameView.setBackgroundResource(R.drawable.photo_border);
             checkImageView.setImageResource(R.drawable.selectphoto_small_active);

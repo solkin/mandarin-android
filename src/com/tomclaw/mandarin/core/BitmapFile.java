@@ -51,10 +51,10 @@ public class BitmapFile extends VirtualFile {
 
     public static BitmapFile create(Context context, UriFile file)
             throws UnsupportedFileTypeException {
-        if(file.getMimeType().startsWith("image")) {
+        if (file.getMimeType().startsWith("image")) {
             // Now we can compress this image with pleasure.
             Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, file.getUri(), 768, 768);
-            if(bitmap != null) {
+            if (bitmap != null) {
                 File bitmapFile = saveBitmapSync(file.getName(), bitmap);
                 if (bitmapFile != null) {
                     return new BitmapFile(bitmapFile);

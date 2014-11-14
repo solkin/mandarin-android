@@ -3,8 +3,8 @@ package com.tomclaw.mandarin.main;
 import java.util.ArrayList;
 
 /**
-* Created by solkin on 07.11.14.
-*/
+ * Created by solkin on 07.11.14.
+ */
 public class AlbumEntry {
     public int bucketId;
     public String bucketName;

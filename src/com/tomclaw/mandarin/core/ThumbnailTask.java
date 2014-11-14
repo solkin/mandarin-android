@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.core;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.widget.ImageView;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 
 /**
@@ -41,12 +40,12 @@ public class ThumbnailTask extends WeakObjectTask<LazyImageView> {
         LazyImageView image = getWeakObject();
         if (image != null) {
             bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true, false);
-            if(bitmap == null) {
+            if (bitmap == null) {
                 int thumbnailKind = BitmapCache.getInstance().isLowDensity() ?
                         MediaStore.Images.Thumbnails.MICRO_KIND : MediaStore.Images.Thumbnails.MINI_KIND;
                 Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
                         image.getContext().getContentResolver(), imageId, thumbnailKind, null);
-                if(thumbnail != null) {
+                if (thumbnail != null) {
                     BitmapCache.getInstance().saveBitmapSync(hash, thumbnail, Bitmap.CompressFormat.JPEG);
                     thumbnail.recycle();
                     bitmap = BitmapCache.getInstance().getBitmapSync(hash, width, height, true, false);

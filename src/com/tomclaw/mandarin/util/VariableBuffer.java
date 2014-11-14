@@ -30,7 +30,7 @@ public class VariableBuffer {
     public void onExecuteCompleted(int read) {
         executeTime = System.currentTimeMillis() - executeStart;
         executeStart = 0;
-        if(executeTime > 0) {
+        if (executeTime > 0) {
             float bytesPerSecond = 1000 * read / executeTime;
             if (averageSpeed > 0) {
                 averageSpeed = (averageSpeed + bytesPerSecond) / 2;
@@ -38,7 +38,7 @@ public class VariableBuffer {
                 averageSpeed = bytesPerSecond;
             }
             int size = (int) averageSpeed;
-            if(size < DEFAULT_BUFFER_SIZE) {
+            if (size < DEFAULT_BUFFER_SIZE) {
                 size = DEFAULT_BUFFER_SIZE;
             } else if (size > MAXIMUM_BUFFER_SIZE) {
                 size = MAXIMUM_BUFFER_SIZE;

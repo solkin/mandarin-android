@@ -225,7 +225,7 @@ public class DocumentPickerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     setResult(resultCode, data);
                     finish();
                 }
@@ -290,21 +290,21 @@ public class DocumentPickerActivity extends Activity {
             } else {
                 item.subtitle = StringUtil.formatBytes(getResources(), file.length());
                 String mimeType = HttpUtil.getMimeType(file.getName());
-                if(mimeType.startsWith("image")) {
+                if (mimeType.startsWith("image")) {
                     item.icon = R.drawable.files_img;
-                } else if(mimeType.contains("compressed") ||
+                } else if (mimeType.contains("compressed") ||
                         mimeType.contains("zip") ||
                         mimeType.contains("7z") ||
                         mimeType.contains("rar")) {
                     item.icon = R.drawable.files_zip;
-                } else if(mimeType.contains("android") && mimeType.contains("package")) {
+                } else if (mimeType.contains("android") && mimeType.contains("package")) {
                     item.icon = R.drawable.files_apk;
-                } else if(mimeType.contains("text") || mimeType.contains("document") ||
+                } else if (mimeType.contains("text") || mimeType.contains("document") ||
                         mimeType.contains("pdf") || mimeType.contains("html") || mimeType.contains("latex")) {
                     item.icon = R.drawable.files_text;
-                } else if(mimeType.contains("audio")) {
+                } else if (mimeType.contains("audio")) {
                     item.icon = R.drawable.files_music;
-                } else if(mimeType.contains("video") || mimeType.contains("flash")) {
+                } else if (mimeType.contains("video") || mimeType.contains("flash")) {
                     item.icon = R.drawable.files_video;
                 } else {
                     item.icon = R.drawable.files_unknown;
@@ -418,7 +418,7 @@ public class DocumentPickerActivity extends Activity {
     private String getRootSubtitle(String path) {
         StatFs stat = new StatFs(path);
         long total, free;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             total = stat.getTotalBytes();
             free = stat.getAvailableBytes();
         } else {

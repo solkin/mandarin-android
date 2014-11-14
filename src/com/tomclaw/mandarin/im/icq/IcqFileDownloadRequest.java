@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -100,8 +101,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
+            Uri uri = Uri.fromFile(storeFile);
             QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                    time, getUrlMessage(), storeFile.getPath(), fileName, contentType, fileSize, previewHash);
+                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash);
             // Check to download file now.
             if (!isStartDownload()) {
                 throw new DownloadCancelledException();

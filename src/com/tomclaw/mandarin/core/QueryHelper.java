@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
@@ -386,25 +387,25 @@ public class QueryHelper {
     }
 
     public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 String path, String name, int contentType, long contentSize, String previewHash)
+                                                 Uri uri, String name, int contentType, long contentSize, String previewHash)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", false, contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash);
     }
 
     public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 long time, String originalMessage, String path, String name, int contentType,
+                                                 long time, String originalMessage, Uri uri, String name, int contentType,
                                                  long contentSize, String previewHash) throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, true, contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, path, name, previewHash);
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
                                          int messageType, int messageState, String cookie,
                                          long messageTime, String messageText, boolean activateDialog,
-                                         int contentType, long contentSize, int contentState, String contentPath,
+                                         int contentType, long contentSize, int contentState, String contentUri,
                                          String contentName, String previewHash) {
         // Checking for dialog activate needed.
         if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
@@ -426,7 +427,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, contentType);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, contentSize);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, contentState);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_PATH, contentPath);
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, contentUri);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
         // Try to modify message or create it.
@@ -567,7 +568,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, 0);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, GlobalProvider.HISTORY_CONTENT_STATE_STABLE);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_PROGRESS, 0);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_PATH, "");
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, "");
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, "");
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, "");
         modifyFile(contentResolver, contentValues, messageType, cookie);

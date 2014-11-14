@@ -949,13 +949,14 @@ public class ChatActivity extends ChiefActivity {
                     String cookie = System.currentTimeMillis() + "/" + counter + ":" + photoEntry.hash;
                     File file = new File(photoEntry.path);
                     if(file.exists() && file.length() > 0) {
-                        UriFile uriFile = UriFile.create(context, Uri.fromFile(file));
+                        Uri uri = Uri.fromFile(file);
+                        UriFile uriFile = UriFile.create(context, uri);
                         // Checking file type, size and other required information.
                         long size = uriFile.getSize();
                         int contentType = uriFile.getContentType();
                         String hash = photoEntry.hash;
                         // Create outgoing file message.s
-                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
+                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
                                 uriFile.getName(), contentType, size, hash);
                         // Sending protocol message request.
                         RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);
@@ -1005,7 +1006,7 @@ public class ChatActivity extends ChiefActivity {
                     // ... and async saving in storage.
                     BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
                 }
-                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getPath(),
+                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
                         uriFile.getName(), contentType, size, hash);
                 // Sending protocol message request.
                 RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);

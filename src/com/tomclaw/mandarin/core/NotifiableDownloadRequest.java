@@ -16,8 +16,8 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
 
     private static final int NOTIFICATION_ID = 0x03;
 
-    private NotificationCompat.Builder mBuilder;
-    private NotificationManager mNotifyManager;
+    private transient NotificationCompat.Builder mBuilder;
+    private transient NotificationManager mNotifyManager;
 
     private transient long progressUpdateTime = 0;
 

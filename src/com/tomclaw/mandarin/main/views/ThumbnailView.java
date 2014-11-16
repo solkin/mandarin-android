@@ -1,9 +1,12 @@
 package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import com.tomclaw.mandarin.R;
 
 /**
  * Created by Solkin on 05.11.2014.

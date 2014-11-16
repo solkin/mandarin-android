@@ -35,14 +35,16 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String fileUrl;
     private final String originalMessage;
     private String tag;
+    private boolean isFirstAttempt = false;
+    private String previewHash = "";
 
     private transient long fileSize;
     private transient File storeFile;
 
     private transient int metaTryCount;
 
-    public IcqFileDownloadRequest(String buddyId, String cookie, long time,
-                                  String fileId, String fileUrl, String originalMessage, String tag) {
+    public IcqFileDownloadRequest(String buddyId, String cookie, long time, String fileId,
+                                  String fileUrl, String originalMessage, String tag) {
         this.buddyId = buddyId;
         this.cookie = cookie;
         this.time = time;
@@ -50,6 +52,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         this.fileUrl = fileUrl;
         this.originalMessage = originalMessage;
         this.tag = tag;
+        this.isFirstAttempt = true;
     }
 
     @Override
@@ -79,7 +82,6 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 return getUrl();
             }
             // Downloading preview.
-            String previewHash = "";
             if (isPreviewable == 1) {
                 // Check for preview is ready now or try again after short delay.
                 if (TextUtils.isEmpty(previewUrl)) {
@@ -90,11 +92,14 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                         return getUrl();
                     }
                 } else {
-                    // Preview Url is ready - let's download it and cache.
-                    Bitmap previewBitmap = getPreviewBitmap(previewUrl);
-                    if (previewBitmap != null) {
-                        previewHash = HttpUtil.getUrlHash(previewUrl);
-                        saveBitmap(previewBitmap, previewHash);
+                    // For the first attempt we must download and store preview.
+                    if(isFirstAttempt) {
+                        // Preview Url is ready - let's download it and cache.
+                        Bitmap previewBitmap = getPreviewBitmap(previewUrl);
+                        if (previewBitmap != null) {
+                            previewHash = HttpUtil.getUrlHash(previewUrl);
+                            saveBitmap(previewBitmap, previewHash);
+                        }
                     }
                 }
             }
@@ -108,6 +113,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
             if (!isStartDownload()) {
+                // All other attempts will be manual.
+                isFirstAttempt = false;
                 throw new DownloadCancelledException();
             }
             return downloadLink;
@@ -136,7 +143,13 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     private boolean isStartDownload() {
-        // TODO: check specified constructor flag and preferences.
+        // Checking for this is first auto-run of this task.
+        if(isFirstAttempt) {
+            // Check for preferences of auto downloading content.
+            // TODO: check specified constructor flag and preferences.
+            boolean isAutoDownload = false;
+            return isAutoDownload;
+        }
         return true;
     }
 
@@ -239,7 +252,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     protected void onCancelDelegate() {
         // Update message to be in waiting state.
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+                GlobalProvider.HISTORY_CONTENT_STATE_STOPPED, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 
     private String getUrlMessage() {

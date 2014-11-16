@@ -64,7 +64,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
             virtualFile = BitmapFile.create(getAccountRoot().getContext(), uriFile);
             QueryHelper.updateFileSize(getAccountRoot().getContentResolver(), virtualFile.getSize(),
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
-        } catch (BitmapFile.UnsupportedFileTypeException ignored) {
+        } catch (Throwable ignored) {
             virtualFile = uriFile;
         }
     }

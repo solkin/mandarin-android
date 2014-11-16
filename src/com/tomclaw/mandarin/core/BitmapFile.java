@@ -67,7 +67,7 @@ public class BitmapFile extends VirtualFile {
     public static File saveBitmapSync(String fileName, Bitmap bitmap) {
         try {
             File file = File.createTempFile(
-                    HttpUtil.getFileBaseFromName(fileName),
+                    HttpUtil.getFileBaseFromName(fileName) + System.currentTimeMillis(),
                     "." + HttpUtil.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);

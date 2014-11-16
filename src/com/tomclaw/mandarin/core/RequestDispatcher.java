@@ -59,7 +59,8 @@ public class RequestDispatcher {
             Cursor requestCursor;
             Cursor accountCursor;
             QueryBuilder queryBuilder = new QueryBuilder();
-            queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType);
+            queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType)
+                .and().columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
             do {
                 // Registering created observers.
                 requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
@@ -161,6 +162,7 @@ public class RequestDispatcher {
                                 + "bundle = " + requestBundle + "");
 
                         int requestResult = Request.REQUEST_DELETE;
+                        Request request = null;
                         try {
                             // Obtain account root and request class (type).
                             AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
@@ -170,7 +172,7 @@ public class RequestDispatcher {
                                 continue;
                             }
                             // Preparing request.
-                            Request request = (Request) GsonSingleton.getInstance().fromJson(
+                            request = (Request) GsonSingleton.getInstance().fromJson(
                                     requestBundle, Class.forName(requestClass));
                             requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
@@ -193,8 +195,10 @@ public class RequestDispatcher {
                         } else {
                             // Updating this request.
                             Log.d(Settings.LOG_TAG, "Updating this request");
+                            String requestJson = GsonSingleton.getInstance().toJson(request);
                             ContentValues contentValues = new ContentValues();
                             contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
+                            contentValues.put(GlobalProvider.REQUEST_BUNDLE, requestJson);
                             contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                         }

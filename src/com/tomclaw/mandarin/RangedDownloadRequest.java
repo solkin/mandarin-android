@@ -84,7 +84,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
         } catch (DownloadCancelledException ex) {
             // No need to process task this time.
             onCancel();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (Throwable ex) {
             return REQUEST_PENDING;
         }

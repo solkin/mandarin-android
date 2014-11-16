@@ -216,4 +216,12 @@ public class RequestHelper {
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(request));
         contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
+
+    public static void startDelayedRequest(ContentResolver contentResolver, String tag) {
+        // Writing to requests database.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_PENDING);
+        contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
+                GlobalProvider.REQUEST_TAG + "='" + tag + "'", null);
+    }
 }

@@ -60,6 +60,8 @@
         <item name="chat_icons_tint">#FF151515</item>
         <item name="chat_input_background">#FFFFFF</item>
         <item name="chat_separator">#D9D9D9</item>
+        <item name="chat_placeholder_tint_inc">#a0a0a0</item>
+        <item name="chat_placeholder_tint_out">#818181</item>
 
         <item name="profile_panel_background">#EE232323</item>
         <item name="separator_navbar">#44000000</item>
@@ -96,6 +98,8 @@
         <item name="chat_icons_tint">#FFDADADA</item>
         <item name="chat_input_background">#FF151515</item>
         <item name="chat_separator">#FF252525</item>
+        <item name="chat_placeholder_tint_inc">#60616161</item>
+        <item name="chat_placeholder_tint_out">#60616161</item>
 
         <item name="profile_panel_background">#EE151515</item>
         <item name="separator_navbar">#44000000</item>

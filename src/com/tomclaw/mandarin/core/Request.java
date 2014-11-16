@@ -24,6 +24,7 @@ public abstract class Request<A extends AccountRoot> implements Unobfuscatable {
      */
     public static final int REQUEST_PENDING = 0x00;
     public static final int REQUEST_SENT = 0x01;
+    public static final int REQUEST_LATER = 0x02;
     public static final int REQUEST_DELETE = 0xff;
 
     private transient A accountRoot;

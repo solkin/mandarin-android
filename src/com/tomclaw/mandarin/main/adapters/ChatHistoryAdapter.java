@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
@@ -11,10 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
@@ -63,6 +61,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
     private static int COLUMN_MESSAGE_STATE;
+    private static int COLUMN_MESSAGE_COOKIE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
     private static int COLUMN_MESSAGE_READ;
@@ -73,6 +72,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_CONTENT_PROGRESS;
     private static int COLUMN_CONTENT_NAME;
     private static int COLUMN_PREVIEW_HASH;
+    private static int COLUMN_CONTENT_TAG;
 
     private Context context;
     private LayoutInflater inflater;
@@ -117,6 +117,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
         COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
+        COLUMN_MESSAGE_COOKIE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE);
         COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
         COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
         COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
@@ -126,6 +127,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
         COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
         COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
+        COLUMN_CONTENT_TAG = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TAG);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -255,15 +257,18 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
+        final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
         // Content message data
         int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
         long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
-        int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
+        final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
         int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
         String contentName = cursor.getString(COLUMN_CONTENT_NAME);
         String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
+        final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
+        final ContentResolver contentResolver = context.getContentResolver();
         // Select message type.
         switch (messageType) {
             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
@@ -281,9 +286,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         View incProgressContainer = view.findViewById(R.id.inc_progress_container);
                         ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
                         TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
-                        BitmapCache.getInstance().getBitmapAsync(incPreviewImage, previewHash, R.drawable.files_img, true);
+                        BitmapCache.getInstance().getBitmapAsync(incPreviewImage, previewHash,
+                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ?
+                                        R.drawable.picture_placeholder : R.drawable.video_placeholder, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
@@ -302,6 +313,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         incProgress.setProgress(contentProgress);
                         incPercent.setText(contentProgress + "%");
+                        incPreviewImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
+                                    RequestHelper.startDelayedRequest(contentResolver, contentTag);
+                                    QueryHelper.updateMessageState(contentResolver,
+                                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                }
+                            }
+                        });
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
@@ -312,6 +333,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
@@ -355,9 +380,16 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
                         TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
-                        BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash, R.drawable.files_img, true);
+                        BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash,
+                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ?
+                                        R.drawable.picture_placeholder : R.drawable.video_placeholder, true);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 outError.setVisibility(View.GONE);
                                 break;
@@ -390,6 +422,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                // outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 // outError.setVisibility(View.GONE);
                                 break;

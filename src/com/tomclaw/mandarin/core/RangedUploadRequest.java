@@ -139,6 +139,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
     }
 
     protected void identifyErrorResponse(int responseCode) throws Throwable {
+        Log.d(Settings.LOG_TAG, "uploading error: " + responseCode);
         switch (responseCode) {
             case 401: {
                 throw new UnauthorizedException();

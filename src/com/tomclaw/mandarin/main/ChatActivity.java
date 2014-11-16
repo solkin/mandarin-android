@@ -956,11 +956,12 @@ public class ChatActivity extends ChiefActivity {
                         long size = uriFile.getSize();
                         int contentType = uriFile.getContentType();
                         String hash = photoEntry.hash;
-                        // Create outgoing file message.s
+                        String tag = cookie + ":" + uriFile.getPath();
+                        // Create outgoing file messages.
                         QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                                uriFile.getName(), contentType, size, hash);
+                                uriFile.getName(), contentType, size, hash, tag);
                         // Sending protocol message request.
-                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);
+                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
                         counter++;
                     }
                 }
@@ -991,6 +992,7 @@ public class ChatActivity extends ChiefActivity {
                 long size = uriFile.getSize();
                 int contentType = uriFile.getContentType();
                 String hash = HttpUtil.getUrlHash(uriFile.toString());
+                String tag = cookie + ":" + uriFile.getPath();
                 // Check for image in bitmap cache first.
                 Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false);
                 if (bitmap == null) {
@@ -1008,9 +1010,9 @@ public class ChatActivity extends ChiefActivity {
                     BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
                 }
                 QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                        uriFile.getName(), contentType, size, hash);
+                        uriFile.getName(), contentType, size, hash, tag);
                 // Sending protocol message request.
-                RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, uriFile);
+                RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
             }
         }
 

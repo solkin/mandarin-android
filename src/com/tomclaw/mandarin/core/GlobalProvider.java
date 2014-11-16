@@ -104,6 +104,7 @@ public class GlobalProvider extends ContentProvider {
     public static final String HISTORY_CONTENT_URI = "content_uri";
     public static final String HISTORY_CONTENT_NAME = "content_name";
     public static final String HISTORY_PREVIEW_HASH = "preview_hash";
+    public static final String HISTORY_CONTENT_TAG = "content_tag";
 
     public static final int HISTORY_MESSAGE_TYPE_ERROR = 0;
     public static final int HISTORY_MESSAGE_TYPE_INCOMING = 1;
@@ -165,7 +166,7 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_CONTENT_STATE + " int default " + HISTORY_CONTENT_STATE_STABLE + ", "
             + HISTORY_CONTENT_PROGRESS + " int default 0, "
             + HISTORY_CONTENT_URI + " text, " + HISTORY_CONTENT_NAME + " text, "
-            + HISTORY_PREVIEW_HASH + " text" + ");";
+            + HISTORY_PREVIEW_HASH + " text, " + HISTORY_CONTENT_TAG + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +

@@ -34,6 +34,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String fileId;
     private final String fileUrl;
     private final String originalMessage;
+    private String tag;
 
     private transient long fileSize;
     private transient File storeFile;
@@ -41,13 +42,14 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private transient int metaTryCount;
 
     public IcqFileDownloadRequest(String buddyId, String cookie, long time,
-                                  String fileId, String fileUrl, String originalMessage) {
+                                  String fileId, String fileUrl, String originalMessage, String tag) {
         this.buddyId = buddyId;
         this.cookie = cookie;
         this.time = time;
         this.fileId = fileId;
         this.fileUrl = fileUrl;
         this.originalMessage = originalMessage;
+        this.tag = tag;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             int contentType = getContentType(mimeType);
             Uri uri = Uri.fromFile(storeFile);
             QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash);
+                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
             if (!isStartDownload()) {
                 throw new DownloadCancelledException();

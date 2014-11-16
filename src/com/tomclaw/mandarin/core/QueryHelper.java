@@ -387,26 +387,27 @@ public class QueryHelper {
     }
 
     public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 Uri uri, String name, int contentType, long contentSize, String previewHash)
+                                                 Uri uri, String name, int contentType, long contentSize,
+                                                 String previewHash, String contentTag)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", false, contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash);
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash,contentTag);
     }
 
     public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
                                                  long time, String originalMessage, Uri uri, String name, int contentType,
-                                                 long contentSize, String previewHash) throws BuddyNotFoundException {
+                                                 long contentSize, String previewHash, String contentTag) throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, true, contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash);
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash, contentTag);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
                                          int messageType, int messageState, String cookie,
                                          long messageTime, String messageText, boolean activateDialog,
                                          int contentType, long contentSize, int contentState, String contentUri,
-                                         String contentName, String previewHash) {
+                                         String contentName, String previewHash, String contentTag) {
         // Checking for dialog activate needed.
         if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
             modifyDialog(contentResolver, buddyDbId, true);
@@ -430,6 +431,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, contentUri);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_TAG, contentTag);
         // Try to modify message or create it.
         if (modifyFile(contentResolver, contentValues, messageType, cookie) == 0) {
             contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
@@ -571,6 +573,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, "");
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, "");
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, "");
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_TAG, "");
         modifyFile(contentResolver, contentValues, messageType, cookie);
     }
 

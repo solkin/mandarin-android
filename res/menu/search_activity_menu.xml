@@ -3,7 +3,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/search_action_menu"
           android:title="@string/search_button"
-          android:icon="@drawable/action_search"
+          android:icon="@drawable/ic_search"
           android:showAsAction="always|withText"
           android:actionLayout="@layout/search_button"/>
 </menu>

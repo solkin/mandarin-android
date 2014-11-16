@@ -50,22 +50,13 @@ public class RequestHelper {
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
                                           String buddyId, String url) {
-        // Obtain existing request.
-        Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
-                GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Checking for at least one such download request exist.
-            if (!cursor.moveToFirst()) {
-                BuddyAvatarRequest buddyAvatarRequest = new BuddyAvatarRequest(buddyId, url);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, buddyAvatarRequest);
-            }
-            cursor.close();
-        }
+        BuddyAvatarRequest buddyAvatarRequest = new BuddyAvatarRequest(buddyId, url);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId,
+                url, buddyAvatarRequest);
     }
 
     public static void requestFileSend(ContentResolver contentResolver, int buddyDbId,
-                                       String cookie, UriFile uriFile) {
+                                       String cookie, String tag, UriFile uriFile) {
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
@@ -74,7 +65,7 @@ public class RequestHelper {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadRequest);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, tag, uploadRequest);
             }
             cursor.close();
         }
@@ -82,7 +73,7 @@ public class RequestHelper {
 
     public static void requestFileReceive(ContentResolver contentResolver, int buddyDbId,
                                           String cookie, long time, String fileId, String fileUrl,
-                                          String originalMessage) {
+                                          String originalMessage, String tag) {
         Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
@@ -91,26 +82,17 @@ public class RequestHelper {
                 int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
                 String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
                 RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
-                        buddyId, cookie, time, fileId, fileUrl, originalMessage);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, downloadRequest);
+                        buddyId, cookie, time, fileId, fileUrl, originalMessage, tag);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, tag, downloadRequest);
             }
             cursor.close();
         }
     }
 
     public static void requestAccountAvatar(ContentResolver contentResolver, int accountDbId, String url) {
-        // Obtain existing request.
-        Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
-                GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Checking for at least one such download request exist.
-            if (!cursor.moveToFirst()) {
-                AccountAvatarRequest accountAvatarRequest = new AccountAvatarRequest(url);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, accountAvatarRequest);
-            }
-            cursor.close();
-        }
+        AccountAvatarRequest accountAvatarRequest = new AccountAvatarRequest(url);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId,
+                url, accountAvatarRequest);
     }
 
     public static void requestBuddyInfo(ContentResolver contentResolver, String appSession,
@@ -182,19 +164,9 @@ public class RequestHelper {
 
     public static void requestSearchAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
                                            String appSession, String url) {
-        // Obtain existing request.
-        Cursor cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
-                GlobalProvider.REQUEST_TAG + "='" + url + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Checking for at least one such download request exist.
-            if (!cursor.moveToFirst()) {
-                SearchAvatarRequest searchAvatarRequest = new SearchAvatarRequest(buddyId, url);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
-                        appSession, searchAvatarRequest);
-            }
-            cursor.close();
-        }
+        SearchAvatarRequest searchAvatarRequest = new SearchAvatarRequest(buddyId, url);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
+                appSession, url, searchAvatarRequest);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
@@ -205,6 +177,11 @@ public class RequestHelper {
     private static void insertRequest(ContentResolver contentResolver, int type, int accountDbId,
                                       Request request) {
         insertRequest(contentResolver, type, true, accountDbId, null, null, request);
+    }
+
+    private static void insertRequest(ContentResolver contentResolver, int type, int accountDbId,
+                                      String tag, Request request) {
+        insertRequest(contentResolver, type, true, accountDbId, tag, null, request);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
@@ -220,6 +197,20 @@ public class RequestHelper {
             contentValues.put(GlobalProvider.REQUEST_SESSION, appSession);
         }
         if (!TextUtils.isEmpty(tag)) {
+            Cursor cursor = null;
+            try {
+                // Obtain existing request.
+                cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
+                        GlobalProvider.REQUEST_TAG + "='" + tag + "'", null, null);
+                // Checking for at least one such download request exist.
+                if (cursor == null || cursor.moveToFirst()) {
+                    return;
+                }
+            } finally {
+                if(cursor != null) {
+                    cursor.close();
+                }
+            }
             contentValues.put(GlobalProvider.REQUEST_TAG, tag);
         }
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(request));

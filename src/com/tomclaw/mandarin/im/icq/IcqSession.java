@@ -404,8 +404,9 @@ public class IcqSession {
                             String fileId = matcher.group(1);
                             int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
                                     icqAccountRoot.getAccountDbId(), buddyId);
+                            String tag = cookie + ":" + url;
                             RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                    buddyDbId, cookie, messageTime * 1000, fileId, url, messageText);
+                                    buddyDbId, cookie, messageTime * 1000, fileId, url, messageText, tag);
                             isProcessed = true;
                         }
                         if (!isProcessed) {

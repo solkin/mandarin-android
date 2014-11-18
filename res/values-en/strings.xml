@@ -354,4 +354,9 @@
     <string name="receive_mobile_less_size">Up to 5 MB always</string>
     <string name="receive_wi_fi_only">Only on Wi-Fi</string>
     <string name="receive_manual_only">Newer</string>
+    <string name="pref_title_image_compression">Image compression</string>
+    <string name="pref_summary_image_compression">Outgoing images compression quality</string>
+    <string name="image_compression_original">Original</string>
+    <string name="image_compression_medium">Medium quality</string>
+    <string name="image_compression_low_quality">Low quality</string>
 </resources>

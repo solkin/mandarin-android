@@ -359,4 +359,9 @@
     <string name="receive_mobile_less_size">До 5 МБ всегда</string>
     <string name="receive_wi_fi_only">Только на Wi-Fi</string>
     <string name="receive_manual_only">Никогда</string>
+    <string name="pref_title_image_compression">Сжатие изображений</string>
+    <string name="pref_summary_image_compression">Настройка качества сжатия исходящих изображений</string>
+    <string name="image_compression_original">Без сжатия</string>
+    <string name="image_compression_medium">Среднее качество</string>
+    <string name="image_compression_low_quality">Низкое качество</string>
 </resources>

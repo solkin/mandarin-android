@@ -2,7 +2,9 @@ package com.tomclaw.mandarin.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Log;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 
@@ -50,12 +52,26 @@ public class BitmapFile extends VirtualFile {
     }
 
     public static BitmapFile create(Context context, UriFile file)
-            throws UnsupportedFileTypeException {
+            throws UnsupportedFileTypeException, ImageCompressionDesireLackException {
+        // Check for preferences of image compression.
+        String imageCompression = PreferenceHelper.getImageCompression(context);
+        if (TextUtils.equals(imageCompression, context.getString(R.string.compression_original))) {
+            throw new ImageCompressionDesireLackException();
+        }
+        int sampleSize;
+        int quality;
+        if (TextUtils.equals(imageCompression, context.getString(R.string.compression_medium))) {
+            sampleSize = 768;
+            quality = 75;
+        } else {
+            sampleSize = 480;
+            quality = 60;
+        }
         if (file.getMimeType().startsWith("image")) {
             // Now we can compress this image with pleasure.
-            Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, file.getUri(), 768, 768);
+            Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, file.getUri(), sampleSize, sampleSize);
             if (bitmap != null) {
-                File bitmapFile = saveBitmapSync(file.getName(), bitmap);
+                File bitmapFile = saveBitmapSync(file.getName(), bitmap, quality);
                 if (bitmapFile != null) {
                     return new BitmapFile(bitmapFile);
                 }
@@ -64,13 +80,13 @@ public class BitmapFile extends VirtualFile {
         throw new UnsupportedFileTypeException();
     }
 
-    public static File saveBitmapSync(String fileName, Bitmap bitmap) {
+    public static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
         try {
             File file = File.createTempFile(
                     HttpUtil.getFileBaseFromName(fileName) + System.currentTimeMillis(),
                     "." + HttpUtil.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
             os.flush();
             os.close();
             return file;
@@ -83,5 +99,8 @@ public class BitmapFile extends VirtualFile {
     }
 
     public static class UnsupportedFileTypeException extends Throwable {
+    }
+
+    public static class ImageCompressionDesireLackException extends Throwable {
     }
 }

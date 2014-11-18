@@ -73,6 +73,13 @@
                 android:defaultValue="@string/pref_files_auto_receive_default"
                 android:entries="@array/pref_files_auto_receive_strings"
                 android:entryValues="@array/pref_files_auto_receive_values"/>
+        <ListPreference
+                android:key="@string/pref_image_compression"
+                android:summary="@string/pref_summary_image_compression"
+                android:title="@string/pref_title_image_compression"
+                android:defaultValue="@string/pref_image_compression_default"
+                android:entries="@array/pref_image_compression_strings"
+                android:entryValues="@array/pref_image_compression_values"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_notifications_title"

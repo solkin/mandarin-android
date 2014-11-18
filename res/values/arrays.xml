@@ -36,6 +36,18 @@
         <item>@string/auto_receive_manual_only</item>
     </string-array>
 
+    <string-array name="pref_image_compression_strings">
+        <item>@string/image_compression_original</item>
+        <item>@string/image_compression_medium</item>
+        <item>@string/image_compression_low_quality</item>
+    </string-array>
+
+    <string-array name="pref_image_compression_values">
+        <item>@string/compression_original</item>
+        <item>@string/compression_medium</item>
+        <item>@string/compression_low_quality</item>
+    </string-array>
+
     <string name="roster_mode_alphabet">alphabet</string>
     <string name="roster_mode_groups">groups</string>
 
@@ -43,4 +55,8 @@
     <string name="auto_receive_mobile_less_size">mobile_less_size</string>
     <string name="auto_receive_wi_fi_only">wi_fi_only</string>
     <string name="auto_receive_manual_only">manual_only</string>
+
+    <string name="compression_original">original</string>
+    <string name="compression_medium">medium</string>
+    <string name="compression_low_quality">low_quality</string>
 </resources>

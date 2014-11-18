@@ -20,6 +20,7 @@
     <string name="pref_roster_mode">pref_roster_mode</string>
     <string name="pref_file_settings">pref_file_settings</string>
     <string name="pref_files_auto_receive">pref_file_settings</string>
+    <string name="pref_image_compression">pref_image_compression</string>
 
     <string name="pref_show_start_helper">pref_show_start_helper</string>
 </resources>

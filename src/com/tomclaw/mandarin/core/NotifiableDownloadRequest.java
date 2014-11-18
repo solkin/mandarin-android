@@ -3,11 +3,16 @@ package com.tomclaw.mandarin.core;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.RangedDownloadRequest;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.ConnectivityHelper;
 
 /**
  * Created by Solkin on 02.11.2014.
@@ -34,6 +39,25 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onStartedDelegate();
+    }
+
+    protected boolean isStartDownload(boolean isFirstAttempt, long fileSize) {
+        // Checking for this is first auto-run of this task.
+        if(isFirstAttempt) {
+            Context context = getAccountRoot().getContext();
+            // Check for preferences of auto downloading content.
+            String autoReceive = PreferenceHelper.getFilesAutoReceive(context);
+            if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_mobile_and_wi_fi))) {
+                return true;
+            } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_mobile_less_size))) {
+                return fileSize < context.getResources().getInteger(R.integer.def_auto_receive_max_size);
+            } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_wi_fi_only))) {
+                return ConnectivityHelper.isConnectedWifi(getAccountRoot().getContext());
+            } else if(TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_manual_only))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected abstract String getDescription();

@@ -14,6 +14,9 @@
     <bool name="pref_dark_theme_default">false</bool>
     <bool name="pref_ignore_unknown_default">false</bool>
     <string name="pref_roster_mode_default">@string/roster_mode_alphabet</string>
+    <string name="pref_files_auto_receive_default">@string/auto_receive_mobile_less_size</string>
 
     <bool name="pref_show_start_helper_default">true</bool>
+
+    <integer name="def_auto_receive_max_size">5242880</integer>
 </resources>

@@ -352,4 +352,11 @@
     <string name="mibibytes">%.1f МБ</string>
     <string name="gigibytes">%.1f ГБ</string>
     <string name="system_picker">Выбрать в другом приложении</string>
+    <string name="pref_files_title">Обмен файлами</string>
+    <string name="pref_title_files_auto_receive">Автополучение файлов</string>
+    <string name="pref_summary_files_auto_receive">Настройка автоматического получения файлов</string>
+    <string name="receive_mobile_and_wi_fi">Всегда</string>
+    <string name="receive_mobile_less_size">До 5 МБ всегда</string>
+    <string name="receive_wi_fi_only">Только на Wi-Fi</string>
+    <string name="receive_manual_only">Никогда</string>
 </resources>

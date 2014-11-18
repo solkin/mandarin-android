@@ -64,6 +64,17 @@
                 android:defaultValue="@bool/pref_send_by_enter_default"/>
     </PreferenceCategory>
     <PreferenceCategory
+            android:title="@string/pref_files_title"
+            android:key="@string/pref_file_settings">
+        <ListPreference
+                android:key="@string/pref_files_auto_receive"
+                android:summary="@string/pref_summary_files_auto_receive"
+                android:title="@string/pref_title_files_auto_receive"
+                android:defaultValue="@string/pref_files_auto_receive_default"
+                android:entries="@array/pref_files_auto_receive_strings"
+                android:entryValues="@array/pref_files_auto_receive_values"/>
+    </PreferenceCategory>
+    <PreferenceCategory
             android:title="@string/pref_notifications_title"
             android:key="@string/pref_notification_settings">
         <CheckBoxPreference

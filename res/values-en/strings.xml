@@ -347,4 +347,11 @@
     <string name="mibibytes">%.1f MB</string>
     <string name="gigibytes">%.1f GB</string>
     <string name="system_picker">Select file in another picker</string>
+    <string name="pref_files_title">File sharing</string>
+    <string name="pref_title_files_auto_receive">Receiving files</string>
+    <string name="pref_summary_files_auto_receive">Automatic files receiving options</string>
+    <string name="receive_mobile_and_wi_fi">Always</string>
+    <string name="receive_mobile_less_size">Up to 5 MB always</string>
+    <string name="receive_wi_fi_only">Only on Wi-Fi</string>
+    <string name="receive_manual_only">Newer</string>
 </resources>

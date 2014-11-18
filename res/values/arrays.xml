@@ -22,6 +22,25 @@
         <item>@string/roster_mode_groups</item>
     </string-array>
 
+    <string-array name="pref_files_auto_receive_strings">
+        <item>@string/receive_mobile_and_wi_fi</item>
+        <item>@string/receive_mobile_less_size</item>
+        <item>@string/receive_wi_fi_only</item>
+        <item>@string/receive_manual_only</item>
+    </string-array>
+
+    <string-array name="pref_files_auto_receive_values">
+        <item>@string/auto_receive_mobile_and_wi_fi</item>
+        <item>@string/auto_receive_mobile_less_size</item>
+        <item>@string/auto_receive_wi_fi_only</item>
+        <item>@string/auto_receive_manual_only</item>
+    </string-array>
+
     <string name="roster_mode_alphabet">alphabet</string>
     <string name="roster_mode_groups">groups</string>
+
+    <string name="auto_receive_mobile_and_wi_fi">mobile_and_wi_fi</string>
+    <string name="auto_receive_mobile_less_size">mobile_less_size</string>
+    <string name="auto_receive_wi_fi_only">wi_fi_only</string>
+    <string name="auto_receive_manual_only">manual_only</string>
 </resources>

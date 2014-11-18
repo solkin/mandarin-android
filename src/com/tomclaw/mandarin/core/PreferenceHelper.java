@@ -57,6 +57,10 @@ public class PreferenceHelper {
         return getStringPreference(context, R.string.pref_roster_mode, R.string.pref_roster_mode_default);
     }
 
+    public static String getFilesAutoReceive(Context context) {
+        return getStringPreference(context, R.string.pref_files_auto_receive, R.string.pref_files_auto_receive_default);
+    }
+
     public static Uri getNotificationUri(Context context) {
         String uriValue = getStringPreference(context, R.string.pref_notification_sound,
                 R.string.pref_notification_sound_default);

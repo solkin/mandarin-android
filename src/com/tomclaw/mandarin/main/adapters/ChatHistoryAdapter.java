@@ -3,8 +3,12 @@ package com.tomclaw.mandarin.main.adapters;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,10 +21,9 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.views.PreviewImageView;
-import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.SmileyParser;
-import com.tomclaw.mandarin.util.StringUtil;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.mandarin.util.*;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,6 +73,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_CONTENT_SIZE;
     private static int COLUMN_CONTENT_STATE;
     private static int COLUMN_CONTENT_PROGRESS;
+    private static int COLUMN_CONTENT_URI;
     private static int COLUMN_CONTENT_NAME;
     private static int COLUMN_PREVIEW_HASH;
     private static int COLUMN_CONTENT_TAG;
@@ -125,6 +129,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
         COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
         COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
+        COLUMN_CONTENT_URI = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_URI);
         COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
         COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
         COLUMN_CONTENT_TAG = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TAG);
@@ -250,7 +255,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         // Message data.
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
@@ -263,12 +268,14 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
         final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
         int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
-        String contentName = cursor.getString(COLUMN_CONTENT_NAME);
+        final String contentName = cursor.getString(COLUMN_CONTENT_NAME);
+        final String contentUri = cursor.getString(COLUMN_CONTENT_URI);
         String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
         final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         final ContentResolver contentResolver = context.getContentResolver();
+        final PackageManager packageManager = context.getPackageManager();
         // Select message type.
         switch (messageType) {
             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
@@ -313,13 +320,19 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         incProgress.setProgress(contentProgress);
                         incPercent.setText(contentProgress + "%");
+                        // TODO: make this code clearer.
                         incPreviewImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
+                                if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
                                     RequestHelper.startDelayedRequest(contentResolver, contentTag);
                                     QueryHelper.updateMessageState(contentResolver,
                                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                } else if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
+                                    Intent intent = new Intent();
+                                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                                    intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
+                                    context.startActivity(intent);
                                 }
                             }
                         });

@@ -112,7 +112,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
                     time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
-            if (!isStartDownload()) {
+            if (!isStartDownload(isFirstAttempt, fileSize)) {
                 // All other attempts will be manual.
                 isFirstAttempt = false;
                 throw new DownloadCancelledException();
@@ -140,17 +140,6 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             fileName = base + "-" + files.length + "." + extension;
         }
         return new File(directory, fileName);
-    }
-
-    private boolean isStartDownload() {
-        // Checking for this is first auto-run of this task.
-        if(isFirstAttempt) {
-            // Check for preferences of auto downloading content.
-            // TODO: check specified constructor flag and preferences.
-            boolean isAutoDownload = false;
-            return isAutoDownload;
-        }
-        return true;
     }
 
     private Bitmap getPreviewBitmap(String url) throws IOException {

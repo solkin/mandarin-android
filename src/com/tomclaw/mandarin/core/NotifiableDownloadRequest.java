@@ -3,9 +3,6 @@ package com.tomclaw.mandarin.core;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -50,7 +47,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
             if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_mobile_and_wi_fi))) {
                 return true;
             } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_mobile_less_size))) {
-                return fileSize < context.getResources().getInteger(R.integer.def_auto_receive_max_size);
+                return fileSize < context.getResources().getInteger(R.integer.def_auto_receive_threshold);
             } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_wi_fi_only))) {
                 return ConnectivityHelper.isConnectedWifi(getAccountRoot().getContext());
             } else if(TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_manual_only))) {

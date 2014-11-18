@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.util.QueryBuilder;
  */
 public class RequestDispatcher {
 
+    private static final long PENDING_REQUEST_DELAY = 3000;
     /**
      * Variables
      */
@@ -178,9 +179,8 @@ public class RequestDispatcher {
                         } catch (AccountNotFoundException e) {
                             Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
                                     "Cancelling.");
-                        } catch (Throwable e) {
-                            Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass);
-                            e.printStackTrace();
+                        } catch (Throwable ex) {
+                            Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass, ex);
                         }
                         // Checking for request result.
                         if (requestResult == Request.REQUEST_DELETE) {
@@ -191,7 +191,7 @@ public class RequestDispatcher {
                         } else if (requestResult == Request.REQUEST_PENDING) {
                             // Request wasn't completed. We'll retry request a little bit later.
                             Log.d(Settings.LOG_TAG, "Request wasn't completed. We'll retry request a little bit later.");
-                            continue;
+                            break;
                         } else {
                             // Updating this request.
                             Log.d(Settings.LOG_TAG, "Updating this request");
@@ -207,8 +207,15 @@ public class RequestDispatcher {
                     } while (requestCursor.moveToNext());
                 }
                 try {
-                    // Wait until notifying. Try it.
-                    sync.wait();
+                    if(requestCursor.getCount() > 0) {
+                        // Wait for specified daley or until notifying.
+                        Log.d(Settings.LOG_TAG, "Wait for specified delay or until notifying");
+                        sync.wait(PENDING_REQUEST_DELAY);
+                    } else {
+                        // Wait until notifying. Try it.
+                        Log.d(Settings.LOG_TAG, "Wait until notifying");
+                        sync.wait();
+                    }
                 } catch (InterruptedException ignored) {
                     // Notified.
                 }

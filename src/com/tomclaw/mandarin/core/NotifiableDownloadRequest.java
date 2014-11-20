@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.RangedDownloadRequest;
+import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
+import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.ConnectivityHelper;
 
@@ -24,7 +26,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
     private transient long progressUpdateTime = 0;
 
     @Override
-    protected final void onStarted() {
+    protected final void onStarted() throws Throwable {
         Context context = getAccountRoot().getContext();
         mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(context);
@@ -59,7 +61,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
 
     protected abstract String getDescription();
 
-    protected abstract void onStartedDelegate();
+    protected abstract void onStartedDelegate() throws DownloadCancelledException, DownloadException;
 
     @Override
     protected final void onBufferReleased(long read, long size) {
@@ -114,6 +116,16 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
     }
 
     protected abstract void onCancelDelegate();
+
+    @Override
+    protected void onPending() {
+        // Closing notification.
+        mNotifyManager.cancel(NOTIFICATION_ID);
+        // Delegate invocation.
+        onPendingDelegate();
+    }
+
+    protected abstract void onPendingDelegate();
 
     @Override
     protected final void onFileNotFound() {

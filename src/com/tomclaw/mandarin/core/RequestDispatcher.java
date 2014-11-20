@@ -32,6 +32,8 @@ public class RequestDispatcher {
     private final Object sync;
     private int requestType;
 
+    private volatile String executingRequestTag;
+
     public RequestDispatcher(Service service, SessionHolder sessionHolder, int requestType) {
         this.service = service;
         // Session holder.
@@ -51,6 +53,27 @@ public class RequestDispatcher {
         // Almost done. Starting.
         dispatcherThread.setPriority(Thread.MIN_PRIORITY);
         dispatcherThread.start();
+    }
+
+    /**
+     * Stops task with specified tag.
+     * @param tag - tag of the task needs to be stopped.
+     */
+    public void stopRequest(String tag) {
+        // First of all, check that task is executing or in queue.
+        if(TextUtils.equals(tag, executingRequestTag)) {
+            // Task is executing this moment.
+            // Interrupt thread as faster as it can be!
+            // Task will receive interrupt exception.
+            dispatcherThread.interrupt();
+        } else {
+            // Huh... Task is only in scheduled queue.
+            // We can simply mark is as delayed "REQUEST_LATER".
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
+            contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
+                    GlobalProvider.REQUEST_TAG + "='" + tag + "'", null);
+        }
     }
 
     private class DispatcherThread extends Thread {
@@ -94,6 +117,7 @@ public class RequestDispatcher {
                         int accountColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
                         int stateColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
                         int bundleColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
+                        int tagColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_TAG);
                         /**
                          * Если сессия совпадает, то постоянство задачи значения не имеет.
                          * Если задача непостоянная, сессия отличается, то задача отклоняется.
@@ -153,6 +177,7 @@ public class RequestDispatcher {
                         String requestClass = requestCursor.getString(classColumnIndex);
                         int requestAccountDbId = requestCursor.getInt(accountColumnIndex);
                         String requestBundle = requestCursor.getString(bundleColumnIndex);
+                        String requestTag = requestCursor.getString(tagColumnIndex);
 
                         Log.d(Settings.LOG_TAG, "Request received: "
                                 + "class = " + requestClass + "; "
@@ -175,12 +200,15 @@ public class RequestDispatcher {
                             // Preparing request.
                             request = (Request) GsonSingleton.getInstance().fromJson(
                                     requestBundle, Class.forName(requestClass));
+                            executingRequestTag = requestTag;
                             requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
                             Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
                                     "Cancelling.");
                         } catch (Throwable ex) {
                             Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass, ex);
+                        } finally {
+                            executingRequestTag = null;
                         }
                         // Checking for request result.
                         if (requestResult == Request.REQUEST_DELETE) {

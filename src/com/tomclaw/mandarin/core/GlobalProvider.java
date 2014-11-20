@@ -116,10 +116,11 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_CONTENT_TYPE_FILE = 3;
 
     public static final int HISTORY_CONTENT_STATE_STABLE = 0;
-    public static final int HISTORY_CONTENT_STATE_STOPPED = 1;
-    public static final int HISTORY_CONTENT_STATE_WAITING = 2;
-    public static final int HISTORY_CONTENT_STATE_RUNNING = 3;
-    public static final int HISTORY_CONTENT_STATE_FAILED = 4;
+    public static final int HISTORY_CONTENT_STATE_INTERRUPT = 1;
+    public static final int HISTORY_CONTENT_STATE_STOPPED = 2;
+    public static final int HISTORY_CONTENT_STATE_WAITING = 3;
+    public static final int HISTORY_CONTENT_STATE_RUNNING = 4;
+    public static final int HISTORY_CONTENT_STATE_FAILED = 5;
 
     // Database create scripts.
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("

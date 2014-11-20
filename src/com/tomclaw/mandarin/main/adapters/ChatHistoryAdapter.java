@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.views.PreviewImageView;
 import com.tomclaw.mandarin.util.*;
 
@@ -301,6 +302,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                 incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 incProgressContainer.setVisibility(View.GONE);
                                 break;
@@ -326,8 +331,19 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                             public void onClick(View v) {
                                 if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
                                     RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                    QueryHelper.updateMessageState(contentResolver,
+                                    QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
                                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                } else if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_RUNNING) {
+                                    try {
+                                        // Oh, God, what is it?!
+                                        ChiefActivity activity = ((ChiefActivity) context);
+                                        QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                                                GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
+                                        activity.getServiceInteraction().stopDownloadRequest(contentTag);
+                                    } catch(Throwable ex) {
+                                        // Simply. Stupidly.
+                                        ex.printStackTrace();
+                                    }
                                 } else if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
                                     Intent intent = new Intent();
                                     intent.setAction(android.content.Intent.ACTION_VIEW);
@@ -346,6 +362,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                incProgressContainer.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
                                 incProgressContainer.setVisibility(View.GONE);
                                 break;
                             }
@@ -402,6 +422,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                 outError.setVisibility(View.GONE);
                                 break;
                             }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                outError.setVisibility(View.GONE);
+                                break;
+                            }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 outError.setVisibility(View.GONE);
@@ -435,6 +460,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
+                                outProgressContainer.setVisibility(View.GONE);
+                                // outError.setVisibility(View.GONE);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
                                 outProgressContainer.setVisibility(View.GONE);
                                 // outError.setVisibility(View.GONE);
                                 break;

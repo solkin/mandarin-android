@@ -471,9 +471,9 @@ public class QueryHelper {
     /**
      * Will append some more cookie to message.
      *
-     * @param contentResolver
-     * @param cookie
-     * @param cookiesToAdd
+     * @param contentResolver - content resolver
+     * @param cookie - cookie of message to be updated
+     * @param cookiesToAdd - appending cookies
      */
     public static void addMessageCookie(ContentResolver contentResolver, String cookie, String... cookiesToAdd) {
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -583,6 +583,24 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, hash);
         modifyFile(contentResolver, contentValues, messageType, cookie);
+    }
+
+    public static int getFileState(ContentResolver contentResolver, int messageType, String cookie)
+            throws MessageNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
+                .and().like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE));
+            }
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        throw new MessageNotFoundException();
     }
 
     public static void readAllMessages(ContentResolver contentResolver) {

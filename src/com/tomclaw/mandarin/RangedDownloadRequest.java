@@ -8,10 +8,7 @@ import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.VariableBuffer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -58,25 +55,33 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                         read += cache;
                         onBufferReleased(read, size);
                         buffer.onExecuteStart();
+                        // Checking for thread is interrupted.
+                        if(Thread.interrupted()) {
+                            // Request is interrupted.
+                            throw new DownloadCancelledException();
+                        }
                     }
+                } catch (InterruptedIOException ex) {
+                    // Request might be interrupted.
+                    throw new DownloadCancelledException();
                 } catch (IOException ex) {
                     // Pretty network exception.
                     Log.d(Settings.LOG_TAG, "Io exception while downloading", ex);
                     Thread.sleep(3000);
                 } finally {
-                    connection.disconnect();
+                    try {
+                        connection.disconnect();
+                    } catch (Throwable ignored) {
+                        // Some exception while disconnecting.
+                    }
                 }
             } while (read < size);
             onSuccess();
             Log.d(Settings.LOG_TAG, "Download completed successfully.");
-        } catch (FileNotFoundException ex) {
-            onFileNotFound();
+        } catch (InterruptedIOException ex) {
+            onFail();
+            Log.d(Settings.LOG_TAG, "Download interrupted.");
             return REQUEST_DELETE;
-        } catch (IOException ex) {
-            return REQUEST_PENDING;
-        } catch (IllegalStateException ex) {
-            Log.d(Settings.LOG_TAG, "Server is temporary unavailable.");
-            return REQUEST_PENDING;
         } catch (DownloadException ex) {
             onFail();
             Log.d(Settings.LOG_TAG, "Server returned strange error.");
@@ -85,7 +90,18 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             // No need to process task this time.
             onCancel();
             return REQUEST_LATER;
+        } catch (FileNotFoundException ex) {
+            onFileNotFound();
+            return REQUEST_DELETE;
+        } catch (IOException ex) {
+            onPending();
+            return REQUEST_PENDING;
+        } catch (IllegalStateException ex) {
+            Log.d(Settings.LOG_TAG, "Server is temporary unavailable.");
+            onPending();
+            return REQUEST_PENDING;
         } catch (Throwable ex) {
+            onPending();
             return REQUEST_PENDING;
         }
         return REQUEST_DELETE;
@@ -121,7 +137,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
         return 76800;
     }
 
-    protected abstract void onStarted();
+    protected abstract void onStarted() throws Throwable;
 
     protected abstract void onDownload();
 
@@ -134,4 +150,6 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
     protected abstract void onCancel();
 
     protected abstract void onSuccess();
+
+    protected abstract void onPending();
 }

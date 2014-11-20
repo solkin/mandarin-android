@@ -97,6 +97,11 @@ public class CoreService extends Service {
         public void disconnectAccounts() {
             sessionHolder.disconnectAccounts();
         }
+
+        @Override
+        public void stopDownloadRequest(String tag) {
+            downloadDispatcher.stopRequest(tag);
+        }
     };
 
     @Override

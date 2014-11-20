@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
@@ -37,6 +38,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private String tag;
     private boolean isFirstAttempt = false;
     private String previewHash = "";
+
+    private String cachedFileName;
 
     private transient long fileSize;
     private transient File storeFile;
@@ -104,7 +107,15 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 }
             }
             // Saving obtained data to the history table.
-            storeFile = getUniqueFile(mimeType, fileName);
+            if(TextUtils.isEmpty(cachedFileName)) {
+                // This is probable first attempt to download file.
+                // Create new file.
+                storeFile = getUniqueFile(mimeType, fileName);
+                cachedFileName = storeFile.getName();
+            } else {
+                // Continue downloading to existing file.
+                storeFile = new File(getStoragePublicFolder(mimeType), cachedFileName);
+            }
             int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
@@ -129,7 +140,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private File getUniqueFile(String mimeType, String fileName) {
         final String base = HttpUtil.getFileBaseFromName(fileName);
         final String extension = HttpUtil.getFileExtensionFromPath(fileName);
-        File directory = Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType));
+        File directory = getStoragePublicFolder(mimeType);
         File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(File file, String name) {
                 return HttpUtil.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
@@ -140,6 +151,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             fileName = base + "-" + files.length + "." + extension;
         }
         return new File(directory, fileName);
+    }
+
+    private File getStoragePublicFolder(String mimeType) {
+        return Environment.getExternalStoragePublicDirectory(getStorageFolder(mimeType));
     }
 
     private Bitmap getPreviewBitmap(String url) throws IOException {
@@ -200,7 +215,16 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     @Override
-    protected void onStartedDelegate() {
+    protected void onStartedDelegate() throws DownloadCancelledException, DownloadException {
+        try {
+            int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
+                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+            if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT) {
+                throw new DownloadCancelledException();
+            }
+        } catch (MessageNotFoundException ignored) {
+            // This may be if this is first request call and no message inserted yet.
+        }
     }
 
     @Override
@@ -233,8 +257,11 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     protected void onFailDelegate() {
         QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, originalMessage, cookie);
-        // Remove file fragment.
-        storeFile.delete();
+        // Checking for file is being created.
+        if(storeFile != null) {
+            // Remove file fragment.
+            storeFile.delete();
+        }
     }
 
     @Override
@@ -242,6 +269,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         // Update message to be in waiting state.
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_STOPPED, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+    }
+
+    @Override
+    protected void onPendingDelegate() {
     }
 
     private String getUrlMessage() {

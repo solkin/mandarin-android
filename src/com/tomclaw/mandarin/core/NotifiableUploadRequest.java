@@ -2,10 +2,13 @@ package com.tomclaw.mandarin.core;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.main.ChatActivity;
 
 /**
  * Created by Solkin on 21.10.2014.
@@ -28,11 +31,14 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
                 .setContentText(getDescription())
                 .setSmallIcon(android.R.drawable.stat_sys_upload)
                 .setOngoing(true)
-                .setProgress(0, 100, true);
+                .setProgress(0, 100, true)
+                .setContentIntent(getIntent());
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onStartedDelegate();
     }
+
+    protected abstract PendingIntent getIntent();
 
     protected abstract String getDescription();
 

@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -34,11 +35,14 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
                 .setContentText(getDescription())
                 .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setOngoing(true)
-                .setProgress(0, 100, true);
+                .setProgress(0, 100, true)
+                .setContentIntent(getIntent());
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
         // Delegate invocation.
         onStartedDelegate();
     }
+
+    protected abstract PendingIntent getIntent();
 
     protected boolean isStartDownload(boolean isFirstAttempt, long fileSize) {
         // Checking for this is first auto-run of this task.

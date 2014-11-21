@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
@@ -13,6 +15,8 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.main.ChatActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
@@ -196,6 +200,28 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     @Override
     public FileOutputStream getOutputStream() throws FileNotFoundException {
         return new FileOutputStream(storeFile);
+    }
+
+    @Override
+    protected PendingIntent getIntent() {
+        // Show chat activity with concrete buddy.
+        Context context = getAccountRoot().getContext();
+        try {
+            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
+                    getAccountRoot().getAccountDbId(), buddyId);
+            return PendingIntent.getActivity(context, 0,
+                    new Intent(context, ChatActivity.class)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        } catch (Throwable ignored) {
+            // No such buddy?!
+            // Okay, open chats at least.
+            return PendingIntent.getActivity(context, 0,
+                    new Intent(context, MainActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        }
     }
 
     @Override

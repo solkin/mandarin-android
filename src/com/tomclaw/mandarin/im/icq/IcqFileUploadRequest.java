@@ -1,10 +1,14 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.main.ChatActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -36,6 +40,28 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
         this.uriFile = uriFile;
         this.buddyId = buddyId;
         this.cookie = cookie;
+    }
+
+    @Override
+    protected PendingIntent getIntent() {
+        // Show chat activity with concrete buddy.
+        Context context = getAccountRoot().getContext();
+        try {
+            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
+                    getAccountRoot().getAccountDbId(), buddyId);
+            return PendingIntent.getActivity(context, 0,
+                    new Intent(context, ChatActivity.class)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        } catch (Throwable ignored) {
+            // No such buddy?!
+            // Okay, open chats at least.
+            return PendingIntent.getActivity(context, 0,
+                    new Intent(context, MainActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        }
     }
 
     @Override

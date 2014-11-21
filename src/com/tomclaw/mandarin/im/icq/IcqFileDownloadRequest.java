@@ -27,7 +27,7 @@ import java.net.URL;
  */
 public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccountRoot> {
 
-    private static transient int MAX_META_TRY_COUNT = 5;
+    private static final transient int MAX_META_TRY_COUNT = 5;
 
     private final String buddyId;
     private final String cookie;

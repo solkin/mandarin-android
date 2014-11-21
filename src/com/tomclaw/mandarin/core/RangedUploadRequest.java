@@ -18,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
 
 /**
@@ -54,6 +55,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     input = virtualFile.openInputStream(getAccountRoot().getContext());
                     sent = input.skip(sent);
                     while ((cache = input.read(buffer.calculateBuffer())) != -1 || sent < size) {
+                        checkInterrupted();
                         // Checking for continuous stream.
                         if (sent + cache > size) {
                             // ... and stop at the specified size.
@@ -96,10 +98,19 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                         sent += cache;
                         if (!completed) {
                             onBufferReleased(sent, size);
+                            checkInterrupted();
                         }
                     }
                 } catch (FileNotFoundException ex) {
                     // Where is my file?! :'(
+                    throw ex;
+                } catch (InterruptedIOException ex) {
+                    // Thread interrupted exception.
+                    Log.d(Settings.LOG_TAG, "Interruption while uploading", ex);
+                    throw ex;
+                } catch (InterruptedException ex) {
+                    // Thread Io interrupted exception.
+                    Log.d(Settings.LOG_TAG, "Interruption while uploading", ex);
                     throw ex;
                 } catch (IOException ex) {
                     // Pretty network exception.
@@ -132,9 +143,24 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             Log.d(Settings.LOG_TAG, "File is missing while uploading", ex);
             onFileNotFound();
             return REQUEST_DELETE;
+        } catch (InterruptedIOException ex) {
+            Log.d(Settings.LOG_TAG, "Upload interrupted", ex);
+            onCancel();
+            return REQUEST_LATER;
+        } catch (InterruptedException ex) {
+            Log.d(Settings.LOG_TAG, "Upload interrupted while read", ex);
+            onCancel();
+            return REQUEST_LATER;
         } catch (Throwable ex) {
             Log.d(Settings.LOG_TAG, "Unable to execute upload due to exception", ex);
+            onPending();
             return REQUEST_PENDING;
+        }
+    }
+
+    private void checkInterrupted() throws InterruptedException {
+        if(Thread.interrupted()) {
+            throw new InterruptedException();
         }
     }
 
@@ -159,7 +185,11 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     protected abstract void onFail();
 
+    protected abstract void onCancel();
+
     protected abstract void onFileNotFound();
+
+    protected abstract void onPending();
 
     private InputStream getInputStream(int responseCode, HttpURLConnection connection)
             throws IOException {

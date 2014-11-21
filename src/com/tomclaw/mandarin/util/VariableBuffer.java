@@ -9,7 +9,7 @@ import com.tomclaw.mandarin.core.Settings;
 public class VariableBuffer {
 
     private static final int DEFAULT_BUFFER_SIZE = 128 * 1024;
-    private static final int MAXIMUM_BUFFER_SIZE = 2 * 1024 * 1024;
+    private static final int MAXIMUM_BUFFER_SIZE = 1 * 1024 * 1024;
 
     private byte[] buffer;
 

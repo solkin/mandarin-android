@@ -14,8 +14,8 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
 
     private static final int NOTIFICATION_ID = 0x02;
 
-    private NotificationCompat.Builder mBuilder;
-    private NotificationManager mNotifyManager;
+    private transient NotificationCompat.Builder mBuilder;
+    private transient NotificationManager mNotifyManager;
 
     private transient long progressUpdateTime = 0;
 
@@ -82,7 +82,27 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
     protected abstract void onFailDelegate();
 
     @Override
+    protected void onCancel() {
+        // Closing notification.
+        mNotifyManager.cancel(NOTIFICATION_ID);
+        // Delegate invocation.
+        onCancelDelegate();
+    }
+
+    protected abstract void onCancelDelegate();
+
+    @Override
     protected final void onFileNotFound() {
         onFail();
     }
+
+    @Override
+    protected final void onPending() {
+        // Closing notification.
+        mNotifyManager.cancel(NOTIFICATION_ID);
+        // Delegate invocation.
+        onPendingDelegate();
+    }
+
+    protected abstract void onPendingDelegate();
 }

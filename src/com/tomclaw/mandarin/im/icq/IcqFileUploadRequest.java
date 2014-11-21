@@ -107,6 +107,18 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     }
 
     @Override
+    protected void onCancelDelegate() {
+        // Update message to be in waiting state.
+        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+                GlobalProvider.HISTORY_CONTENT_STATE_STOPPED, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
+    }
+
+    @Override
+    protected void onPendingDelegate() {
+
+    }
+
+    @Override
     protected void onProgressUpdated(int progress) {
         QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);

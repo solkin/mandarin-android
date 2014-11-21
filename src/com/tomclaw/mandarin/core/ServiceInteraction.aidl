@@ -17,4 +17,5 @@ interface ServiceInteraction
 	void connectAccounts();
 	void disconnectAccounts();
 	void stopDownloadRequest(String tag);
+	void stopUploadingRequest(String tag);
 }

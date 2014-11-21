@@ -329,26 +329,33 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         incPreviewImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
-                                    RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                    QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
-                                } else if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_RUNNING) {
-                                    try {
-                                        // Oh, God, what is it?!
-                                        ChiefActivity activity = ((ChiefActivity) context);
+                                switch(contentState) {
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                                        RequestHelper.startDelayedRequest(contentResolver, contentTag);
                                         QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                                GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
-                                        activity.getServiceInteraction().stopDownloadRequest(contentTag);
-                                    } catch(Throwable ex) {
-                                        // Simply. Stupidly.
-                                        ex.printStackTrace();
+                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                        break;
                                     }
-                                } else if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
-                                    Intent intent = new Intent();
-                                    intent.setAction(android.content.Intent.ACTION_VIEW);
-                                    intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
-                                    context.startActivity(intent);
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                        try {
+                                            // Oh, God, what is it?!
+                                            ChiefActivity activity = ((ChiefActivity) context);
+                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                                                    GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
+                                            activity.getServiceInteraction().stopDownloadRequest(contentTag);
+                                        } catch(Throwable ex) {
+                                            // Simply. Stupidly.
+                                            ex.printStackTrace();
+                                        }
+                                        break;
+                                    }
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                        Intent intent = new Intent();
+                                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                                        intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
+                                        context.startActivity(intent);
+                                        break;
+                                    }
                                 }
                             }
                         });
@@ -386,7 +393,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                 break;
                             }
                         }
-
                         incName.setText(contentName);
                         incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         incProgress.setProgress(contentProgress);
@@ -450,6 +456,39 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         outProgress.setProgress(contentProgress);
                         outPercent.setText(contentProgress + "%");
+                        outPreviewImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                switch(contentState) {
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                                        RequestHelper.startDelayedRequest(contentResolver, contentTag);
+                                        QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                        break;
+                                    }
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                                        try {
+                                            // Oh, God, what is it?!
+                                            ChiefActivity activity = ((ChiefActivity) context);
+                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                                                    GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
+                                            activity.getServiceInteraction().stopUploadingRequest(contentTag);
+                                        } catch(Throwable ex) {
+                                            // Simply. Stupidly.
+                                            ex.printStackTrace();
+                                        }
+                                        break;
+                                    }
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                                        Intent intent = new Intent();
+                                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                                        intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
+                                        context.startActivity(intent);
+                                        break;
+                                    }
+                                }
+                            }
+                        });
                         break;
                     }
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
@@ -457,7 +496,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         TextView outSize = (TextView) view.findViewById(R.id.out_size);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
-
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 outProgressContainer.setVisibility(View.GONE);
@@ -490,7 +528,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                 break;
                             }
                         }
-
                         outName.setText(contentName);
                         outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         outProgress.setProgress(contentProgress);

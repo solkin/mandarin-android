@@ -166,7 +166,7 @@ public class RequestHelper {
                                            String appSession, String url) {
         SearchAvatarRequest searchAvatarRequest = new SearchAvatarRequest(buddyId, url);
         insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
-                appSession, url, searchAvatarRequest);
+                url, appSession, searchAvatarRequest);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,

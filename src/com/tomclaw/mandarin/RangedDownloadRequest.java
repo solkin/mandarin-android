@@ -78,14 +78,14 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             } while (read < size);
             onSuccess();
             Log.d(Settings.LOG_TAG, "Download completed successfully.");
-        } catch (InterruptedIOException ex) {
-            onFail();
-            Log.d(Settings.LOG_TAG, "Download interrupted.");
-            return REQUEST_DELETE;
         } catch (DownloadException ex) {
             onFail();
             Log.d(Settings.LOG_TAG, "Server returned strange error.");
             return REQUEST_DELETE;
+        } catch (InterruptedIOException ex) {
+            Log.d(Settings.LOG_TAG, "Download interrupted.");
+            onCancel();
+            return REQUEST_LATER;
         } catch (DownloadCancelledException ex) {
             // No need to process task this time.
             onCancel();

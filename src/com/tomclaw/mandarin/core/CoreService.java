@@ -99,8 +99,13 @@ public class CoreService extends Service {
         }
 
         @Override
-        public void stopDownloadRequest(String tag) {
+        public void stopDownloadRequest(String tag) throws RemoteException {
             downloadDispatcher.stopRequest(tag);
+        }
+
+        @Override
+        public void stopUploadingRequest(String tag) throws RemoteException {
+            uploadDispatcher.stopRequest(tag);
         }
     };
 

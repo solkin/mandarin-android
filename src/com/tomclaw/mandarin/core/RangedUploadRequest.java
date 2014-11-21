@@ -126,23 +126,23 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
         } catch (UnauthorizedException ex) {
             Log.d(Settings.LOG_TAG, "Unauthorized exception while uploading", ex);
             onFail();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (ServerInternalException ex) {
             Log.d(Settings.LOG_TAG, "Server internal exception while uploading", ex);
             onFail();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (UnknownResponseException ex) {
             Log.d(Settings.LOG_TAG, "Unknown response exception while uploading", ex);
             onFail();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (SecurityException ex) {
             Log.d(Settings.LOG_TAG, "Security exception while uploading", ex);
             onFail();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (FileNotFoundException ex) {
             Log.d(Settings.LOG_TAG, "File is missing while uploading", ex);
             onFileNotFound();
-            return REQUEST_DELETE;
+            return REQUEST_LATER;
         } catch (InterruptedIOException ex) {
             Log.d(Settings.LOG_TAG, "Upload interrupted", ex);
             onCancel();

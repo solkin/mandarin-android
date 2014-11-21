@@ -460,6 +460,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                             @Override
                             public void onClick(View v) {
                                 switch(contentState) {
+                                    case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                                     case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                         RequestHelper.startDelayedRequest(contentResolver, contentTag);
                                         QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
@@ -470,7 +471,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                         try {
                                             // Oh, God, what is it?!
                                             ChiefActivity activity = ((ChiefActivity) context);
-                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
                                                     GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
                                             activity.getServiceInteraction().stopUploadingRequest(contentTag);
                                         } catch(Throwable ex) {

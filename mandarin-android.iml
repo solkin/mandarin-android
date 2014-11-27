@@ -4,7 +4,7 @@
     <facet type="android" name="Android">
       <configuration>
         <proGuardCfgFiles>
-          <file>file://%MODULE_SDK_HOME%/tools/proguard/proguard-android.txt</file>
+          <file>file://C:/Program Files (x86)/Android/android-sdk/tools/proguard/proguard-android.txt</file>
           <file>file://$MODULE_DIR$/proguard-project.txt</file>
         </proGuardCfgFiles>
       </configuration>
@@ -47,15 +47,6 @@
     </orderEntry>
     <orderEntry type="module" module-name="smileys-mandarin" />
     <orderEntry type="module" module-name="sticky-list-headers" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/libphonenumber-6.3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>
 

@@ -4,6 +4,9 @@
     <facet type="android" name="Android">
       <configuration>
         <option name="LIBRARY_PROJECT" value="true" />
+        <proGuardCfgFiles>
+          <file>file://C:/Program Files (x86)/Android/android-sdk/tools/proguard/proguard-android.txt</file>
+        </proGuardCfgFiles>
       </configuration>
     </facet>
   </component>

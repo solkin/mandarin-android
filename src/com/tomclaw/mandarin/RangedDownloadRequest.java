@@ -86,6 +86,10 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             Log.d(Settings.LOG_TAG, "Download interrupted.");
             onCancel();
             return REQUEST_LATER;
+        } catch (InterruptedException ex) {
+            Log.d(Settings.LOG_TAG, "Download interrupted.");
+            onCancel();
+            return REQUEST_LATER;
         } catch (DownloadCancelledException ex) {
             // No need to process task this time.
             onCancel();

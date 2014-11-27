@@ -332,17 +332,27 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                 switch(contentState) {
                                     case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                         RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                        QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                        QueryHelper.updateFileState(contentResolver,
+                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                                                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                                                messageCookie);
                                         break;
                                     }
                                     case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                                         try {
                                             // Oh, God, what is it?!
                                             ChiefActivity activity = ((ChiefActivity) context);
-                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                                    GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
-                                            activity.getServiceInteraction().stopDownloadRequest(contentTag);
+                                            boolean wasActive = activity.getServiceInteraction().stopDownloadRequest(contentTag);
+                                            int desiredState;
+                                            // Checking for the task was active and will be stopped by itself,
+                                            // or it was in queue and it needs to be switched to waiting state manually.
+                                            if(wasActive) {
+                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                                            } else {
+                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                                            }
+                                            QueryHelper.updateFileState(contentResolver, desiredState,
+                                                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
                                         } catch(Throwable ex) {
                                             // Simply. Stupidly.
                                             ex.printStackTrace();
@@ -463,17 +473,27 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                     case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                                     case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                         RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                        QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
-                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, messageCookie);
+                                        QueryHelper.updateFileState(contentResolver,
+                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                                                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+                                                messageCookie);
                                         break;
                                     }
                                     case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                                         try {
                                             // Oh, God, what is it?!
                                             ChiefActivity activity = ((ChiefActivity) context);
-                                            QueryHelper.updateFileState(contentResolver, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
-                                                    GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT, messageCookie);
-                                            activity.getServiceInteraction().stopUploadingRequest(contentTag);
+                                            boolean wasActive = activity.getServiceInteraction().stopUploadingRequest(contentTag);
+                                            int desiredState;
+                                            // Checking for the task was active and will be stopped by itself,
+                                            // or it was in queue and it needs to be switched to waiting state manually.
+                                            if(wasActive) {
+                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                                            } else {
+                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                                            }
+                                            QueryHelper.updateFileState(contentResolver, desiredState,
+                                                    GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
                                         } catch(Throwable ex) {
                                             // Simply. Stupidly.
                                             ex.printStackTrace();

@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
@@ -83,6 +85,17 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     @Override
     protected void onStartedDelegate() throws Throwable {
         Log.d(Settings.LOG_TAG, "onStarted");
+        try {
+            int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
+                    GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
+            if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT ||
+                    contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
+                throw new InterruptedException();
+            }
+        } catch (MessageNotFoundException ignored) {
+            // Message may be already deleted. So, delete this task too.
+            throw new UnknownResponseException();
+        }
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
         // Try to compress outgoing file.

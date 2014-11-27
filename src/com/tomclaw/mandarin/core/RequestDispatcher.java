@@ -59,13 +59,14 @@ public class RequestDispatcher {
      * Stops task with specified tag.
      * @param tag - tag of the task needs to be stopped.
      */
-    public void stopRequest(String tag) {
+    public boolean stopRequest(String tag) {
         // First of all, check that task is executing or in queue.
         if(TextUtils.equals(tag, executingRequestTag)) {
             // Task is executing this moment.
             // Interrupt thread as faster as it can be!
             // Task will receive interrupt exception.
             dispatcherThread.interrupt();
+            return true;
         } else {
             // Huh... Task is only in scheduled queue.
             // We can simply mark is as delayed "REQUEST_LATER".
@@ -73,6 +74,7 @@ public class RequestDispatcher {
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
             contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                     GlobalProvider.REQUEST_TAG + "='" + tag + "'", null);
+            return false;
         }
     }
 

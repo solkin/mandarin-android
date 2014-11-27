@@ -539,7 +539,8 @@ public class QueryHelper {
     public static void updateFileState(ContentResolver contentResolver, int state, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        int modified = modifyFile(contentResolver, contentValues, messageType, cookie);
+        Log.d(Settings.LOG_TAG, "modified: " + modified);
     }
 
     public static void updateFileSize(ContentResolver contentResolver, long size, int messageType, String cookie) {

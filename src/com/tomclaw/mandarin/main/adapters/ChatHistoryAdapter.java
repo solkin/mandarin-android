@@ -39,11 +39,11 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.layout.chat_item_error,
             R.layout.chat_item_inc_text,
             R.layout.chat_item_inc_image,
-            R.layout.chat_item_inc_image,
+            R.layout.chat_item_inc_video,
             R.layout.chat_item_inc_file,
             R.layout.chat_item_out_text,
             R.layout.chat_item_out_image,
-            R.layout.chat_item_out_image,
+            R.layout.chat_item_out_video,
             R.layout.chat_item_out_file
     };
     private static final int[] MESSAGE_STATES = new int[]{

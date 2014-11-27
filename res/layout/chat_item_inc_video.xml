@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:gravity="center_vertical"
+              android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dp"
+              android:paddingTop="5dp" android:paddingRight="5dp"
+              android:descendantFocusability="blocksDescendants">
+    <include layout="@layout/chat_item_date"/>
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/incoming_message"
+                  android:baselineAligned="false">
+        <LinearLayout android:orientation="vertical"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"
+                      android:paddingEnd="5dp"
+                      android:paddingRight="5dp"
+                      android:paddingStart="0dp"
+                      android:paddingLeft="0dp">
+            <RelativeLayout android:orientation="vertical"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:background="?attr/chat_inc_bubble"
+                         android:id="@+id/inc_bubble_back"
+                         android:layout_gravity="start">
+                <com.tomclaw.mandarin.main.views.PreviewImageView
+                        android:id="@+id/inc_preview_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/preview_height"
+                        android:padding="0dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        mandarin:preview_placeholder_tint="?attr/chat_placeholder_tint_inc"/>
+                <ImageView
+                        android:id="@+id/inc_video_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/inc_preview_image"
+                        android:layout_alignStart="@+id/inc_preview_image"
+                        android:layout_alignRight="@+id/inc_preview_image"
+                        android:layout_alignEnd="@+id/inc_preview_image"
+                        android:layout_alignTop="@+id/inc_preview_image"
+                        android:layout_alignBottom="@+id/inc_preview_image"
+                        android:scaleType="center"
+                        android:src="@drawable/video_play"/>
+                <RelativeLayout
+                        android:id="@+id/inc_progress_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/preview_progress_background"
+                        android:layout_alignBottom="@id/inc_preview_image"
+                        android:layout_alignLeft="@id/inc_preview_image"
+                        android:layout_alignStart="@id/inc_preview_image"
+                        android:layout_alignRight="@id/inc_preview_image"
+                        android:layout_alignEnd="@id/inc_preview_image">
+                    <TextView
+                            android:id="@+id/inc_percent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/file_size_text_color"
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-light"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:paddingTop="6dp"
+                            android:paddingBottom="6dp"
+                            android:paddingLeft="6dp"
+                            android:paddingRight="0dp"/>
+                    <ProgressBar
+                            android:id="@+id/inc_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/inc_percent"
+                            android:layout_toEndOf="@id/inc_percent"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:padding="8dp"
+                            android:max="100"
+                            android:progressDrawable="@drawable/file_progress"/>
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="right">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/inc_time"
+                    android:layout_gravity="right"
+                    android:textColor="?chat_time_color"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

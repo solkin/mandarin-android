@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.core;
 
+import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
@@ -14,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,6 +44,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             VariableBuffer buffer = new VariableBuffer();
             String contentType = virtualFile.getMimeType();
             boolean completed = false;
+            String successReply = null;
             // Obtain uploading Url.
             String url = getUrl(virtualFile.getName(), virtualFile.getSize());
             // Starting upload.
@@ -82,7 +85,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                             int responseCode = httpResponse.getStatusLine().getStatusCode();
                             if (responseCode == 200) {
                                 // Uploading completed successfully.
-                                onSuccess(EntityUtils.toString(entity));
+                                successReply = EntityUtils.toString(entity);
                                 completed = true;
                             } else if (responseCode == 206) {
                                 // Server is still hungry. Next chunk, please...
@@ -96,10 +99,8 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                             }
                         }
                         sent += cache;
-                        if (!completed) {
-                            onBufferReleased(sent, size);
-                            checkInterrupted();
-                        }
+                        onBufferReleased(sent, size);
+                        checkInterrupted();
                     }
                 } catch (FileNotFoundException ex) {
                     // Where is my file?! :'(
@@ -122,6 +123,9 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     }
                 }
             } while (!completed);
+            if(!TextUtils.isEmpty(successReply)) {
+                onSuccess(successReply);
+            }
             return REQUEST_DELETE;
         } catch (UnauthorizedException ex) {
             Log.d(Settings.LOG_TAG, "Unauthorized exception while uploading", ex);

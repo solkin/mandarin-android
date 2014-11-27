@@ -68,12 +68,6 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                     // Pretty network exception.
                     Log.d(Settings.LOG_TAG, "Io exception while downloading", ex);
                     Thread.sleep(3000);
-                } finally {
-                    try {
-                        connection.disconnect();
-                    } catch (Throwable ignored) {
-                        // Some exception while disconnecting.
-                    }
                 }
             } while (read < size);
             onSuccess();

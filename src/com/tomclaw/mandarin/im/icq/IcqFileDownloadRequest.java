@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
@@ -142,13 +143,13 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     private File getUniqueFile(String mimeType, String fileName) {
-        final String base = HttpUtil.getFileBaseFromName(fileName);
-        final String extension = HttpUtil.getFileExtensionFromPath(fileName);
+        final String base = FileHelper.getFileBaseFromName(fileName);
+        final String extension = FileHelper.getFileExtensionFromPath(fileName);
         File directory = getStoragePublicFolder(mimeType);
         File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(File file, String name) {
-                return HttpUtil.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
-                        HttpUtil.getFileExtensionFromPath(name).toLowerCase().equals(extension);
+                return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
+                        FileHelper.getFileExtensionFromPath(name).toLowerCase().equals(extension);
             }
         });
         if (files.length > 0) {

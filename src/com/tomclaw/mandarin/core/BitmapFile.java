@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.FileHelper;
 
 import java.io.*;
 
@@ -83,8 +83,8 @@ public class BitmapFile extends VirtualFile {
     public static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
         try {
             File file = File.createTempFile(
-                    HttpUtil.getFileBaseFromName(fileName) + System.currentTimeMillis(),
-                    "." + HttpUtil.getFileExtensionFromPath(fileName));
+                    FileHelper.getFileBaseFromName(fileName) + System.currentTimeMillis(),
+                    "." + FileHelper.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
             os.flush();

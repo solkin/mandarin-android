@@ -33,7 +33,7 @@ public class FileHelper {
 
     public static String getMimeType(String path) {
         String type = null;
-        String extension = HttpUtil.getFileExtensionFromPath(path);
+        String extension = getFileExtensionFromPath(path);
         if (extension != null) {
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             type = mime.getMimeTypeFromExtension(extension.toLowerCase());
@@ -42,5 +42,27 @@ public class FileHelper {
             type = "application/octet-stream";
         }
         return type;
+    }
+
+    public static String getFileBaseFromName(String name) {
+        String base = name;
+        if (!TextUtils.isEmpty(name)) {
+            int index = name.lastIndexOf(".");
+            if (index != -1) {
+                base = name.substring(0, index);
+            }
+        }
+        return base;
+    }
+
+    public static String getFileExtensionFromPath(String path) {
+        String suffix = "";
+        if (!TextUtils.isEmpty(path)) {
+            int index = path.lastIndexOf(".");
+            if (index != -1) {
+                suffix = path.substring(index + 1);
+            }
+        }
+        return suffix;
     }
 }

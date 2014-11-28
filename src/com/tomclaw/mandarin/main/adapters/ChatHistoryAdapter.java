@@ -280,6 +280,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                 // Updating data.
                 ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
+                View incBubbleBack = view.findViewById(R.id.inc_bubble_back);
                 // Updating content-specific data.
                 switch (contentType) {
                     case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
@@ -323,7 +324,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         incProgress.setProgress(contentProgress);
                         incPercent.setText(contentProgress + "%");
-                        incPreviewImage.setOnClickListener(new View.OnClickListener() {
+                        incBubbleBack.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if(contentMessageClickListener != null) {
@@ -379,7 +380,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         incPercent.setText(contentProgress + "%");
                         incFileType.setImageResource(
                                 FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
-                        view.setOnClickListener(new View.OnClickListener() {
+                        incBubbleBack.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if(contentMessageClickListener != null) {
@@ -397,6 +398,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                 // Updating data.
                 ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
                 ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
+                View outBubbleBack = view.findViewById(R.id.out_bubble_back);
                 // Updating content-specific data.
                 switch (contentType) {
                     case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
@@ -448,7 +450,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         outProgress.setProgress(contentProgress);
                         outPercent.setText(contentProgress + "%");
-                        outPreviewImage.setOnClickListener(new View.OnClickListener() {
+                        outBubbleBack.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if(contentMessageClickListener != null) {
@@ -510,7 +512,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outPercent.setText(contentProgress + "%");
                         outFileType.setImageResource(
                                 FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
-                        view.setOnClickListener(new View.OnClickListener() {
+                        outBubbleBack.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if(contentMessageClickListener != null) {

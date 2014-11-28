@@ -22,6 +22,7 @@
     <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
     <color name="preview_progress_background">#70000000</color>
+    <color name="file_progress_background">#50000000</color>
     <color name="progress_background_color">#70ffffff</color>
     <color name="progress_fore_color">@color/orange_normal</color>
     <color name="file_size_text_color">#fafafa</color>

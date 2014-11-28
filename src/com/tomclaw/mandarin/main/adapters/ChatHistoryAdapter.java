@@ -374,38 +374,46 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
                         TextView incName = (TextView) view.findViewById(R.id.inc_name);
                         TextView incSize = (TextView) view.findViewById(R.id.inc_size);
+                        TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
                         ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
                         View incProgressContainer = view.findViewById(R.id.inc_progress_container);
 
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 incProgressContainer.setVisibility(View.GONE);
+                                incSize.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
                                 incProgressContainer.setVisibility(View.GONE);
+                                incSize.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 incProgressContainer.setVisibility(View.GONE);
+                                incSize.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                                 incProgressContainer.setVisibility(View.VISIBLE);
+                                incSize.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
                                 incProgressContainer.setVisibility(View.GONE);
+                                incSize.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
                                 incProgressContainer.setVisibility(View.GONE);
+                                incSize.setVisibility(View.VISIBLE);
                                 break;
                             }
                         }
                         incName.setText(contentName);
                         incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         incProgress.setProgress(contentProgress);
+                        incPercent.setText(contentProgress + "%");
                         break;
                     }
                 }
@@ -515,36 +523,43 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                     case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
                         TextView outName = (TextView) view.findViewById(R.id.out_name);
                         TextView outSize = (TextView) view.findViewById(R.id.out_size);
+                        TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 outProgressContainer.setVisibility(View.GONE);
+                                outSize.setVisibility(View.VISIBLE);
                                 // outError.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
                                 outProgressContainer.setVisibility(View.GONE);
+                                outSize.setVisibility(View.VISIBLE);
                                 // outError.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                                 outProgressContainer.setVisibility(View.GONE);
+                                outSize.setVisibility(View.VISIBLE);
                                 // outError.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                                 outProgressContainer.setVisibility(View.VISIBLE);
+                                outSize.setVisibility(View.GONE);
                                 // outError.setVisibility(View.GONE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
                                 outProgressContainer.setVisibility(View.GONE);
+                                outSize.setVisibility(View.VISIBLE);
                                 // outError.setVisibility(View.VISIBLE);
                                 break;
                             }
                             case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
                                 outProgressContainer.setVisibility(View.GONE);
+                                outSize.setVisibility(View.VISIBLE);
                                 // outError.setVisibility(View.GONE);
                                 break;
                             }
@@ -552,6 +567,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outName.setText(contentName);
                         outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         outProgress.setProgress(contentProgress);
+                        outPercent.setText(contentProgress + "%");
                         break;
                     }
                 }

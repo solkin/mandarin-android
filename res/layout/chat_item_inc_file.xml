@@ -22,47 +22,73 @@
                       android:paddingStart="0dp"
                       android:paddingLeft="0dp">
             <LinearLayout
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/chat_inc_bubble"
                     android:id="@+id/inc_bubble_back"
                     android:layout_gravity="start">
-                <TextView
-                        android:id="@+id/inc_name"
+                <ImageView
+                        android:id="@+id/inc_file_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="@dimen/file_min_width"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif-light"
-                        android:padding="4dp"/>
+                        android:src="@drawable/files_unknown"
+                        android:layout_gravity="center_vertical"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="10dp"/>
                 <LinearLayout
-                        android:id="@+id/inc_progress_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@color/preview_progress_background">
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
                     <TextView
+                            android:id="@+id/inc_name"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:id="@+id/inc_size"
-                            android:textColor="@color/file_size_text_color"
+                            android:layout_height="wrap_content"
+                            android:minWidth="@dimen/file_min_width"
                             android:textSize="16sp"
+                            android:paddingBottom="2dp"
+                            android:includeFontPadding="false"/>
+                    <TextView
+                            android:id="@+id/inc_size"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
                             android:fontFamily="sans-serif-light"
-                            android:paddingStart="6dp"
-                            android:paddingLeft="6dp"
-                            android:paddingEnd="0dp"
-                            android:paddingRight="0dp"
-                            android:gravity="center_vertical"/>
-                    <ProgressBar
-                            android:id="@+id/inc_progress"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="1"
-                            android:padding="8dp"
-                            android:max="100"
-                            android:progressDrawable="@drawable/file_progress"/>
+                            android:paddingTop="2dp"
+                            android:visibility="visible"
+                            android:includeFontPadding="false"/>
+                    <LinearLayout
+                            android:id="@+id/inc_progress_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:background="@drawable/file_progress_background">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:id="@+id/inc_percent"
+                                android:textColor="@color/file_size_text_color"
+                                android:textSize="16sp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingStart="6dp"
+                                android:paddingLeft="6dp"
+                                android:paddingEnd="0dp"
+                                android:paddingRight="0dp"
+                                android:gravity="center_vertical"/>
+                        <ProgressBar
+                                android:id="@+id/inc_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="24dp"
+                                android:layout_weight="1"
+                                android:padding="8dp"
+                                android:max="100"
+                                android:progressDrawable="@drawable/file_progress"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

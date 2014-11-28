@@ -65,7 +65,9 @@
                             android:minWidth="@dimen/file_min_width"
                             android:textSize="16sp"
                             android:paddingBottom="2dp"
-                            android:includeFontPadding="false"/>
+                            android:includeFontPadding="false"
+                            android:lines="1"
+                            android:singleLine="true"/>
                     <TextView
                             android:id="@+id/out_size"
                             android:layout_width="wrap_content"

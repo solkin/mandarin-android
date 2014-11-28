@@ -79,6 +79,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private Context context;
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
+    private ContentMessageClickListener contentMessageClickListener;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(context, null, 0x00);
@@ -322,47 +323,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         }
                         incProgress.setProgress(contentProgress);
                         incPercent.setText(contentProgress + "%");
-                        // TODO: make this code clearer.
                         incPreviewImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                switch(contentState) {
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                        RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                        QueryHelper.updateFileState(contentResolver,
-                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                                                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                                messageCookie);
-                                        break;
-                                    }
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                        try {
-                                            // Oh, God, what is it?!
-                                            ChiefActivity activity = ((ChiefActivity) context);
-                                            boolean wasActive = activity.getServiceInteraction().stopDownloadRequest(contentTag);
-                                            int desiredState;
-                                            // Checking for the task was active and will be stopped by itself,
-                                            // or it was in queue and it needs to be switched to waiting state manually.
-                                            if(wasActive) {
-                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
-                                            } else {
-                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
-                                            }
-                                            QueryHelper.updateFileState(contentResolver, desiredState,
-                                                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
-                                        } catch(Throwable ex) {
-                                            // Simply. Stupidly.
-                                            ex.printStackTrace();
-                                        }
-                                        break;
-                                    }
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                        Intent intent = new Intent();
-                                        intent.setAction(android.content.Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
-                                        context.startActivity(intent);
-                                        break;
-                                    }
+                                if(contentMessageClickListener != null) {
+                                    contentMessageClickListener.onIncomingClicked(contentState, contentTag,
+                                            contentUri, contentName, messageCookie);
                                 }
                             }
                         });
@@ -413,6 +379,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         incPercent.setText(contentProgress + "%");
                         incFileType.setImageResource(
                                 FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
+                        view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(contentMessageClickListener != null) {
+                                    contentMessageClickListener.onIncomingClicked(contentState, contentTag,
+                                            contentUri, contentName, messageCookie);
+                                }
+                            }
+                        });
                         break;
                     }
                 }
@@ -476,44 +451,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outPreviewImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                switch(contentState) {
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                        RequestHelper.startDelayedRequest(contentResolver, contentTag);
-                                        QueryHelper.updateFileState(contentResolver,
-                                                GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                                                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
-                                                messageCookie);
-                                        break;
-                                    }
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                        try {
-                                            // Oh, God, what is it?!
-                                            ChiefActivity activity = ((ChiefActivity) context);
-                                            boolean wasActive = activity.getServiceInteraction().stopUploadingRequest(contentTag);
-                                            int desiredState;
-                                            // Checking for the task was active and will be stopped by itself,
-                                            // or it was in queue and it needs to be switched to waiting state manually.
-                                            if(wasActive) {
-                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
-                                            } else {
-                                                desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
-                                            }
-                                            QueryHelper.updateFileState(contentResolver, desiredState,
-                                                    GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
-                                        } catch(Throwable ex) {
-                                            // Simply. Stupidly.
-                                            ex.printStackTrace();
-                                        }
-                                        break;
-                                    }
-                                    case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                        Intent intent = new Intent();
-                                        intent.setAction(android.content.Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
-                                        context.startActivity(intent);
-                                        break;
-                                    }
+                                if(contentMessageClickListener != null) {
+                                    contentMessageClickListener.onOncomingClicked(contentState, contentTag,
+                                            contentUri, contentName, messageCookie);
                                 }
                             }
                         });
@@ -570,6 +510,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outPercent.setText(contentProgress + "%");
                         outFileType.setImageResource(
                                 FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
+                        view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(contentMessageClickListener != null) {
+                                    contentMessageClickListener.onOncomingClicked(contentState, contentTag,
+                                            contentUri, contentName, messageCookie);
+                                }
+                            }
+                        });
                         break;
                     }
                 }
@@ -647,6 +596,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         return queryBuilder;
     }
 
+    public ContentMessageClickListener getContentMessageClickListener() {
+        return contentMessageClickListener;
+    }
+
+    public void setContentMessageClickListener(
+            ContentMessageClickListener contentMessageClickListener) {
+        this.contentMessageClickListener = contentMessageClickListener;
+    }
+
     private class ChatFilterQueryProvider implements FilterQueryProvider {
 
         @Override
@@ -656,5 +614,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
             return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
         }
+    }
+
+    public interface ContentMessageClickListener {
+        public void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                                      String contentName, String messageCookie);
+        public void onOncomingClicked(int contentState, String contentTag, String contentUri,
+                                      String contentName, String messageCookie);
     }
 }

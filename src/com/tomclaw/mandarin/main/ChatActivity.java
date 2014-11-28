@@ -27,6 +27,7 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
+import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
@@ -97,6 +98,7 @@ public class ChatActivity extends ChiefActivity {
         buddyObserver.touch();
 
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
 
         chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
@@ -452,6 +454,7 @@ public class ChatActivity extends ChiefActivity {
             chatHistoryAdapter.notifyDataSetInvalidated();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
         chatList.setAdapter(chatHistoryAdapter);
 
         setMessageTextFromDraft(buddyDbId);
@@ -1117,5 +1120,90 @@ public class ChatActivity extends ChiefActivity {
         public abstract void onSuccess();
 
         public abstract void onFailed();
+    }
+
+    public class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
+        @Override
+        public void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                String contentName, String messageCookie) {
+            switch(contentState) {
+                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                    QueryHelper.updateFileState(getContentResolver(),
+                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                            GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                            messageCookie);
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                    // TODO: use ServiceTask
+                    try {
+                        boolean wasActive = getServiceInteraction().stopDownloadRequest(contentTag);
+                        int desiredState;
+                        // Checking for the task was active and will be stopped by itself,
+                        // or it was in queue and it needs to be switched to waiting state manually.
+                        if(wasActive) {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                        } else {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                        }
+                        QueryHelper.updateFileState(getContentResolver(), desiredState,
+                                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
+                    } catch (Throwable ignored) {
+                    }
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                    startActivity(intent);
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onOncomingClicked(int contentState, String contentTag, String contentUri,
+                String contentName, String messageCookie) {
+            switch(contentState) {
+                case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
+                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                    QueryHelper.updateFileState(getContentResolver(),
+                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                            GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+                            messageCookie);
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                    // TODO: use ServiceTask
+                    try {
+                        boolean wasActive = getServiceInteraction().stopUploadingRequest(contentTag);
+                        int desiredState;
+                        // Checking for the task was active and will be stopped by itself,
+                        // or it was in queue and it needs to be switched to waiting state manually.
+                        if(wasActive) {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                        } else {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                        }
+                        QueryHelper.updateFileState(getContentResolver(), desiredState,
+                                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
+                    } catch(Throwable ex) {
+                        // Simply. Stupidly.
+                        ex.printStackTrace();
+                    }
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                    startActivity(intent);
+                    break;
+                }
+            }
+        }
     }
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,8 +22,6 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.views.PreviewImageView;
 import com.tomclaw.mandarin.util.*;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -362,7 +359,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                     case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
                                         Intent intent = new Intent();
                                         intent.setAction(android.content.Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
+                                        intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
                                         context.startActivity(intent);
                                         break;
                                     }
@@ -377,7 +374,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
                         ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
                         View incProgressContainer = view.findViewById(R.id.inc_progress_container);
-
+                        ImageView incFileType = (ImageView) view.findViewById(R.id.inc_file_type);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 incProgressContainer.setVisibility(View.GONE);
@@ -414,6 +411,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         incProgress.setProgress(contentProgress);
                         incPercent.setText(contentProgress + "%");
+                        incFileType.setImageResource(
+                                FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
                         break;
                     }
                 }
@@ -511,7 +510,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                                     case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
                                         Intent intent = new Intent();
                                         intent.setAction(android.content.Intent.ACTION_VIEW);
-                                        intent.setDataAndType(Uri.parse(contentUri), HttpUtil.getMimeType(contentName));
+                                        intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
                                         context.startActivity(intent);
                                         break;
                                     }
@@ -526,6 +525,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
                         ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
                         View outProgressContainer = view.findViewById(R.id.out_progress_container);
+                        ImageView outFileType = (ImageView) view.findViewById(R.id.out_file_type);
                         switch (contentState) {
                             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                                 outProgressContainer.setVisibility(View.GONE);
@@ -568,6 +568,8 @@ public class ChatHistoryAdapter extends CursorAdapter implements
                         outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
                         outProgress.setProgress(contentProgress);
                         outPercent.setText(contentProgress + "%");
+                        outFileType.setImageResource(
+                                FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
                         break;
                     }
                 }

@@ -181,17 +181,4 @@ public class HttpUtil {
         }
         return suffix;
     }
-
-    public static String getMimeType(String path) {
-        String type = null;
-        String extension = getFileExtensionFromPath(path);
-        if (extension != null) {
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            type = mime.getMimeTypeFromExtension(extension.toLowerCase());
-        }
-        if (TextUtils.isEmpty(type)) {
-            type = "application/octet-stream";
-        }
-        return type;
-    }
 }

@@ -16,7 +16,7 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.io.BufferedReader;
@@ -289,26 +289,8 @@ public class DocumentPickerActivity extends Activity {
                 item.icon = R.drawable.files_folder;
             } else {
                 item.subtitle = StringUtil.formatBytes(getResources(), file.length());
-                String mimeType = HttpUtil.getMimeType(file.getName());
-                if (mimeType.startsWith("image")) {
-                    item.icon = R.drawable.files_img;
-                } else if (mimeType.contains("compressed") ||
-                        mimeType.contains("zip") ||
-                        mimeType.contains("7z") ||
-                        mimeType.contains("rar")) {
-                    item.icon = R.drawable.files_zip;
-                } else if (mimeType.contains("android") && mimeType.contains("package")) {
-                    item.icon = R.drawable.files_apk;
-                } else if (mimeType.contains("text") || mimeType.contains("document") ||
-                        mimeType.contains("pdf") || mimeType.contains("html") || mimeType.contains("latex")) {
-                    item.icon = R.drawable.files_text;
-                } else if (mimeType.contains("audio")) {
-                    item.icon = R.drawable.files_music;
-                } else if (mimeType.contains("video") || mimeType.contains("flash")) {
-                    item.icon = R.drawable.files_video;
-                } else {
-                    item.icon = R.drawable.files_unknown;
-                }
+                String mimeType = FileHelper.getMimeType(file.getName());
+                item.icon = FileHelper.getMimeTypeResPicture(mimeType);
             }
             items.add(item);
         }

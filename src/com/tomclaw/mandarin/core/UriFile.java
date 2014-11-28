@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.FileHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -121,7 +121,7 @@ public class UriFile extends VirtualFile {
                     String mimeType;
                     int mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
                     if (mimeTypeColumn == -1) {
-                        mimeType = HttpUtil.getMimeType(name);
+                        mimeType = FileHelper.getMimeType(name);
                     } else {
                         mimeType = cursor.getString(mimeTypeColumn);
                     }
@@ -134,7 +134,7 @@ public class UriFile extends VirtualFile {
             }
         } else if (TextUtils.equals(uriScheme, ContentResolver.SCHEME_FILE)) {
             File file = new File(uri.getPath());
-            return new UriFile(uri.toString(), HttpUtil.getMimeType(file.getName()), file.length(), file.getName());
+            return new UriFile(uri.toString(), FileHelper.getMimeType(file.getName()), file.length(), file.getName());
         }
         throw new FileNotFoundException();
     }

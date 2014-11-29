@@ -1,13 +1,9 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.views.PreviewImageView;
 import com.tomclaw.mandarin.util.*;
 
@@ -273,8 +271,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
-        final ContentResolver contentResolver = context.getContentResolver();
-        final PackageManager packageManager = context.getPackageManager();
         // Select message type.
         switch (messageType) {
             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {

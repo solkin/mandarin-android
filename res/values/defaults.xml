@@ -19,5 +19,5 @@
 
     <bool name="pref_show_start_helper_default">true</bool>
 
-    <integer name="def_auto_receive_threshold">5242880</integer>
+    <integer name="def_auto_receive_threshold">1048576</integer>
 </resources>

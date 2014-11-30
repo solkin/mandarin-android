@@ -195,25 +195,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
 
     protected abstract void onPending();
 
-    private InputStream getInputStream(int responseCode, HttpURLConnection connection)
-            throws IOException {
-        if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
-            return connection.getErrorStream();
-        } else {
-            return connection.getInputStream();
-        }
-    }
-
     protected abstract void onBufferReleased(long sent, long size);
-
-    /**
-     * Returns uploading range block size.
-     *
-     * @return int - buffer size.
-     */
-    private int getBufferSize() {
-        return 76800;
-    }
 
     /**
      * Returns uploading virtual file.

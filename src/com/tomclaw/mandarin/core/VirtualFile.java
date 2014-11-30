@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import com.tomclaw.mandarin.util.Unobfuscatable;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -9,7 +10,7 @@ import java.io.InputStream;
 /**
  * Created by Solkin on 18.10.2014.
  */
-public abstract class VirtualFile {
+public abstract class VirtualFile implements Unobfuscatable {
 
     public VirtualFile() {
     }

@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin;
+package com.tomclaw.mandarin.core;
 
 import android.util.Log;
 import com.tomclaw.mandarin.core.Request;
@@ -125,15 +125,6 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
      * @return FileOutputStream to store data.
      */
     public abstract FileOutputStream getOutputStream() throws FileNotFoundException;
-
-    /**
-     * Returns download block size.
-     *
-     * @return int - buffer size.
-     */
-    private int getBufferSize() {
-        return 76800;
-    }
 
     protected abstract void onStarted() throws Throwable;
 

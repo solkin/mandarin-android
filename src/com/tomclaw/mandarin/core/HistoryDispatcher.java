@@ -38,6 +38,7 @@ public class HistoryDispatcher {
     private static final int NOTIFICATION_ID = 0x01;
 
     private final int largeIconSize;
+    private final int previewSize;
 
     public HistoryDispatcher(Context context) {
         // Variables.
@@ -47,6 +48,7 @@ public class HistoryDispatcher {
         // Creating observers.
         historyObserver = new HistoryObserver();
         largeIconSize = BitmapCache.convertDpToPixel(64, context);
+        previewSize = BitmapCache.BITMAP_SIZE_ORIGINAL;
     }
 
     public void startObservation() {
@@ -99,6 +101,7 @@ public class HistoryDispatcher {
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+                    NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
                     // Building variables.
                     int unread = 0;
                     boolean multipleSenders = (unreadList.size() > 1);
@@ -107,14 +110,18 @@ public class HistoryDispatcher {
                     int buddyDbId = 0;
                     Bitmap largeIcon = null;
                     String message = "";
-                    for(NotificationData data : unreadList) {
+                    int contentType = GlobalProvider.HISTORY_CONTENT_TYPE_TEXT;
+                    String previewHash = "";
+                    for (NotificationData data : unreadList) {
                         // Obtaining and collecting message-specific data.
                         unread += data.getUnreadCount();
                         message = data.getMessageText();
                         buddyDbId = data.getBuddyDbId();
                         String nickName = data.getBuddyNick();
                         String avatarHash = data.getBuddyAvatarHash();
-                        if(TextUtils.isEmpty(nickName)) {
+                        contentType = data.getContentType();
+                        previewHash = data.getPreviewHash();
+                        if (TextUtils.isEmpty(nickName)) {
                             nickName = context.getString(R.string.unknown_buddy);
                             avatarHash = null;
                         }
@@ -123,7 +130,7 @@ public class HistoryDispatcher {
                             if (!TextUtils.isEmpty(avatarHash)) {
                                 // Obtain avatar for notification.
                                 largeIcon = BitmapCache.getInstance().getBitmapSync(
-                                        avatarHash, largeIconSize, largeIconSize, true);
+                                        avatarHash, largeIconSize, largeIconSize, true, true);
                             }
                         } else {
                             nickNamesBuilder.append(", ");
@@ -176,10 +183,19 @@ public class HistoryDispatcher {
                         actionIcon = R.drawable.social_chat;
                         actionButton = context.getString(R.string.dialogs);
                         actionIntent = openChatsIntent;
-                        bigTextStyle.bigText(message);
-                        bigTextStyle.setBigContentTitle(title);
                         readButton = context.getString(R.string.mark_as_read);
-                        style = bigTextStyle;
+                        if ((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
+                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO) &&
+                                !TextUtils.isEmpty(previewHash)) {
+                            Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true, false);
+                            bigPictureStyle.bigPicture(previewFull);
+                            bigPictureStyle.setSummaryText(message);
+                            style = bigPictureStyle;
+                        } else {
+                            bigTextStyle.bigText(message);
+                            bigTextStyle.setBigContentTitle(title);
+                            style = bigTextStyle;
+                        }
                     }
                     // Notification prepare.
                     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)

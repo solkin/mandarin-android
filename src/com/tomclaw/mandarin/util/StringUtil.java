@@ -3,9 +3,11 @@ package com.tomclaw.mandarin.util;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
+import com.tomclaw.mandarin.R;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -31,9 +33,9 @@ public class StringUtil {
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
     private static final String MAPPING_CP1252 = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
 
-    public static int getAlphabetIndex(String nickName) {
-        for (int c = 0; c < nickName.length(); c++) {
-            char character = nickName.charAt(c);
+    public static int getAlphabetIndex(String name) {
+        for (int c = 0; c < name.length(); c++) {
+            char character = name.charAt(c);
             if (Character.isLetterOrDigit(character)) {
                 return Character.toUpperCase(character);
             }
@@ -59,7 +61,6 @@ public class StringUtil {
     public static String unescapeXml(String string) {
         return Entities.XML.unescape(string);
     }
-
 
     public static void copyStringToClipboard(Context context, String string, int toastText) {
         ClipboardManager clipboardManager = (ClipboardManager)
@@ -108,5 +109,26 @@ public class StringUtil {
 
     public static boolean isEmptyOrWhitespace(String string) {
         return TextUtils.isEmpty(string) || TextUtils.isEmpty(string.trim());
+    }
+
+    public static String formatBytes(Resources resources, long bytes) {
+        if (bytes < 1024) {
+            return resources.getString(R.string.bytes, bytes);
+        } else if (bytes < 1024 * 1024) {
+            return resources.getString(R.string.kibibytes, bytes / 1024.0f);
+        } else if (bytes < 1024 * 1024 * 1024) {
+            return resources.getString(R.string.mibibytes, bytes / 1024.0f / 1024.0f);
+        } else {
+            return resources.getString(R.string.gigibytes, bytes / 1024.0f / 1024.0f / 1024.0f);
+        }
+    }
+
+    public static String formatSpeed(float bytesPerSecond) {
+        float bitsPerSecond = bytesPerSecond * 8;
+        int unit = 1000;
+        if (bitsPerSecond < unit) return bitsPerSecond + " bits/sec";
+        int exp = (int) (Math.log(bitsPerSecond) / Math.log(unit));
+        String pre = String.valueOf("kmgtpe".charAt(exp - 1));
+        return String.format("%.1f %sB/sec", bitsPerSecond / Math.pow(unit, exp), pre);
     }
 }

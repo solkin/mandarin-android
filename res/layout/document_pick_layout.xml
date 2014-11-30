@@ -1,0 +1,20 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/listView"/>
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:textColor="#808080"
+              android:gravity="center"
+              android:textSize="24sp"
+              android:id="@+id/searchEmptyView"
+              android:visibility="gone"
+              android:layout_gravity="top"/>
+
+</FrameLayout>

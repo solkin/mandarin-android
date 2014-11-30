@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,9 @@ public class SettingsActivity extends Activity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(listener);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setIcon(R.drawable.ic_ab_logo);
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()

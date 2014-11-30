@@ -16,18 +16,13 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.MainExecutor;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
-import com.tomclaw.mandarin.main.AccountAddActivity;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.main.SettingsActivity;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
+import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.tasks.AccountInfoTask;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -81,33 +76,30 @@ public class AccountsDrawerLayout extends DrawerLayout {
         final View.OnClickListener connectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    activity.getServiceInteraction().connectAccounts();
-                } catch (Throwable ignored) {
-                    // Heh... Nothing to do in this case.
-                    Toast.makeText(activity, R.string.unable_to_connect_account,
-                            Toast.LENGTH_SHORT).show();
-                }
+                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                    @Override
+                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                        interaction.connectAccounts();
+                    }
+                });
             }
         };
         final View.OnClickListener disconnectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    activity.getServiceInteraction().disconnectAccounts();
-                } catch (RemoteException e) {
-                    // Heh... Nothing to do in this case.
-                    Toast.makeText(activity, R.string.unable_to_shutdown_account,
-                            Toast.LENGTH_SHORT).show();
-                }
+                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                    @Override
+                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                        interaction.disconnectAccounts();
+                    }
+                });
             }
         };
         Button addAccountButton = (Button) findViewById(R.id.add_account_button);
         addAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent accountAddIntent = new Intent(getContext(), AccountAddActivity.class);
-                accountAddIntent.putExtra(AccountAddActivity.EXTRA_CLASS_NAME, IcqAccountRoot.class.getName());
+                Intent accountAddIntent = new Intent(activity, IntroActivity.class);
                 activity.startActivity(accountAddIntent);
                 closeAccountsPanel();
             }
@@ -262,17 +254,16 @@ public class AccountsDrawerLayout extends DrawerLayout {
         builder.setPositiveButton(R.string.connect_yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    int selectedStatusIndex = spinnerAdapter.getStatus(
-                            statusSpinner.getSelectedItemPosition());
-                    // Trying to connect account.
-                    activity.getServiceInteraction().updateAccountStatusIndex(
-                            accountType, userId, selectedStatusIndex);
-                } catch (Throwable ignored) {
-                    // Heh... Nothing to do in this case.
-                    Toast.makeText(activity, R.string.unable_to_connect_account,
-                            Toast.LENGTH_SHORT).show();
-                }
+                final int selectedStatusIndex = spinnerAdapter.getStatus(
+                        statusSpinner.getSelectedItemPosition());
+                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                    @Override
+                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                        // Trying to connect account.
+                        interaction.updateAccountStatusIndex(
+                                accountType, userId, selectedStatusIndex);
+                    }
+                });
             }
         });
         builder.setNegativeButton(R.string.connect_no, null);
@@ -325,20 +316,19 @@ public class AccountsDrawerLayout extends DrawerLayout {
         builder.setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    int selectedStatusIndex = spinnerAdapter.getStatus(
-                            statusSpinner.getSelectedItemPosition());
-                    String statusTitleString = StatusUtil.getStatusTitle(accountType, selectedStatusIndex);
-                    String statusMessageString = statusMessage.getText().toString();
-                    // Trying to update account status.
-                    activity.getServiceInteraction().updateAccountStatus(
-                            accountType, userId, selectedStatusIndex,
-                            statusTitleString, statusMessageString);
-                } catch (Throwable ignored) {
-                    // Heh... Nothing to do in this case.
-                    Toast.makeText(activity, R.string.unable_to_connect_account,
-                            Toast.LENGTH_SHORT).show();
-                }
+                final int selectedStatusIndex = spinnerAdapter.getStatus(
+                        statusSpinner.getSelectedItemPosition());
+                final String statusTitleString = StatusUtil.getStatusTitle(accountType, selectedStatusIndex);
+                final String statusMessageString = statusMessage.getText().toString();
+                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                    @Override
+                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                        // Trying to update account status.
+                        interaction.updateAccountStatus(
+                                accountType, userId, selectedStatusIndex,
+                                statusTitleString, statusMessageString);
+                    }
+                });
             }
         });
         builder.setNegativeButton(R.string.connect_no, null);

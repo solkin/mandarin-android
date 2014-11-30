@@ -63,7 +63,9 @@ public class SearchActivity extends ChiefActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.search_activity_menu, menu);
         final MenuItem item = menu.findItem(R.id.search_action_menu);
-        item.getActionView().setOnClickListener(new View.OnClickListener() {
+        TextView actionView = ((TextView) item.getActionView());
+        actionView.setText(actionView.getText().toString().toUpperCase());
+        actionView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -108,7 +110,7 @@ public class SearchActivity extends ChiefActivity {
         String city = cityEdit.getText().toString();
         // Obtain search builder instance from account.
         builder.keyword(keyword);
-        if(!TextUtils.isEmpty(city)) {
+        if (!TextUtils.isEmpty(city)) {
             builder.city(city);
         }
         builder.online(onlineBox.isChecked());

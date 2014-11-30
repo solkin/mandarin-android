@@ -195,6 +195,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT);
                 db.execSQL(GlobalProvider.DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT);
             }
+            case 5: {
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_TYPE + " int default " + GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_SIZE + " bigint default 0");
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_STATE + " int default " + GlobalProvider.HISTORY_CONTENT_STATE_STABLE);
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_PROGRESS + " int default 0");
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_URI + " text");
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_NAME + " text");
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_PREVIEW_HASH + " text");
+                db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_TAG + " text");
+            }
         }
         Log.d(Settings.LOG_TAG, "Database upgrade completed");
     }

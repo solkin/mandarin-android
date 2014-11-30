@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/phone_enter_menu"
+          android:title="@string/next"
+          android:icon="@drawable/ic_action_forward"
+          android:showAsAction="always|withText"
+          android:actionLayout="@layout/phone_login_button"/>
+</menu>

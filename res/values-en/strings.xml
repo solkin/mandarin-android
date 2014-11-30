@@ -8,11 +8,6 @@
     <string name="add_account">Add an account</string>
     <string name="edit_account">Edit</string>
     <string name="remove_account">Delete</string>
-    <string name="save_account">Save</string>
-    <string name="user_id_empty">Please enter your login or ID</string>
-    <string name="user_password_empty">Please enter your password</string>
-    <string name="user_id">Login or ID</string>
-    <string name="user_password">Password</string>
     <string name="account_add_fail">Sorry! Account adding failed.</string>
     <string name="account_already_exists">Account with the same ID already exists!</string>
     <string name="add_buddy">Add to buddylist</string>
@@ -50,17 +45,21 @@
     <string name="message_share">Share</string>
 
     <string name="clear_history_title">Clear your history?</string>
-    <string name="clear_history_text">All the history of messages between you and this buddy will be deleted. Continue?</string>
+    <string name="clear_history_text">All the history of messages between you and this buddy will be deleted.
+        Continue?
+    </string>
     <string name="yes_clear">Yes</string>
     <string name="do_not_clear">Cancel</string>
 
     <string name="selected_items">%d selected</string>
     <string name="yes_remove">Remove</string>
     <string name="remove_accounts_title">Delete these accounts?</string>
-    <string name="remove_accounts_text">Selected accounts will be deleted forever along with their message history. This action cannot be undone. Continue?
+    <string name="remove_accounts_text">Selected accounts will be deleted forever along with their message history. This
+        action cannot be undone. Continue?
     </string>
     <string name="remove_account_title">Delete this account?</string>
-    <string name="remove_account_text">This account will be deleted forever along with its message history. This action cannot be undone. Continue?
+    <string name="remove_account_text">This account will be deleted forever along with its message history. This action
+        cannot be undone. Continue?
     </string>
     <string name="do_not_remove">No</string>
     <string name="please_wait">Please wait a while...</string>
@@ -95,7 +94,8 @@
     <string name="buddy_status">Status</string>
     <string name="pref_chat_title">Переписка</string>
     <string name="pref_title_collapse_messages">Merge messages</string>
-    <string name="pref_summary_collapse_messages">Merge messages together if they were sent less than 2 minutes from each other
+    <string name="pref_summary_collapse_messages">Merge messages together if they were sent less than 2 minutes from
+        each other
     </string>
     <string name="pref_base_title">Essentials</string>
     <string name="pref_title_autorun">Autorun service</string>
@@ -122,8 +122,8 @@
     </string>
     <string name="unable_to_setup_status">Failed to change your status. Restarting the app may help.
     </string>
-    <string name="status_message_hint">Change status message...</string>
-    <string name="status_message_change_hint">Status message...</string>
+    <string name="status_message_hint">Change status message…</string>
+    <string name="status_message_change_hint">Status message…</string>
     <string name="click_to_connect_hint">Click here to connect</string>
     <string name="apply">Apply</string>
     <string name="not_now">Not now</string>
@@ -183,24 +183,24 @@
     <string name="status_icq_diary">Diary</string>
     <string name="no_dialogs_opened">No dialogs yet. Open one!</string>
     <string name="pref_title_chat_background">Background</string>
-    <string name="add_icq_account">Please enter your UIN and password and press the \"Save\" button
-    </string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
-    <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client; I developed it due to high demand and some personal interest.
+    <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client; I developed it due to
+        high demand and some personal interest.
     </string>
     <string name="app_year">2014</string>
-    <string name="disconnecting">Disconnecting...</string>
-    <string name="connecting">Connecting...</string>
+    <string name="disconnecting">Disconnecting…</string>
+    <string name="connecting">Connecting…</string>
     <string name="invalid_credentials">Sorry, your password or ID is invalid. Please review them again.</string>
-    <string name="checking_credentials">Connecting, please wait a while...</string>
+    <string name="checking_credentials">Connecting, please wait a while…</string>
     <string name="pref_summary_chat_show_keyboard">Show keyboard when I open a dialog</string>
     <string name="pref_title_chat_show_keyboard">Show keyboard</string>
     <string name="pref_title_send_by_enter">Use Enter to send</string>
     <string name="pref_summary_send_by_enter">Send message when I press Enter on my keyboard</string>
     <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
     <string name="pref_title_music_auto_status">Now playing status</string>
-    <string name="pref_summary_music_auto_status">Automatically set my status to \"Music\" with currently playing track name in description when I play music in system player
+    <string name="pref_summary_music_auto_status">Automatically set my status to \"Music\" with currently playing track
+        name in description when I play music in system player
     </string>
     <string name="update_after_track_switch">Status will be updated after track switch</string>
     <string name="pref_title_lights">LED</string>
@@ -225,7 +225,7 @@
     <string name="yesterday">yesterday</string>
     <string name="last_seen_date" formatted="false">Last seen %1$s at %2$s</string>
     <string name="last_seen_time" formatted="false">Last seen at %s</string>
-    <string name="typing">is typing...</string>
+    <string name="typing">is typing…</string>
     <string name="unknown_buddy">Unknown buddy</string>
     <string name="pref_title_dark_theme">Dark theme</string>
     <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
@@ -236,11 +236,12 @@
     <string name="rename_buddy_short">Rename</string>
     <string name="edit_buddy_name_title">Renaming buddy</string>
     <string name="rename_buddy_description">Desired name:</string>
-    <string name="buddy_name_hint">Buddy name...</string>
+    <string name="buddy_name_hint">Buddy name…</string>
     <string name="no_buddy_in_roster">Not present in your buddylist</string>
     <string name="remove_buddy_title">Delete this buddy?</string>
     <string name="remove_buddies_title">Delete these buddies?</string>
-    <string name="remove_buddies_message">You are going to delete %d buddies. Their message history will be deleted, too. Continue?
+    <string name="remove_buddies_message">You are going to delete %d buddies. Their message history will be deleted,
+        too. Continue?
     </string>
     <string name="remove_buddy_message">Are you sure you want to delete this buddy along with the message history?
     </string>
@@ -250,7 +251,7 @@
     <string name="search_buddy">Buddy search</string>
     <string name="no_active_accounts">Connect at least one account to add buddies</string>
     <string name="search_buddy_error">Failed to perform search. Please try again later.</string>
-    <string name="buddy_search_progress">Search in progress...</string>
+    <string name="buddy_search_progress">Search in progress…</string>
     <string name="buddy_search_no_result">No buddies found.</string>
     <string name="select_age">Age</string>
     <string name="range_from">from</string>
@@ -285,4 +286,77 @@
     <string name="city_search">City</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="mark_as_read_all">Mark all as read</string>
+    <string name="next">Next</string>
+    <string name="complete">Complete</string>
+    <string name="send_file">Send file</string>
+    <string name="out_file_error">File sending error</string>
+
+    <string name="fill_the_fields_below">Fill the fields below</string>
+    <string name="email_or_uin_empty">Please enter your e-mail or UIN and password</string>
+    <string name="password_empty">Please enter your password</string>
+    <string name="email_or_uin_hint">E-mail or UIN</string>
+    <string name="password_hint">Password</string>
+    <string name="tiny_icq_client">Tiny ICQ client</string>
+    <string name="plain_login">Login and password</string>
+    <string name="login_account">Login</string>
+    <string name="enter_phone_number">Enter your phone number</string>
+    <string name="file_upload_title">Sending file</string>
+    <string name="upload_failed">File sending failed</string>
+    <string name="file_for">for %s</string>
+    <string name="default_locale">US</string>
+    <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a>.</string>
+    <string name="select_country">Select country</string>
+    <string name="phone_number_faq"><u>Why does Mandarin use my phone number?</u></string>
+    <string name="phone_number_faq_message">Mandarin uses your phone number as your \"identity\". Once you\'ve entered your phone number, you will receive an access code via SMS to activate your account. This is the best way to get fast, secure and simple access to your new or existing account.</string>
+    <string name="got_it">Got it</string>
+    <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code below.</string>
+    <string name="resend_code_time">Resend code (%1$s)</string>
+    <string name="resend_code">Resend code</string>
+    <string name="checking_phone_number">Checking entered phone number…</string>
+    <string name="phone_auth_error">Error</string>
+    <string name="checking_phone_protocol_error">Incorrect phone number. Please, check country code, entered number and try again.</string>
+    <string name="phone_auth_network_error">Network error. Check the internet connection and try again.</string>
+    <string name="checking_sms_code">Checking entered code…</string>
+    <string name="checking_sms_error">Unable to validate phone number. Check entered code, internet connection and try again.</string>
+    <string name="requesting_sms_code">Requesting activation code…</string>
+    <string name="file_download_title">Receiving file</string>
+    <string name="download_failed">File receiving failed</string>
+    <string name="file_from">from %s</string>
+    <string name="send_picture">Picture</string>
+    <string name="send_video">Video</string>
+    <string name="send_document">Document</string>
+    <string name="gallery">Gallery</string>
+    <string name="all_pictures">All pictures</string>
+    <string name="cancel">Cancel</string>
+    <string name="send">Send</string>
+
+    <string name="select_file">Select File</string>
+    <string name="free_of_total">Free %1$s of %2$s</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="access_error">Access error</string>
+    <string name="no_files">No files yet…</string>
+    <string name="file_upload_limit">File size shouldn\'t be greater than %1$s</string>
+    <string name="not_mounted">Storage not mounted</string>
+    <string name="usb_active">USB transfer active</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="external_storage">External Storage</string>
+    <string name="system_root">System Root</string>
+    <string name="sd_card">SD Card</string>
+    <string name="bytes">%d B</string>
+    <string name="kibibytes">%.1f KB</string>
+    <string name="mibibytes">%.1f MB</string>
+    <string name="gigibytes">%.1f GB</string>
+    <string name="system_picker">Select file in another picker</string>
+    <string name="pref_files_title">File sharing</string>
+    <string name="pref_title_files_auto_receive">Receiving files</string>
+    <string name="pref_summary_files_auto_receive">Automatic files receiving options</string>
+    <string name="receive_mobile_and_wi_fi">Always</string>
+    <string name="receive_mobile_less_size">Up to 1 MB always</string>
+    <string name="receive_wi_fi_only">Only on Wi-Fi</string>
+    <string name="receive_manual_only">Newer</string>
+    <string name="pref_title_image_compression">Image compression</string>
+    <string name="pref_summary_image_compression">Outgoing images compression quality</string>
+    <string name="image_compression_original">Original</string>
+    <string name="image_compression_medium">Medium quality</string>
+    <string name="image_compression_low_quality">Low quality</string>
 </resources>

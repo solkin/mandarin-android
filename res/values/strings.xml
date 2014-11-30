@@ -8,11 +8,6 @@
     <string name="add_account">Добавить профиль</string>
     <string name="edit_account">Редактировать</string>
     <string name="remove_account">Удалить</string>
-    <string name="save_account">Сохранить</string>
-    <string name="user_id_empty">Пожалуйста, введите логин</string>
-    <string name="user_password_empty">Пожалуйста, введите пароль</string>
-    <string name="user_id">Логин</string>
-    <string name="user_password">Пароль</string>
     <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
     <string name="account_already_exists">Добавляемый профиль уже существует!</string>
     <string name="add_buddy">Добавить в список контактов</string>
@@ -187,9 +182,6 @@
     <string name="status_icq_diary">Дневник</string>
     <string name="no_dialogs_opened">Нажмите на кнопку создания диалога сверху, чтобы начать общаться!</string>
     <string name="pref_title_chat_background">Фоновая заставка</string>
-    <string name="add_icq_account">Введите, пожалуйста, ваши логин (UIN) и пароль для входа в ICQ и нажмите
-        \"Сохранить\"
-    </string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
@@ -297,4 +289,79 @@
     <string name="city_search">Город</string>
     <string name="mark_as_read">Прочитано</string>
     <string name="mark_as_read_all">Прочитано всё</string>
+    <string name="next">Далее</string>
+    <string name="complete">Готово</string>
+    <string name="send_file">Отправить файл</string>
+    <string name="out_file_error">Ошибка передачи файла</string>
+
+    <string name="fill_the_fields_below">Заполните поля ниже</string>
+    <string name="email_or_uin_empty">Пожалуйста, введите Ваши e-mail или UIN и пароль</string>
+    <string name="password_empty">Пожалуйста, введите пароль</string>
+    <string name="email_or_uin_hint">E-mail или UIN</string>
+    <string name="password_hint">Пароль</string>
+    <string name="tiny_icq_client">Лёгкий ICQ клиент</string>
+    <string name="plain_login">Логин и пароль</string>
+    <string name="login_account">Войти</string>
+    <string name="enter_phone_number">Введите номер Вашего телефона</string>
+    <string name="file_upload_title">Отправка файла</string>
+    <string name="upload_failed">Отправка файла не удалась</string>
+    <string name="file_for">для %s</string>
+    <string name="default_locale">RU</string>
+    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a>.</string>
+    <string name="select_country">Выберите страну</string>
+    <string name="phone_number_faq"><u>Для чего Мандарину мой номер телефона?</u></string>
+    <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ для доступа к Вашей новой или существующей учётной записи.</string>
+    <string name="got_it">Понятно</string>
+    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код ниже.</string>
+    <string name="resend_code_time">Переотправить код (%s)</string>
+    <string name="resend_code">Переотправить код</string>
+    <string name="checking_phone_number">Проверка введённого номера…</string>
+    <string name="phone_auth_error">Ошибка</string>
+    <string name="checking_phone_protocol_error">Введён неверный номер телефона. Пожалуйста, проверьте код страны, введённый номер и
+        повторите попытку.
+    </string>
+    <string name="phone_auth_network_error">Ошибка сети. Проверьте интернет-соединение и повторите попытку.</string>
+    <string name="checking_sms_code">Проверка введённого кода подтверждения…</string>
+    <string name="checking_sms_error">Не удалось проверить номер телефона. Проверьте правильность введённого кода подтверждения, интернет-соединение и повторите попытку.</string>
+    <string name="requesting_sms_code">Запрос кода подтверждения…</string>
+    <string name="file_download_title">Получение файла</string>
+    <string name="download_failed">Получение файла не удалось</string>
+    <string name="file_from">от %s</string>
+    <string name="send_picture">Изображение</string>
+    <string name="send_video">Видео</string>
+    <string name="send_document">Документ</string>
+    <string name="gallery">Галерея</string>
+    <string name="all_pictures">Все изображения</string>
+    <string name="cancel">Отмена</string>
+    <string name="send">Отправить</string>
+
+    <string name="select_file">Выберите файл</string>
+    <string name="free_of_total">Свободно %1$s из %2$s</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="access_error">Ошибка доступа</string>
+    <string name="no_files">Здесь пока нет файлов…</string>
+    <string name="file_upload_limit">Размер файла должен быть не более %1$s</string>
+    <string name="not_mounted">Накопитель не подключен</string>
+    <string name="usb_active">USB передача данных активна</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
+    <string name="external_storage">Внешнее хранилище</string>
+    <string name="system_root">Системный корень</string>
+    <string name="sd_card">SD карта</string>
+    <string name="bytes">%d B</string>
+    <string name="kibibytes">%.1f КБ</string>
+    <string name="mibibytes">%.1f МБ</string>
+    <string name="gigibytes">%.1f ГБ</string>
+    <string name="system_picker">Выбрать в другом приложении</string>
+    <string name="pref_files_title">Обмен файлами</string>
+    <string name="pref_title_files_auto_receive">Автополучение файлов</string>
+    <string name="pref_summary_files_auto_receive">Настройка автоматического получения файлов</string>
+    <string name="receive_mobile_and_wi_fi">Всегда</string>
+    <string name="receive_mobile_less_size">До 1 МБ всегда</string>
+    <string name="receive_wi_fi_only">Только на Wi-Fi</string>
+    <string name="receive_manual_only">Никогда</string>
+    <string name="pref_title_image_compression">Сжатие изображений</string>
+    <string name="pref_summary_image_compression">Настройка качества сжатия исходящих изображений</string>
+    <string name="image_compression_original">Без сжатия</string>
+    <string name="image_compression_medium">Среднее качество</string>
+    <string name="image_compression_low_quality">Низкое качество</string>
 </resources>

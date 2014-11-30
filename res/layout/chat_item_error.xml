@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:gravity="center_vertical"
+              android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dp"
+              android:paddingTop="5dp" android:paddingRight="5dp"
+              android:descendantFocusability="blocksDescendants">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/error_message"
+            android:background="?attr/chat_error_bubble">
+        <com.tomclaw.mandarin.main.views.TightTextView
+                style="@style/Chat.Message"
+                android:text="@string/error_bubble"
+                android:id="@+id/error_text"/>
+    </LinearLayout>
+</LinearLayout>

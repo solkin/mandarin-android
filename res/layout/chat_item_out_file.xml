@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:gravity="center_vertical"
+              android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dp"
+              android:paddingTop="5dp" android:paddingRight="5dp"
+              android:descendantFocusability="blocksDescendants">
+    <include layout="@layout/chat_item_date"/>
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/outgoing_message"
+                  android:baselineAligned="false">
+        <LinearLayout android:orientation="vertical"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:gravity="right">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/out_time"
+                      android:layout_gravity="right"
+                      android:textColor="?chat_time_color"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/message_delivery"
+                    android:src="@drawable/ic_delivered"
+                    android:tint="?chat_icons_tint"
+                    android:layout_marginTop="6dp"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"
+                      android:paddingLeft="5dp"
+                      android:paddingRight="0dp">
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/chat_out_bubble"
+                    android:id="@+id/out_bubble_back"
+                    android:layout_gravity="right">
+                <ImageView
+                        android:id="@+id/out_file_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/files_unknown"
+                        android:layout_gravity="center_vertical"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="10dp"/>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
+                    <TextView
+                            android:id="@+id/out_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minWidth="@dimen/file_min_width"
+                            android:textSize="16sp"
+                            android:paddingBottom="1dp"
+                            android:includeFontPadding="false"
+                            android:lines="1"
+                            android:singleLine="true"/>
+                    <TextView
+                            android:id="@+id/out_size"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingTop="1dp"
+                            android:visibility="gone"
+                            android:includeFontPadding="false"/>
+                    <LinearLayout
+                            android:id="@+id/out_progress_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="visible">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:id="@+id/out_percent"
+                                android:textSize="16sp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingStart="6dp"
+                                android:paddingLeft="6dp"
+                                android:paddingEnd="0dp"
+                                android:paddingRight="0dp"
+                                android:gravity="center_vertical"/>
+                        <ProgressBar
+                                android:id="@+id/out_progress"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="24dp"
+                                android:layout_weight="1"
+                                android:padding="8dp"
+                                android:max="100"
+                                android:progress="50"
+                                android:progressDrawable="@drawable/file_progress"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView>

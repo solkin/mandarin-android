@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/sms_code_menu"
+          android:title="@string/complete"
+          android:showAsAction="always|withText"
+          android:actionLayout="@layout/sms_code_button"/>
+</menu>

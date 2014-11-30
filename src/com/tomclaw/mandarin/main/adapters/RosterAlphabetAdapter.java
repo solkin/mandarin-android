@@ -47,6 +47,7 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX);
+        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

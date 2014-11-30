@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <array name="default_icons">
-        <item>@drawable/rating_important</item>
-        <item>@drawable/social_chat</item>
-        <item>@drawable/social_person</item>
-        <item>@drawable/social_group</item>
-    </array>
-
     <string-array name="roster_filter_strings">
         <item>@string/filter_show_all_buddies</item>
         <item>@string/filter_show_online_only</item>
@@ -29,6 +22,41 @@
         <item>@string/roster_mode_groups</item>
     </string-array>
 
+    <string-array name="pref_files_auto_receive_strings">
+        <item>@string/receive_mobile_and_wi_fi</item>
+        <item>@string/receive_mobile_less_size</item>
+        <item>@string/receive_wi_fi_only</item>
+        <item>@string/receive_manual_only</item>
+    </string-array>
+
+    <string-array name="pref_files_auto_receive_values">
+        <item>@string/auto_receive_mobile_and_wi_fi</item>
+        <item>@string/auto_receive_mobile_less_size</item>
+        <item>@string/auto_receive_wi_fi_only</item>
+        <item>@string/auto_receive_manual_only</item>
+    </string-array>
+
+    <string-array name="pref_image_compression_strings">
+        <item>@string/image_compression_original</item>
+        <item>@string/image_compression_medium</item>
+        <item>@string/image_compression_low_quality</item>
+    </string-array>
+
+    <string-array name="pref_image_compression_values">
+        <item>@string/compression_original</item>
+        <item>@string/compression_medium</item>
+        <item>@string/compression_low_quality</item>
+    </string-array>
+
     <string name="roster_mode_alphabet">alphabet</string>
     <string name="roster_mode_groups">groups</string>
+
+    <string name="auto_receive_mobile_and_wi_fi">mobile_and_wi_fi</string>
+    <string name="auto_receive_mobile_less_size">mobile_less_size</string>
+    <string name="auto_receive_wi_fi_only">wi_fi_only</string>
+    <string name="auto_receive_manual_only">manual_only</string>
+
+    <string name="compression_original">original</string>
+    <string name="compression_medium">medium</string>
+    <string name="compression_low_quality">low_quality</string>
 </resources>

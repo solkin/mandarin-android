@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
@@ -27,6 +26,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
+import com.tomclaw.mandarin.main.views.ContactBadge;
 
 /**
  * Created with IntelliJ IDEA.
@@ -189,8 +189,8 @@ public class RosterDialogsAdapter extends CursorAdapter implements
                 TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
-        QuickContactBadge contactBadge = ((QuickContactBadge) view.findViewById(R.id.buddy_badge));
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar);
+        ContactBadge contactBadge = ((ContactBadge) view.findViewById(R.id.buddy_badge));
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
         // On-avatar click listener.
         final int buddyDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
         final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);

@@ -8,7 +8,8 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
-import android.widget.ImageView;
+import com.tomclaw.mandarin.main.views.LazyImageView;
+import com.tomclaw.mandarin.util.BitmapHelper;
 
 import java.io.*;
 
@@ -34,16 +35,22 @@ public class BitmapCache {
     private static final String BITMAP_CACHE_FOLDER = "bitmaps";
     private File path;
     private LruCache<String, Bitmap> bitmapLruCache;
+    private int densityDpi;
 
     public BitmapCache() {
-        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
-        int cacheSize = maxMemory / 8;
-        bitmapLruCache = new LruCache<String, Bitmap>(cacheSize);
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory());
+        // Use 1/12th of the available memory for this memory cache.
+        int cacheSize = maxMemory / 12;
+        bitmapLruCache = new LruCache<String, Bitmap>(cacheSize) {
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
     }
 
-    public void initStorage(Context context) {
+    public void init(Context context) {
         path = context.getDir(BITMAP_CACHE_FOLDER, Context.MODE_PRIVATE);
+        densityDpi = context.getResources().getDisplayMetrics().densityDpi;
     }
 
     private static String getCacheKey(String hash, int width, int height) {
@@ -57,20 +64,48 @@ public class BitmapCache {
      * @param imageView       - image view to show image
      * @param hash            - required image hash
      * @param defaultResource - default resource to show while original image being loaded and scaled
+     * @param original        - if false, image will be cached with specified imageView size,
+     *                        if true original size image will be used
      */
-    public void getBitmapAsync(ImageView imageView, final String hash, int defaultResource) {
-        Bitmap bitmap = getBitmapSyncFromCache(hash, imageView.getWidth(), imageView.getHeight());
+    public void getBitmapAsync(LazyImageView imageView, final String hash, int defaultResource, boolean original) {
+        int width, height;
+        if (original) {
+            width = height = BITMAP_SIZE_ORIGINAL;
+        } else {
+            width = imageView.getWidth();
+            height = imageView.getHeight();
+        }
+        Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
         // Checking for there is no cached bitmap and reset is really required.
         if (bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
-            imageView.setImageResource(defaultResource);
+            imageView.setPlaceholder(defaultResource);
         }
-        imageView.setTag(hash);
+        imageView.setHash(hash);
         if (!TextUtils.isEmpty(hash)) {
             // Checking for bitmap cached or not.
             if (bitmap == null) {
-                TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash));
+                TaskExecutor.getInstance().execute(new BitmapTask(imageView, hash, width, height));
             } else {
-                imageView.setImageBitmap(bitmap);
+                imageView.setBitmap(bitmap);
+            }
+        }
+    }
+
+    public void getThumbnailAsync(LazyImageView imageView, String hash, long imageId, int placeholder) {
+        int width = imageView.getWidth();
+        int height = imageView.getHeight();
+        Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
+        // Checking for there is no cached bitmap and reset is really required.
+        if (bitmap == null && ThumbnailTask.isResetRequired(imageView, hash)) {
+            imageView.setPlaceholder(placeholder);
+        }
+        imageView.setHash(hash);
+        if (!TextUtils.isEmpty(hash)) {
+            // Checking for bitmap cached or not.
+            if (bitmap == null) {
+                TaskExecutor.getInstance().execute(new ThumbnailTask(imageView, hash, imageId, width, height));
+            } else {
+                imageView.setBitmap(bitmap);
             }
         }
     }
@@ -89,36 +124,45 @@ public class BitmapCache {
      * @param width          - required width
      * @param height         - required height
      * @param isProportional - proportional scale flag
+     * @param isAccurate     - bitmap may be sampled size or exact width and height
      * @return Bitmap or null if such image not found.
      */
-    public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional) {
+    public Bitmap getBitmapSync(String hash, int width, int height, boolean isProportional, boolean isAccurate) {
         String cacheKey = getCacheKey(hash, width, height);
         Bitmap bitmap = bitmapLruCache.get(cacheKey);
         if (bitmap == null) {
-            File file = getBitmapFile(hash);
             try {
-                FileInputStream inputStream = new FileInputStream(file);
-                bitmap = BitmapFactory.decodeStream(inputStream);
-                // Check and set original size.
-                if (width == BITMAP_SIZE_ORIGINAL) {
-                    width = bitmap.getWidth();
-                }
-                if (height == BITMAP_SIZE_ORIGINAL) {
-                    height = bitmap.getHeight();
-                }
-                // Resize bitmap for the largest size.
-                if (isProportional) {
-                    if (bitmap.getWidth() > bitmap.getHeight()) {
-                        height = width * bitmap.getHeight() / bitmap.getWidth();
-                    } else if (bitmap.getHeight() > bitmap.getWidth()) {
-                        width = height * bitmap.getWidth() / bitmap.getHeight();
+                FileInputStream inputStream = new FileInputStream(getBitmapFilePath(hash));
+                if (width != BITMAP_SIZE_ORIGINAL && height != BITMAP_SIZE_ORIGINAL) {
+                    bitmap = BitmapHelper.decodeSampledBitmapFromStream(inputStream, width, height);
+                } else {
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    // Check and set original size.
+                    if (width == BITMAP_SIZE_ORIGINAL) {
+                        width = bitmap.getWidth();
+                    }
+                    if (height == BITMAP_SIZE_ORIGINAL) {
+                        height = bitmap.getHeight();
                     }
                 }
-                // Check for bitmap needs to be resized.
-                if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                // Checking for exact size is needed.
+                if (isAccurate) {
+                    // Resize bitmap for the largest size.
+                    if (isProportional) {
+                        if (bitmap.getWidth() > bitmap.getHeight()) {
+                            height = width * bitmap.getHeight() / bitmap.getWidth();
+                        } else if (bitmap.getHeight() > bitmap.getWidth()) {
+                            width = height * bitmap.getWidth() / bitmap.getHeight();
+                        }
+                    }
+                    // Check for bitmap needs to be resized.
+                    if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                        bitmap.recycle();
+                        bitmap = scaledBitmap;
+                    }
                 }
-                bitmapLruCache.put(cacheKey, bitmap);
+                cacheBitmap(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {
                 Log.d(Settings.LOG_TAG, "Bitmap '" + hash + "' not found!");
             } catch (Throwable ex) {
@@ -129,27 +173,39 @@ public class BitmapCache {
     }
 
     public boolean saveBitmapSync(String hash, Bitmap bitmap) {
-        File file = getBitmapFile(hash);
+        return saveBitmapSync(hash, bitmap, COMPRESS_FORMAT);
+    }
+
+    public boolean saveBitmapSync(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
         try {
-            OutputStream os = new FileOutputStream(file);
-            bitmap.compress(COMPRESS_FORMAT, 95, os);
+            OutputStream os = new FileOutputStream(getBitmapFilePath(hash));
+            bitmap.compress(compressFormat, 85, os);
+            os.flush();
             os.close();
             return true;
         } catch (IOException e) {
             // Unable to create file, likely because external storage is
             // not currently mounted.
-            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + file, e);
+            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + hash, e);
         }
         return false;
     }
 
-    public void removeBitmap(String hash) {
-        File file = getBitmapFile(hash);
-        file.delete();
+    public void saveBitmapAsync(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
+        TaskExecutor.getInstance().execute(new SaveBitmapTask(hash, bitmap, compressFormat));
     }
 
-    private File getBitmapFile(String hash) {
-        return new File(path, hash.concat(".").concat(COMPRESS_FORMAT.name()));
+    public void cacheBitmapOriginal(String hash, Bitmap bitmap) {
+        String cacheKey = getCacheKey(hash, BITMAP_SIZE_ORIGINAL, BITMAP_SIZE_ORIGINAL);
+        cacheBitmap(cacheKey, bitmap);
+    }
+
+    public void cacheBitmap(String cacheKey, Bitmap bitmap) {
+        bitmapLruCache.put(cacheKey, bitmap);
+    }
+
+    private String getBitmapFilePath(String hash) {
+        return path.getPath().concat("/").concat(hash).concat(".").concat(COMPRESS_FORMAT.name());
     }
 
     /**
@@ -163,5 +219,28 @@ public class BitmapCache {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return (int) (dp * metrics.density);
+    }
+
+    public boolean isLowDensity() {
+        return densityDpi == DisplayMetrics.DENSITY_LOW ||
+                densityDpi == DisplayMetrics.DENSITY_MEDIUM;
+    }
+
+    public class SaveBitmapTask extends Task {
+
+        private String hash;
+        private Bitmap bitmap;
+        private Bitmap.CompressFormat compressFormat;
+
+        public SaveBitmapTask(String hash, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
+            this.hash = hash;
+            this.bitmap = bitmap;
+            this.compressFormat = compressFormat;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            saveBitmapSync(hash, bitmap, compressFormat);
+        }
     }
 }

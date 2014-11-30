@@ -3,11 +3,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search"
-          android:icon="@drawable/action_search"
+          android:icon="@drawable/ic_search"
           android:showAsAction="never|collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
+    <item android:icon="@drawable/ic_attach_file"
+          android:showAsAction="ifRoom"
+          android:title="@string/send_file">
+        <menu>
+            <item android:id="@+id/send_picture_menu"
+                  android:showAsAction="ifRoom"
+                  android:title="@string/send_picture"/>
+            <item android:id="@+id/send_video_menu"
+                  android:showAsAction="ifRoom"
+                  android:title="@string/send_video"/>
+            <item android:id="@+id/send_document_menu"
+                  android:showAsAction="ifRoom"
+                  android:title="@string/send_document"/>
+        </menu>
+    </item>
     <item android:id="@+id/buddy_info_menu"
-          android:icon="@drawable/social_person"
+          android:icon="@drawable/ic_person"
           android:showAsAction="ifRoom"
           android:title="@string/buddy_info"/>
     <item android:id="@+id/close_chat_menu"

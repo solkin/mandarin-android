@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_action_bar">#FFFF9E16</color>
     <color name="background_split_action_bar">#FF555555</color>
     <color name="item_background_action_bar">#FFFFFFFF</color>
     <color name="chat_gradient_light_start">#FFDBDBDB</color>
@@ -8,9 +7,9 @@
     <color name="chat_gradient_dark_start">#FF040404</color>
     <color name="chat_gradient_dark_end">#FF101010</color>
     <color name="smiley_selected_background">#aabababa</color>
-    <color name="smiley_selected_stroke">#aa888899</color>
+    <color name="smiley_selected_stroke">#66888899</color>
     <color name="draft_indicator_color">#ff95a5a6</color>
-    <color name="blue_indicator_color">#ff3498db</color>
+    <color name="orange_indicator_color">@color/orange_normal</color>
     <color name="green_indicator_color">#ff5cb85c</color>
     <color name="red_indicator_color">#ffe74c3c</color>
     <color name="button_navbar_normal">#11000000</color>
@@ -20,12 +19,34 @@
     <color name="status_message_color">#FFFAFAFA</color>
     <color name="account_nick_color">#FFFAFAFA</color>
     <color name="tint_color">#70000000</color>
+    <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
+    <color name="preview_progress_background">#70000000</color>
+    <color name="file_progress_background">#50000000</color>
+    <color name="progress_background_color">#70ffffff</color>
+    <color name="progress_fore_color">@color/orange_normal</color>
+    <color name="file_size_text_color">#fafafa</color>
+    <color name="failed_preview_tint">#70000000</color>
+    <color name="out_error_text_color">#fafafa</color>
+    <color name="orange_normal">#ff6600</color>
+    <color name="orange_pressed">#e55400</color>
+    <color name="resend_code_disabled">#bababa</color>
+    <color name="resend_code_enabled">#ffffff</color>
+    <color name="light_back_color">#f0f0f0</color>
+    <color name="check_selected_color">@color/orange_normal</color>
+    <color name="check_unselected_color">#501c1c1c</color>
+    <color name="thumbnail_back">#333333</color>
+    <color name="photo_border_body_color">#33ff6600</color>
+    <color name="photo_border_stroke_color">@color/orange_normal</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
-        <item name="header_head_color">#F0CCCCCC</item>
-        <item name="header_back_color">#99CCCCCC</item>
-        <item name="header_font_color">#AA000000</item>
-        <item name="header_line_color">#E0CCCCCC</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
+
+        <item name="android:windowBackground">@color/light_back_color</item>
+
+        <item name="header_head_color">#d9d9d9</item>
+        <item name="header_back_color">#e6e6e6</item>
+        <item name="header_font_color">#ff6600</item>
+        <item name="header_line_color">#d9d9d9</item>
 
         <item name="chat_date_color">#FF111111</item>
         <item name="chat_time_color">#FF111111</item>
@@ -36,9 +57,12 @@
         <item name="chat_out_bubble">@drawable/ic_out_bubble_light</item>
         <item name="chat_error_bubble">@drawable/ic_error_bubble_light</item>
 
+        <item name="chat_buttons_tint">#666666</item>
         <item name="chat_icons_tint">#FF151515</item>
-        <item name="chat_input_background">#FFEEEEEE</item>
-        <item name="chat_separator">#aaaaaa</item>
+        <item name="chat_input_background">#FFFFFF</item>
+        <item name="chat_separator">#D9D9D9</item>
+        <item name="chat_placeholder_tint_inc">#a0a0a0</item>
+        <item name="chat_placeholder_tint_out">#818181</item>
 
         <item name="profile_panel_background">#EE232323</item>
         <item name="separator_navbar">#44000000</item>
@@ -71,9 +95,12 @@
         <item name="chat_out_bubble">@drawable/ic_out_bubble_dark</item>
         <item name="chat_error_bubble">@drawable/ic_error_bubble_dark</item>
 
+        <item name="chat_buttons_tint">#FFD6D6D6</item>
         <item name="chat_icons_tint">#FFDADADA</item>
         <item name="chat_input_background">#FF151515</item>
         <item name="chat_separator">#FF252525</item>
+        <item name="chat_placeholder_tint_inc">#60616161</item>
+        <item name="chat_placeholder_tint_out">#60616161</item>
 
         <item name="profile_panel_background">#EE151515</item>
         <item name="separator_navbar">#44000000</item>
@@ -83,6 +110,8 @@
         <item name="chat_background_doodle">@android:color/transparent</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_dark</item>
+    </style>
+    <style name="ActionBar.Holo.Light" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
     </style>
     <style name="ActionBar.Holo.Opaque" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
@@ -112,6 +141,15 @@
     <style name="Button.Blue" parent="Button.Flat">
         <item name="android:background">@drawable/blue_button_selector</item>
     </style>
+    <style name="Button.Orange" parent="Button.Flat">
+        <item name="android:background">@drawable/orange_button_selector</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="Button.White" parent="Button.Flat">
+        <item name="android:background">@drawable/white_button_selector</item>
+        <item name="android:textColor">#454545</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
     <style name="Chat.Message" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -122,5 +160,92 @@
         <item name="android:layout_gravity">left|center_vertical</item>
         <item name="android:singleLine">false</item>
         <item name="android:textColor">?chat_text_color</item>
+    </style>
+    <style name="Theme.Mandarin.Intro" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/ActionBar.Holo.Opaque.Intro</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+    <style name="ActionBar.Holo.Opaque.Intro" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
+        <item name="android:subtitleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle</item>
+    </style>
+    <style name="PhoneNumberBlock">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/text_view_focused</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+    <style name="IntroEditField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/text_view_selector</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <style name="IntroSmsCodeField">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/text_view_selector</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">40sp</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:inputType">number</item>
+    </style>
+    <style name="IntroHeaderView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    <style name="CountryNameView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">3dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    <style name="CountryCodeView">
+        <item name="android:textSize">28dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">#959595</item>
+    </style>
+    <style name="PhoneNumberView">
+        <item name="android:textSize">28dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    <style name="PrivacyPolicyView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorLink">#ffffff</item>
+    </style>
+    <style name="ResendCodeView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@drawable/resend_code_color</item>
     </style>
 </resources>

@@ -19,6 +19,7 @@ public class TimeHelper {
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
     private static final SimpleDateFormat simpleTimeFormat12 = new SimpleDateFormat("h:mm a");
     private static final SimpleDateFormat simpleTimeFormat24 = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat simpleTimeFormatSeconds = new SimpleDateFormat("mm:ss");
 
     public TimeHelper(Context context) {
         this.context = context;
@@ -48,5 +49,9 @@ public class TimeHelper {
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c;
+    }
+
+    public String getTime(long timestamp) {
+        return simpleTimeFormatSeconds.format(timestamp);
     }
 }

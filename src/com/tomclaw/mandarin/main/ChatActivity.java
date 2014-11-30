@@ -4,7 +4,9 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
@@ -25,12 +27,16 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
+import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +47,8 @@ import java.util.Collection;
 public class ChatActivity extends ChiefActivity {
 
     private static final int TYPING_DELAY = 5 * 1000;
+    private static final int PICK_FILE_RESULT_CODE = 1;
+    private static final int PICK_GALLERY_RESULT_CODE = 2;
 
     private LinearLayout chatRoot;
     private ChatListView chatList;
@@ -74,12 +82,6 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
-        // Checking for we must show keyboard automatically.
-        if (PreferenceHelper.isShowKeyboard(this)) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        }
-        isSendByEnter = PreferenceHelper.isSendByEnter(ChatActivity.this);
-
         // Initialize action bar.
         ActionBar bar = getActionBar();
         bar.setTitle(R.string.dialogs);
@@ -96,6 +98,7 @@ public class ChatActivity extends ChiefActivity {
         buddyObserver.touch();
 
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
 
         chatList = (ChatListView) findViewById(R.id.chat_list);
         chatList.setAdapter(chatHistoryAdapter);
@@ -196,6 +199,13 @@ public class ChatActivity extends ChiefActivity {
                     }
             );
         }
+
+        // Checking for we must show keyboard automatically.
+        if (PreferenceHelper.isShowKeyboard(this)) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            messageText.requestFocus();
+        }
+        isSendByEnter = PreferenceHelper.isSendByEnter(this);
     }
 
     private String getMessageText() {
@@ -211,10 +221,10 @@ public class ChatActivity extends ChiefActivity {
         int selectionStart = messageText.getSelectionStart();
         int selectionEnd = messageText.getSelectionEnd();
         // Checking for spaces needed on the left or right side of this smile.
-        if(selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
+        if (selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
             smileyText = " " + smileyText;
         }
-        if(selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
+        if (selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
             smileyText += " ";
         }
         // Inserting smile into current message.
@@ -403,6 +413,20 @@ public class ChatActivity extends ChiefActivity {
                 builder.show();
                 return true;
             }
+            case R.id.send_picture_menu: {
+                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                return true;
+            }
+            case R.id.send_video_menu: {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("video/*");
+                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                return true;
+            }
+            case R.id.send_document_menu: {
+                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                return true;
+            }
             default: {
                 return super.onOptionsItemSelected(item);
             }
@@ -430,6 +454,7 @@ public class ChatActivity extends ChiefActivity {
             chatHistoryAdapter.notifyDataSetInvalidated();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
         chatList.setAdapter(chatHistoryAdapter);
 
         setMessageTextFromDraft(buddyDbId);
@@ -449,6 +474,56 @@ public class ChatActivity extends ChiefActivity {
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_FILE_RESULT_CODE: {
+                if (resultCode == RESULT_OK) {
+                    onFilePicked(data.getData());
+                }
+                break;
+            }
+            case PICK_GALLERY_RESULT_CODE: {
+                if (resultCode == RESULT_OK) {
+                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
+                        Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
+                        if (bundle != null) {
+                            List<PhotoEntry> photoEntries = new ArrayList<PhotoEntry>();
+                            for (String key : bundle.keySet()) {
+                                photoEntries.add((PhotoEntry) bundle.getSerializable(key));
+                            }
+                            TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
+                        }
+                    } else if (data.getData() != null) {
+                        onFilePicked(data.getData());
+                    }
+                }
+            }
+        }
+    }
+
+    private void onFilePicked(Uri uri) {
+        try {
+            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            MessageCallback callback = new MessageCallback() {
+
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onFailed() {
+                    Log.d(Settings.LOG_TAG, "sending file failed");
+                }
+            };
+            UriFile uriFile = UriFile.create(this, uri);
+            TaskExecutor.getInstance().execute(
+                    new SendFileTask(this, buddyDbId, uriFile, callback));
+        } catch (Throwable ignored) {
+        }
     }
 
     @Override
@@ -535,14 +610,6 @@ public class ChatActivity extends ChiefActivity {
                 });
             }
         };
-        /*try {
-            ActionBar actionBar = getActionBar();
-            // This will provide buddy nick by db id.
-            actionBar.setTitle(QueryHelper.getBuddyNick(getContentResolver(), buddyDbId));
-
-        } catch (BuddyNotFoundException ignored) {
-            Log.d(Settings.LOG_TAG, "No buddy fount by specified buddyDbId");
-        }*/
     }
 
     private void setMessageTextFromDraft(int buddyDbId) {
@@ -865,6 +932,109 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
+    private class SendPhotosTask extends PleaseWaitTask {
+
+        private final int buddyDbId;
+        private final List<PhotoEntry> selectedPhotos;
+
+        public SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
+            super(context);
+            this.buddyDbId = buddyDbId;
+            this.selectedPhotos = photoEntries;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                int counter = 0;
+                for (PhotoEntry photoEntry : selectedPhotos) {
+                    String cookie = System.currentTimeMillis() + "/" + counter + ":" + photoEntry.hash;
+                    File file = new File(photoEntry.path);
+                    if (file.exists() && file.length() > 0) {
+                        Uri uri = Uri.fromFile(file);
+                        UriFile uriFile = UriFile.create(context, uri);
+                        // Checking file type, size and other required information.
+                        long size = uriFile.getSize();
+                        int contentType = uriFile.getContentType();
+                        String hash = photoEntry.hash;
+                        String tag = cookie + ":" + uriFile.getPath();
+                        // Create outgoing file messages.
+                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+                                uriFile.getName(), contentType, size, hash, tag);
+                        // Sending protocol message request.
+                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+                        counter++;
+                    }
+                }
+            }
+        }
+    }
+
+    private class SendFileTask extends PleaseWaitTask {
+
+        private final int buddyDbId;
+        private UriFile uriFile;
+        private final MessageCallback callback;
+
+        public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
+            super(activity);
+            this.buddyDbId = buddyDbId;
+            this.uriFile = uriFile;
+            this.callback = callback;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                String cookie = String.valueOf(System.currentTimeMillis());
+                // Checking file type, size and other required information.
+                long size = uriFile.getSize();
+                int contentType = uriFile.getContentType();
+                String hash = HttpUtil.getUrlHash(uriFile.toString());
+                String tag = cookie + ":" + uriFile.getPath();
+                // Check for image in bitmap cache first.
+                Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false);
+                if (bitmap == null) {
+                    // Try to create thumbnail from selected Uri.
+                    bitmap = uriFile.getThumbnail(context);
+                }
+                // Check and store bitmap in bitmap cache.
+                if (bitmap == null) {
+                    // No bitmap - no hash.
+                    hash = "";
+                } else {
+                    // Cache bitmap in Ram immediately
+                    BitmapCache.getInstance().cacheBitmapOriginal(hash, bitmap);
+                    // ... and async saving in storage.
+                    BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
+                }
+                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+                        uriFile.getName(), contentType, size, hash, tag);
+                // Sending protocol message request.
+                RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            callback.onSuccess();
+        }
+
+        @Override
+        public void onFailMain() {
+            Context context = getWeakObject();
+            if (context != null) {
+                // Show error.
+                Toast.makeText(context, R.string.error_sending_message, Toast.LENGTH_LONG).show();
+            }
+            callback.onFailed();
+        }
+    }
+
     public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
@@ -950,5 +1120,107 @@ public class ChatActivity extends ChiefActivity {
         public abstract void onSuccess();
 
         public abstract void onFailed();
+    }
+
+    public class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
+
+        @Override
+        public void onClicked(ChatHistoryItem historyItem) {
+            switch (historyItem.getMessageType()) {
+                case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
+                    onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                            historyItem.getContentUri(), historyItem.getContentName(),
+                            historyItem.getMessageCookie());
+                    break;
+                }
+                case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
+                    onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                            historyItem.getContentUri(), historyItem.getContentName(),
+                            historyItem.getMessageCookie());
+                    break;
+                }
+            }
+        }
+
+        public void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                String contentName, String messageCookie) {
+            switch(contentState) {
+                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                    QueryHelper.updateFileState(getContentResolver(),
+                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                            GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                            messageCookie);
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                    // TODO: use ServiceTask
+                    try {
+                        boolean wasActive = getServiceInteraction().stopDownloadRequest(contentTag);
+                        int desiredState;
+                        // Checking for the task was active and will be stopped by itself,
+                        // or it was in queue and it needs to be switched to waiting state manually.
+                        if(wasActive) {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                        } else {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                        }
+                        QueryHelper.updateFileState(getContentResolver(), desiredState,
+                                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
+                    } catch (Throwable ignored) {
+                    }
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                    startActivity(intent);
+                    break;
+                }
+            }
+        }
+
+        public void onOutgoingClicked(int contentState, String contentTag, String contentUri,
+                String contentName, String messageCookie) {
+            switch(contentState) {
+                case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
+                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                    QueryHelper.updateFileState(getContentResolver(),
+                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                            GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+                            messageCookie);
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                    // TODO: use ServiceTask
+                    try {
+                        boolean wasActive = getServiceInteraction().stopUploadingRequest(contentTag);
+                        int desiredState;
+                        // Checking for the task was active and will be stopped by itself,
+                        // or it was in queue and it needs to be switched to waiting state manually.
+                        if(wasActive) {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                        } else {
+                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                        }
+                        QueryHelper.updateFileState(getContentResolver(), desiredState,
+                                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
+                    } catch(Throwable ex) {
+                        // Simply. Stupidly.
+                        ex.printStackTrace();
+                    }
+                    break;
+                }
+                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                    startActivity(intent);
+                    break;
+                }
+            }
+        }
     }
 }

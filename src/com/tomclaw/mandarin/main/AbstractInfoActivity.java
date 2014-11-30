@@ -16,6 +16,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
+import com.tomclaw.mandarin.main.views.ContactImage;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
@@ -99,8 +100,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         }
 
         // Buddy avatar.
-        ImageView contactBadge = (ImageView) findViewById(R.id.buddy_badge);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar);
+        ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.ic_default_avatar, false);
     }
 
     protected abstract int getLayout();

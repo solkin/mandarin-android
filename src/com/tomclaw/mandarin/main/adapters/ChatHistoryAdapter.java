@@ -4,7 +4,6 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.FilterQueryProvider;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -21,6 +18,8 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.main.ChatHistoryItem;
+import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.TimeHelper;
@@ -34,10 +33,17 @@ import com.tomclaw.mandarin.util.TimeHelper;
 public class ChatHistoryAdapter extends CursorAdapter implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int[] MESSAGE_TYPES = new int[]{
-            R.id.error_message,
-            R.id.incoming_message,
-            R.id.outgoing_message};
+    private static final int[] ITEM_LAYOUTS = new int[]{
+            R.layout.chat_item_error,
+            R.layout.chat_item_inc_text,
+            R.layout.chat_item_inc_image,
+            R.layout.chat_item_inc_video,
+            R.layout.chat_item_inc_file,
+            R.layout.chat_item_out_text,
+            R.layout.chat_item_out_image,
+            R.layout.chat_item_out_video,
+            R.layout.chat_item_out_file
+    };
     private static final int[] MESSAGE_STATES = new int[]{
             R.drawable.ic_dot,
             R.drawable.ic_error,
@@ -57,14 +63,24 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
     private static int COLUMN_MESSAGE_STATE;
+    private static int COLUMN_MESSAGE_COOKIE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
     private static int COLUMN_MESSAGE_READ;
     private static int COLUMN_ROW_AUTO_ID;
+    private static int COLUMN_CONTENT_TYPE;
+    private static int COLUMN_CONTENT_SIZE;
+    private static int COLUMN_CONTENT_STATE;
+    private static int COLUMN_CONTENT_PROGRESS;
+    private static int COLUMN_CONTENT_URI;
+    private static int COLUMN_CONTENT_NAME;
+    private static int COLUMN_PREVIEW_HASH;
+    private static int COLUMN_CONTENT_TAG;
 
     private Context context;
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
+    private ContentMessageClickListener contentMessageClickListener;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(context, null, 0x00);
@@ -105,9 +121,18 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
         COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
         COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
+        COLUMN_MESSAGE_COOKIE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE);
         COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
         COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
         COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
+        COLUMN_CONTENT_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE);
+        COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
+        COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
+        COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
+        COLUMN_CONTENT_URI = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_URI);
+        COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
+        COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
+        COLUMN_CONTENT_TAG = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TAG);
         // Changing current cursor.
         swapCursor(cursor);
     }
@@ -139,19 +164,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             bindView(view, context, cursor);
         } catch (Throwable ex) {
-            if (convertView == null) {
-                view = inflater.inflate(R.layout.chat_item, parent, false);
-                Log.d(Settings.LOG_TAG, "create new error view");
-            } else {
-                view = convertView;
-                Log.d(Settings.LOG_TAG, "using existing view for error bubble");
-            }
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
-            view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
-            view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
-            view.findViewById(R.id.error_message).setVisibility(View.VISIBLE);
             Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
+            view = inflater.inflate(R.layout.chat_item_error, parent, false);
+            ex.printStackTrace();
         }
         return view;
     }
@@ -164,60 +179,112 @@ public class ChatHistoryAdapter extends CursorAdapter implements
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return inflater.inflate(R.layout.chat_item, parent, false);
+        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+        return inflater.inflate(ITEM_LAYOUTS[getItemType(messageType, contentType)], parent, false);
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public int getItemViewType(int position) {
+        Cursor cursor = getCursor();
+        int type;
+        try {
+            if (cursor == null || !cursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+            int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+            type = getItemType(messageType, contentType);
+        } catch (Throwable ex) {
+            type = 0;
+        }
+        return type;
+    }
+
+    private int getItemType(int messageType, int contentType) {
+        int type;
+        switch (messageType) {
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_ERROR:
+                type = 0;
+                break;
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING:
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT:
+                        type = 1;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE:
+                        type = 2;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                        type = 3;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE:
+                        type = 4;
+                        break;
+                    default:
+                        return 0;
+                }
+                break;
+            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING:
+                switch (contentType) {
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT:
+                        type = 5;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE:
+                        type = 6;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                        type = 7;
+                        break;
+                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE:
+                        type = 8;
+                        break;
+                    default:
+                        return 0;
+                }
+                break;
+            default:
+                return 0;
+        }
+        return type;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 9;
+    }
+
+    @Override
+    public void bindView(View view, final Context context, Cursor cursor) {
         // Message data.
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
         int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
+        final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
+        // Content message data
+        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+        long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
+        final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
+        int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
+        final String contentName = cursor.getString(COLUMN_CONTENT_NAME);
+        final String contentUri = cursor.getString(COLUMN_CONTENT_URI);
+        String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
+        final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
-        // Select message type.
-        switch (MESSAGE_TYPES[messageType]) {
-            case R.id.incoming_message: {
-                // Update visibility.
-                view.findViewById(R.id.incoming_message).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.outgoing_message).setVisibility(View.GONE);
-                view.findViewById(R.id.error_message).setVisibility(View.GONE);
-                // Updating data.
-                ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
-                ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
-                break;
-            }
-            case R.id.outgoing_message: {
-                // Update visibility.
-                view.findViewById(R.id.outgoing_message).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.incoming_message).setVisibility(View.GONE);
-                view.findViewById(R.id.error_message).setVisibility(View.GONE);
-                // Updating data.
-                ((TextView) view.findViewById(R.id.out_text)).setText(messageText);
-                ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
-                ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
-                break;
-            }
-            default: {
-                // What's up?
-                return;
-            }
-        }
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        if (!(cursor.moveToPrevious() && messageDateText
-                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
-            // Update date text view.
-            ((TextView) view.findViewById(R.id.message_date))
-                    .setText(messageDateText);
-        } else {
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
-        }
+        boolean dateVisible = !(cursor.moveToPrevious() && messageDateText
+                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
+        // Creating chat history item to bind the view.
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageType, messageText, messageTime, messageState,
+                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
+                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        BaseHistoryView historyView = (BaseHistoryView) view;
+        historyView.bind(historyItem);
+        historyView.setContentClickListener(contentMessageClickListener);
     }
 
     public long getMessageDbId(int position) throws MessageNotFoundException {
@@ -242,12 +309,12 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             String buddyNick = "unknown";
             try {
                 // Select message type.
-                switch (MESSAGE_TYPES[messageType]) {
-                    case R.id.incoming_message: {
+                switch (messageType) {
+                    case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                         buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
                         break;
                     }
-                    case R.id.outgoing_message: {
+                    case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
                         buddyNick = QueryHelper.getAccountName(context.getContentResolver(), accountDbId);
                         break;
                     }
@@ -272,6 +339,15 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         return queryBuilder;
     }
 
+    public ContentMessageClickListener getContentMessageClickListener() {
+        return contentMessageClickListener;
+    }
+
+    public void setContentMessageClickListener(
+            ContentMessageClickListener contentMessageClickListener) {
+        this.contentMessageClickListener = contentMessageClickListener;
+    }
+
     private class ChatFilterQueryProvider implements FilterQueryProvider {
 
         @Override
@@ -281,5 +357,10 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
             return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
         }
+    }
+
+    public interface ContentMessageClickListener {
+
+        public void onClicked(ChatHistoryItem historyItem);
     }
 }

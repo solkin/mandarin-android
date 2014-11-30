@@ -47,7 +47,7 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
         }
         String groupName = cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
         Integer groupId = groupsMap.get(groupName);
-        if(groupId == null) {
+        if (groupId == null) {
             groupId = groupsMap.size();
             groupsMap.put(groupName, groupId);
         }

@@ -16,4 +16,6 @@ interface ServiceInteraction
 	void updateAccountStatus(String accountType, String userId, int statusIndex, String statusTitle, String statusMessage);
 	void connectAccounts();
 	void disconnectAccounts();
+	boolean stopDownloadRequest(String tag);
+	boolean stopUploadingRequest(String tag);
 }

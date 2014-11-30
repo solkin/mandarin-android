@@ -12,7 +12,7 @@
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:orientation="horizontal">
-        <QuickContactBadge
+        <com.tomclaw.mandarin.main.views.ContactBadge
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:id="@+id/buddy_badge"
@@ -24,7 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp">
+                android:paddingLeft="10dp"
+                android:paddingRight="0dp">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/counter_text" android:padding="4dp"
-                android:layout_margin="6dp" android:background="@drawable/blue_indicator"
+                android:layout_margin="6dp" android:background="@drawable/orange_indicator"
                 android:textColor="#ffffff" android:textStyle="bold"
                 android:gravity="center" android:visibility="visible" android:minWidth="25dp"/>
     </LinearLayout>

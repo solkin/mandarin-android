@@ -6,7 +6,7 @@
           android:showAsAction="always|withText"
           android:title="@string/select_all"/>
     <item android:id="@+id/close_chat_menu"
-          android:icon="@drawable/content_remove"
+          android:icon="@drawable/ic_archive"
           android:showAsAction="always|withText"
           android:title="@string/close_chat_short"/>
 </menu>

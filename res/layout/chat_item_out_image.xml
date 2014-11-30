@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
               android:orientation="vertical"
               android:layout_width="match_parent"
@@ -119,4 +119,4 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView>

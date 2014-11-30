@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tomclaw.mandarin.main.views.history.incoming.IncomingImageView xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
               android:orientation="vertical"
               android:layout_width="match_parent"
@@ -89,4 +89,4 @@
                     android:textColor="?chat_time_color"/>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.tomclaw.mandarin.main.views.history.incoming.IncomingImageView>

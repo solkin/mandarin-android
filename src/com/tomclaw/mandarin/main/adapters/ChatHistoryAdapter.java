@@ -9,17 +9,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.CursorAdapter;
+import android.widget.FilterQueryProvider;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.main.views.PreviewImageView;
-import com.tomclaw.mandarin.util.*;
+import com.tomclaw.mandarin.main.ChatHistoryItem;
+import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
+import com.tomclaw.mandarin.util.QueryBuilder;
+import com.tomclaw.mandarin.util.SmileyParser;
+import com.tomclaw.mandarin.util.TimeHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -271,275 +274,17 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
-        // Select message type.
-        switch (messageType) {
-            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                // Updating data.
-                ((TextView) view.findViewById(R.id.inc_time)).setText(messageTimeText);
-                View incBubbleBack = view.findViewById(R.id.inc_bubble_back);
-                // Updating content-specific data.
-                switch (contentType) {
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
-                        ((TextView) view.findViewById(R.id.inc_text)).setText(messageText);
-                        break;
-                    }
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
-                        PreviewImageView incPreviewImage = (PreviewImageView) view.findViewById(R.id.inc_preview_image);
-                        View incProgressContainer = view.findViewById(R.id.inc_progress_container);
-                        ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
-                        TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
-                        BitmapCache.getInstance().getBitmapAsync(incPreviewImage, previewHash,
-                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ?
-                                        R.drawable.picture_placeholder : R.drawable.video_placeholder, true);
-                        switch (contentState) {
-                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                incProgressContainer.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                break;
-                            }
-                        }
-                        incProgress.setProgress(contentProgress);
-                        incPercent.setText(contentProgress + "%");
-                        incBubbleBack.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if(contentMessageClickListener != null) {
-                                    contentMessageClickListener.onIncomingClicked(contentState, contentTag,
-                                            contentUri, contentName, messageCookie);
-                                }
-                            }
-                        });
-                        break;
-                    }
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
-                        TextView incName = (TextView) view.findViewById(R.id.inc_name);
-                        TextView incSize = (TextView) view.findViewById(R.id.inc_size);
-                        TextView incPercent = (TextView) view.findViewById(R.id.inc_percent);
-                        ProgressBar incProgress = (ProgressBar) view.findViewById(R.id.inc_progress);
-                        View incProgressContainer = view.findViewById(R.id.inc_progress_container);
-                        ImageView incFileType = (ImageView) view.findViewById(R.id.inc_file_type);
-                        switch (contentState) {
-                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                incSize.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                incSize.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                incSize.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                incProgressContainer.setVisibility(View.VISIBLE);
-                                incSize.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                incSize.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                incProgressContainer.setVisibility(View.GONE);
-                                incSize.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                        }
-                        incName.setText(contentName);
-                        incSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
-                        incProgress.setProgress(contentProgress);
-                        incPercent.setText(contentProgress + "%");
-                        incFileType.setImageResource(
-                                FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
-                        incBubbleBack.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if(contentMessageClickListener != null) {
-                                    contentMessageClickListener.onIncomingClicked(contentState, contentTag,
-                                            contentUri, contentName, messageCookie);
-                                }
-                            }
-                        });
-                        break;
-                    }
-                }
-                break;
-            }
-            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
-                // Updating data.
-                ((TextView) view.findViewById(R.id.out_time)).setText(messageTimeText);
-                ((ImageView) view.findViewById(R.id.message_delivery)).setImageResource(MESSAGE_STATES[messageState]);
-                View outBubbleBack = view.findViewById(R.id.out_bubble_back);
-                // Updating content-specific data.
-                switch (contentType) {
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_TEXT: {
-                        TextView outText = (TextView) view.findViewById(R.id.out_text);
-                        outText.setText(messageText);
-                        break;
-                    }
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE: {
-                        PreviewImageView outPreviewImage = (PreviewImageView) view.findViewById(R.id.out_preview_image);
-                        View outError = view.findViewById(R.id.out_error);
-                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
-                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
-                        TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
-                        BitmapCache.getInstance().getBitmapAsync(outPreviewImage, previewHash,
-                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ?
-                                        R.drawable.picture_placeholder : R.drawable.video_placeholder, true);
-                        switch (contentState) {
-                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                outProgressContainer.setVisibility(View.VISIBLE);
-                                outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outError.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outError.setVisibility(View.GONE);
-                                break;
-                            }
-                        }
-                        outProgress.setProgress(contentProgress);
-                        outPercent.setText(contentProgress + "%");
-                        outBubbleBack.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if(contentMessageClickListener != null) {
-                                    contentMessageClickListener.onOncomingClicked(contentState, contentTag,
-                                            contentUri, contentName, messageCookie);
-                                }
-                            }
-                        });
-                        break;
-                    }
-                    case GlobalProvider.HISTORY_CONTENT_TYPE_FILE: {
-                        TextView outName = (TextView) view.findViewById(R.id.out_name);
-                        TextView outSize = (TextView) view.findViewById(R.id.out_size);
-                        TextView outPercent = (TextView) view.findViewById(R.id.out_percent);
-                        ProgressBar outProgress = (ProgressBar) view.findViewById(R.id.out_progress);
-                        View outProgressContainer = view.findViewById(R.id.out_progress_container);
-                        ImageView outFileType = (ImageView) view.findViewById(R.id.out_file_type);
-                        switch (contentState) {
-                            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outSize.setVisibility(View.VISIBLE);
-                                // outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outSize.setVisibility(View.VISIBLE);
-                                // outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outSize.setVisibility(View.VISIBLE);
-                                // outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                                outProgressContainer.setVisibility(View.VISIBLE);
-                                outSize.setVisibility(View.GONE);
-                                // outError.setVisibility(View.GONE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outSize.setVisibility(View.VISIBLE);
-                                // outError.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                                outProgressContainer.setVisibility(View.GONE);
-                                outSize.setVisibility(View.VISIBLE);
-                                // outError.setVisibility(View.GONE);
-                                break;
-                            }
-                        }
-                        outName.setText(contentName);
-                        outSize.setText(StringUtil.formatBytes(context.getResources(), contentSize));
-                        outProgress.setProgress(contentProgress);
-                        outPercent.setText(contentProgress + "%");
-                        outFileType.setImageResource(
-                                FileHelper.getMimeTypeResPicture(FileHelper.getMimeType(contentName)));
-                        outBubbleBack.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if(contentMessageClickListener != null) {
-                                    contentMessageClickListener.onOncomingClicked(contentState, contentTag,
-                                            contentUri, contentName, messageCookie);
-                                }
-                            }
-                        });
-                        break;
-                    }
-                }
-                break;
-            }
-            default: {
-                // What's up?
-                return;
-            }
-        }
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        if (!(cursor.moveToPrevious() && messageDateText
-                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))))) {
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.VISIBLE);
-            // Update date text view.
-            ((TextView) view.findViewById(R.id.message_date))
-                    .setText(messageDateText);
-        } else {
-            // Update visibility.
-            view.findViewById(R.id.date_layout).setVisibility(View.GONE);
-        }
+        boolean dateVisible = !(cursor.moveToPrevious() && messageDateText
+                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
+        // Creating chat history item to bind the view.
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageType, messageText, messageTime, messageState,
+                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
+                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        BaseHistoryView historyView = (BaseHistoryView) view;
+        historyView.bind(historyItem);
+        historyView.setContentClickListener(contentMessageClickListener);
     }
 
     public long getMessageDbId(int position) throws MessageNotFoundException {
@@ -615,9 +360,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     }
 
     public interface ContentMessageClickListener {
-        public void onIncomingClicked(int contentState, String contentTag, String contentUri,
-                                      String contentName, String messageCookie);
-        public void onOncomingClicked(int contentState, String contentTag, String contentUri,
-                                      String contentName, String messageCookie);
+
+        public void onClicked(ChatHistoryItem historyItem);
     }
 }

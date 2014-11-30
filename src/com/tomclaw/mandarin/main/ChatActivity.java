@@ -1123,7 +1123,25 @@ public class ChatActivity extends ChiefActivity {
     }
 
     public class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
+
         @Override
+        public void onClicked(ChatHistoryItem historyItem) {
+            switch (historyItem.getMessageType()) {
+                case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
+                    onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                            historyItem.getContentUri(), historyItem.getContentName(),
+                            historyItem.getMessageCookie());
+                    break;
+                }
+                case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
+                    onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                            historyItem.getContentUri(), historyItem.getContentName(),
+                            historyItem.getMessageCookie());
+                    break;
+                }
+            }
+        }
+
         public void onIncomingClicked(int contentState, String contentTag, String contentUri,
                 String contentName, String messageCookie) {
             switch(contentState) {
@@ -1163,8 +1181,7 @@ public class ChatActivity extends ChiefActivity {
             }
         }
 
-        @Override
-        public void onOncomingClicked(int contentState, String contentTag, String contentUri,
+        public void onOutgoingClicked(int contentState, String contentTag, String contentUri,
                 String contentName, String messageCookie) {
             switch(contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:

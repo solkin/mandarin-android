@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,7 +21,9 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.main.views.ThumbnailView;
+import com.tomclaw.mandarin.util.FileHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -108,6 +111,11 @@ public class PhotoPickerActivity extends Activity {
                     if (i < 0 || i >= selectedAlbum.photos.size()) {
                         return;
                     }
+                    PhotoEntry photoEntity = selectedAlbum.photos.get(i);
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(new File(photoEntity.path)), FileHelper.getMimeType(photoEntity.path));
+                    startActivity(intent);
                     // PhotoViewer.getInstance().setParentActivity(getParentActivity());
                     // PhotoViewer.getInstance().openPhotoForSelect(selectedAlbum.photos, i, PhotoPickerActivity.this);
                 }

@@ -49,7 +49,7 @@
                             android:layout_height="wrap_content"
                             android:minWidth="@dimen/file_min_width"
                             android:textSize="16sp"
-                            android:paddingBottom="2dp"
+                            android:paddingBottom="1dp"
                             android:includeFontPadding="false"
                             android:lines="1"
                             android:singleLine="true"/>
@@ -59,21 +59,19 @@
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
                             android:fontFamily="sans-serif-light"
-                            android:paddingTop="2dp"
-                            android:visibility="visible"
+                            android:paddingTop="1dp"
+                            android:visibility="gone"
                             android:includeFontPadding="false"/>
                     <LinearLayout
                             android:id="@+id/inc_progress_container"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:visibility="gone"
-                            android:background="@drawable/file_progress_background">
+                            android:visibility="visible">
                         <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:id="@+id/inc_percent"
-                                android:textColor="@color/file_size_text_color"
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-light"
                                 android:paddingStart="6dp"

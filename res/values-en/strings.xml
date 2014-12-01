@@ -92,7 +92,7 @@
     <string name="pref_summary_system_notifications">Use system-wide settings for notifications</string>
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="buddy_status">Status</string>
-    <string name="pref_chat_title">Переписка</string>
+    <string name="pref_chat_title">Conversation</string>
     <string name="pref_title_collapse_messages">Merge messages</string>
     <string name="pref_summary_collapse_messages">Merge messages together if they were sent less than 2 minutes from
         each other

@@ -121,6 +121,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 // Continue downloading to existing file.
                 storeFile = new File(getStoragePublicFolder(mimeType), cachedFileName);
             }
+            // Make directories for this path.
+            storeFile.getParentFile().mkdirs();
             int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
@@ -146,14 +148,16 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         final String base = FileHelper.getFileBaseFromName(fileName);
         final String extension = FileHelper.getFileExtensionFromPath(fileName);
         File directory = getStoragePublicFolder(mimeType);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            public boolean accept(File file, String name) {
-                return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base) &&
-                        FileHelper.getFileExtensionFromPath(name).toLowerCase().equals(extension);
+        if(directory.exists()) {
+            File[] files = directory.listFiles(new FilenameFilter() {
+                public boolean accept(File file, String name) {
+                    return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
+                            FileHelper.getFileExtensionFromPath(name).toLowerCase().equals(extension.toLowerCase());
+                }
+            });
+            if (files.length > 0) {
+                fileName = base + "-" + files.length + "." + extension;
             }
-        });
-        if (files.length > 0) {
-            fileName = base + "-" + files.length + "." + extension;
         }
         return new File(directory, fileName);
     }

@@ -53,21 +53,24 @@ public class BitmapFile extends VirtualFile {
 
     public static BitmapFile create(Context context, UriFile file)
             throws UnsupportedFileTypeException, ImageCompressionDesireLackException {
-        // Check for preferences of image compression.
-        String imageCompression = PreferenceHelper.getImageCompression(context);
-        if (TextUtils.equals(imageCompression, context.getString(R.string.compression_original))) {
-            throw new ImageCompressionDesireLackException();
-        }
-        int sampleSize;
-        int quality;
-        if (TextUtils.equals(imageCompression, context.getString(R.string.compression_medium))) {
-            sampleSize = 768;
-            quality = 75;
-        } else {
-            sampleSize = 480;
-            quality = 60;
-        }
-        if (file.getMimeType().startsWith("image")) {
+        // Check for this is image and not GIF.
+        String extension = FileHelper.getFileExtensionFromPath(file.getName());
+        if (file.getMimeType().startsWith("image") &&
+                !TextUtils.equals(extension.toLowerCase(), "gif")) {
+            // Check for preferences of image compression.
+            String imageCompression = PreferenceHelper.getImageCompression(context);
+            if (TextUtils.equals(imageCompression, context.getString(R.string.compression_original))) {
+                throw new ImageCompressionDesireLackException();
+            }
+            int sampleSize;
+            int quality;
+            if (TextUtils.equals(imageCompression, context.getString(R.string.compression_medium))) {
+                sampleSize = 768;
+                quality = 75;
+            } else {
+                sampleSize = 480;
+                quality = 60;
+            }
             // Now we can compress this image with pleasure.
             Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, file.getUri(), sampleSize, sampleSize);
             if (bitmap != null) {

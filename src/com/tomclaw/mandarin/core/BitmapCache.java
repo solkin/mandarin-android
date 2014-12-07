@@ -136,7 +136,9 @@ public class BitmapCache {
                 if (width != BITMAP_SIZE_ORIGINAL && height != BITMAP_SIZE_ORIGINAL) {
                     bitmap = BitmapHelper.decodeSampledBitmapFromStream(inputStream, width, height);
                 } else {
-                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    bitmap = BitmapFactory.decodeStream(inputStream, null, options);
                     // Check and set original size.
                     if (width == BITMAP_SIZE_ORIGINAL) {
                         width = bitmap.getWidth();

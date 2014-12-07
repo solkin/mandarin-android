@@ -57,6 +57,7 @@ public class BitmapHelper {
             // First decode with inJustDecodeBounds=true to check dimensions
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
             BitmapFactory.decodeStream(inputStream, null, options);
 
             // Calculate inSampleSize

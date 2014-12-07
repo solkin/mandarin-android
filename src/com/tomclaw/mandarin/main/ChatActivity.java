@@ -424,7 +424,8 @@ public class ChatActivity extends ChiefActivity {
                     startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
                     return true;
                 } catch (Throwable ignored) {
-                    // Open internal file picker for Movies directory.
+                    // No video picker application.
+                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
                 }
             }
             case R.id.send_document_menu: {

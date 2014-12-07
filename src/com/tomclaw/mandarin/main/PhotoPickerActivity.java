@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.*;
@@ -34,6 +35,8 @@ public class PhotoPickerActivity extends Activity {
 
     private static final int PICK_IMAGE_RESULT_CODE = 4;
     public static final String SELECTED_ENTRIES = "selected_entries";
+
+    private static final int PHOTO_VIEW_RESULT_CODE = 5;
 
     private static final String[] projectionPhotos = {
             MediaStore.Images.Media._ID,
@@ -112,12 +115,26 @@ public class PhotoPickerActivity extends Activity {
                         return;
                     }
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
-                    Intent intent = new Intent();
-                    intent.setAction(android.content.Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(new File(photoEntity.path)), FileHelper.getMimeType(photoEntity.path));
-                    startActivity(intent);
-                    // PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                    // PhotoViewer.getInstance().openPhotoForSelect(selectedAlbum.photos, i, PhotoPickerActivity.this);
+                    File photoFile = new File(photoEntity.path);
+                    Uri uri = Uri.fromFile(photoFile);
+                    if(TextUtils.equals(FileHelper.getFileExtensionFromPath(photoEntity.path), "gif")) {
+                        Intent intent = new Intent();
+                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                        intent.setDataAndType(uri, FileHelper.getMimeType(photoEntity.path));
+                        startActivity(intent);
+                    } else {
+                        int selectedCount = selectedPhotos.size();
+                        if(!selectedPhotos.containsKey(photoEntity.imageId)) {
+                            selectedCount ++;
+                        }
+                        Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
+                        intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
+                        intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
+                        intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, photoEntity.hash);
+                        intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
+                        intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
+                        startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
+                    }
                 }
             }
         });
@@ -182,6 +199,18 @@ public class PhotoPickerActivity extends Activity {
                     setResult(resultCode, data);
                     finish();
                 }
+                break;
+            }
+            case PHOTO_VIEW_RESULT_CODE: {
+                if (resultCode == RESULT_OK) {
+                    PhotoEntry photoEntry = (PhotoEntry) data.getSerializableExtra(
+                            PhotoViewerActivity.SELECTED_PHOTO_ENTRY);
+                    if(photoEntry != null) {
+                        selectedPhotos.put(photoEntry.imageId, photoEntry);
+                        sendSelectedPhotos();
+                    }
+                }
+                break;
             }
         }
     }

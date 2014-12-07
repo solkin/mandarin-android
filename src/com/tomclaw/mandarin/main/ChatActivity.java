@@ -418,10 +418,14 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.send_video_menu: {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("video/*");
-                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
-                return true;
+                try {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("video/*");
+                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                    return true;
+                } catch (Throwable ignored) {
+                    // Open internal file picker for Movies directory.
+                }
             }
             case R.id.send_document_menu: {
                 startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
@@ -1130,20 +1134,20 @@ public class ChatActivity extends ChiefActivity {
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
                     onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
                             historyItem.getContentUri(), historyItem.getContentName(),
-                            historyItem.getMessageCookie());
+                            historyItem.getPreviewHash(), historyItem.getMessageCookie());
                     break;
                 }
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
                     onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
                             historyItem.getContentUri(), historyItem.getContentName(),
-                            historyItem.getMessageCookie());
+                            historyItem.getPreviewHash(), historyItem.getMessageCookie());
                     break;
                 }
             }
         }
 
         public void onIncomingClicked(int contentState, String contentTag, String contentUri,
-                String contentName, String messageCookie) {
+                String contentName, String previewHash, String messageCookie) {
             switch(contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
@@ -1172,17 +1176,14 @@ public class ChatActivity extends ChiefActivity {
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                    Intent intent = new Intent();
-                    intent.setAction(android.content.Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
-                    startActivity(intent);
+                    viewContent(contentName, contentUri, previewHash);
                     break;
                 }
             }
         }
 
         public void onOutgoingClicked(int contentState, String contentTag, String contentUri,
-                String contentName, String messageCookie) {
+                String contentName, String previewHash, String messageCookie) {
             switch(contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
@@ -1214,12 +1215,25 @@ public class ChatActivity extends ChiefActivity {
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                    Intent intent = new Intent();
-                    intent.setAction(android.content.Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
-                    startActivity(intent);
+                    viewContent(contentName, contentUri, previewHash);
                     break;
                 }
+            }
+        }
+
+        private void viewContent(String contentName, String contentUri, String previewHash) {
+            if(FileHelper.getMimeType(contentName).startsWith("image") &&
+                    !TextUtils.equals(FileHelper.getFileExtensionFromPath(contentName), "gif")) {
+                Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
+                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
+                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
+                intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent();
+                intent.setAction(android.content.Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                startActivity(intent);
             }
         }
     }

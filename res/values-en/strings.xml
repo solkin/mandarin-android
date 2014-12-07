@@ -359,4 +359,5 @@
     <string name="image_compression_original">Original</string>
     <string name="image_compression_medium">Medium quality</string>
     <string name="image_compression_low_quality">Low quality</string>
+    <string name="view_in_external_app">View in another application</string>
 </resources>

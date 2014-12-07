@@ -4,7 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#ff333333">
 
@@ -16,7 +16,7 @@
             android:paddingLeft="3dp"
             android:paddingRight="0dp"
             android:layout_width="0.0dip"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1.0"
             android:textStyle="bold"/>
 
@@ -33,7 +33,7 @@
             android:paddingRight="3dp"
             android:clickable="true"
             android:layout_width="0.0dip"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1.0">
 
         <LinearLayout

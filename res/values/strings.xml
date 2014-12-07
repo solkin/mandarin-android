@@ -364,4 +364,5 @@
     <string name="image_compression_original">Без сжатия</string>
     <string name="image_compression_medium">Среднее качество</string>
     <string name="image_compression_low_quality">Низкое качество</string>
+    <string name="view_in_external_app">Открыть в другом приложении</string>
 </resources>

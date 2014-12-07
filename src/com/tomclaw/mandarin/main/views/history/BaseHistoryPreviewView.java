@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.views.history;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.tomclaw.mandarin.core.BitmapCache;
@@ -19,6 +20,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
     private ProgressBar progress;
     private TextView percent;
     private View bubbleBack;
+    private ImageView overlay;
 
     public BaseHistoryPreviewView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,6 +33,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
         progressContainer = findViewById(getProgressContainerViewId());
         progress = (ProgressBar) findViewById(getProgressViewId());
         percent = (TextView) findViewById(getPercentViewId());
+        overlay = (ImageView) findViewById(getOverlayViewId());
     }
 
     protected abstract int getPreviewImageViewId();
@@ -42,6 +45,8 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
     protected abstract int getPercentViewId();
 
     protected abstract int getBubbleBackViewId();
+
+    protected abstract int getOverlayViewId();
 
     @Override
     protected void afterStates(ChatHistoryItem historyItem) {
@@ -55,34 +60,46 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
 
     protected abstract int getThumbnailPlaceholder();
 
+    protected abstract int getOverlayPaused();
+
+    protected abstract int getOverlayRunning();
+
+    protected abstract int getOverlayStable();
+
     @Override
     protected void waiting() {
         progressContainer.setVisibility(View.GONE);
+        overlay.setImageResource(getOverlayRunning());
     }
 
     @Override
     protected void interrupt() {
         progressContainer.setVisibility(View.GONE);
+        overlay.setImageResource(getOverlayPaused());
     }
 
     @Override
     protected void stopped() {
         progressContainer.setVisibility(View.GONE);
+        overlay.setImageResource(getOverlayPaused());
     }
 
     @Override
     protected void running() {
         progressContainer.setVisibility(View.VISIBLE);
+        overlay.setImageResource(getOverlayRunning());
     }
 
     @Override
     protected void failed() {
         progressContainer.setVisibility(View.GONE);
+        overlay.setImageResource(getOverlayStable());
     }
 
     @Override
     protected void stable() {
         progressContainer.setVisibility(View.GONE);
+        overlay.setImageResource(getOverlayStable());
     }
 
     @Override

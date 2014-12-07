@@ -37,7 +37,7 @@
                         android:adjustViewBounds="true"
                         mandarin:preview_placeholder_tint="?attr/chat_placeholder_tint_inc"/>
                 <ImageView
-                        android:id="@+id/inc_video_play"
+                        android:id="@+id/inc_video_overlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignLeft="@+id/inc_preview_image"

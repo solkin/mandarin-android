@@ -1158,6 +1158,7 @@ public class ChatActivity extends ChiefActivity {
                             messageCookie);
                     break;
                 }
+                case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
                 case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                     TaskExecutor.getInstance().execute(
                             new StopDownloadingTask(ChatActivity.this, contentTag, messageCookie));
@@ -1182,6 +1183,7 @@ public class ChatActivity extends ChiefActivity {
                             messageCookie);
                     break;
                 }
+                case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
                 case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
                     TaskExecutor.getInstance().execute(
                             new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));

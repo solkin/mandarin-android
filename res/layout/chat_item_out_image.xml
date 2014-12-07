@@ -51,6 +51,17 @@
                         android:scaleType="centerCrop"
                         android:adjustViewBounds="true"
                         mandarin:preview_placeholder_tint="?attr/chat_placeholder_tint_out"/>
+                <ImageView
+                        android:id="@+id/out_image_overlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/out_preview_image"
+                        android:layout_alignStart="@+id/out_preview_image"
+                        android:layout_alignRight="@+id/out_preview_image"
+                        android:layout_alignEnd="@+id/out_preview_image"
+                        android:layout_alignTop="@+id/out_preview_image"
+                        android:layout_alignBottom="@+id/out_preview_image"
+                        android:scaleType="center"/>
                 <LinearLayout
                         android:id="@+id/out_error"
                         android:layout_width="wrap_content"
@@ -63,7 +74,8 @@
                         android:layout_alignEnd="@id/out_preview_image"
                         android:background="@color/failed_preview_tint"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="6dp">
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

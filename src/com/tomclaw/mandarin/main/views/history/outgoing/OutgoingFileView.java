@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history.outgoing;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryFileView;
 
@@ -10,8 +11,16 @@ import com.tomclaw.mandarin.main.views.history.BaseHistoryFileView;
  */
 public class OutgoingFileView extends BaseHistoryFileView {
 
+    private View errorView;
+
     public OutgoingFileView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        errorView = findViewById(R.id.out_error);
     }
 
     @Override
@@ -57,5 +66,41 @@ public class OutgoingFileView extends BaseHistoryFileView {
     @Override
     protected boolean hasDeliveryState() {
         return true;
+    }
+
+    @Override
+    protected void waiting() {
+        super.waiting();
+        errorView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void interrupt() {
+        super.interrupt();
+        errorView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void stopped() {
+        super.stopped();
+        errorView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void running() {
+        super.running();
+        errorView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void failed() {
+        super.failed();
+        errorView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void stable() {
+        super.stable();
+        errorView.setVisibility(View.GONE);
     }
 }

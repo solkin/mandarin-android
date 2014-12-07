@@ -62,48 +62,57 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
         size.setText(StringUtil.formatBytes(getResources(), historyItem.getContentSize()));
         progress.setProgress(historyItem.getContentProgress());
         percent.setText(historyItem.getContentProgress() + "%");
-        fileType.setImageResource(FileHelper.getMimeTypeResPicture(
-                FileHelper.getMimeType(historyItem.getContentName())));
     }
 
     @Override
     protected void waiting() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
+        fileType.setImageResource(R.drawable.files_pause);
     }
 
     @Override
     protected void interrupt() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
+        fileType.setImageResource(R.drawable.files_download);
     }
 
     @Override
     protected void stopped() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
+        fileType.setImageResource(R.drawable.files_download);
     }
 
     @Override
     protected void running() {
         progressContainer.setVisibility(View.VISIBLE);
         size.setVisibility(View.GONE);
+        fileType.setImageResource(R.drawable.files_pause);
     }
 
     @Override
     protected void failed() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
+        setMimeTypeFilePicture();
     }
 
     @Override
     protected void stable() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
+        setMimeTypeFilePicture();
     }
 
     @Override
     protected View getClickableView() {
         return bubbleBack;
+    }
+
+    private void setMimeTypeFilePicture() {
+        fileType.setImageResource(FileHelper.getMimeTypeResPicture(
+                FileHelper.getMimeType(getHistoryItem().getContentName())));
     }
 }

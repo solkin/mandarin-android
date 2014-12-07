@@ -11,6 +11,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+    <TextView
+            android:id="@+id/photo_view_failed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/failed_to_load_photo"
+            android:gravity="center"
+            android:textColor="@color/photo_view_failed_text_color"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
+            android:visibility="gone"/>
+
     <include layout="@layout/photo_picker_buttons"
             android:id="@+id/picker_buttons"/>
 </FrameLayout>

@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,15 +43,17 @@ public class PhotoViewerActivity extends Activity {
 
     private View pickerButtons;
 
+    private View photoViewFailedView;
     private View doneButton;
     private TextView doneButtonTextView;
     private TextView doneButtonBadgeTextView;
 
     private Uri uri;
     private String name;
-    private String preview;
+    private String previewHash;
     private int selectedCount;
     private PhotoEntry photoEntry;
+    private boolean hasPreview = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class PhotoViewerActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         String uriString = extras.getString(EXTRA_PICTURE_URI);
         name = extras.getString(EXTRA_PICTURE_NAME);
-        preview = extras.getString(EXTRA_PREVIEW_HASH);
+        previewHash = extras.getString(EXTRA_PREVIEW_HASH);
         selectedCount = extras.getInt(EXTRA_SELECTED_COUNT, -1);
         photoEntry = (PhotoEntry) extras.getSerializable(EXTRA_PHOTO_ENTRY);
         // Check the parameters are correct.
@@ -89,6 +90,8 @@ public class PhotoViewerActivity extends Activity {
             bar.setTitle(name);
             bar.setIcon(R.drawable.ic_ab_logo);
         }
+
+        photoViewFailedView = findViewById(R.id.photo_view_failed);
 
         pickerButtons = findViewById(R.id.picker_buttons);
 
@@ -139,9 +142,9 @@ public class PhotoViewerActivity extends Activity {
         });
 
         // Checking for preview hash is not empty and show it in a block way.
-        if(!TextUtils.isEmpty(preview)) {
+        if(!TextUtils.isEmpty(previewHash)) {
             // Preview hash seems to be in a heap cache.
-            setBitmap(BitmapCache.getInstance().getBitmapSync(preview,
+            setBitmap(BitmapCache.getInstance().getBitmapSync(previewHash,
                     BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false));
         }
 
@@ -214,19 +217,24 @@ public class PhotoViewerActivity extends Activity {
     }
 
     private void samplePicture() {
-        TaskExecutor.getInstance().execute(new PhotoSamplingTask(this));
+        TaskExecutor.getInstance().execute(new PhotoSamplingTask(this, hasPreview));
     }
 
     protected void setBitmap(Bitmap bitmap) {
+        if(bitmap != null) {
+            hasPreview = true;
+        }
         imageView.setImageBitmap(bitmap);
     }
 
     public class PhotoSamplingTask extends WeakObjectTask<PhotoViewerActivity> {
 
         private Bitmap bitmap;
+        private boolean hasPreview;
 
-        public PhotoSamplingTask(PhotoViewerActivity object) {
+        public PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
             super(object);
+            this.hasPreview = hasPreview;
         }
 
         @Override
@@ -234,15 +242,24 @@ public class PhotoViewerActivity extends Activity {
             PhotoViewerActivity activity = getWeakObject();
             if(activity != null) {
                 bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
+                if(bitmap == null && !hasPreview) {
+                    throw new NullPointerException();
+                }
             }
         }
 
         @Override
         public void onSuccessMain() {
             PhotoViewerActivity activity = getWeakObject();
-            if(activity != null) {
+            if(activity != null && bitmap != null) {
                 activity.setBitmap(bitmap);
             }
+        }
+
+        @Override
+        public void onFailMain() {
+            photoViewFailedView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
         }
     }
 }

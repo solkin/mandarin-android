@@ -1158,21 +1158,8 @@ public class ChatActivity extends ChiefActivity {
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                    // TODO: use ServiceTask
-                    try {
-                        boolean wasActive = getServiceInteraction().stopDownloadRequest(contentTag);
-                        int desiredState;
-                        // Checking for the task was active and will be stopped by itself,
-                        // or it was in queue and it needs to be switched to waiting state manually.
-                        if(wasActive) {
-                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
-                        } else {
-                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
-                        }
-                        QueryHelper.updateFileState(getContentResolver(), desiredState,
-                                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
-                    } catch (Throwable ignored) {
-                    }
+                    TaskExecutor.getInstance().execute(
+                            new StopDownloadingTask(ChatActivity.this, contentTag, messageCookie));
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
@@ -1195,23 +1182,8 @@ public class ChatActivity extends ChiefActivity {
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                    // TODO: use ServiceTask
-                    try {
-                        boolean wasActive = getServiceInteraction().stopUploadingRequest(contentTag);
-                        int desiredState;
-                        // Checking for the task was active and will be stopped by itself,
-                        // or it was in queue and it needs to be switched to waiting state manually.
-                        if(wasActive) {
-                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
-                        } else {
-                            desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
-                        }
-                        QueryHelper.updateFileState(getContentResolver(), desiredState,
-                                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
-                    } catch(Throwable ex) {
-                        // Simply. Stupidly.
-                        ex.printStackTrace();
-                    }
+                    TaskExecutor.getInstance().execute(
+                            new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));
                     break;
                 }
                 case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
@@ -1234,6 +1206,66 @@ public class ChatActivity extends ChiefActivity {
                 intent.setAction(android.content.Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
                 startActivity(intent);
+            }
+        }
+    }
+
+    public class StopDownloadingTask extends ServiceTask {
+
+        private String contentTag;
+        private String messageCookie;
+
+        public StopDownloadingTask(ChiefActivity object, String contentTag, String messageCookie) {
+            super(object);
+            this.contentTag = contentTag;
+            this.messageCookie = messageCookie;
+        }
+
+        @Override
+        public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+            ChiefActivity activity = getWeakObject();
+            if(activity != null) {
+                boolean wasActive = interaction.stopDownloadRequest(contentTag);
+                int desiredState;
+                // Checking for the task was active and will be stopped by itself,
+                // or it was in queue and it needs to be switched to waiting state manually.
+                if (wasActive) {
+                    desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                } else {
+                    desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                }
+                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
+            }
+        }
+    }
+
+    public class StopUploadingTask extends ServiceTask {
+
+        private String contentTag;
+        private String messageCookie;
+
+        public StopUploadingTask(ChiefActivity object, String contentTag, String messageCookie) {
+            super(object);
+            this.contentTag = contentTag;
+            this.messageCookie = messageCookie;
+        }
+
+        @Override
+        public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+            ChiefActivity activity = getWeakObject();
+            if(activity != null) {
+                boolean wasActive = interaction.stopUploadingRequest(contentTag);
+                int desiredState;
+                // Checking for the task was active and will be stopped by itself,
+                // or it was in queue and it needs to be switched to waiting state manually.
+                if(wasActive) {
+                    desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
+                } else {
+                    desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
+                }
+                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
             }
         }
     }

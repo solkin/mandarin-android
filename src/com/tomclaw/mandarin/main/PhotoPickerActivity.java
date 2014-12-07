@@ -170,9 +170,13 @@ public class PhotoPickerActivity extends Activity {
                 return true;
             }
             case R.id.system_picker_menu: {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_IMAGE_RESULT_CODE);
+                try {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, PICK_IMAGE_RESULT_CODE);
+                } catch (Throwable ignored) {
+                    // No such application?!
+                }
                 break;
             }
         }

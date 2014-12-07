@@ -188,9 +188,13 @@ public class DocumentPickerActivity extends Activity {
                 break;
             }
             case R.id.system_picker_menu: {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("*/*");
-                startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                try {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("*/*");
+                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                } catch (Throwable ignored) {
+                    // No such application?!
+                }
                 break;
             }
         }

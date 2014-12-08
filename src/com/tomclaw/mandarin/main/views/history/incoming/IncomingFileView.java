@@ -50,6 +50,16 @@ public class IncomingFileView extends BaseHistoryFileView {
     }
 
     @Override
+    protected int getIconPaused() {
+        return R.drawable.files_download;
+    }
+
+    @Override
+    protected int getIconRunning() {
+        return R.drawable.files_pause;
+    }
+
+    @Override
     protected int getTimeViewId() {
         return R.id.inc_time;
     }

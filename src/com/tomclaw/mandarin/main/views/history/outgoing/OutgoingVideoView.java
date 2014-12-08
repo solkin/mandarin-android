@@ -26,7 +26,7 @@ public class OutgoingVideoView extends OutgoingPreviewView {
 
     @Override
     protected int getOverlayPaused() {
-        return R.drawable.chat_download;
+        return R.drawable.chat_upload;
     }
 
     @Override

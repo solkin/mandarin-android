@@ -59,6 +59,16 @@ public class OutgoingFileView extends BaseHistoryFileView {
     }
 
     @Override
+    protected int getIconPaused() {
+        return R.drawable.files_upload;
+    }
+
+    @Override
+    protected int getIconRunning() {
+        return R.drawable.files_pause;
+    }
+
+    @Override
     protected int getTimeViewId() {
         return R.id.out_time;
     }

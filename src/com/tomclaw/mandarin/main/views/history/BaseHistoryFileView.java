@@ -64,55 +64,59 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
         percent.setText(historyItem.getContentProgress() + "%");
     }
 
+    protected abstract int getIconPaused();
+
+    protected abstract int getIconRunning();
+
+    protected int getIconStable() {
+        return FileHelper.getMimeTypeResPicture(
+                FileHelper.getMimeType(getHistoryItem().getContentName()));
+    }
+
     @Override
     protected void waiting() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
-        fileType.setImageResource(R.drawable.files_pause);
+        fileType.setImageResource(getIconRunning());
     }
 
     @Override
     protected void interrupt() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
-        fileType.setImageResource(R.drawable.files_download);
+        fileType.setImageResource(getIconPaused());
     }
 
     @Override
     protected void stopped() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
-        fileType.setImageResource(R.drawable.files_download);
+        fileType.setImageResource(getIconPaused());
     }
 
     @Override
     protected void running() {
         progressContainer.setVisibility(View.VISIBLE);
         size.setVisibility(View.GONE);
-        fileType.setImageResource(R.drawable.files_pause);
+        fileType.setImageResource(getIconRunning());
     }
 
     @Override
     protected void failed() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
-        setMimeTypeFilePicture();
+        fileType.setImageResource(getIconStable());
     }
 
     @Override
     protected void stable() {
         progressContainer.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
-        setMimeTypeFilePicture();
+        fileType.setImageResource(getIconStable());
     }
 
     @Override
     protected View getClickableView() {
         return bubbleBack;
-    }
-
-    private void setMimeTypeFilePicture() {
-        fileType.setImageResource(FileHelper.getMimeTypeResPicture(
-                FileHelper.getMimeType(getHistoryItem().getContentName())));
     }
 }

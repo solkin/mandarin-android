@@ -362,6 +362,6 @@
     <string name="view_in_external_app">View in another application</string>
     <string name="failed_to_load_photo">Unable to load picture</string>
     <string name="no_video_picker">No special video choosing application</string>
-    <string name="login_phone_number">Login with phone number</string>
+    <string name="use_phone_number">Login with phone number</string>
     <string name="use_login_and_password">I already have login and password</string>
 </resources>

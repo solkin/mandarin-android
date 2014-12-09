@@ -31,7 +31,6 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
     public void onCoreServiceReady() {
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setTitle(R.string.account);
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());
         // Initialize add account activity.

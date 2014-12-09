@@ -14,7 +14,7 @@
     <string name="create_dialog">Open dialog</string>
     <string name="settings">Settings</string>
     <string name="info">Information</string>
-    <string name="rate_application">Rate</string>
+    <string name="rate_application">Rate the app</string>
     <string name="all_projects">All projects</string>
     <string name="dialogs">Dialogs</string>
     <string name="close_chat">Close dialog</string>
@@ -185,7 +185,7 @@
     <string name="pref_title_chat_background">Background</string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
-    <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client; I developed it due to
+    <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client\nI developed it due to
         high demand and some personal interest.
     </string>
     <string name="app_year">2014</string>
@@ -362,4 +362,6 @@
     <string name="view_in_external_app">View in another application</string>
     <string name="failed_to_load_photo">Unable to load picture</string>
     <string name="no_video_picker">No special video choosing application</string>
+    <string name="login_phone_number">Login with phone number</string>
+    <string name="use_login_and_password">I already have login and password</string>
 </resources>

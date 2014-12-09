@@ -24,11 +24,6 @@ import net.hockeyapp.android.CrashManagerListener;
 
 public class MainActivity extends ChiefActivity {
 
-    private static final String MARKET_DETAILS_URI = "market://details?id=";
-    private static final String MARKET_DEVELOPER_URI = "market://search?q=pub:";
-    private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
-    private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=";
-
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
 
@@ -149,14 +144,6 @@ public class MainActivity extends ChiefActivity {
                 openSettings();
                 return true;
             }
-            case R.id.rate_application: {
-                rateApplication();
-                return true;
-            }
-            case R.id.all_projects: {
-                allProjects();
-                return true;
-            }
             case R.id.info: {
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
@@ -198,27 +185,6 @@ public class MainActivity extends ChiefActivity {
 
     public void openSettings() {
         startActivity(new Intent(this, SettingsActivity.class));
-    }
-
-    private void rateApplication() {
-        final String appPackageName = getPackageName();
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(MARKET_DETAILS_URI + appPackageName)));
-        } catch (android.content.ActivityNotFoundException ignored) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(GOOGLE_PLAY_DETAILS_URI + appPackageName)));
-        }
-    }
-
-    private void allProjects() {
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(MARKET_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
-        } catch (android.content.ActivityNotFoundException ignored) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(GOOGLE_PLAY_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
-        }
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {

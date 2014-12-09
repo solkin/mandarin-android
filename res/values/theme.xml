@@ -42,6 +42,9 @@
     <color name="photo_view_background_color">#000000</color>
     <color name="photo_view_action_bar_color">#CC000000</color>
     <color name="photo_view_failed_text_color">#efefef</color>
+    <color name="about_background_color">#222222</color>
+    <color name="about_text_color">#FFFFFF</color>
+    <color name="about_subtext_color">#bababa</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 

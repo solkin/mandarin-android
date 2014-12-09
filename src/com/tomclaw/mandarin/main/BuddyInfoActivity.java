@@ -62,7 +62,6 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
-            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             bar.setTitle(R.string.buddy_info);
         }
         buttonSwitcher = (ViewSwitcher) findViewById(R.id.button_switcher);

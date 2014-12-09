@@ -14,7 +14,7 @@
     <string name="create_dialog">Создать диалог</string>
     <string name="settings">Настройки</string>
     <string name="info">Информация</string>
-    <string name="rate_application">Оценить</string>
+    <string name="rate_application">Оценить приложение</string>
     <string name="all_projects">Все проекты</string>
     <string name="dialogs">Диалоги</string>
     <string name="close_chat">Закрыть диалог</string>
@@ -367,4 +367,6 @@
     <string name="view_in_external_app">Открыть в другом приложении</string>
     <string name="failed_to_load_photo">Не удалось загрузить изображение</string>
     <string name="no_video_picker">Отсутствует специальное приложение для выбора видео</string>
+    <string name="use_phone_number">Войти по номеру телефона</string>
+    <string name="use_login_and_password">У меня есть логин и пароль</string>
 </resources>

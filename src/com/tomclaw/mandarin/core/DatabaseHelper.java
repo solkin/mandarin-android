@@ -213,6 +213,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + GlobalProvider.CHAT_HISTORY_TABLE
                         + " ADD COLUMN " + GlobalProvider.HISTORY_CONTENT_TAG + " text");
             }
+            case 6: {
+                db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
+                        + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " int default 0");
+            }
         }
         Log.d(Settings.LOG_TAG, "Database upgrade completed");
     }

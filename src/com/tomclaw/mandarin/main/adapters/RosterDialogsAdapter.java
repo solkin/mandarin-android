@@ -80,11 +80,10 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         }
         return new CursorLoader(context,
                 Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROSTER_BUDDY_DIALOG + "='" + 1 + "'" + " AND "
+                GlobalProvider.ROSTER_BUDDY_DIALOG + "=" + 1 + " AND "
                         + GlobalProvider.ROSTER_BUDDY_OPERATION + "!=" + GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE,
-                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 2 ELSE 0 END) DESC, "
-                + "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + "=" + StatusUtil.STATUS_OFFLINE
-                + " THEN 0 ELSE 1 END" + ") DESC, "
+                null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 1 ELSE 0 END) DESC, "
+                + GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " DESC, "
                 + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
     }
 

@@ -364,4 +364,5 @@
     <string name="no_video_picker">No special video choosing application</string>
     <string name="use_phone_number">Login with phone number</string>
     <string name="use_login_and_password">I already have login and password</string>
+    <string name="register_using_phone">Have no account yet?\n<u>Register it using your phone number!</u></string>
 </resources>

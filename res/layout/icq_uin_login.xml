@@ -37,4 +37,11 @@
                 android:imeOptions="actionDone"
                 style="@style/IntroEditField"/>
     </LinearLayout>
+    <TextView
+        android:id="@+id/register_using_phone_view"
+        android:layout_alignParentBottom="true"
+        android:text="@string/register_using_phone"
+        android:paddingBottom="12dp"
+        android:textSize="14sp"
+        style="@style/PrivacyPolicyView"/>
 </RelativeLayout>

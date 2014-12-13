@@ -139,7 +139,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         } else {
             QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
                     PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
-                    getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage, true);
+                    getAccountRoot().getAccountDbId(), buddyId, 1, 2, cookie, time, originalMessage);
             throw new DownloadException();
         }
     }

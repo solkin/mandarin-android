@@ -50,6 +50,15 @@ public class PlainLoginActivity extends ChiefActivity {
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
+        View view = findViewById(R.id.register_using_phone_view);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(IntroActivity.RESULT_REDIRECT_PHONE_LOGIN);
+                finish();
+            }
+        });
+
         userIdEditText = (EditText) findViewById(R.id.user_id_field);
         userPasswordEditText = (EditText) findViewById(R.id.user_password_field);
 

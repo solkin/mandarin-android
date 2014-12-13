@@ -274,9 +274,22 @@ public class QueryHelper {
         modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened);
     }
 
+    public static void modifyDialog(ContentResolver contentResolver, int buddyDbId,
+                                    boolean isOpened, long lastMessageTime) {
+        modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened, lastMessageTime);
+    }
+
     public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
+        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+    }
+
+    public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds,
+                                     boolean isOpened, long lastMessageTime) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME, lastMessageTime);
         modifyBuddies(contentResolver, buddyDbIds, contentValues);
     }
 
@@ -307,25 +320,22 @@ public class QueryHelper {
     }
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages, int buddyDbId,
-                                     int messageType, String cookie, String messageText, boolean activateDialog)
+                                     int messageType, String cookie, String messageText)
             throws BuddyNotFoundException {
         insertTextMessage(contentResolver, isCollapseMessages, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                messageType, 2, cookie, 0, messageText, activateDialog);
+                messageType, 2, cookie, 0, messageText);
     }
 
     public static void insertTextMessage(ContentResolver contentResolver, boolean isCollapseMessages,
                                          int accountDbId, int buddyDbId, int messageType, int messageState, String cookie,
-                                         long messageTime, String messageText, boolean activateDialog) {
+                                         long messageTime, String messageText) {
         Log.d(Settings.LOG_TAG, "insertTextMessage: type: " + messageType + " message = " + messageText);
-        // Checking for dialog activate needed.
-        if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
-            modifyDialog(contentResolver, buddyDbId, true);
-        }
         // Checking for time specified.
         if (messageTime == 0) {
             messageTime = System.currentTimeMillis();
         }
-
+        // Update last message time and make dialog opened.
+        modifyDialog(contentResolver, buddyDbId, true, messageTime);
         // Collapse text messages only.
         if (isCollapseMessages) {
             QueryBuilder queryBuilder = new QueryBuilder();
@@ -391,7 +401,7 @@ public class QueryHelper {
                                                  String previewHash, String contentTag)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", false, contentType, contentSize,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", contentType, contentSize,
                 GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash,contentTag);
     }
 
@@ -399,23 +409,20 @@ public class QueryHelper {
                                                  long time, String originalMessage, Uri uri, String name, int contentType,
                                                  long contentSize, String previewHash, String contentTag) throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, true, contentType, contentSize,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, contentType, contentSize,
                 GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash, contentTag);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
-                                         int messageType, int messageState, String cookie,
-                                         long messageTime, String messageText, boolean activateDialog,
-                                         int contentType, long contentSize, int contentState, String contentUri,
-                                         String contentName, String previewHash, String contentTag) {
-        // Checking for dialog activate needed.
-        if (activateDialog && !checkDialog(contentResolver, buddyDbId)) {
-            modifyDialog(contentResolver, buddyDbId, true);
-        }
+                                         int messageType, int messageState, String cookie, long messageTime,
+                                         String messageText, int contentType, long contentSize, int contentState,
+                                         String contentUri, String contentName, String previewHash, String contentTag) {
         // Checking for time specified.
         if (messageTime == 0) {
             messageTime = System.currentTimeMillis();
         }
+        // Update last message time and make dialog opened.
+        modifyDialog(contentResolver, buddyDbId, true, messageTime);
         // No matching request message. Insert new message.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
@@ -443,22 +450,21 @@ public class QueryHelper {
 
     public static void insertMessage(ContentResolver contentResolver, boolean isCollapseMessages,
                                      int accountDbId, String buddyId, int messageType, int messageState,
-                                     String cookie, long messageTime, String messageText, boolean activateDialog)
+                                     String cookie, long messageTime, String messageText)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+                .descending(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME);
         // Obtain account db id.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
-            // Cycling all the identical buddies in different groups.
-            do {
-                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                // Plain message query.
-                insertTextMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
-                        cookie, messageTime, messageText, activateDialog);
-            } while (cursor.moveToNext());
+            // Insert message only for buddy with latest message time.
+            int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            // Plain message query.
+            insertTextMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
+                    cookie, messageTime, messageText);
             // Closing cursor.
             cursor.close();
         } else {

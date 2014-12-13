@@ -18,6 +18,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
 
     public static final String EXTRA_START_HELPER = "start_helper";
     public static final int RESULT_LOGIN_COMPLETED = 1;
+    public static final int RESULT_REDIRECT_PHONE_LOGIN = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,13 +40,13 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getBaseContext(), PhoneLoginActivity.class), RESULT_LOGIN_COMPLETED);
+                startPhoneLogin();
             }
         });
         findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getBaseContext(), PlainLoginActivity.class), RESULT_LOGIN_COMPLETED);
+                startPlainLogin();
             }
         });
     }
@@ -62,6 +63,14 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         return getIntent().getBooleanExtra(EXTRA_START_HELPER, false);
     }
 
+    private void startPhoneLogin() {
+        startActivityForResult(new Intent(getBaseContext(), PhoneLoginActivity.class), RESULT_LOGIN_COMPLETED);
+    }
+
+    private void startPlainLogin() {
+        startActivityForResult(new Intent(getBaseContext(), PlainLoginActivity.class), RESULT_LOGIN_COMPLETED);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -71,6 +80,8 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
+            } else if (resultCode == RESULT_REDIRECT_PHONE_LOGIN) {
+                startPhoneLogin();
             }
         }
     }

@@ -114,6 +114,8 @@ public class WimConstants {
             "sent",
             "delivered"
     };
+    private static final String PROTOCOL_REGEX =
+            "http" + "|" + "https";
     private static final String DOMAINS_REGEX =
             "files\\.mail\\.ru" + "|" +
                     "api\\.icq\\.net" + "|" +
@@ -121,5 +123,5 @@ public class WimConstants {
                     "files\\.icq\\.com" + "|" +
                     "(?:files\\.)?chat\\.my\\.com";
     public static final Pattern URL_REGEX = Pattern.compile(
-            "http://(?:" + DOMAINS_REGEX + ")/(?:get/|files/(?:get\\?fileId=)?)?([0-9a-zA-Z_\\-]+)");
+            "(?:" + PROTOCOL_REGEX + ")://(?:" + DOMAINS_REGEX + ")/(?:get/|files/(?:get\\?fileId=)?)?([0-9a-zA-Z_\\-]+)");
 }

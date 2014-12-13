@@ -412,7 +412,7 @@ public class IcqSession {
                         if (!isProcessed) {
                             QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
                                     PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                                    icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText, true);
+                                    icqAccountRoot.getAccountDbId(), buddyId, 1, 2, cookie, messageTime * 1000, messageText);
                         }
                         isProcessed = true;
                     } catch (BuddyNotFoundException ignored) {

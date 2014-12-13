@@ -88,7 +88,6 @@ public class ChatActivity extends ChiefActivity {
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         timeHelper = new TimeHelper(this);
 
@@ -239,6 +238,7 @@ public class ChatActivity extends ChiefActivity {
         if (!TextUtils.isEmpty(message)) {
             int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             messageText.setText("");
+            scrollBottom();
             MessageCallback callback = new MessageCallback() {
 
                 @Override
@@ -500,6 +500,7 @@ public class ChatActivity extends ChiefActivity {
                             for (String key : bundle.keySet()) {
                                 photoEntries.add((PhotoEntry) bundle.getSerializable(key));
                             }
+                            scrollBottom();
                             TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
                         }
                     } else if (data.getData() != null) {
@@ -524,6 +525,7 @@ public class ChatActivity extends ChiefActivity {
                     Log.d(Settings.LOG_TAG, "sending file failed");
                 }
             };
+            scrollBottom();
             UriFile uriFile = UriFile.create(this, uri);
             TaskExecutor.getInstance().execute(
                     new SendFileTask(this, buddyDbId, uriFile, callback));
@@ -663,6 +665,10 @@ public class ChatActivity extends ChiefActivity {
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
             }
         }
+    }
+
+    public void scrollBottom() {
+        chatList.setSelection(chatList.getCount() - 1);
     }
 
     @Override

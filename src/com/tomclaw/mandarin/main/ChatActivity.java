@@ -668,7 +668,14 @@ public class ChatActivity extends ChiefActivity {
     }
 
     public void scrollBottom() {
-        chatList.setSelection(chatList.getCount() - 1);
+        chatList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        chatList.requestLayout();
+        chatList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                chatList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            }
+        }, 300);
     }
 
     @Override

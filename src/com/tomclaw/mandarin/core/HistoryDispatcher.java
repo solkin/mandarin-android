@@ -144,18 +144,18 @@ public class HistoryDispatcher {
                         }
                     }
                     // Show chat activity with concrete buddy.
-                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, 0,
+                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, 1,
                             new Intent(context, ChatActivity.class)
                                     .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
                     // Mark all messages as read.
-                    PendingIntent readAllIntent = PendingIntent.getService(context, 0,
+                    PendingIntent readAllIntent = PendingIntent.getService(context, 2,
                             new Intent(context, CoreService.class)
                                     .putExtra(EXTRA_READ_MESSAGES, true),
                             PendingIntent.FLAG_CANCEL_CURRENT);
                     // Simply open chats list.
-                    PendingIntent openChatsIntent = PendingIntent.getActivity(context, 0,
+                    PendingIntent openChatsIntent = PendingIntent.getActivity(context, 3,
                             new Intent(context, MainActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);

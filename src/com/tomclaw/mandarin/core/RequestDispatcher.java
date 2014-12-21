@@ -241,10 +241,12 @@ public class RequestDispatcher {
                         // Wait for specified daley or until notifying.
                         Log.d(Settings.LOG_TAG, "Wait for specified delay or until notifying");
                         sync.wait(PENDING_REQUEST_DELAY);
+                        Log.d(Settings.LOG_TAG, "... pending time went.");
                     } else {
                         // Wait until notifying. Try it.
                         Log.d(Settings.LOG_TAG, "Wait until notifying");
                         sync.wait();
+                        Log.d(Settings.LOG_TAG, "... notified!");
                     }
                 } catch (InterruptedException ignored) {
                     // Notified.
@@ -270,9 +272,7 @@ public class RequestDispatcher {
 
         @Override
         public void onChange(boolean selfChange) {
-            synchronized (sync) {
-                sync.notify();
-            }
+            notifyQueue();
         }
     }
 
@@ -280,5 +280,13 @@ public class RequestDispatcher {
         synchronized (sync) {
             sync.notify();
         }
+    }
+
+    public void backgroundQueueNotify() {
+        new Thread() {
+            public void run() {
+                notifyQueue();
+            }
+        }.start();
     }
 }

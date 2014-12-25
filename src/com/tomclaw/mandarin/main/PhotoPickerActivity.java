@@ -70,7 +70,6 @@ public class PhotoPickerActivity extends Activity {
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
-            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             bar.setTitle(R.string.gallery);
             bar.setIcon(R.drawable.ic_ab_logo);
         }

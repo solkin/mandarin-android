@@ -31,8 +31,8 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-
         // Check for start helper needs to be shown.
         if (PreferenceHelper.isShowStartHelper(this)) {
             // This will start
@@ -86,6 +86,7 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
+        Log.d(Settings.LOG_TAG, "main activity start time: " + (System.currentTimeMillis() - time));
     }
 
     @Override

@@ -78,6 +78,7 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.chat_activity);
@@ -205,6 +206,7 @@ public class ChatActivity extends ChiefActivity {
             messageText.requestFocus();
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
+        Log.d(Settings.LOG_TAG, "chat activity start time: " + (System.currentTimeMillis() - time));
     }
 
     private String getMessageText() {
@@ -223,13 +225,17 @@ public class ChatActivity extends ChiefActivity {
         if (selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
             smileyText = " " + smileyText;
         }
-        if (selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') {
+        if (selectionEnd < messageText.length() && message.charAt(selectionEnd) != ' ') {
             smileyText += " ";
         }
         // Inserting smile into current message.
         message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
         messageText.setText(message);
-        messageText.setSelection(selectionStart + smileyText.length());
+        int selection = selectionStart + smileyText.length();
+        // Check for selection range is correct.
+        if(selection >= 0 && selection <= messageText.length()) {
+            messageText.setSelection(selection);
+        }
     }
 
     private void sendMessage() {

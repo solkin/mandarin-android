@@ -111,6 +111,7 @@ public class CoreService extends Service {
 
     @Override
     public void onCreate() {
+        long time = System.currentTimeMillis();
         Log.d(Settings.LOG_TAG, "CoreService onCreate");
         super.onCreate();
         updateState(STATE_LOADING);
@@ -130,6 +131,7 @@ public class CoreService extends Service {
         // Service is now ready.
         updateState(STATE_UP);
         Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");
+        Log.d(Settings.LOG_TAG, "core service start time: " + (System.currentTimeMillis() - time));
     }
 
     @Override

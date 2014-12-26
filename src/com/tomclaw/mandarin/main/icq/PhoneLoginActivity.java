@@ -35,7 +35,7 @@ public class PhoneLoginActivity extends Activity {
     private static final int REQUEST_CODE_COUNTRY = 1;
     private static final int REQUEST_SMS_NUMBER = 2;
 
-    private static final int MIN_PHONE_BODY_LENGTH = 10;
+    private static final int MIN_PHONE_BODY_LENGTH = 6;
 
     private TextView countryCodeView;
     private TextView countryNameView;

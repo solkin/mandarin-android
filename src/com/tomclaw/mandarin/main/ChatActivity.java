@@ -462,6 +462,7 @@ public class ChatActivity extends ChiefActivity {
         startTitleObservation(buddyDbId);
 
         if (chatHistoryAdapter != null) {
+            chatHistoryAdapter.close();
             chatHistoryAdapter.notifyDataSetInvalidated();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);

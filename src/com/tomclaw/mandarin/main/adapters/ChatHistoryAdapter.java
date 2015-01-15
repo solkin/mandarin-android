@@ -139,11 +139,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        Cursor cursor = swapCursor(null);
-        // Maybe, previous non-closed cursor present?
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
+        close();
     }
 
     /**
@@ -346,6 +342,14 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public void setContentMessageClickListener(
             ContentMessageClickListener contentMessageClickListener) {
         this.contentMessageClickListener = contentMessageClickListener;
+    }
+
+    public void close() {
+        Cursor cursor = swapCursor(null);
+        // Maybe, previous non-closed cursor present?
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     private class ChatFilterQueryProvider implements FilterQueryProvider {

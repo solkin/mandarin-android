@@ -24,11 +24,13 @@ public class WimConstants {
     public static final String LOGIN = "s";
     public static final String RESPONSE_OBJECT = "response";
     public static final String DATA_OBJECT = "data";
+    public static final String USER_DATA_OBJECT = "userData";
     public static final String LOGIN_ID = "loginId";
     public static final String HOST_TIME = "hostTime";
     public static final String STATUS_CODE = "statusCode";
     public static final String SESSION_SECRET = "sessionSecret";
     public static final String SESSION_KEY = "sessionKey";
+    public static final String RENEW_TOKEN = "renewToken";
     public static final String TOKEN_OBJECT = "token";
     public static final String EXPIRES_IN = "expiresIn";
     public static final String ASSERT_CAPS = "assertCaps";
@@ -47,7 +49,8 @@ public class WimConstants {
     public static final String SESSION_TIMEOUT = "sessionTimeout";
     public static final String TS = "ts";
     public static final String VIEW = "view";
-    public static final String START_SESSION_URL = "http://api.icq.net/aim/startSession";
+    public static final String START_SESSION_URL = "https://api.icq.net/aim/startSession";
+    public static final String RENEW_TOKEN_URL = "https://api.login.icq.net/auth/getInfo";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";
     public static final String EQUAL = "=";

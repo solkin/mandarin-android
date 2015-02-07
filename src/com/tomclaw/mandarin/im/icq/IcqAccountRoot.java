@@ -55,49 +55,87 @@ public class IcqAccountRoot extends AccountRoot {
 
             public void run() {
                 do {
+                    Log.d(Settings.LOG_TAG, "login: " + "start");
                     while (!checkSessionReady()) {
+                        Log.d(Settings.LOG_TAG, "login: " + "session not ready");
                         while (!checkLoginReady()) {
-                            // Login with credentials.
-                            switch (icqSession.clientLogin()) {
-                                case IcqSession.EXTERNAL_LOGIN_ERROR: {
-                                    // Show notification.
-                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
-                                    return;
+                            Log.d(Settings.LOG_TAG, "login: " + "login not ready");
+                            if(checkLoginExist()) {
+                                Log.d(Settings.LOG_TAG, "login: " + "login exists, try to renew token");
+                                // Try to renew token.
+                                switch (icqSession.renewToken()) {
+                                    case IcqSession.EXTERNAL_UNKNOWN: {
+                                        Log.d(Settings.LOG_TAG, "login: " + "renew token external error");
+                                        if(isPasswordLogin()) {
+                                            Log.d(Settings.LOG_TAG, "login: " + "password login - reset login data");
+                                            // Reset login data and try to client login.
+                                            resetLoginData();
+                                        } else {
+                                            Log.d(Settings.LOG_TAG, "login: " + "can't renew token and no password :(");
+                                            // Show notification.
+                                            updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                        }
+                                        break;
+                                    }
+                                    case IcqSession.INTERNAL_ERROR: {
+                                        Log.d(Settings.LOG_TAG, "login: " + "renew token internal error");
+                                        sleep();
+                                        break;
+                                    }
                                 }
-                                case IcqSession.EXTERNAL_UNKNOWN: {
-                                    // Show notification.
-                                    updateAccountState(StatusUtil.STATUS_OFFLINE, false);
-                                    return;
-                                }
-                                case IcqSession.INTERNAL_ERROR: {
-                                    // Sleep some time.
-                                    sleep();
-                                    break;
+                            } else {
+                                Log.d(Settings.LOG_TAG, "login: " + "no login data, lets client login");
+                                // Login with credentials.
+                                switch (icqSession.clientLogin()) {
+                                    case IcqSession.EXTERNAL_LOGIN_ERROR: {
+                                        Log.d(Settings.LOG_TAG, "login: " + "client login error");
+                                        // Show notification.
+                                        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                        return;
+                                    }
+                                    case IcqSession.EXTERNAL_UNKNOWN: {
+                                        Log.d(Settings.LOG_TAG, "login: " + "client login external unknown");
+                                        // Show notification.
+                                        updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                        return;
+                                    }
+                                    case IcqSession.INTERNAL_ERROR: {
+                                        Log.d(Settings.LOG_TAG, "login: " + "client login internal error");
+                                        // Sleep some time.
+                                        sleep();
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        Log.d(Settings.LOG_TAG, "login: " + "start session attempt");
                         // Attempt to start session.
                         switch (icqSession.startSession()) {
                             case IcqSession.EXTERNAL_SESSION_OK: {
+                                Log.d(Settings.LOG_TAG, "login: " + "session started ok");
                                 break;
                             }
                             case IcqSession.EXTERNAL_SESSION_RATE_LIMIT: {
+                                Log.d(Settings.LOG_TAG, "login: " + "start session rate limit");
                                 // Show notification.
                                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                 return;
                             }
                             case IcqSession.EXTERNAL_UNKNOWN: {
-                                // Retry client login.
-                                resetLoginData();
+                                Log.d(Settings.LOG_TAG, "login: " + "start session external error");
+                                // Renew token or retry client login.
+                                expireLoginData();
                                 break;
                             }
                             case IcqSession.INTERNAL_ERROR: {
+                                Log.d(Settings.LOG_TAG, "login: " + "start session internal error");
                                 // Sleep some time.
                                 sleep();
                                 break;
                             }
                         }
                     }
+                    Log.d(Settings.LOG_TAG, "login: " + "session ready, almost ok");
                     // Update account connecting state to false.
                     updateAccountState(false);
                     // Starting events fetching in verbal cycle.
@@ -112,6 +150,10 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void disconnect() {
         RequestHelper.endSession(getContentResolver(), accountDbId);
+    }
+
+    public boolean isPasswordLogin() {
+        return !TextUtils.isEmpty(getUserPassword());
     }
 
     @Override
@@ -223,6 +265,14 @@ public class IcqAccountRoot extends AccountRoot {
         this.wellKnownUrls = wellKnownUrls;
     }
 
+    public void setRenewTokenResult(String login, String tokenA, long expiresIn) {
+        // Setup local variables.
+        this.tokenA = tokenA;
+        this.tokenExpirationDate = expiresIn + System.currentTimeMillis() / 1000;
+        // Save account data in database.
+        updateAccount();
+    }
+
     /**
      * Updates account brief and status information. Also, updates account info in database.
      *
@@ -261,14 +311,26 @@ public class IcqAccountRoot extends AccountRoot {
         }
     }
 
+    public boolean checkLoginExpired() {
+        return System.currentTimeMillis() / 1000 > tokenExpirationDate;
+    }
+
+    public boolean checkLoginExist() {
+        return !TextUtils.isEmpty(tokenA) && !TextUtils.isEmpty(sessionKey);
+    }
+
     public boolean checkLoginReady() {
         return !(TextUtils.isEmpty(tokenA) || TextUtils.isEmpty(sessionKey)
-                || tokenExpirationDate == 0);
+                || checkLoginExpired());
     }
 
     public boolean checkSessionReady() {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
                 || myInfo == null || wellKnownUrls == null);
+    }
+
+    public void expireLoginData() {
+        tokenExpirationDate = 0;
     }
 
     public void resetLoginData() {

@@ -224,6 +224,49 @@ public class IcqSession {
         }
     }
 
+    public int renewToken() {
+        try {
+            HttpParamsBuilder builder = new HttpParamsBuilder();
+            builder.appendParam(TOKEN_A, icqAccountRoot.getTokenA());
+            builder.appendParam(SESSION_KEY, icqAccountRoot.getSessionKey());
+            builder.appendParam(RENEW_TOKEN, "1");
+
+            String url = signRequest(HttpUtil.GET, RENEW_TOKEN_URL, false, builder);
+
+            Log.d(Settings.LOG_TAG, "renew token request: " + url);
+
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
+            Log.d(Settings.LOG_TAG, "renew token response: " + response);
+            JSONObject jsonObject = new JSONObject(response);
+            JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
+            int statusCode = responseObject.getInt(STATUS_CODE);
+            switch (statusCode) {
+                case EXTERNAL_LOGIN_OK: {
+                    JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
+                    JSONObject userDataObject = dataObject.getJSONObject(USER_DATA_OBJECT);
+                    String login = userDataObject.getString(LOGIN_ID);
+                    Log.d(Settings.LOG_TAG, "renew token login = " + login);
+                    JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
+                    int expiresIn = tokenObject.getInt(EXPIRES_IN);
+                    String tokenA = tokenObject.getString(TOKEN_A);
+                    Log.d(Settings.LOG_TAG, "renew token expires in = " + expiresIn);
+                    Log.d(Settings.LOG_TAG, "renew token token a = " + tokenA);
+                    // Update renew token result in database.
+                    icqAccountRoot.setRenewTokenResult(login, tokenA, expiresIn);
+                    break;
+                }
+                default: {
+                    return EXTERNAL_UNKNOWN;
+                }
+            }
+            return EXTERNAL_LOGIN_OK;
+        } catch (Throwable ex) {
+            Log.d(Settings.LOG_TAG, "renew token exception", ex);
+            return INTERNAL_ERROR;
+        }
+    }
+
     /**
      * Start event fetching in verbal cycle.
      *
@@ -583,11 +626,18 @@ public class IcqSession {
 
     public String signRequest(String method, String url, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
-        builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA())
-                .appendParam(WimConstants.AIM_SID, icqAccountRoot.getAimSid())
-                .appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
-                .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
-                .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
+        return signRequest(method, url, true, builder);
+    }
+
+    public String signRequest(String method, String url, boolean includeSession, HttpParamsBuilder builder)
+            throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
+        builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA());
+        if(includeSession) {
+            builder.appendParam(WimConstants.AIM_SID, icqAccountRoot.getAimSid());
+        }
+        builder.appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
+               .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
+               .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
         builder.sortParams();
         String params = builder.build();
         String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))

@@ -77,6 +77,7 @@ public class WimConstants {
     public static final String STATE = "state";
     public static final String USER_TYPE = "userType";
     public static final String BUDDY_ICON = "buddyIcon";
+    public static final String BIG_BUDDY_ICON = "bigBuddyIcon";
     public static final String LAST_SEEN = "lastseen";
     public static final String IM = "im";
     public static final String MESSAGE = "message";

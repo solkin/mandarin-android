@@ -60,16 +60,21 @@ public class BuddyPresenceRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK) {
             Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<String, ShortBuddyInfo>();
-            JSONObject data = responseObject.getJSONObject("data");
+            JSONObject data = responseObject.getJSONObject(WimConstants.DATA_OBJECT);
             JSONArray users = data.getJSONArray("users");
             for (int i = 0; i < users.length(); i++) {
                 JSONObject buddy = users.getJSONObject(i);
                 JSONObject profile = buddy.optJSONObject("profile");
-                String buddyId = buddy.getString("aimId");
+                String buddyId = buddy.getString(WimConstants.AIM_ID);
                 if (profile != null) {
                     ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
-                    String state = buddy.getString("state");
-                    String buddyIcon = buddy.optString("buddyIcon", null);
+                    String state = buddy.getString(WimConstants.STATE);
+                    String buddyIcon = buddy.optString(WimConstants.BUDDY_ICON);
+                    String bigBuddyIcon = buddy.optString(WimConstants.BIG_BUDDY_ICON);
+                    if(!TextUtils.isEmpty(bigBuddyIcon)) {
+                        buddyIcon = bigBuddyIcon;
+                    }
+
                     int statusIndex;
                     try {
                         statusIndex = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);

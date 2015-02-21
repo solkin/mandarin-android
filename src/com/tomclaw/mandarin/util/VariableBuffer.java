@@ -1,8 +1,5 @@
 package com.tomclaw.mandarin.util;
 
-import android.util.Log;
-import com.tomclaw.mandarin.core.Settings;
-
 /**
  * Created by Solkin on 08.11.2014.
  */
@@ -44,7 +41,7 @@ public class VariableBuffer {
                 size = MAXIMUM_BUFFER_SIZE;
             }
             bufferSize = size;
-            Log.d(Settings.LOG_TAG, "speed: " + StringUtil.formatSpeed(averageSpeed) + ", bufferSize: " + bufferSize);
+            Logger.log("speed: " + StringUtil.formatSpeed(averageSpeed) + ", bufferSize: " + bufferSize);
         }
     }
 

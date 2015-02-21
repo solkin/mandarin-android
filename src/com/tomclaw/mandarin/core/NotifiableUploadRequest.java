@@ -4,11 +4,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.main.ChatActivity;
 
 /**
  * Created by Solkin on 21.10.2014.

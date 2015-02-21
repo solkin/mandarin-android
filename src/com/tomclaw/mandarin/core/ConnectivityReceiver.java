@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by solkin on 20/03/14.
@@ -23,7 +23,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
 
-        Log.d(Settings.LOG_TAG, "connected: " + isConnected);
+        Logger.log("connected: " + isConnected);
 
         sendEventToService(context, isConnected);
     }

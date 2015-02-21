@@ -1,27 +1,24 @@
 package com.tomclaw.mandarin.core;
 
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.VariableBuffer;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.net.HttpURLConnection;
 
 /**
  * Created by Solkin on 14.10.2014.
@@ -107,15 +104,15 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     throw ex;
                 } catch (InterruptedIOException ex) {
                     // Thread interrupted exception.
-                    Log.d(Settings.LOG_TAG, "Interruption while uploading", ex);
+                    Logger.log("Interruption while uploading", ex);
                     throw ex;
                 } catch (InterruptedException ex) {
                     // Thread Io interrupted exception.
-                    Log.d(Settings.LOG_TAG, "Interruption while uploading", ex);
+                    Logger.log("Interruption while uploading", ex);
                     throw ex;
                 } catch (IOException ex) {
                     // Pretty network exception.
-                    Log.d(Settings.LOG_TAG, "Io exception while uploading", ex);
+                    Logger.log("Io exception while uploading", ex);
                     Thread.sleep(3000);
                 } finally {
                     if (input != null) {
@@ -123,53 +120,53 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     }
                 }
             } while (!completed);
-            if(!TextUtils.isEmpty(successReply)) {
+            if (!TextUtils.isEmpty(successReply)) {
                 onSuccess(successReply);
             }
             return REQUEST_DELETE;
         } catch (UnauthorizedException ex) {
-            Log.d(Settings.LOG_TAG, "Unauthorized exception while uploading", ex);
+            Logger.log("Unauthorized exception while uploading", ex);
             onFail();
             return REQUEST_LATER;
         } catch (ServerInternalException ex) {
-            Log.d(Settings.LOG_TAG, "Server internal exception while uploading", ex);
+            Logger.log("Server internal exception while uploading", ex);
             onFail();
             return REQUEST_LATER;
         } catch (UnknownResponseException ex) {
-            Log.d(Settings.LOG_TAG, "Unknown response exception while uploading", ex);
+            Logger.log("Unknown response exception while uploading", ex);
             onFail();
             return REQUEST_LATER;
         } catch (SecurityException ex) {
-            Log.d(Settings.LOG_TAG, "Security exception while uploading", ex);
+            Logger.log("Security exception while uploading", ex);
             onFail();
             return REQUEST_LATER;
         } catch (FileNotFoundException ex) {
-            Log.d(Settings.LOG_TAG, "File is missing while uploading", ex);
+            Logger.log("File is missing while uploading", ex);
             onFileNotFound();
             return REQUEST_LATER;
         } catch (InterruptedIOException ex) {
-            Log.d(Settings.LOG_TAG, "Upload interrupted", ex);
+            Logger.log("Upload interrupted", ex);
             onCancel();
             return REQUEST_LATER;
         } catch (InterruptedException ex) {
-            Log.d(Settings.LOG_TAG, "Upload interrupted while read", ex);
+            Logger.log("Upload interrupted while read", ex);
             onCancel();
             return REQUEST_LATER;
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "Unable to execute upload due to exception", ex);
+            Logger.log("Unable to execute upload due to exception", ex);
             onPending();
             return REQUEST_PENDING;
         }
     }
 
     private void checkInterrupted() throws InterruptedException {
-        if(Thread.interrupted()) {
+        if (Thread.interrupted()) {
             throw new InterruptedException();
         }
     }
 
     protected void identifyErrorResponse(int responseCode) throws Throwable {
-        Log.d(Settings.LOG_TAG, "uploading error: " + responseCode);
+        Logger.log("uploading error: " + responseCode);
         switch (responseCode) {
             case 401: {
                 throw new UnauthorizedException();

@@ -8,15 +8,18 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
 /**
@@ -38,7 +41,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Settings.LOG_TAG, "AbstractInfoActivity onCreate");
+        Logger.log("AbstractInfoActivity onCreate");
         // We want to receive service state notifications.
         addCoreServiceListener(this);
 
@@ -142,7 +145,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                 hideProgressBar();
             }
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "Unable to publish buddy info request due to exception.", ex);
+            Logger.log("Unable to publish buddy info request due to exception.", ex);
             onBuddyInfoRequestError();
         }
     }
@@ -157,7 +160,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
         int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
         String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
-        Log.d(Settings.LOG_TAG, "buddy id: " + requestBuddyId);
+        Logger.log("buddy id: " + requestBuddyId);
         // Checking for this is info we need.
         if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
             // Hide the progress bar.
@@ -195,11 +198,11 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                 }
                 updateBuddyNick();
             } else {
-                Log.d(Settings.LOG_TAG, "No info case :(");
+                Logger.log("No info case :(");
                 onBuddyInfoRequestError();
             }
         } else {
-            Log.d(Settings.LOG_TAG, "Wrong buddy info!");
+            Logger.log("Wrong buddy info!");
         }
     }
 

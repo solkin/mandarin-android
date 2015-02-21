@@ -1,10 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Log;
 import com.tomclaw.mandarin.core.BitmapRequest;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +25,13 @@ public class BuddyAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     @Override
     protected void onBitmapSaved(String hash) {
-        Log.d(Settings.LOG_TAG, "Update destination buddy " + buddyId + " avatar hash to " + hash);
+        Logger.log("Update destination buddy " + buddyId + " avatar hash to " + hash);
         try {
             QueryHelper.modifyBuddyAvatar(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId, hash);
-            Log.d(Settings.LOG_TAG, "Avatar complex operations succeeded!");
+            Logger.log("Avatar complex operations succeeded!");
         } catch (BuddyNotFoundException ignored) {
-            Log.d(Settings.LOG_TAG, "Hm... Buddy became not found while avatar being downloaded...");
+            Logger.log("Hm... Buddy became not found while avatar being downloaded...");
         }
     }
 }

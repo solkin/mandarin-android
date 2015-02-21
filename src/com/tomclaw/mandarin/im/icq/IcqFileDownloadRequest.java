@@ -9,7 +9,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
@@ -19,6 +18,7 @@ import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -69,7 +69,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         HttpURLConnection connection = (HttpURLConnection) new URL(fileInfoUrl).openConnection();
         String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
 
-        Log.d(Settings.LOG_TAG, response);
+        Logger.log(response);
 
         JSONObject rootObject = new JSONObject(response);
         int fileCount = rootObject.getInt("file_count");
@@ -101,7 +101,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     }
                 } else {
                     // For the first attempt we must download and store preview.
-                    if(isFirstAttempt) {
+                    if (isFirstAttempt) {
                         // Preview Url is ready - let's download it and cache.
                         Bitmap previewBitmap = getPreviewBitmap(previewUrl);
                         if (previewBitmap != null) {
@@ -112,7 +112,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 }
             }
             // Saving obtained data to the history table.
-            if(TextUtils.isEmpty(cachedFileName)) {
+            if (TextUtils.isEmpty(cachedFileName)) {
                 // This is probable first attempt to download file.
                 // Create new file.
                 storeFile = getUniqueFile(mimeType, fileName);
@@ -148,7 +148,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         final String base = FileHelper.getFileBaseFromName(fileName);
         final String extension = FileHelper.getFileExtensionFromPath(fileName);
         File directory = getStoragePublicFolder(mimeType);
-        if(directory.exists()) {
+        if (directory.exists()) {
             File[] files = directory.listFiles(new FilenameFilter() {
                 public boolean accept(File file, String name) {
                     return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
@@ -250,7 +250,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         try {
             int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
                     GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
-            if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT) {
+            if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT) {
                 throw new DownloadCancelledException();
             }
         } catch (MessageNotFoundException ignored) {
@@ -289,7 +289,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, originalMessage, cookie);
         // Checking for file is being created.
-        if(storeFile != null) {
+        if (storeFile != null) {
             // Remove file fragment.
             storeFile.delete();
         }

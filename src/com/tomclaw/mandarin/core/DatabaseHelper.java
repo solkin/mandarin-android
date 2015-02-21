@@ -4,11 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
@@ -126,10 +126,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
                     + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_MESSAGE_READ + "=0"
                     + " AND " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
-            Log.d(Settings.LOG_TAG, "query: " + query);
+            Logger.log("query: " + query);
             db.execSQL(query);
 
-            Log.d(Settings.LOG_TAG, "DB created: " + db.toString());
+            Logger.log("DB created: " + db.toString());
 
             PreferenceHelper.setShowStartHelper(context, false);
         } catch (Throwable ex) {
@@ -174,7 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Yo!
-        Log.d(Settings.LOG_TAG, "Now we need to upgrade database from " + oldVersion + " to " + newVersion);
+        Logger.log("Now we need to upgrade database from " + oldVersion + " to " + newVersion);
         switch (oldVersion) {
             case 1: {
                 db.execSQL("ALTER TABLE " + GlobalProvider.ROSTER_BUDDY_TABLE
@@ -218,6 +218,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + " ADD COLUMN " + GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " int default 0");
             }
         }
-        Log.d(Settings.LOG_TAG, "Database upgrade completed");
+        Logger.log("Database upgrade completed");
     }
 }

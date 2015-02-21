@@ -9,10 +9,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,7 +74,7 @@ public class UriFile extends VirtualFile {
         } else {
             bitmap = null;
         }
-        Log.d(Settings.LOG_TAG, "preview sampling (" + sizePx + "): " + (System.currentTimeMillis() - time));
+        Logger.log("preview sampling (" + sizePx + "): " + (System.currentTimeMillis() - time));
         return bitmap;
     }
 

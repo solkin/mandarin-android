@@ -1,11 +1,11 @@
 package com.tomclaw.mandarin.core;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +38,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
             in.close();
             return result;
         } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "Unable to execute request due to exception", e);
+            Logger.log("Unable to execute request due to exception", e);
             return REQUEST_PENDING;
         } finally {
             // Trying to disconnect in any case.
@@ -88,7 +88,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
         // Obtain request-specific url.
         String url = getUrl();
         String parameters = HttpUtil.prepareParameters(getParams());
-        Log.d(Settings.LOG_TAG, "try to send request to ".concat(url).concat(" with parameters: ")
+        Logger.log("try to send request to ".concat(url).concat(" with parameters: ")
                 .concat(WimConstants.QUE).concat(parameters));
         if (!TextUtils.isEmpty(parameters)) {
             url = url.concat(WimConstants.QUE).concat(parameters);

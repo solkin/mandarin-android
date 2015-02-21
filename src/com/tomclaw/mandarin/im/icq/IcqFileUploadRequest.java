@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
@@ -13,6 +12,7 @@ import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONObject;
 
@@ -84,11 +84,11 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected void onStartedDelegate() throws Throwable {
-        Log.d(Settings.LOG_TAG, "onStarted");
+        Logger.log("onStarted");
         try {
             int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
-            if(contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT ||
+            if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT ||
                     contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
                 throw new InterruptedException();
             }
@@ -121,7 +121,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
                 String fileName = dataObject.getString("filename");
                 String mime = dataObject.getString("mime");
                 String staticUrl = dataObject.getString("static_url");
-                Log.d(Settings.LOG_TAG, "onSuccess: " + staticUrl);
+                Logger.log("onSuccess: " + staticUrl);
                 String text = fileName + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                         + "\n" + staticUrl;
                 QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
@@ -139,7 +139,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected void onFailDelegate() {
-        Log.d(Settings.LOG_TAG, "onFail");
+        Logger.log("onFail");
         QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_CONTENT_STATE_FAILED,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
@@ -182,12 +182,12 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
         String url = getAccountRoot().getSession().signRequest(HttpUtil.GET, INIT_URL, builder);
 
-        Log.d(Settings.LOG_TAG, url);
+        Logger.log(url);
 
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
 
-        Log.d(Settings.LOG_TAG, response);
+        Logger.log(response);
 
         JSONObject rootObject = new JSONObject(response);
         int status = rootObject.getInt("status");

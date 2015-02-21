@@ -6,10 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.LruCache;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.*;
 
@@ -166,9 +166,9 @@ public class BitmapCache {
                 }
                 cacheBitmap(cacheKey, bitmap);
             } catch (FileNotFoundException ignored) {
-                Log.d(Settings.LOG_TAG, "Bitmap '" + hash + "' not found!");
+                Logger.log("Bitmap '" + hash + "' not found!");
             } catch (Throwable ex) {
-                Log.d(Settings.LOG_TAG, "Couldn't cache '" + hash + "' bitmap!", ex);
+                Logger.log("Couldn't cache '" + hash + "' bitmap!", ex);
             }
         }
         return bitmap;
@@ -188,7 +188,7 @@ public class BitmapCache {
         } catch (IOException e) {
             // Unable to create file, likely because external storage is
             // not currently mounted.
-            Log.d(Settings.LOG_TAG, "Error writing bitmap: " + hash, e);
+            Logger.log("Error writing bitmap: " + hash, e);
         }
         return false;
     }

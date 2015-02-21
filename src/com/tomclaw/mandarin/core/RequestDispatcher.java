@@ -6,10 +6,10 @@ import android.content.ContentValues;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -57,11 +57,12 @@ public class RequestDispatcher {
 
     /**
      * Stops task with specified tag.
+     *
      * @param tag - tag of the task needs to be stopped.
      */
     public boolean stopRequest(String tag) {
         // First of all, check that task is executing or in queue.
-        if(TextUtils.equals(tag, executingRequestTag)) {
+        if (TextUtils.equals(tag, executingRequestTag)) {
             // Task is executing this moment.
             // Interrupt thread as faster as it can be!
             // Task will receive interrupt exception.
@@ -86,7 +87,7 @@ public class RequestDispatcher {
             Cursor accountCursor;
             QueryBuilder queryBuilder = new QueryBuilder();
             queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType)
-                .and().columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
+                    .and().columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
             do {
                 // Registering created observers.
                 requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
@@ -106,11 +107,11 @@ public class RequestDispatcher {
         @SuppressWarnings("unchecked")
         private boolean dispatch(Cursor requestCursor, Cursor accountCursor) {
             synchronized (sync) {
-                Log.d(Settings.LOG_TAG, "Dispatching requests.");
+                Logger.log("Dispatching requests.");
                 // Checking for at least one request in database.
                 if (requestCursor.moveToFirst()) {
                     do {
-                        Log.d(Settings.LOG_TAG, "Request...");
+                        Logger.log("Request...");
                         // Obtain necessary column index.
                         int rowColumnIndex = requestCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
                         int classColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
@@ -139,10 +140,10 @@ public class RequestDispatcher {
                         // Checking for session is equals.
                         if (TextUtils.equals(requestAppSession, CoreService.getAppSession())) {
                             if (requestState != Request.REQUEST_PENDING) {
-                                Log.d(Settings.LOG_TAG, "Processed request of current session.");
+                                Logger.log("Processed request of current session.");
                                 continue;
                             }
-                            Log.d(Settings.LOG_TAG, "Normal request and will be processed now.");
+                            Logger.log("Normal request and will be processed now.");
                         } else {
                             boolean isDecline = false;
                             boolean isBreak = false;
@@ -151,13 +152,13 @@ public class RequestDispatcher {
                                 switch (requestState) {
                                     case Request.REQUEST_PENDING: {
                                         // Persistent request, might be processed at anytime.
-                                        Log.d(Settings.LOG_TAG, "Persistent request, might be processed at anytime.");
+                                        Logger.log("Persistent request, might be processed at anytime.");
                                         break;
                                     }
                                     case Request.REQUEST_SENT: {
                                         // Request sent, processed by server,
                                         // but we have no answer. Decline.
-                                        Log.d(Settings.LOG_TAG, "Request sent, processed by server, " +
+                                        Logger.log("Request sent, processed by server, " +
                                                 "but we have no answer. Decline.");
                                         isDecline = true;
                                         break;
@@ -166,7 +167,7 @@ public class RequestDispatcher {
                             } else {
                                 // Decline request.
                                 isDecline = true;
-                                Log.d(Settings.LOG_TAG, "Another session and not persistent request.");
+                                Logger.log("Another session and not persistent request.");
                             }
                             // Checking for request is obsolete and must be declined.
                             if (isDecline) {
@@ -181,7 +182,7 @@ public class RequestDispatcher {
                         String requestBundle = requestCursor.getString(bundleColumnIndex);
                         String requestTag = requestCursor.getString(tagColumnIndex);
 
-                        Log.d(Settings.LOG_TAG, "Request received: "
+                        Logger.log("Request received: "
                                 + "class = " + requestClass + "; "
                                 + "session = " + requestAppSession + "; "
                                 + "persistent = " + isPersistent + "; "
@@ -205,26 +206,26 @@ public class RequestDispatcher {
                             executingRequestTag = requestTag;
                             requestResult = request.onRequest(accountRoot, service);
                         } catch (AccountNotFoundException e) {
-                            Log.d(Settings.LOG_TAG, "RequestDispatcher: account not found by request db id. " +
+                            Logger.log("RequestDispatcher: account not found by request db id. " +
                                     "Cancelling.");
                         } catch (Throwable ex) {
-                            Log.d(Settings.LOG_TAG, "Exception while loading request class: " + requestClass, ex);
+                            Logger.log("Exception while loading request class: " + requestClass, ex);
                         } finally {
                             executingRequestTag = null;
                         }
                         // Checking for request result.
                         if (requestResult == Request.REQUEST_DELETE) {
                             // Result is delete-type.
-                            Log.d(Settings.LOG_TAG, "Result is delete-type");
+                            Logger.log("Result is delete-type");
                             contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                         } else if (requestResult == Request.REQUEST_PENDING) {
                             // Request wasn't completed. We'll retry request a little bit later.
-                            Log.d(Settings.LOG_TAG, "Request wasn't completed. We'll retry request a little bit later.");
+                            Logger.log("Request wasn't completed. We'll retry request a little bit later.");
                             break;
                         } else {
                             // Updating this request.
-                            Log.d(Settings.LOG_TAG, "Updating this request");
+                            Logger.log("Updating this request");
                             String requestJson = GsonSingleton.getInstance().toJson(request);
                             ContentValues contentValues = new ContentValues();
                             contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
@@ -237,16 +238,16 @@ public class RequestDispatcher {
                     } while (requestCursor.moveToNext());
                 }
                 try {
-                    if(requestCursor.getCount() > 0) {
+                    if (requestCursor.getCount() > 0) {
                         // Wait for specified daley or until notifying.
-                        Log.d(Settings.LOG_TAG, "Wait for specified delay or until notifying");
+                        Logger.log("Wait for specified delay or until notifying");
                         sync.wait(PENDING_REQUEST_DELAY);
-                        Log.d(Settings.LOG_TAG, "... pending time went.");
+                        Logger.log("... pending time went.");
                     } else {
                         // Wait until notifying. Try it.
-                        Log.d(Settings.LOG_TAG, "Wait until notifying");
+                        Logger.log("Wait until notifying");
                         sync.wait();
-                        Log.d(Settings.LOG_TAG, "... notified!");
+                        Logger.log("... notified!");
                     }
                 } catch (InterruptedException ignored) {
                     // Notified.

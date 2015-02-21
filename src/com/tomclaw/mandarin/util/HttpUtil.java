@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.util;
 
-import android.text.TextUtils;
 import android.util.Pair;
-import android.webkit.MimeTypeMap;
 import com.tomclaw.mandarin.im.icq.WimConstants;
 import org.apache.http.HttpStatus;
 

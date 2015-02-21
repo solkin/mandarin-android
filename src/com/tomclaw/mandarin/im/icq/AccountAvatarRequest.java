@@ -1,8 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Log;
 import com.tomclaw.mandarin.core.BitmapRequest;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by solkin on 12/21/13.
@@ -18,9 +17,9 @@ public class AccountAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     @Override
     protected void onBitmapSaved(String hash) {
-        Log.d(Settings.LOG_TAG, "Update destination profile " + getAccountRoot().getUserId() + " avatar hash to " + hash);
+        Logger.log("Update destination profile " + getAccountRoot().getUserId() + " avatar hash to " + hash);
         getAccountRoot().setAvatarHash(hash);
         getAccountRoot().updateAccount();
-        Log.d(Settings.LOG_TAG, "Avatar complex operations succeeded!");
+        Logger.log("Avatar complex operations succeeded!");
     }
 }

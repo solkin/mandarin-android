@@ -1,11 +1,9 @@
 package com.tomclaw.mandarin.core;
 
-import android.util.Log;
-import com.tomclaw.mandarin.core.Request;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.VariableBuffer;
 
 import java.io.*;
@@ -36,10 +34,10 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Connection", "Keep-Alive");
                 connection.setRequestProperty("Range", range);
-                Log.d(Settings.LOG_TAG, "Range: " + range);
+                Logger.log("Range: " + range);
                 try {
                     int statusCode = connection.getResponseCode();
-                    Log.d(Settings.LOG_TAG, "Server returns " + statusCode);
+                    Logger.log("Server returns " + statusCode);
                     if (statusCode == 503) {
                         throw new IllegalStateException();
                     } else if (statusCode != 200 && statusCode != 206) {
@@ -56,7 +54,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                         onBufferReleased(read, size);
                         buffer.onExecuteStart();
                         // Checking for thread is interrupted.
-                        if(Thread.interrupted()) {
+                        if (Thread.interrupted()) {
                             // Request is interrupted.
                             throw new DownloadCancelledException();
                         }
@@ -66,22 +64,22 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
                     throw new DownloadCancelledException();
                 } catch (IOException ex) {
                     // Pretty network exception.
-                    Log.d(Settings.LOG_TAG, "Io exception while downloading", ex);
+                    Logger.log("Io exception while downloading", ex);
                     Thread.sleep(3000);
                 }
             } while (read < size);
             onSuccess();
-            Log.d(Settings.LOG_TAG, "Download completed successfully.");
+            Logger.log("Download completed successfully.");
         } catch (DownloadException ex) {
             onFail();
-            Log.d(Settings.LOG_TAG, "Server returned strange error.");
+            Logger.log("Server returned strange error.");
             return REQUEST_DELETE;
         } catch (InterruptedIOException ex) {
-            Log.d(Settings.LOG_TAG, "Download interrupted.");
+            Logger.log("Download interrupted.");
             onCancel();
             return REQUEST_LATER;
         } catch (InterruptedException ex) {
-            Log.d(Settings.LOG_TAG, "Download interrupted.");
+            Logger.log("Download interrupted.");
             onCancel();
             return REQUEST_LATER;
         } catch (DownloadCancelledException ex) {
@@ -95,7 +93,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             onPending();
             return REQUEST_PENDING;
         } catch (IllegalStateException ex) {
-            Log.d(Settings.LOG_TAG, "Server is temporary unavailable.");
+            Logger.log("Server is temporary unavailable.");
             onPending();
             return REQUEST_PENDING;
         } catch (Throwable ex) {

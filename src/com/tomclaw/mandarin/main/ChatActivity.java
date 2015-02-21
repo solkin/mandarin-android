@@ -13,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -27,10 +26,7 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
-import com.tomclaw.mandarin.util.FileHelper;
-import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.SelectionHelper;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.mandarin.util.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -206,7 +202,7 @@ public class ChatActivity extends ChiefActivity {
             messageText.requestFocus();
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
-        Log.d(Settings.LOG_TAG, "chat activity start time: " + (System.currentTimeMillis() - time));
+        Logger.log("chat activity start time: " + (System.currentTimeMillis() - time));
     }
 
     private String getMessageText() {
@@ -233,14 +229,14 @@ public class ChatActivity extends ChiefActivity {
         messageText.setText(message);
         int selection = selectionStart + smileyText.length();
         // Check for selection range is correct.
-        if(selection >= 0 && selection <= messageText.length()) {
+        if (selection >= 0 && selection <= messageText.length()) {
             messageText.setSelection(selection);
         }
     }
 
     private void sendMessage() {
         final String message = getMessageText().trim();
-        Log.d(Settings.LOG_TAG, "message = " + message);
+        Logger.log("message = " + message);
         if (!TextUtils.isEmpty(message)) {
             int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             messageText.setText("");
@@ -447,7 +443,7 @@ public class ChatActivity extends ChiefActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(Settings.LOG_TAG, "onNewIntent");
+        Logger.log("onNewIntent");
 
         // Save currently entered text as draft before switching.
         saveMessageTextAsDraft();
@@ -529,7 +525,7 @@ public class ChatActivity extends ChiefActivity {
 
                 @Override
                 public void onFailed() {
-                    Log.d(Settings.LOG_TAG, "sending file failed");
+                    Logger.log("sending file failed");
                 }
             };
             scrollBottom();
@@ -658,7 +654,7 @@ public class ChatActivity extends ChiefActivity {
     private void readVisibleMessages() {
         final int firstVisiblePosition = chatList.getFirstVisiblePosition();
         final int lastVisiblePosition = chatList.getLastVisiblePosition();
-        Log.d(Settings.LOG_TAG, "Reading visible messages ["
+        Logger.log("Reading visible messages ["
                 + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
         if (lastVisiblePosition >= firstVisiblePosition) {
@@ -668,7 +664,7 @@ public class ChatActivity extends ChiefActivity {
                 final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
                 readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
             } catch (MessageNotFoundException ignored) {
-                Log.d(Settings.LOG_TAG, "Error while marking messages as read positions ["
+                Logger.log("Error while marking messages as read positions ["
                         + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
             }
         }
@@ -764,7 +760,7 @@ public class ChatActivity extends ChiefActivity {
                 try {
                     selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
                 } catch (MessageNotFoundException ignored) {
-                    Log.d(Settings.LOG_TAG, "Error while copying message on position " + position);
+                    Logger.log("Error while copying message on position " + position);
                 }
             }
             return selectionBuilder.toString().trim();
@@ -842,7 +838,7 @@ public class ChatActivity extends ChiefActivity {
                         firstPosition = firstVisiblePosition;
                         lastPosition = startLastVisiblePosition;
                     }
-                    Log.d(Settings.LOG_TAG, "Scroll: " + firstPosition + " -> " + lastPosition);
+                    Logger.log("Scroll: " + firstPosition + " -> " + lastPosition);
                     final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                     try {
                         final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
@@ -1168,8 +1164,8 @@ public class ChatActivity extends ChiefActivity {
         }
 
         public void onIncomingClicked(int contentState, String contentTag, String contentUri,
-                String contentName, String previewHash, String messageCookie) {
-            switch(contentState) {
+                                      String contentName, String previewHash, String messageCookie) {
+            switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
                     QueryHelper.updateFileState(getContentResolver(),
@@ -1192,8 +1188,8 @@ public class ChatActivity extends ChiefActivity {
         }
 
         public void onOutgoingClicked(int contentState, String contentTag, String contentUri,
-                String contentName, String previewHash, String messageCookie) {
-            switch(contentState) {
+                                      String contentName, String previewHash, String messageCookie) {
+            switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
@@ -1217,7 +1213,7 @@ public class ChatActivity extends ChiefActivity {
         }
 
         private void viewContent(String contentName, String contentUri, String previewHash) {
-            if(FileHelper.getMimeType(contentName).startsWith("image") &&
+            if (FileHelper.getMimeType(contentName).startsWith("image") &&
                     !TextUtils.equals(FileHelper.getFileExtensionFromPath(contentName), "gif")) {
                 Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
@@ -1247,7 +1243,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
             ChiefActivity activity = getWeakObject();
-            if(activity != null) {
+            if (activity != null) {
                 boolean wasActive = interaction.stopDownloadRequest(contentTag);
                 int desiredState;
                 // Checking for the task was active and will be stopped by itself,
@@ -1277,12 +1273,12 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
             ChiefActivity activity = getWeakObject();
-            if(activity != null) {
+            if (activity != null) {
                 boolean wasActive = interaction.stopUploadingRequest(contentTag);
                 int desiredState;
                 // Checking for the task was active and will be stopped by itself,
                 // or it was in queue and it needs to be switched to waiting state manually.
-                if(wasActive) {
+                if (wasActive) {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT;
                 } else {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;

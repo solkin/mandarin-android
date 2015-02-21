@@ -1,10 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
-import android.util.Log;
 import com.tomclaw.mandarin.core.BitmapRequest;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by Solkin on 25.07.2014.
@@ -27,7 +26,7 @@ public class SearchAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     @Override
     protected void onBitmapSaved(String hash) {
-        Log.d(Settings.LOG_TAG, "Search avatar received for buddy " + buddyId + ", avatar hash is " + hash);
+        Logger.log("Search avatar received for buddy " + buddyId + ", avatar hash is " + hash);
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
         intent.putExtra(ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());

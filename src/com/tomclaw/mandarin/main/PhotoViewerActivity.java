@@ -67,7 +67,7 @@ public class PhotoViewerActivity extends Activity {
         selectedCount = extras.getInt(EXTRA_SELECTED_COUNT, -1);
         photoEntry = (PhotoEntry) extras.getSerializable(EXTRA_PHOTO_ENTRY);
         // Check the parameters are correct.
-        if(TextUtils.isEmpty(uriString) || TextUtils.isEmpty(name)) {
+        if (TextUtils.isEmpty(uriString) || TextUtils.isEmpty(name)) {
             finish();
         } else {
             uri = Uri.parse(uriString);
@@ -116,7 +116,7 @@ public class PhotoViewerActivity extends Activity {
         doneButtonBadgeTextView = (TextView) doneButton.findViewById(R.id.done_button_badge);
 
         // Check for no selection here and...
-        if(selectedCount == -1) {
+        if (selectedCount == -1) {
             // ... hide picker buttons.
             pickerButtons.setVisibility(View.GONE);
         } else {
@@ -130,7 +130,7 @@ public class PhotoViewerActivity extends Activity {
             public void onClick(View v) {
                 ActionBar bar = getActionBar();
                 if (bar != null) {
-                    if(bar.isShowing()) {
+                    if (bar.isShowing()) {
                         bar.hide();
                         hidePickerButtons();
                     } else {
@@ -142,7 +142,7 @@ public class PhotoViewerActivity extends Activity {
         });
 
         // Checking for preview hash is not empty and show it in a block way.
-        if(!TextUtils.isEmpty(previewHash)) {
+        if (!TextUtils.isEmpty(previewHash)) {
             // Preview hash seems to be in a heap cache.
             setBitmap(BitmapCache.getInstance().getBitmapSync(previewHash,
                     BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false));
@@ -221,7 +221,7 @@ public class PhotoViewerActivity extends Activity {
     }
 
     protected void setBitmap(Bitmap bitmap) {
-        if(bitmap != null) {
+        if (bitmap != null) {
             hasPreview = true;
         }
         imageView.setImageBitmap(bitmap);
@@ -240,9 +240,9 @@ public class PhotoViewerActivity extends Activity {
         @Override
         public void executeBackground() throws Throwable {
             PhotoViewerActivity activity = getWeakObject();
-            if(activity != null) {
+            if (activity != null) {
                 bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
-                if(bitmap == null && !hasPreview) {
+                if (bitmap == null && !hasPreview) {
                     throw new NullPointerException();
                 }
             }
@@ -251,7 +251,7 @@ public class PhotoViewerActivity extends Activity {
         @Override
         public void onSuccessMain() {
             PhotoViewerActivity activity = getWeakObject();
-            if(activity != null && bitmap != null) {
+            if (activity != null && bitmap != null) {
                 activity.setBitmap(bitmap);
             }
         }

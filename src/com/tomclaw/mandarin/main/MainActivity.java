@@ -3,9 +3,7 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -14,10 +12,10 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
@@ -78,7 +76,7 @@ public class MainActivity extends ChiefActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int buddyDbId = dialogsAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Check out dialog with buddy (db id): " + buddyDbId);
+                Logger.log("Check out dialog with buddy (db id): " + buddyDbId);
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
@@ -86,7 +84,7 @@ public class MainActivity extends ChiefActivity {
             }
         });
         dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-        Log.d(Settings.LOG_TAG, "main activity start time: " + (System.currentTimeMillis() - time));
+        Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
     }
 
     @Override
@@ -181,7 +179,7 @@ public class MainActivity extends ChiefActivity {
     }
 
     public void onCoreServiceIntent(Intent intent) {
-        Log.d(Settings.LOG_TAG, "onCoreServiceIntent");
+        Logger.log("onCoreServiceIntent");
     }
 
     public void openSettings() {

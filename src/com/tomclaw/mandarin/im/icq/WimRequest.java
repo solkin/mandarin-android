@@ -1,9 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Log;
 import com.tomclaw.mandarin.core.HttpRequest;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +27,7 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
     @Override
     protected final int parseResponse(InputStream httpResponseStream) throws Throwable {
         String responseString = HttpUtil.streamToString(httpResponseStream);
-        Log.d(Settings.LOG_TAG, "sent request = ".concat(responseString));
+        Logger.log("sent request = ".concat(responseString));
         return parseJson(parseResponse(responseString));
     }
 

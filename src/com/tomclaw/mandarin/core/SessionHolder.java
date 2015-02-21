@@ -2,11 +2,11 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.util.Log;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class SessionHolder {
         try {
             getAccountRoot(accountType, userId).setStatus(statusIndex);
         } catch (AccountNotFoundException ignored) {
-            Log.d(Settings.LOG_TAG, "Account not found while attempting to change status!");
+            Logger.log("Account not found while attempting to change status!");
         }
     }
 
@@ -78,7 +78,7 @@ public class SessionHolder {
         try {
             getAccountRoot(accountType, userId).setStatus(statusIndex, statusTitle, statusMessage);
         } catch (AccountNotFoundException ignored) {
-            Log.d(Settings.LOG_TAG, "Account not found while attempting to change status!");
+            Logger.log("Account not found while attempting to change status!");
         }
     }
 

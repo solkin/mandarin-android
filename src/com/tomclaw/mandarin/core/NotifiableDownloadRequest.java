@@ -6,12 +6,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.ConnectivityHelper;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by Solkin on 02.11.2014.
@@ -45,7 +45,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
 
     protected boolean isStartDownload(boolean isFirstAttempt, long fileSize) {
         // Checking for this is first auto-run of this task.
-        if(isFirstAttempt) {
+        if (isFirstAttempt) {
             Context context = getAccountRoot().getContext();
             // Check for preferences of auto downloading content.
             String autoReceive = PreferenceHelper.getFilesAutoReceive(context);
@@ -55,7 +55,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
                 return fileSize < context.getResources().getInteger(R.integer.def_auto_receive_threshold);
             } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_wi_fi_only))) {
                 return ConnectivityHelper.isConnectedWifi(getAccountRoot().getContext());
-            } else if(TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_manual_only))) {
+            } else if (TextUtils.equals(autoReceive, context.getString(R.string.auto_receive_manual_only))) {
                 return false;
             }
         }
@@ -68,7 +68,7 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
 
     @Override
     protected final void onBufferReleased(long read, long size) {
-        Log.d(Settings.LOG_TAG, "downloading buffer released: " + read + "/" + size);
+        Logger.log("downloading buffer released: " + read + "/" + size);
         final int progress = (int) (100 * read / size);
         if (System.currentTimeMillis() - progressUpdateTime >= getProgressStepDelay()) {
             mBuilder.setProgress(100, progress, false);

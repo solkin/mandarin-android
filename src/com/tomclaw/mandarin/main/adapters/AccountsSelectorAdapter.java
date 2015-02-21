@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -70,7 +70,7 @@ public class AccountsSelectorAdapter extends CursorAdapter implements
             bindView(view, context, cursor);
         } catch (Throwable ex) {
             view = inflater.inflate(R.layout.account_selector_item, parent, false);
-            Log.d(Settings.LOG_TAG, "exception in accounts adapter: " + ex.getMessage());
+            Logger.log("exception in accounts adapter: " + ex.getMessage());
         }
         return view;
     }

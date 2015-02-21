@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.lang.ref.WeakReference;
 
@@ -35,9 +35,9 @@ public class MusicStateReceiver extends BroadcastReceiver {
                         String artist = intent.getStringExtra("artist");
                         String album = intent.getStringExtra("album");
                         String track = intent.getStringExtra("track");
-                        Log.d(Settings.LOG_TAG, action + " / " + cmd);
-                        Log.d(Settings.LOG_TAG, artist + ":" + album + ":" + track);
-                        Log.d(Settings.LOG_TAG, "music active: " + isMusicActive);
+                        Logger.log(action + " / " + cmd);
+                        Logger.log(artist + ":" + album + ":" + track);
+                        Logger.log("music active: " + isMusicActive);
                         String statusMessage = null;
                         if (!TextUtils.isEmpty(track) && isMusicActive) {
                             if (TextUtils.isEmpty(artist)) {

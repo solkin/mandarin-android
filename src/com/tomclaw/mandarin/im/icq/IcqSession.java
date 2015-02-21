@@ -2,17 +2,16 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.GsonSingleton;
-import com.tomclaw.mandarin.util.HttpParamsBuilder;
-import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.mandarin.util.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
@@ -93,7 +92,7 @@ public class IcqSession {
                 InputStream responseStream = HttpUtil.executePost(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
                 String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
-                Log.d(Settings.LOG_TAG, "client login = " + responseString);
+                Logger.log("client login = " + responseString);
 
                 JSONObject jsonObject = new JSONObject(responseString);
                 JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
@@ -107,10 +106,10 @@ public class IcqSession {
                         JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
                         int expiresIn = tokenObject.getInt(EXPIRES_IN);
                         String tokenA = tokenObject.getString(TOKEN_A);
-                        Log.d(Settings.LOG_TAG, "token a = " + tokenA);
-                        Log.d(Settings.LOG_TAG, "sessionSecret = " + sessionSecret);
+                        Logger.log("token a = " + tokenA);
+                        Logger.log("sessionSecret = " + sessionSecret);
                         String sessionKey = StringUtil.getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
-                        Log.d(Settings.LOG_TAG, "sessionKey = " + sessionKey);
+                        Logger.log("sessionKey = " + sessionKey);
                         // Update client login result in database.
                         icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
                         return EXTERNAL_LOGIN_OK;
@@ -126,7 +125,7 @@ public class IcqSession {
                 loginConnection.disconnect();
             }
         } catch (Throwable e) {
-            Log.d(Settings.LOG_TAG, "client login: " + e.getMessage());
+            Logger.log("client login: " + e.getMessage());
             return INTERNAL_ERROR;
         }
     }
@@ -166,13 +165,13 @@ public class IcqSession {
 
             nameValuePairs.add(new Pair<String, String>(SIG_SHA256,
                     StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
-            Log.d(Settings.LOG_TAG, HttpUtil.prepareParameters(nameValuePairs));
+            Logger.log(HttpUtil.prepareParameters(nameValuePairs));
             try {
                 // Execute HTTP Post Request
                 InputStream responseStream = HttpUtil.executePost(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
                 String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
-                Log.d(Settings.LOG_TAG, "start session = " + responseString);
+                Logger.log("start session = " + responseString);
 
                 JSONObject jsonObject = new JSONObject(responseString);
                 JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
@@ -219,7 +218,7 @@ public class IcqSession {
                 startSessionConnection.disconnect();
             }
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "start session exception", ex);
+            Logger.log("start session exception", ex);
             return INTERNAL_ERROR;
         }
     }
@@ -233,11 +232,11 @@ public class IcqSession {
 
             String url = signRequest(HttpUtil.GET, RENEW_TOKEN_URL, false, builder);
 
-            Log.d(Settings.LOG_TAG, "renew token request: " + url);
+            Logger.log("renew token request: " + url);
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
-            Log.d(Settings.LOG_TAG, "renew token response: " + response);
+            Logger.log("renew token response: " + response);
             JSONObject jsonObject = new JSONObject(response);
             JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
             int statusCode = responseObject.getInt(STATUS_CODE);
@@ -246,12 +245,12 @@ public class IcqSession {
                     JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
                     JSONObject userDataObject = dataObject.getJSONObject(USER_DATA_OBJECT);
                     String login = userDataObject.getString(LOGIN_ID);
-                    Log.d(Settings.LOG_TAG, "renew token login = " + login);
+                    Logger.log("renew token login = " + login);
                     JSONObject tokenObject = dataObject.getJSONObject(TOKEN_OBJECT);
                     int expiresIn = tokenObject.getInt(EXPIRES_IN);
                     String tokenA = tokenObject.getString(TOKEN_A);
-                    Log.d(Settings.LOG_TAG, "renew token expires in = " + expiresIn);
-                    Log.d(Settings.LOG_TAG, "renew token token a = " + tokenA);
+                    Logger.log("renew token expires in = " + expiresIn);
+                    Logger.log("renew token token a = " + tokenA);
                     // Update renew token result in database.
                     icqAccountRoot.setRenewTokenResult(login, tokenA, expiresIn);
                     break;
@@ -262,7 +261,7 @@ public class IcqSession {
             }
             return EXTERNAL_LOGIN_OK;
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "renew token exception", ex);
+            Logger.log("renew token exception", ex);
             return INTERNAL_ERROR;
         }
     }
@@ -274,7 +273,7 @@ public class IcqSession {
      * false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
-        Log.d(Settings.LOG_TAG, "start events fetching");
+        Logger.log("start events fetching");
         do {
             try {
                 URL url = new URL(getFetchUrl());
@@ -285,7 +284,7 @@ public class IcqSession {
                     InputStream responseStream = HttpUtil.executeGet(fetchEventConnection);
                     String responseString = HttpUtil.streamToString(responseStream);
                     responseStream.close();
-                    Log.d(Settings.LOG_TAG, "fetch events = " + responseString);
+                    Logger.log("fetch events = " + responseString);
 
                     JSONObject jsonObject = new JSONObject(responseString);
                     JSONObject responseObject = jsonObject.getJSONObject(RESPONSE_OBJECT);
@@ -307,7 +306,7 @@ public class IcqSession {
                             // Process events.
                             JSONArray eventsArray = dataObject.getJSONArray(EVENTS_ARRAY);
                             // Cycling all events.
-                            Log.d(Settings.LOG_TAG, "Cycling all events.");
+                            Logger.log("Cycling all events.");
                             for (int c = 0; c < eventsArray.length(); c++) {
                                 JSONObject eventObject = eventsArray.getJSONObject(c);
                                 String eventType = eventObject.getString(TYPE);
@@ -320,7 +319,7 @@ public class IcqSession {
                         default: {
                             // Something wend wrong. Let's reconnect if status is not offline.
                             // Reset login and session data.
-                            Log.d(Settings.LOG_TAG, "Something wend wrong. Let's reconnect if status is not offline.");
+                            Logger.log("Something wend wrong. Let's reconnect if status is not offline.");
                             icqAccountRoot.resetSessionData();
                             icqAccountRoot.updateAccount();
                             return icqAccountRoot.getStatusIndex() == StatusUtil.STATUS_OFFLINE;
@@ -330,7 +329,7 @@ public class IcqSession {
                     fetchEventConnection.disconnect();
                 }
             } catch (Throwable ex) {
-                Log.d(Settings.LOG_TAG, "fetch events exception: " + ex.getMessage());
+                Logger.log("fetch events exception: " + ex.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
@@ -351,7 +350,7 @@ public class IcqSession {
     }
 
     private void processEvent(String eventType, JSONObject eventData) {
-        Log.d(Settings.LOG_TAG, "eventType = " + eventType + "; eventData = " + eventData.toString());
+        Logger.log("eventType = " + eventType + "; eventData = " + eventData.toString());
         long processStartTime = System.currentTimeMillis();
         if (eventType.equals(BUDDYLIST)) {
             try {
@@ -389,7 +388,7 @@ public class IcqSession {
                         String buddyType = buddyObject.getString(USER_TYPE);
                         String buddyIcon = buddyObject.optString(BUDDY_ICON);
                         String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
-                        if(!TextUtils.isEmpty(bigBuddyIcon)) {
+                        if (!TextUtils.isEmpty(bigBuddyIcon)) {
                             buddyIcon = bigBuddyIcon;
                         }
 
@@ -429,7 +428,7 @@ public class IcqSession {
                     String buddyType = sourceObject.optString(USER_TYPE);
                     buddyIcon = sourceObject.optString(BUDDY_ICON);
                     String bigBuddyIcon = sourceObject.optString(WimConstants.BIG_BUDDY_ICON);
-                    if(!TextUtils.isEmpty(bigBuddyIcon)) {
+                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
                         buddyIcon = bigBuddyIcon;
                     }
                     lastSeen = sourceObject.optLong(LAST_SEEN, -1);
@@ -480,7 +479,7 @@ public class IcqSession {
                     // in roster and then retry message insertion.
                 } while (!isProcessed);
             } catch (JSONException ex) {
-                Log.d(Settings.LOG_TAG, "error while processing im - JSON exception", ex);
+                Logger.log("error while processing im - JSON exception", ex);
             }
         } else if (eventType.equals(IM_STATE)) {
             try {
@@ -498,7 +497,7 @@ public class IcqSession {
                     }
                 }
             } catch (JSONException ex) {
-                Log.d(Settings.LOG_TAG, "error while processing im state", ex);
+                Logger.log("error while processing im state", ex);
             }
         } else if (eventType.equals(PRESENCE)) {
             try {
@@ -514,7 +513,7 @@ public class IcqSession {
 
                 String buddyIcon = eventData.optString(BUDDY_ICON);
                 String bigBuddyIcon = eventData.optString(WimConstants.BIG_BUDDY_ICON);
-                if(!TextUtils.isEmpty(bigBuddyIcon)) {
+                if (!TextUtils.isEmpty(bigBuddyIcon)) {
                     buddyIcon = bigBuddyIcon;
                 }
 
@@ -523,9 +522,9 @@ public class IcqSession {
                 QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                         buddyId, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
             } catch (JSONException ex) {
-                Log.d(Settings.LOG_TAG, "error while processing presence - JSON exception", ex);
+                Logger.log("error while processing presence - JSON exception", ex);
             } catch (BuddyNotFoundException ex) {
-                Log.d(Settings.LOG_TAG, "error while processing presence - buddy not found");
+                Logger.log("error while processing presence - buddy not found");
             }
         } else if (eventType.equals(TYPING)) {
             try {
@@ -534,7 +533,7 @@ public class IcqSession {
                 QueryHelper.modifyBuddyTyping(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
                         buddyId, TextUtils.equals(typingStatus, TYPING_STATUS_TYPE));
             } catch (Throwable ignored) {
-                Log.d(Settings.LOG_TAG, "error while processing typing.");
+                Logger.log("error while processing typing.");
             }
         } else if (eventType.equals(MY_INFO)) {
             try {
@@ -542,13 +541,13 @@ public class IcqSession {
                         StringUtil.fixCyrillicSymbols(eventData.toString()), MyInfo.class);
                 icqAccountRoot.setMyInfo(myInfo);
             } catch (Throwable ignored) {
-                Log.d(Settings.LOG_TAG, "error while processing my info.");
+                Logger.log("error while processing my info.");
             }
         } else if (eventType.equals(SESSION_ENDED)) {
             icqAccountRoot.resetSessionData();
             icqAccountRoot.carriedOff();
         }
-        Log.d(Settings.LOG_TAG, "processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
+        Logger.log("processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }
 
     protected String getStatusTitle(String moodTitle, int statusIndex) {
@@ -632,12 +631,12 @@ public class IcqSession {
     public String signRequest(String method, String url, boolean includeSession, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA());
-        if(includeSession) {
+        if (includeSession) {
             builder.appendParam(WimConstants.AIM_SID, icqAccountRoot.getAimSid());
         }
         builder.appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
-               .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
-               .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
+                .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
+                .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
         builder.sortParams();
         String params = builder.build();
         String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))

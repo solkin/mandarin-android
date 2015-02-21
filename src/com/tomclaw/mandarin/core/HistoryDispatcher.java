@@ -12,10 +12,10 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
 
@@ -74,7 +74,7 @@ public class HistoryDispatcher {
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            Log.d(Settings.LOG_TAG, "HistoryObserver: onChange [selfChange = " + selfChange + "]");
+            Logger.log("HistoryObserver: onChange [selfChange = " + selfChange + "]");
             TaskExecutor.getInstance().execute(historyDispatcherTask);
         }
     }
@@ -231,14 +231,14 @@ public class HistoryDispatcher {
                     // Update shown messages flag.
                     QueryHelper.updateShownMessagesFlag(contentResolver);
                 } else {
-                    Log.d(Settings.LOG_TAG, "HistoryObserver: Non-shown messages not found");
+                    Logger.log("HistoryObserver: Non-shown messages not found");
                 }
             } else {
-                Log.d(Settings.LOG_TAG, "HistoryObserver: No unread messages found");
+                Logger.log("HistoryObserver: No unread messages found");
                 onNotificationCancel();
                 notificationManager.cancel(NOTIFICATION_ID);
             }
-            Log.d(Settings.LOG_TAG, "History dispatching time: " + (System.currentTimeMillis() - time));
+            Logger.log("History dispatching time: " + (System.currentTimeMillis() - time));
             // Call to update unread count.
             contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
         }

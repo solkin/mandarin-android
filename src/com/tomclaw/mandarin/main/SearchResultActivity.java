@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +19,7 @@ import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
 import com.tomclaw.mandarin.main.adapters.EndlessListAdapter;
 import com.tomclaw.mandarin.main.adapters.SearchResultAdapter;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.List;
 import java.util.Set;
@@ -131,7 +131,7 @@ public class SearchResultActivity extends ChiefActivity {
                 Set<String> buddyIds = bundle.keySet();
                 for (String buddyId : buddyIds) {
                     ShortBuddyInfo info = (ShortBuddyInfo) bundle.getSerializable(buddyId);
-                    Log.d(Settings.LOG_TAG, info.getBuddyId() + " [" + info.getBuddyNick() + "]");
+                    Logger.log(info.getBuddyId() + " [" + info.getBuddyNick() + "]");
                     if (info.isItemStatic()) {
                         searchAdapter.appendStaticItem(info);
                     } else {
@@ -140,7 +140,7 @@ public class SearchResultActivity extends ChiefActivity {
                 }
                 searchAdapter.setMoreItemsAvailable(total > offset + buddyIds.size());
             } else {
-                Log.d(Settings.LOG_TAG, "No result case :(");
+                Logger.log("No result case :(");
                 if (searchAdapter.isEmpty()) {
                     onSearchRequestNoResult();
                 }
@@ -158,7 +158,7 @@ public class SearchResultActivity extends ChiefActivity {
                 }
             }
         } else {
-            Log.d(Settings.LOG_TAG, "Another search request with another account db id.");
+            Logger.log("Another search request with another account db id.");
         }
     }
 

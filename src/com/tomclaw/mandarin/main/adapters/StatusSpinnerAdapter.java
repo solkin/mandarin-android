@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +49,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
             bindView(view, statusIndex);
         } catch (Throwable ex) {
             view = newView(parent);
-            Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
+            Logger.log("exception in getView: " + ex.getMessage());
         }
         return view;
     }

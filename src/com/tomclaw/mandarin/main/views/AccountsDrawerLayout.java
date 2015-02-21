@@ -7,12 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -25,6 +23,7 @@ import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.tasks.AccountInfoTask;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.util.ArrayList;
@@ -284,7 +283,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
             statusSpinner.setSelection(spinnerAdapter.getStatusPosition(userStatusIndex), false);
         } catch (StatusNotFoundException ignored) {
             // Nothing to do in this case. This may be produced by incorrect setup status collection.
-            Log.d(Settings.LOG_TAG, "Status not found in account info: " + userStatusIndex);
+            Logger.log("Status not found in account info: " + userStatusIndex);
         }
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

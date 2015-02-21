@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -20,6 +19,7 @@ import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -61,7 +61,7 @@ public class RosterActivity extends ChiefActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Log.d(Settings.LOG_TAG, "Opening dialog with buddy (db id): " + buddyDbId);
+                Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
                 try {
                     // Trying to open dialog with this buddy.
                     QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
@@ -295,7 +295,7 @@ public class RosterActivity extends ChiefActivity {
 
         @Override
         public void onAccountSelected(int accountDbId) {
-            Log.d(Settings.LOG_TAG, "Account selected: " + accountDbId);
+            Logger.log("Account selected: " + accountDbId);
             Context context = weakContext.get();
             if (context != null) {
                 Intent intent = new Intent(context, SearchActivity.class);
@@ -306,7 +306,7 @@ public class RosterActivity extends ChiefActivity {
 
         @Override
         public void onNoActiveAccounts() {
-            Log.d(Settings.LOG_TAG, "No active accounts.");
+            Logger.log("No active accounts.");
             Context context = weakContext.get();
             if (context != null) {
                 Toast.makeText(context, R.string.no_active_accounts, Toast.LENGTH_SHORT).show();

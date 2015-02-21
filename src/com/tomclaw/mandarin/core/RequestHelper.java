@@ -206,7 +206,7 @@ public class RequestHelper {
                     return;
                 }
             } finally {
-                if(cursor != null) {
+                if (cursor != null) {
                     cursor.close();
                 }
             }

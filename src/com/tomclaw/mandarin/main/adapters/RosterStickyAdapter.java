@@ -11,7 +11,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
@@ -105,7 +105,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
             bindView(view, context, cursor);
         } catch (Throwable ex) {
             view = inflater.inflate(R.layout.buddy_item, parent, false);
-            Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
+            Logger.log("exception in getView: " + ex.getMessage());
         }
         return view;
     }

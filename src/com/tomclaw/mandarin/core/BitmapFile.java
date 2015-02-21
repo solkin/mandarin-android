@@ -3,10 +3,10 @@ package com.tomclaw.mandarin.core;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.*;
 
@@ -96,7 +96,7 @@ public class BitmapFile extends VirtualFile {
         } catch (Throwable ex) {
             // Unable to create file, likely because external storage is
             // not currently mounted or OutOfMemory was thrown.
-            Log.d(Settings.LOG_TAG, "Error saving bitmap: " + fileName, ex);
+            Logger.log("Error saving bitmap: " + fileName, ex);
         }
         return null;
     }

@@ -1,14 +1,13 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,7 +40,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void connect() {
-        Log.d(Settings.LOG_TAG, "icq connection attempt");
+        Logger.log("icq connection attempt");
         // TODO: Such thread working model must be rewritten.
         Thread connectThread = new Thread() {
 
@@ -55,52 +54,52 @@ public class IcqAccountRoot extends AccountRoot {
 
             public void run() {
                 do {
-                    Log.d(Settings.LOG_TAG, "login: " + "start");
+                    Logger.log("login: " + "start");
                     while (!checkSessionReady()) {
-                        Log.d(Settings.LOG_TAG, "login: " + "session not ready");
+                        Logger.log("login: " + "session not ready");
                         while (!checkLoginReady()) {
-                            Log.d(Settings.LOG_TAG, "login: " + "login not ready");
-                            if(checkLoginExist()) {
-                                Log.d(Settings.LOG_TAG, "login: " + "login exists, try to renew token");
+                            Logger.log("login: " + "login not ready");
+                            if (checkLoginExist()) {
+                                Logger.log("login: " + "login exists, try to renew token");
                                 // Try to renew token.
                                 switch (icqSession.renewToken()) {
                                     case IcqSession.EXTERNAL_UNKNOWN: {
-                                        Log.d(Settings.LOG_TAG, "login: " + "renew token external error");
-                                        if(isPasswordLogin()) {
-                                            Log.d(Settings.LOG_TAG, "login: " + "password login - reset login data");
+                                        Logger.log("login: " + "renew token external error");
+                                        if (isPasswordLogin()) {
+                                            Logger.log("login: " + "password login - reset login data");
                                             // Reset login data and try to client login.
                                             resetLoginData();
                                         } else {
-                                            Log.d(Settings.LOG_TAG, "login: " + "can't renew token and no password :(");
+                                            Logger.log("login: " + "can't renew token and no password :(");
                                             // Show notification.
                                             updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                         }
                                         break;
                                     }
                                     case IcqSession.INTERNAL_ERROR: {
-                                        Log.d(Settings.LOG_TAG, "login: " + "renew token internal error");
+                                        Logger.log("login: " + "renew token internal error");
                                         sleep();
                                         break;
                                     }
                                 }
                             } else {
-                                Log.d(Settings.LOG_TAG, "login: " + "no login data, lets client login");
+                                Logger.log("login: " + "no login data, lets client login");
                                 // Login with credentials.
                                 switch (icqSession.clientLogin()) {
                                     case IcqSession.EXTERNAL_LOGIN_ERROR: {
-                                        Log.d(Settings.LOG_TAG, "login: " + "client login error");
+                                        Logger.log("login: " + "client login error");
                                         // Show notification.
                                         updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                         return;
                                     }
                                     case IcqSession.EXTERNAL_UNKNOWN: {
-                                        Log.d(Settings.LOG_TAG, "login: " + "client login external unknown");
+                                        Logger.log("login: " + "client login external unknown");
                                         // Show notification.
                                         updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                         return;
                                     }
                                     case IcqSession.INTERNAL_ERROR: {
-                                        Log.d(Settings.LOG_TAG, "login: " + "client login internal error");
+                                        Logger.log("login: " + "client login internal error");
                                         // Sleep some time.
                                         sleep();
                                         break;
@@ -108,34 +107,34 @@ public class IcqAccountRoot extends AccountRoot {
                                 }
                             }
                         }
-                        Log.d(Settings.LOG_TAG, "login: " + "start session attempt");
+                        Logger.log("login: " + "start session attempt");
                         // Attempt to start session.
                         switch (icqSession.startSession()) {
                             case IcqSession.EXTERNAL_SESSION_OK: {
-                                Log.d(Settings.LOG_TAG, "login: " + "session started ok");
+                                Logger.log("login: " + "session started ok");
                                 break;
                             }
                             case IcqSession.EXTERNAL_SESSION_RATE_LIMIT: {
-                                Log.d(Settings.LOG_TAG, "login: " + "start session rate limit");
+                                Logger.log("login: " + "start session rate limit");
                                 // Show notification.
                                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
                                 return;
                             }
                             case IcqSession.EXTERNAL_UNKNOWN: {
-                                Log.d(Settings.LOG_TAG, "login: " + "start session external error");
+                                Logger.log("login: " + "start session external error");
                                 // Renew token or retry client login.
                                 expireLoginData();
                                 break;
                             }
                             case IcqSession.INTERNAL_ERROR: {
-                                Log.d(Settings.LOG_TAG, "login: " + "start session internal error");
+                                Logger.log("login: " + "start session internal error");
                                 // Sleep some time.
                                 sleep();
                                 break;
                             }
                         }
                     }
-                    Log.d(Settings.LOG_TAG, "login: " + "session ready, almost ok");
+                    Logger.log("login: " + "session ready, almost ok");
                     // Update account connecting state to false.
                     updateAccountState(false);
                     // Starting events fetching in verbal cycle.

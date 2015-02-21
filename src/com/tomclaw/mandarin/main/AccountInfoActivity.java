@@ -4,15 +4,14 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,7 +79,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Settings.LOG_TAG, "AccountInfoActivity onCreate");
+        Logger.log("AccountInfoActivity onCreate");
 
         // Preparing for action bar.
         ActionBar bar = getActionBar();

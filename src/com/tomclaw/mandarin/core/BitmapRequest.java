@@ -2,10 +2,10 @@ package com.tomclaw.mandarin.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -63,10 +63,10 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
         // Checking for bitmap can be decoded. McDonald's etc.
         if (bitmap != null) {
             // Yeah, avatar is good.
-            Log.d(Settings.LOG_TAG, "Ready to save bitmap for URL: " + url);
+            Logger.log("Ready to save bitmap for URL: " + url);
             return saveBitmap(bitmap);
         } else {
-            Log.d(Settings.LOG_TAG, "Invalid bitmap for URL: " + url);
+            Logger.log("Invalid bitmap for URL: " + url);
         }
         return false;
     }

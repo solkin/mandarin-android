@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.TimeHelper;
@@ -160,7 +160,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             }
             bindView(view, context, cursor);
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "exception in getView: " + ex.getMessage());
+            Logger.log("exception in getView: " + ex.getMessage());
             view = inflater.inflate(R.layout.chat_item_error, parent, false);
             ex.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.core;
 
-import android.util.Log;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +23,7 @@ public abstract class Task implements Runnable {
                 }
             });
         } catch (Throwable ex) {
-            Log.d(Settings.LOG_TAG, "Exception while background task execution", ex);
+            Logger.log("Exception while background task execution", ex);
             onFailBackground();
             MainExecutor.execute(new Runnable() {
                 @Override

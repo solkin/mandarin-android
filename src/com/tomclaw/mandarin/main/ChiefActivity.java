@@ -6,12 +6,11 @@ import android.app.ActivityManager;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ public abstract class ChiefActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(Settings.LOG_TAG, "ChiefActivity onCreate");
+        Logger.log("ChiefActivity onCreate");
         super.onCreate(savedInstanceState);
 
         coreServiceListeners = new ArrayList<CoreServiceListener>();
@@ -102,7 +101,7 @@ public abstract class ChiefActivity extends Activity {
         unbindCoreService();
         /** Destroy **/
         super.onDestroy();
-        Log.d(Settings.LOG_TAG, "ChiefActivity onDestroy");
+        Logger.log("ChiefActivity onDestroy");
     }
 
     /**
@@ -131,7 +130,7 @@ public abstract class ChiefActivity extends Activity {
     }
 
     protected void bindCoreService() {
-        Log.d(Settings.LOG_TAG, "bindCoreService: isServiceBound = " + isServiceBound);
+        Logger.log("bindCoreService: isServiceBound = " + isServiceBound);
         /** Checking for service is not already bound **/
         if (!isServiceBound) {
             /** Broadcast receiver **/
@@ -140,7 +139,7 @@ public abstract class ChiefActivity extends Activity {
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    Log.d(Settings.LOG_TAG, "Intent in main activity received: " + intent.getStringExtra("Data"));
+                    Logger.log("Intent in main activity received: " + intent.getStringExtra("Data"));
                     /** Checking for special message from service **/
                     if (intent.getBooleanExtra(CoreService.EXTRA_STAFF_PARAM, false)) {
                         /** Obtain service state **/
@@ -164,19 +163,19 @@ public abstract class ChiefActivity extends Activity {
                 public void onServiceDisconnected(ComponentName name) {
                     serviceInteraction = null;
                     coreServiceDown();
-                    Log.d(Settings.LOG_TAG, "onServiceDisconnected");
+                    Logger.log("onServiceDisconnected");
                 }
 
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     serviceInteraction = ServiceInteraction.Stub.asInterface(service);
                     coreServiceReady();
-                    Log.d(Settings.LOG_TAG, "onServiceConnected");
+                    Logger.log("onServiceConnected");
                 }
             };
             /** Binding service **/
             bindService(new Intent(this, CoreService.class), serviceConnection, BIND_AUTO_CREATE);
             isServiceBound = true;
-            Log.d(Settings.LOG_TAG, "bindService completed");
+            Logger.log("bindService completed");
         }
     }
 
@@ -202,12 +201,12 @@ public abstract class ChiefActivity extends Activity {
         if (runningServiceInfoList != null) {
             for (ActivityManager.RunningServiceInfo service : runningServiceInfoList) {
                 if (CoreService.class.getCanonicalName().equals(service.service.getClassName())) {
-                    Log.d(Settings.LOG_TAG, "checkCoreService: exist");
+                    Logger.log("checkCoreService: exist");
                     return true;
                 }
             }
         }
-        Log.d(Settings.LOG_TAG, "checkCoreService: none");
+        Logger.log("checkCoreService: none");
         return false;
     }
 

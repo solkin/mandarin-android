@@ -10,7 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.List;
 import java.util.Random;
@@ -61,13 +61,13 @@ public class CoreService extends Service {
 
         @Override
         public List getAccountsList() throws RemoteException {
-            Log.d(Settings.LOG_TAG, "returning " + sessionHolder.getAccountsList().size() + " accounts");
+            Logger.log("returning " + sessionHolder.getAccountsList().size() + " accounts");
             return sessionHolder.getAccountsList();
         }
 
         @Override
         public void holdAccount(int accountDbId) throws RemoteException {
-            Log.d(Settings.LOG_TAG, "hold account " + accountDbId);
+            Logger.log("hold account " + accountDbId);
             sessionHolder.holdAccountRoot(accountDbId);
         }
 
@@ -112,7 +112,7 @@ public class CoreService extends Service {
     @Override
     public void onCreate() {
         long time = System.currentTimeMillis();
-        Log.d(Settings.LOG_TAG, "CoreService onCreate");
+        Logger.log("CoreService onCreate");
         super.onCreate();
         updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
@@ -121,7 +121,7 @@ public class CoreService extends Service {
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         uploadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_UPLOAD);
         historyDispatcher = new HistoryDispatcher(this);
-        Log.d(Settings.LOG_TAG, "CoreService serviceInit");
+        Logger.log("CoreService serviceInit");
         // Loading all data for this application session.
         sessionHolder.load();
         requestDispatcher.startObservation();
@@ -130,13 +130,13 @@ public class CoreService extends Service {
         historyDispatcher.startObservation();
         // Service is now ready.
         updateState(STATE_UP);
-        Log.d(Settings.LOG_TAG, "CoreService serviceInit completed");
-        Log.d(Settings.LOG_TAG, "core service start time: " + (System.currentTimeMillis() - time));
+        Logger.log("CoreService serviceInit completed");
+        Logger.log("core service start time: " + (System.currentTimeMillis() - time));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Settings.LOG_TAG, "onStartCommand flags = " + flags + " startId = " + startId);
+        Logger.log("onStartCommand flags = " + flags + " startId = " + startId);
         // Check for intent is really cool.
         if (intent != null) {
             onIntentReceived(intent);
@@ -190,7 +190,7 @@ public class CoreService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(Settings.LOG_TAG, "CoreService onDestroy");
+        Logger.log("CoreService onDestroy");
         updateState(STATE_DOWN);
         // Reset creation time.
         serviceCreateTime = 0;
@@ -199,7 +199,7 @@ public class CoreService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(Settings.LOG_TAG, "CoreService onBind");
+        Logger.log("CoreService onBind");
         return serviceInteraction;
     }
 

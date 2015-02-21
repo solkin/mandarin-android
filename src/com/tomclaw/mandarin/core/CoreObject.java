@@ -2,7 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Packs itself prior to its shuttling across processes,
@@ -58,7 +58,7 @@ public abstract class CoreObject implements Parcelable {
                 return implementer;
             } catch (Throwable e) {
                 e.printStackTrace();
-                Log.d(Settings.LOG_TAG, "CoreObject Creator error: " + e.getMessage());
+                Logger.log("CoreObject Creator error: " + e.getMessage());
             }
             return null;
         }

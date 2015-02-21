@@ -6,9 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
-import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.StringUtil;
 

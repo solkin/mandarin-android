@@ -3,8 +3,6 @@ package com.tomclaw.mandarin.util;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
-import com.tomclaw.mandarin.core.Settings;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -45,7 +43,7 @@ public class CountriesProvider {
                 reader.close();
                 stream.close();
             } catch (Exception ex) {
-                Log.d(Settings.LOG_TAG, ex.getMessage());
+                Logger.log(ex.getMessage());
             }
             Collections.sort(countries);
         }

@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
@@ -16,10 +15,7 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.GsonSingleton;
-import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.mandarin.util.*;
 
 import java.util.*;
 
@@ -110,7 +106,7 @@ public class QueryHelper {
             accountRoot.actualizeStatus();
             return accountRoot;
         } catch (ClassNotFoundException e) {
-            Log.d(Settings.LOG_TAG, "No such class found: " + e.getMessage());
+            Logger.log("No such class found: " + e.getMessage());
         }
         return null;
     }
@@ -329,7 +325,7 @@ public class QueryHelper {
     public static void insertTextMessage(ContentResolver contentResolver, boolean isCollapseMessages,
                                          int accountDbId, int buddyDbId, int messageType, int messageState, String cookie,
                                          long messageTime, String messageText) {
-        Log.d(Settings.LOG_TAG, "insertTextMessage: type: " + messageType + " message = " + messageText);
+        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
         // Checking for time specified.
         if (messageTime == 0) {
             messageTime = System.currentTimeMillis();
@@ -353,7 +349,7 @@ public class QueryHelper {
                         && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE)) != 1
                         && cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE)) ==
                         GlobalProvider.HISTORY_CONTENT_TYPE_TEXT) {
-                    Log.d(Settings.LOG_TAG, "We have cookies!");
+                    Logger.log("We have cookies!");
                     // We have cookies!
                     long messageDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                     String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
@@ -402,7 +398,7 @@ public class QueryHelper {
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash,contentTag);
+                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash, contentTag);
     }
 
     public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
@@ -478,8 +474,8 @@ public class QueryHelper {
      * Will append some more cookie to message.
      *
      * @param contentResolver - content resolver
-     * @param cookie - cookie of message to be updated
-     * @param cookiesToAdd - appending cookies
+     * @param cookie          - cookie of message to be updated
+     * @param cookiesToAdd    - appending cookies
      */
     public static void addMessageCookie(ContentResolver contentResolver, String cookie, String... cookiesToAdd) {
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -546,7 +542,7 @@ public class QueryHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         int modified = modifyFile(contentResolver, contentValues, messageType, cookie);
-        Log.d(Settings.LOG_TAG, "modified: " + modified);
+        Logger.log("modified: " + modified);
     }
 
     public static void updateFileSize(ContentResolver contentResolver, long size, int messageType, String cookie) {
@@ -603,7 +599,7 @@ public class QueryHelper {
                 return cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE));
             }
         } finally {
-            if(cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }
@@ -1000,7 +996,7 @@ public class QueryHelper {
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_ADD)
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         int removedBuddies = queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        Log.d(Settings.LOG_TAG, "outdated removed: " + removedBuddies);
+        Logger.log("outdated removed: " + removedBuddies);
     }
 
     public static void removeBuddy(ContentResolver contentResolver, int buddyDbId) {

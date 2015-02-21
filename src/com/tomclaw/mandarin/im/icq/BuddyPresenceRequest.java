@@ -2,15 +2,14 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +70,7 @@ public class BuddyPresenceRequest extends WimRequest {
                     String state = buddy.getString(WimConstants.STATE);
                     String buddyIcon = buddy.optString(WimConstants.BUDDY_ICON);
                     String bigBuddyIcon = buddy.optString(WimConstants.BIG_BUDDY_ICON);
-                    if(!TextUtils.isEmpty(bigBuddyIcon)) {
+                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
                         buddyIcon = bigBuddyIcon;
                     }
 
@@ -85,7 +84,7 @@ public class BuddyPresenceRequest extends WimRequest {
                     buddyInfo.setOnline(statusIndex != StatusUtil.STATUS_OFFLINE);
                     // Create custom avatar request.
                     if (!TextUtils.isEmpty(buddyIcon)) {
-                        Log.d(Settings.LOG_TAG, "search avatar for " + buddyId + ": " + buddyIcon);
+                        Logger.log("search avatar for " + buddyId + ": " + buddyIcon);
                         RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
                                 getAccountRoot().getAccountDbId(), buddyId,
                                 CoreService.getAppSession(), buddyIcon);

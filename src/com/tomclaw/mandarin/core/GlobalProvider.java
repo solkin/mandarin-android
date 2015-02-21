@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
 
@@ -287,7 +287,7 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.d(Settings.LOG_TAG, "GlobalProvider onCreate");
+        Logger.log("GlobalProvider onCreate");
         databaseHelper = new DatabaseHelper(getContext());
         return true;
     }
@@ -347,7 +347,7 @@ public class GlobalProvider extends ContentProvider {
         // Cursor cursor = sqLiteDatabase.query(distinct, table, projection, selection, selectionArgs, null, null, sortOrder, null);
 
         // Cursor cursor = sqLiteDatabase.query(true, ROSTER_GROUP_TABLE, new String[]{ROSTER_GROUP_NAME}, null, null, null, null, null, null);
-        // Log.d(Settings.LOG_TAG, "Cursor items count: " + cursor.getCount());
+        // Logger.log("Cursor items count: " + cursor.getCount());
         // просим ContentResolver уведомлять этот курсор
         // об изменениях данных в GROUP_RESOLVER_URI
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -356,7 +356,7 @@ public class GlobalProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        Log.d(Settings.LOG_TAG, "getType, " + uri.toString());
+        Logger.log("getType, " + uri.toString());
         return null;
     }
 
@@ -403,7 +403,7 @@ public class GlobalProvider extends ContentProvider {
             } finally {
                 sqLiteDatabase.endTransaction();
             }
-            Log.d(Settings.LOG_TAG, "Update unread time: " + (System.currentTimeMillis() - time));
+            Logger.log("Update unread time: " + (System.currentTimeMillis() - time));
             getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         } else if (method.equals(METHOD_GET_UNREAD)) {
             long time = System.currentTimeMillis();
@@ -432,7 +432,7 @@ public class GlobalProvider extends ContentProvider {
                 bundle.putSerializable(KEY_NOTIFICATION_DATA, data);
             }
             cursor.close();
-            Log.d(Settings.LOG_TAG, "Get unread time: " + (System.currentTimeMillis() - time));
+            Logger.log("Get unread time: " + (System.currentTimeMillis() - time));
             return bundle;
         } else if (method.equals(METHOD_GET_MESSAGES_COUNT)) {
             Cursor cursor = sqLiteDatabase.rawQuery(COUNT_QUERY, null);

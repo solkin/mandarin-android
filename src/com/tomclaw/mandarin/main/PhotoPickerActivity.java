@@ -19,10 +19,10 @@ import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.main.views.ThumbnailView;
 import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -116,15 +116,15 @@ public class PhotoPickerActivity extends Activity {
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
                     File photoFile = new File(photoEntity.path);
                     Uri uri = Uri.fromFile(photoFile);
-                    if(TextUtils.equals(FileHelper.getFileExtensionFromPath(photoEntity.path), "gif")) {
+                    if (TextUtils.equals(FileHelper.getFileExtensionFromPath(photoEntity.path), "gif")) {
                         Intent intent = new Intent();
                         intent.setAction(android.content.Intent.ACTION_VIEW);
                         intent.setDataAndType(uri, FileHelper.getMimeType(photoEntity.path));
                         startActivity(intent);
                     } else {
                         int selectedCount = selectedPhotos.size();
-                        if(!selectedPhotos.containsKey(photoEntity.imageId)) {
-                            selectedCount ++;
+                        if (!selectedPhotos.containsKey(photoEntity.imageId)) {
+                            selectedCount++;
                         }
                         Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
                         intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
@@ -141,7 +141,7 @@ public class PhotoPickerActivity extends Activity {
         fixLayoutInternal();
         updateSelectedCount();
 
-        Log.d(Settings.LOG_TAG, "albums: " + albums.size());
+        Logger.log("albums: " + albums.size());
     }
 
     private void sendSelectedPhotos() {
@@ -208,7 +208,7 @@ public class PhotoPickerActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     PhotoEntry photoEntry = (PhotoEntry) data.getSerializableExtra(
                             PhotoViewerActivity.SELECTED_PHOTO_ENTRY);
-                    if(photoEntry != null) {
+                    if (photoEntry != null) {
                         selectedPhotos.put(photoEntry.imageId, photoEntry);
                         sendSelectedPhotos();
                     }

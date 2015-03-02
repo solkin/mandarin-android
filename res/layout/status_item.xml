@@ -4,8 +4,8 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:padding="5dp">
-
+              android:padding="5dp"
+              android:gravity="center_vertical">
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/status_name"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="6dp"
             android:textSize="17sp"
             android:fontFamily="sans-serif-light"/>
 </LinearLayout>

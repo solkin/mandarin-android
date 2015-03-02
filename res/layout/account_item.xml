@@ -37,7 +37,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingTop="6dp">
+                android:paddingTop="6dp"
+                android:gravity="center_vertical">
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -48,7 +49,8 @@
                     android:id="@+id/status_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="0dp"
                     android:fontFamily="sans-serif"
                     android:textSize="16sp"
                     android:textColor="@color/status_title_color"

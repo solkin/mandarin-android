@@ -6,20 +6,20 @@
         <item>@drawable/status_icq_mobile</item>
         <item>@drawable/status_icq_online</item>
         <item>@drawable/status_icq_invisible</item>
-        <item>@drawable/status_icq_chat</item>
-        <item>@drawable/status_icq_away</item>
+        <item>@drawable/status_icq_online</item>
         <item>@drawable/status_icq_dnd</item>
-        <item>@drawable/status_icq_na</item>
-        <item>@drawable/status_icq_busy</item>
-        <item>@drawable/status_icq_busy</item>
+        <item>@drawable/status_icq_dnd</item>
+        <item>@drawable/status_icq_dnd</item>
+        <item>@drawable/status_icq_dnd</item>
+        <item>@drawable/status_icq_dnd</item>
         <item>@drawable/status_icq_invisible</item>
 
-        <item>@drawable/status_icq_shop</item>
-        <item>@drawable/status_icq_duck</item>
-        <item>@drawable/status_icq_tired</item>
+        <item>@drawable/status_icq_shopping</item>
+        <item>@drawable/status_icq_bathing</item>
+        <item>@drawable/status_icq_exhausted</item>
         <item>@drawable/status_icq_party</item>
         <item>@drawable/status_icq_beer</item>
-        <item>@drawable/status_icq_think</item>
+        <item>@drawable/status_icq_thinking</item>
         <item>@drawable/status_icq_eating</item>
         <item>@drawable/status_icq_tv</item>
         <item>@drawable/status_icq_friends</item>
@@ -27,27 +27,27 @@
         <item>@drawable/status_icq_music</item>
         <item>@drawable/status_icq_business</item>
         <item>@drawable/status_icq_cinema</item>
-        <item>@drawable/status_icq_fun</item>
+        <item>@drawable/status_icq_havingfun</item>
         <item>@drawable/status_icq_phone</item>
-        <item>@drawable/status_icq_game</item>
+        <item>@drawable/status_icq_gamepad</item>
         <item>@drawable/status_icq_study</item>
         <item>@drawable/status_icq_sick</item>
-        <item>@drawable/status_icq_sleeping</item>
+        <item>@drawable/status_icq_sleep</item>
         <item>@drawable/status_icq_surfing</item>
         <item>@drawable/status_icq_internet</item>
         <item>@drawable/status_icq_working</item>
         <item>@drawable/status_icq_typing</item>
-        <item>@drawable/status_icq_angry</item>
-        <item>@drawable/status_icq_weekend</item>
+        <item>@drawable/status_icq_mad</item>
+        <item>@drawable/status_icq_havinagoodtime</item>
         <item>@drawable/status_icq_psp</item>
-        <item>@drawable/status_icq_on_mobile</item>
-        <item>@drawable/status_icq_asleep</item>
+        <item>@drawable/status_icq_mobile</item>
+        <item>@drawable/status_icq_fall_asleep</item>
         <item>@drawable/status_icq_wc</item>
-        <item>@drawable/status_icq_question</item>
-        <item>@drawable/status_icq_way</item>
+        <item>@drawable/status_icq_confused</item>
+        <item>@drawable/status_icq_on_the_way</item>
         <item>@drawable/status_icq_love</item>
-        <item>@drawable/status_icq_in_love</item>
-        <item>@drawable/status_icq_search</item>
+        <item>@drawable/status_icq_inlove</item>
+        <item>@drawable/status_icq_searching</item>
         <item>@drawable/status_icq_diary</item>
     </array>
 

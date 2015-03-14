@@ -69,12 +69,12 @@ public class BuddyInfoRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK) {
             JSONObject data = responseObject.getJSONObject("data");
-            JSONArray infoArray = data.getJSONArray("infoArray");
-            if (infoArray.length() > 0) {
+            JSONArray users = data.getJSONArray("users");
+            if (users.length() > 0) {
                 Context context = getAccountRoot().getContext();
                 // Only first profile we need.
-                JSONObject firstProfile = infoArray.getJSONObject(0);
-                JSONObject profile = firstProfile.getJSONObject("profile");
+                JSONObject user = users.getJSONObject(0);
+                JSONObject profile = user.getJSONObject("profile");
                 // Obtain buddy info from profile.
                 putExtra(intent, R.id.friendly_name, R.string.friendly_name, profile.optString("friendlyName"));
                 putExtra(intent, R.id.first_name, R.string.first_name, profile.optString("firstName"));
@@ -125,7 +125,7 @@ public class BuddyInfoRequest extends WimRequest {
     @Override
     protected String getUrl() {
         return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("memberDir/get");
+                .concat("presence/get");
     }
 
     @Override
@@ -135,6 +135,7 @@ public class BuddyInfoRequest extends WimRequest {
         params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<String, String>("infoLevel", "mid"));
         params.add(new Pair<String, String>("t", buddyId));
+        params.add(new Pair<String, String>("mdir", "1"));
         return params;
     }
 

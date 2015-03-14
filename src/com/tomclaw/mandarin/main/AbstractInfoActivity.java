@@ -128,7 +128,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
 
     private void updateAboutMe() {
         String aboutMe = getAboutMe();
-        if(TextUtils.isEmpty(aboutMe)) {
+        if (TextUtils.isEmpty(aboutMe)) {
             findViewById(R.id.info_about_me_title).setVisibility(View.GONE);
             findViewById(R.id.about_me).setVisibility(View.GONE);
             findViewById(R.id.info_about_me_footer).setVisibility(View.GONE);
@@ -200,11 +200,11 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                             View buddyInfoItem = findViewById(Integer.valueOf(key));
                             if (buddyInfoItem != null) {
                                 TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
-                                if(titleView != null) {
+                                if (titleView != null) {
                                     titleView.setText(title);
                                 }
                                 TextView valueView = (TextView) buddyInfoItem.findViewById(R.id.info_value);
-                                if(valueView != null) {
+                                if (valueView != null) {
                                     valueView.setText(value);
                                 }
                                 buddyInfoItem.setVisibility(View.VISIBLE);

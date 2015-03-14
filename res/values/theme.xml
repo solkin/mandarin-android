@@ -286,7 +286,6 @@
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">?info_block_header_text_color</item>
-        <item name="android:background">?info_block_background_color</item>
     </style>
     <style name="BuddyInfoBlockContent">
         <item name="android:layout_width">match_parent</item>
@@ -295,7 +294,6 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingBottom">16dp</item>
-        <item name="android:background">?info_block_background_color</item>
     </style>
     <style name="BuddyInfoItemTitle">
         <item name="android:layout_width">wrap_content</item>

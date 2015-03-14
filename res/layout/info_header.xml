@@ -3,50 +3,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <LinearLayout
-            android:orientation="horizontal"
+              android:layout_height="wrap_content">
+    <com.tomclaw.mandarin.main.views.ContactImage
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" android:layout_marginBottom="14dp"
-            >
-        <com.tomclaw.mandarin.main.views.ContactImage
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:id="@+id/buddy_image"
-                android:layout_gravity="center_horizontal|top"
-                android:src="@drawable/ic_default_avatar"/>
-        <LinearLayout
-                android:orientation="vertical"
+            android:layout_height="216dp"
+            android:id="@+id/buddy_image"
+            android:src="@drawable/ic_default_avatar"
+            android:scaleType="centerCrop"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="0dp"
+            android:background="?info_block_background">
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="0dp">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/buddy_nick"
-                    android:textStyle="bold"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/buddy_id"
-                    android:fontFamily="sans-serif-light"/>
-        </LinearLayout>
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical|right"
-                android:paddingLeft="0dp"
-                android:paddingRight="5dp">
-            <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/progress_bar"/>
-        </LinearLayout>
+                android:id="@+id/buddy_nick"
+                android:fontFamily="sans-serif"
+                android:textSize="20sp"
+                android:textColor="?info_block_text"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buddy_id"
+                android:fontFamily="sans-serif"
+                android:textSize="14sp"
+                android:textColor="?info_block_text"/>
     </LinearLayout>
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?info_block_divider"/>
 </LinearLayout>

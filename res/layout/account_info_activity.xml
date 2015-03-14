@@ -7,10 +7,20 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="14dp">
+            android:layout_height="wrap_content">
         <include layout="@layout/info_header"/>
         <include layout="@layout/info_status"/>
         <include layout="@layout/info_block"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+            <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progress_bar"
+                    android:padding="20dp"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

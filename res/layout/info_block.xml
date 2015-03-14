@@ -7,14 +7,12 @@
     <TextView
             android:id="@+id/info_base_title"
             android:text="@string/info_base"
-            style="?android:attr/listSeparatorTextViewStyle"
+            style="@style/BuddyInfoBlockHeader"
             android:visibility="gone"/>
     <LinearLayout
             android:id="@+id/base_info"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
+            style="@style/BuddyInfoBlockContent"
+            android:visibility="gone">
         <include
                 android:id="@+id/friendly_name"
                 android:layout_width="wrap_content"
@@ -52,19 +50,17 @@
                 android:visibility="gone"
                 layout="@layout/info_item"/>
     </LinearLayout>
+    <include layout="@layout/info_footer"
+             android:id="@+id/info_base_footer"/>
     <TextView
             android:id="@+id/info_extended_title"
             android:text="@string/info_extended"
-            style="?android:attr/listSeparatorTextViewStyle"
+            style="@style/BuddyInfoBlockHeader"
             android:visibility="gone"/>
     <LinearLayout
-            android:id="@+id/base_info"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp">
+            android:id="@+id/extended_info"
+            style="@style/BuddyInfoBlockContent"
+            android:visibility="gone">
         <include
                 android:id="@+id/children"
                 android:layout_width="wrap_content"
@@ -83,11 +79,24 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 layout="@layout/info_item"/>
-        <include
-                android:id="@+id/about_me"
+    </LinearLayout>
+    <include layout="@layout/info_footer"
+             android:id="@+id/info_extended_footer"/>
+    <TextView
+            android:id="@+id/info_about_me_title"
+            android:text="@string/about_me"
+            style="@style/BuddyInfoBlockHeader"
+            android:visibility="gone"/>
+    <LinearLayout
+            android:orientation="vertical"
+            style="@style/BuddyInfoBlockContent"
+            android:id="@+id/about_me"
+            android:visibility="gone">
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+                android:id="@+id/info_value"/>
     </LinearLayout>
+    <include layout="@layout/info_footer"
+             android:id="@+id/info_about_me_footer"/>
 </LinearLayout>

@@ -30,6 +30,15 @@
     <attr name="button_navbar_text" format="color|reference"/>
     <attr name="button_navbar_background" format="color|reference"/>
 
+    <attr name="info_block_background" format="color|reference"/>
+    <attr name="info_block_text" format="color|reference"/>
+    <attr name="info_block_divider" format="color|reference"/>
+    <attr name="info_block_header_text_color" format="color|reference"/>
+    <attr name="info_block_background_color" format="color|reference"/>
+    <attr name="block_info_divider_background" format="color|reference"/>
+    <attr name="info_item_title_text_color" format="color|reference"/>
+    <attr name="info_item_value_text_color" format="color|reference"/>
+
     <declare-styleable name="PreviewImageView">
         <attr name="preview_placeholder_tint" format="color|reference"/>
     </declare-styleable>

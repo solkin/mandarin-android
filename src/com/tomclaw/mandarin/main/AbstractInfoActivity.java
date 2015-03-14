@@ -35,6 +35,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
     private int buddyStatus;
     private String firstName;
     private String lastName;
+    private String aboutMe;
 
     private TextView buddyNickView;
 
@@ -88,7 +89,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
             statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, buddyStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Yeah, we have status info - so we might show status info.
-            findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
+            // findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
             View statusContent = findViewById(R.id.info_status_content);
             statusContent.setVisibility(View.VISIBLE);
             statusContent.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +124,15 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
             }
         }
         buddyNickView.setText(nick);
+    }
+
+    private void updateAboutMe() {
+        String aboutMe = getAboutMe();
+        if(TextUtils.isEmpty(aboutMe)) {
+            findViewById(R.id.info_about_me_title).setVisibility(View.GONE);
+            findViewById(R.id.about_me).setVisibility(View.GONE);
+            findViewById(R.id.info_about_me_footer).setVisibility(View.GONE);
+        }
     }
 
     public abstract void onBuddyInfoRequestError();
@@ -168,8 +178,16 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
             if (isInfoPresent) {
                 Bundle bundle = intent.getExtras();
                 // Show info blocks.
+                findViewById(R.id.base_info).setVisibility(View.VISIBLE);
+                findViewById(R.id.extended_info).setVisibility(View.VISIBLE);
+                // Show info titles.
                 findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
                 findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
+                findViewById(R.id.info_about_me_title).setVisibility(View.VISIBLE);
+                // Show footers
+                findViewById(R.id.info_base_footer).setVisibility(View.VISIBLE);
+                findViewById(R.id.info_extended_footer).setVisibility(View.VISIBLE);
+                findViewById(R.id.info_about_me_footer).setVisibility(View.VISIBLE);
                 // Iterate by info keys.
                 for (String key : bundle.keySet()) {
                     if (StringUtil.isNumeric(key)) {
@@ -181,8 +199,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                             // Prepare buddy info item.
                             View buddyInfoItem = findViewById(Integer.valueOf(key));
                             if (buddyInfoItem != null) {
-                                ((TextView) buddyInfoItem.findViewById(R.id.info_title)).setText(title);
-                                ((TextView) buddyInfoItem.findViewById(R.id.info_value)).setText(value);
+                                TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
+                                if(titleView != null) {
+                                    titleView.setText(title);
+                                }
+                                TextView valueView = (TextView) buddyInfoItem.findViewById(R.id.info_value);
+                                if(valueView != null) {
+                                    valueView.setText(value);
+                                }
                                 buddyInfoItem.setVisibility(View.VISIBLE);
                             }
                             // Correct user-defined values for sharing.
@@ -192,11 +216,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                                 setFirstName(value);
                             } else if (Integer.valueOf(key) == R.id.last_name) {
                                 setLastName(value);
+                            } else if (Integer.valueOf(key) == R.id.about_me) {
+                                setAboutMe(value);
                             }
                         }
                     }
                 }
                 updateBuddyNick();
+                updateAboutMe();
             } else {
                 Logger.log("No info case :(");
                 onBuddyInfoRequestError();
@@ -242,11 +269,19 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         return lastName;
     }
 
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
     }
 }

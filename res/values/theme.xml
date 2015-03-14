@@ -45,6 +45,9 @@
     <color name="about_background_color">#222222</color>
     <color name="about_text_color">#FFFFFF</color>
     <color name="about_subtext_color">#bababa</color>
+    <color name="info_block_background_color">#222222</color>
+    <color name="info_block_text_color">#ffffff</color>
+    <color name="info_block_divider_color">#141414</color>
     <style name="Theme.Mandarin.Light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Light</item>
 
@@ -79,6 +82,15 @@
         <item name="chat_background_doodle">@drawable/chat_background_doodle_light</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_light</item>
+
+        <item name="info_block_background">@color/info_block_background_color</item>
+        <item name="info_block_text">@color/info_block_text_color</item>
+        <item name="info_block_divider">@color/info_block_divider_color</item>
+        <item name="info_block_header_text_color">#b6b6b6</item>
+        <item name="info_block_background_color">#fafafa</item>
+        <item name="block_info_divider_background">#eeeeee</item>
+        <item name="info_item_title_text_color">#727272</item>
+        <item name="info_item_value_text_color">#222222</item>
     </style>
     <style name="Theme.Mandarin.Dark" parent="android:Theme.Holo">
         <item name="android:actionBarStyle">@style/ActionBar.Holo.Opaque.Translucent</item>
@@ -117,6 +129,15 @@
         <item name="chat_background_doodle">@android:color/transparent</item>
 
         <item name="chat_background_gradient">@drawable/chat_background_gradient_dark</item>
+
+        <item name="info_block_background">@color/info_block_background_color</item>
+        <item name="info_block_text">@color/info_block_text_color</item>
+        <item name="info_block_divider">@color/info_block_divider_color</item>
+        <item name="info_block_header_text_color">#727272</item>
+        <item name="info_block_background_color">#1a1a1a</item>
+        <item name="block_info_divider_background">#141414</item>
+        <item name="info_item_title_text_color">#b6b6b6</item>
+        <item name="info_item_value_text_color">#ffffff</item>
     </style>
     <style name="ActionBar.Holo.Light" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
     </style>
@@ -254,5 +275,43 @@
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textColor">@drawable/resend_code_color</item>
+    </style>
+    <style name="BuddyInfoBlockHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">?info_block_header_text_color</item>
+        <item name="android:background">?info_block_background_color</item>
+    </style>
+    <style name="BuddyInfoBlockContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:background">?info_block_background_color</item>
+    </style>
+    <style name="BuddyInfoItemTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?info_item_title_text_color</item>
+    </style>
+    <style name="BuddyInfoItemValue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:autoLink">all</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?info_item_value_text_color</item>
     </style>
 </resources>

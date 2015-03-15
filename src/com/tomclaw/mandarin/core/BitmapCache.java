@@ -206,6 +206,10 @@ public class BitmapCache {
         bitmapLruCache.put(cacheKey, bitmap);
     }
 
+    public boolean checkBitmapInCache(String hash) {
+        return new File(getBitmapFilePath(hash)).exists();
+    }
+
     private String getBitmapFilePath(String hash) {
         return path.getPath().concat("/").concat(hash).concat(".").concat(COMPRESS_FORMAT.name());
     }

@@ -12,7 +12,7 @@ public class SearchAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     public static final String ACCOUNT_DB_ID = "account_db_id";
     public static final String BUDDY_ID = "buddy_id";
-    public static final String BUDDY_AVATAR_HASH = "avatar_hash";
+    public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
 
     private String buddyId;
 

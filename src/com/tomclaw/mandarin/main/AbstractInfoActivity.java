@@ -9,6 +9,9 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -170,11 +173,23 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
         int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
         String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
+        // Checking for avatar info received.
+        String requestAvatarHash = intent.getStringExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH);
         Logger.log("buddy id: " + requestBuddyId);
         // Checking for this is info we need.
         if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
             // Hide the progress bar.
             hideProgressBar();
+            // Checking for avatar hash is new and cool.
+            if(!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
+                avatarHash = requestAvatarHash;
+                ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+                Animation fadeIn = new AlphaAnimation(0, 1);
+                fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
+                fadeIn.setDuration(750);
+                contactBadgeUpdate.setAnimation(fadeIn);
+                BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, getAvatarHash(), R.drawable.ic_default_avatar, true);
+            }
             if (isInfoPresent) {
                 Bundle bundle = intent.getExtras();
                 // Show info blocks.

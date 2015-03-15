@@ -168,6 +168,13 @@ public class RequestHelper {
                 url, appSession, searchAvatarRequest);
     }
 
+    public static void requestLargeAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
+                                           String appSession, String url) {
+        LargeAvatarRequest largeAvatarRequest = new LargeAvatarRequest(buddyId, url);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
+                url, appSession, largeAvatarRequest);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

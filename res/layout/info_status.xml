@@ -3,14 +3,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="56dp"
+              android:layout_height="wrap_content"
               android:background="?info_block_background"
               android:paddingLeft="12dp"
               android:paddingRight="0dp">
     <LinearLayout
             android:id="@+id/info_status_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="56dp"
             android:gravity="center_vertical"
             android:visibility="gone">
         <ImageView

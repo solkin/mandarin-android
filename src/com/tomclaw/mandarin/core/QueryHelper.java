@@ -1242,4 +1242,18 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
+
+    public static void updateBuddyOrAccountAvatar(AccountRoot accountRoot, String buddyId, String hash) {
+        // Check for destination buddy is account.
+        if(TextUtils.equals(buddyId,accountRoot.getUserId())) {
+            accountRoot.setAvatarHash(hash);
+            accountRoot.updateAccount();
+        }
+        try {
+            // Attempt to update buddy avatar.
+            QueryHelper.modifyBuddyAvatar(accountRoot.getContentResolver(),
+                    accountRoot.getAccountDbId(), buddyId, hash);
+        } catch (BuddyNotFoundException ignored) {
+        }
+    }
 }

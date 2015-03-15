@@ -1,12 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import com.tomclaw.mandarin.core.BitmapRequest;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by Solkin on 25.07.2014.
@@ -28,17 +25,7 @@ public class LargeAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     @Override
     protected void onBitmapSaved(String hash) {
-        // Check for destination buddy is account.
-        if(TextUtils.equals(buddyId, getAccountRoot().getUserId())) {
-            Logger.log("Update profile " + getAccountRoot().getUserId() + " avatar hash to " + hash);
-            getAccountRoot().setAvatarHash(hash);
-            getAccountRoot().updateAccount();
-        }
-        try {
-            QueryHelper.modifyBuddyAvatar(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId, hash);
-        } catch (BuddyNotFoundException ignored) {
-        }
+        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
         intent.putExtra(ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());

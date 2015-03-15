@@ -6,10 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
@@ -94,6 +91,7 @@ public class BuddyInfoRequest extends WimRequest {
                     Log.d(Settings.LOG_TAG, "large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
                     if(BitmapCache.getInstance().checkBitmapInCache(hash)) {
+                        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {
                         RequestHelper.requestLargeAvatar(

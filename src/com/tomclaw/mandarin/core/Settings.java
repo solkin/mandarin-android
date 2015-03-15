@@ -14,6 +14,7 @@ public class Settings {
     public static final int LED_BLINK_DELAY = 1000;
     public static long NOTIFICATION_MIN_DELAY = 1500;
     public static int MESSAGES_COLLAPSE_DELAY = 2 * 60 * 1000;
+    public static final int TYPING_DELAY = 5 * 1000;
     public static boolean FORCE_RESTART = true;
     public static String DEVELOPER_NAME = "TomClaw Software";
     public static String LOG_TAG = "Mandarin";

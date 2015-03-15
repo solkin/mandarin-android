@@ -42,7 +42,6 @@ import java.util.List;
  */
 public class ChatActivity extends ChiefActivity {
 
-    private static final int TYPING_DELAY = 5 * 1000;
     private static final int PICK_FILE_RESULT_CODE = 1;
     private static final int PICK_GALLERY_RESULT_CODE = 2;
 
@@ -579,7 +578,7 @@ public class ChatActivity extends ChiefActivity {
 
                 long lastTyping = buddyCursor.getBuddyLastTyping();
                 // Checking for typing no more than 5 minutes.
-                if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < 5 * 60 * 1000) {
+                if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                     subtitle = getString(R.string.typing);
                 } else {
                     long lastSeen = buddyCursor.getBuddyLastSeen();
@@ -1081,7 +1080,7 @@ public class ChatActivity extends ChiefActivity {
     private class MessageWatcher implements TextWatcher {
 
         private boolean isTimerDown = true;
-        private CountDownTimer typingTimer = new CountDownTimer(TYPING_DELAY, TYPING_DELAY) {
+        private CountDownTimer typingTimer = new CountDownTimer(Settings.TYPING_DELAY, Settings.TYPING_DELAY) {
             @Override
             public void onTick(long millisUntilFinished) {
             }

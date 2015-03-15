@@ -24,6 +24,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.Logger;
@@ -164,7 +165,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         SpannableString statusString;
         long lastTyping = cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
         // Checking for typing no more than 5 minutes.
-        if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < 5 * 60 * 1000) {
+        if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
             statusString = new SpannableString(context.getString(R.string.typing));
         } else {
             statusString = new SpannableString(statusTitle + " " + statusMessage);

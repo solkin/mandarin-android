@@ -10,7 +10,8 @@
     <LinearLayout
             android:id="@+id/info_status_content"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
             android:gravity="center_vertical"
             android:visibility="gone">
         <ImageView

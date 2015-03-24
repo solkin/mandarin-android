@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.main.icq.IcqEditUserInfoActivity;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
 
@@ -35,6 +37,14 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.user_info_edit:
+                // TODO: open activity only if account is connected.
+                startActivity(new Intent(this, IcqEditUserInfoActivity.class)
+                                .putExtra(IcqEditUserInfoActivity.ACCOUNT_DB_ID, getAccountDbId())
+                                .putExtra(IcqEditUserInfoActivity.ACCOUNT_TYPE, getAccountType())
+                                .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash())
+                );
                 return true;
             case R.id.account_shutdown:
                 try {
@@ -86,7 +96,6 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
-            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             bar.setTitle(R.string.account_info);
         }
     }

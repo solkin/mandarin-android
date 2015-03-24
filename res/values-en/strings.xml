@@ -144,6 +144,9 @@
     <string name="male">male</string>
     <string name="female">female</string>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string name="smiley_item">Smiley</string>
 
     <string name="status_icq_shop">Shopping</string>
@@ -365,4 +368,5 @@
     <string name="use_phone_number">Login with phone number</string>
     <string name="use_login_and_password">I already have login and password</string>
     <string name="register_using_phone">Have no account yet?\n<u>Register it using your phone number!</u></string>
+    <string name="user_info_edit">Edit info</string>
 </resources>

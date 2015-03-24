@@ -100,6 +100,21 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddyInfoRequest);
     }
 
+    public static void requestAccountInfo(ContentResolver contentResolver, String appSession, int accountDbId) {
+        Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
+                GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
+        // Oh, cursor may be null sometimes.
+        if (cursor != null) {
+            // Cursor may have more than only one entry.
+            if (cursor.moveToFirst()) {
+                String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
+                AccountInfoRequest accountInfoRequest = new AccountInfoRequest(userId);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, accountInfoRequest);
+            }
+            cursor.close();
+        }
+    }
+
     public static void requestSetState(ContentResolver contentResolver, int accountDbId, int statusIndex) {
         SetStateRequest setStateRequest = new SetStateRequest(statusIndex);
         String tag = accountDbId + SetStateRequest.class.getName();

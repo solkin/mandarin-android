@@ -39,7 +39,6 @@ public class CountryCodeActivity extends Activity {
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         bar.setIcon(R.drawable.ic_ab_logo);
 
         setContentView(R.layout.country_code_activity);

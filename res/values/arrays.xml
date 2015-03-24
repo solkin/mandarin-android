@@ -12,6 +12,20 @@
         <item>@string/gender_any</item>
     </string-array>
 
+    <string-array name="children_spinner_strings">
+        <item>@string/no</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="smoking_spinner_strings">
+        <item>@string/yes</item>
+        <item>@string/no</item>
+    </string-array>
+
     <string-array name="pref_roster_mode_strings">
         <item>@string/group_by_alphabet</item>
         <item>@string/group_by_groups</item>

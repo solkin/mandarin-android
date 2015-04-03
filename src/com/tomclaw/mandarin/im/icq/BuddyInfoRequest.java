@@ -78,6 +78,7 @@ public class BuddyInfoRequest extends WimRequest {
                 JSONObject user = users.getJSONObject(0);
                 String iconId = user.optString("iconId");
                 String buddyIcon = user.optString("buddyIcon");
+                String bigBuddyIcon = user.optString("bigBuddyIcon");
                 String largeIconId = user.optString("largeIconId");
                 // Check avatar fields be able to modify.
                 if(!TextUtils.isEmpty(iconId) && !TextUtils.isEmpty(buddyIcon) && iconId.length() > 4 &&
@@ -97,6 +98,23 @@ public class BuddyInfoRequest extends WimRequest {
                         RequestHelper.requestLargeAvatar(
                                 context.getContentResolver(), getAccountRoot().getAccountDbId(),
                                 buddyId, CoreService.getAppSession(), buddyIcon);
+                    }
+                } else {
+                    String url = bigBuddyIcon;
+                    if(TextUtils.isEmpty(url)) {
+                        url = buddyIcon;
+                    }
+                    if(!TextUtils.isEmpty(url)) {
+                        String hash = HttpUtil.getUrlHash(url);
+                        // Check for such avatar is already loaded.
+                        if(BitmapCache.getInstance().checkBitmapInCache(hash)) {
+                            QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
+                            intent.putExtra(BUDDY_AVATAR_HASH, hash);
+                        } else {
+                            RequestHelper.requestSearchAvatar(context.getContentResolver(),
+                                    getAccountRoot().getAccountDbId(), buddyId,
+                                    CoreService.getAppSession(), url);
+                        }
                     }
                 }
                 JSONObject profile = user.optJSONObject("profile");

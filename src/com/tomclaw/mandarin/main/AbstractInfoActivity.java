@@ -3,7 +3,12 @@ package com.tomclaw.mandarin.main;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -12,21 +17,25 @@ import android.view.View;
 import android.view.animation.*;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
+import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
+
+import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Created by solkin on 12/26/13.
  */
-public abstract class AbstractInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
+public abstract class AbstractInfoActivity extends ChiefActivity
+        implements ChiefActivity.CoreServiceListener, NfcAdapter.CreateNdefMessageCallback {
 
     private int accountDbId;
     private String accountType;
@@ -39,6 +48,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
     private String aboutMe;
 
     private TextView buddyNickView;
+
+    private NfcAdapter mNfcAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,6 +134,28 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                 container.startAnimation(resizeAnimation);
             }
         });
+
+        // Check for available NFC Adapter
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter != null) {
+            // Register callback
+            mNfcAdapter.setNdefPushMessageCallback(this, this);
+        }
+    }
+
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        NfcBuddyInfo nfcBuddyInfo = new NfcBuddyInfo(accountType, buddyId, buddyNick, buddyStatus);
+        return new NdefMessage(
+                new NdefRecord[] {
+                        createMime(Settings.MIME_TYPE, GsonSingleton.getInstance().toJson(nfcBuddyInfo)),
+                        NdefRecord.createApplicationRecord(getPackageName())
+                });
+    }
+
+    private NdefRecord createMime(String mimeType, String text) {
+        return new NdefRecord(
+                NdefRecord.TNF_MIME_MEDIA, mimeType.getBytes(), new byte[0], text.getBytes());
     }
 
     protected abstract int getLayout();

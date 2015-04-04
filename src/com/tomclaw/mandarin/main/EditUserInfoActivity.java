@@ -3,6 +3,8 @@ package com.tomclaw.mandarin.main;
 import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -12,13 +14,13 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.Request;
-import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
 /**
@@ -26,6 +28,10 @@ import com.tomclaw.mandarin.util.Logger;
  */
 public abstract class EditUserInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
+    private static final int PICK_AVATAR_REQUEST_CODE = 0x01;
+    private static final int CROP_AVATAR_REQUEST_CODE = 0x02;
+    private static final int LARGE_AVATAR_SIZE = 600;
+    private static final String ACTION_CROP = "com.android.camera.action.CROP";
 
     public static final String ACCOUNT_DB_ID = "account_db_id";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -34,6 +40,9 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     private int accountDbId;
     private String accountType;
     private String avatarHash;
+
+    private Bitmap manualAvatar;
+    private String manualAvatarVirtualHash;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +84,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             public void onClick(View v) {
                 View container = findViewById(R.id.buddy_image_container);
                 int targetHeight;
-                if(container.getWidth() != container.getHeight()) {
+                if (container.getWidth() != container.getHeight()) {
                     targetHeight = container.getWidth();
                 } else {
                     targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
@@ -84,6 +93,14 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 resizeAnimation.setInterpolator(new OvershootInterpolator());
                 resizeAnimation.setDuration(500);
                 container.startAnimation(resizeAnimation);
+            }
+        });
+
+        View changeAvatarButton = findViewById(R.id.change_avatar_button);
+        changeAvatarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickAvatar();
             }
         });
 
@@ -103,6 +120,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 finish();
                 return true;
             case R.id.edit_user_info_complete:
+                sendManualBitmap();
                 sendEditUserInfoRequest();
                 finish();
                 return true;
@@ -168,5 +186,160 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     }
 
+    protected void sendManualBitmap() {
+        // Check for manual avatar exists.
+        if(manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
+            // This will cache avatar with specified hash and also for current account.
+            TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, manualAvatar, manualAvatarVirtualHash, avatarHash));
+        }
+    }
+
+    protected abstract void sendManualAvatarRequest(String hash);
+
     protected abstract void sendEditUserInfoRequest();
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_AVATAR_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
+                    onAvatarPicked(data.getData());
+                }
+                break;
+            }
+            case CROP_AVATAR_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
+                    TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, data.getData()));
+                }
+                break;
+            }
+        }
+    }
+
+    private void pickAvatar() {
+        try {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, PICK_AVATAR_REQUEST_CODE);
+        } catch (Throwable ignored) {
+            // No such application?!
+        }
+    }
+
+    private void onAvatarPicked(Uri uri) {
+        try {
+            Intent intent = new Intent(ACTION_CROP);
+            intent.setData(uri);
+            intent.putExtra("crop", "true");
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            intent.putExtra("outputX", LARGE_AVATAR_SIZE);
+            intent.putExtra("outputY", LARGE_AVATAR_SIZE);
+            intent.putExtra("noFaceDetection", true);
+            startActivityForResult(intent, CROP_AVATAR_REQUEST_CODE);
+        } catch (Throwable ignored) {
+            // No such application?!
+            TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setManualAvatar(Bitmap bitmap, String hash) {
+        // Apply manual avatar and hash.
+        manualAvatar = bitmap;
+        manualAvatarVirtualHash = hash;
+        // Show new avatar with animation.
+        ContactImage contactBadgeManual = (ContactImage) findViewById(R.id.buddy_image_manual);
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
+        fadeIn.setDuration(750);
+        contactBadgeManual.setAnimation(fadeIn);
+        contactBadgeManual.setBitmap(bitmap);
+    }
+
+    private void onAvatarChangeError() {
+        Toast.makeText(this, R.string.avatar_changing_error, Toast.LENGTH_SHORT).show();
+    }
+
+    public static class AvatarSamplingTask extends WeakObjectTask<EditUserInfoActivity> {
+
+        private final Uri uri;
+        private Bitmap bitmap;
+        private String hash;
+
+        public AvatarSamplingTask(EditUserInfoActivity object, Uri uri) {
+            super(object);
+            this.uri = uri;
+            this.hash = HttpUtil.getUrlHash(uri.toString());
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, LARGE_AVATAR_SIZE, LARGE_AVATAR_SIZE);
+                if (bitmap == null) {
+                    throw new NullPointerException();
+                }
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null && bitmap != null) {
+                activity.setManualAvatar(bitmap, hash);
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                activity.onAvatarChangeError();
+            }
+        }
+    }
+
+    public static class UpdateAvatarTask extends WeakObjectTask<EditUserInfoActivity> {
+
+        private final Bitmap avatar;
+        private final String virtualHash;
+        private final String avatarHash;
+
+        public UpdateAvatarTask(EditUserInfoActivity object, Bitmap avatar, String virtualHash, String avatarHash) {
+            super(object);
+            this.avatar = avatar;
+            this.virtualHash = virtualHash;
+            this.avatarHash = avatarHash;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                BitmapCache bitmapCache = BitmapCache.getInstance();
+                bitmapCache.saveBitmapSync(virtualHash, avatar);
+                bitmapCache.saveBitmapSync(avatarHash, avatar);
+                // Remove all cached avatars for avatarHash.
+                bitmapCache.invalidateHash(avatarHash);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null && avatar != null) {
+                activity.sendManualAvatarRequest(virtualHash);
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            EditUserInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                activity.onAvatarChangeError();
+            }
+        }
+    }
 }

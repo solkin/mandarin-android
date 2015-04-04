@@ -24,6 +24,11 @@
                         android:layout_height="match_parent"
                         android:id="@+id/buddy_image_update"
                         android:scaleType="centerCrop"/>
+                <com.tomclaw.mandarin.main.views.ContactImage
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/buddy_image_manual"
+                        android:scaleType="centerCrop"/>
             </FrameLayout>
             <LinearLayout
                     android:orientation="vertical"

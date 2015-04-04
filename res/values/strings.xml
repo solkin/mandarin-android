@@ -378,4 +378,7 @@
     <string name="edit_user_info_complete">Готово</string>
     <string name="date_not_set">Не установлено</string>
     <string name="date_format">%1$d.%2$d.%3$d</string>
+    <string name="avatar_changing_error">Произошла ошибка при установке аватара. Пожалуйста, попробуйте другое
+        изображение.
+    </string>
 </resources>

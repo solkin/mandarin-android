@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.io.*;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,6 +56,10 @@ public class BitmapCache {
 
     private static String getCacheKey(String hash, int width, int height) {
         return hash + "_" + width + "_" + height;
+    }
+
+    private static boolean isCacheKeyFromHash(String cacheKey, String hash) {
+        return !TextUtils.isEmpty(cacheKey) && !TextUtils.isEmpty(hash) && cacheKey.startsWith(hash + "_");
     }
 
     /**
@@ -208,6 +213,16 @@ public class BitmapCache {
 
     public boolean checkBitmapInCache(String hash) {
         return new File(getBitmapFilePath(hash)).exists();
+    }
+
+    public void invalidateHash(String hash) {
+        Set<String> cacheKeySet = bitmapLruCache.snapshot().keySet();
+        // Find and remove cache keys, assigned with specified hash.
+        for(String cacheKey : cacheKeySet) {
+            if(isCacheKeyFromHash(cacheKey, hash)) {
+                bitmapLruCache.remove(cacheKey);
+            }
+        }
     }
 
     private String getBitmapFilePath(String hash) {

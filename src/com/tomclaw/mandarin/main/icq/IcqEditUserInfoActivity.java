@@ -1,17 +1,14 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
 import com.tomclaw.mandarin.main.views.DatePickerView;
 import com.tomclaw.mandarin.util.StringUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * Icq-specific user info edit activity
@@ -79,11 +76,14 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
                     DatePickerView birthDateView = (DatePickerView) findViewById(R.id.birth_date);
                     long birthDate = bundle.getLong(key);
                     birthDateView.setDate(birthDate);
-                    // TextView birthDateView = (TextView) findViewById(R.id.birth_date);
-                    // birthDateView.setText(simpleDateFormat.format(birthDate));
                 }
             }
         }
+    }
+
+    @Override
+    protected void sendManualAvatarRequest(String hash) {
+
     }
 
     @Override

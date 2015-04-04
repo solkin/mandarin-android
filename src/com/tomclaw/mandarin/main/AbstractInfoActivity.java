@@ -8,28 +8,25 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.View;
-import android.view.animation.*;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
-import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.views.ContactImage;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
 
 /**
  * Created by solkin on 12/26/13.
@@ -218,9 +215,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     public void onCoreServiceIntent(Intent intent) {
         // Check for this is info response and not edit info response.
         boolean isInfoResponse = intent.getBooleanExtra(BuddyInfoRequest.INFO_RESPONSE, false);
-        if(!isInfoResponse) {
-            return;
-        }
         // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
         int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
@@ -242,59 +236,63 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 contactBadgeUpdate.setAnimation(fadeIn);
                 BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, getAvatarHash(), R.drawable.ic_default_avatar, true);
             }
-            if (isInfoPresent) {
-                Bundle bundle = intent.getExtras();
-                // Show info blocks.
-                findViewById(R.id.base_info).setVisibility(View.VISIBLE);
-                findViewById(R.id.extended_info).setVisibility(View.VISIBLE);
-                // Show info titles.
-                findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
-                findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
-                findViewById(R.id.info_about_me_title).setVisibility(View.VISIBLE);
-                // Show footers
-                findViewById(R.id.info_base_footer).setVisibility(View.VISIBLE);
-                findViewById(R.id.info_extended_footer).setVisibility(View.VISIBLE);
-                findViewById(R.id.info_about_me_footer).setVisibility(View.VISIBLE);
-                // Iterate by info keys.
-                for (String key : bundle.keySet()) {
-                    if (StringUtil.isNumeric(key)) {
-                        int keyInt = Integer.valueOf(key);
-                        String[] extra = intent.getStringArrayExtra(key);
-                        // Strange, but... Let's check extra is not empty.
-                        if (extra != null && extra.length >= 1) {
-                            String title = getString(Integer.parseInt(extra[0]));
-                            String value = extra[1];
-                            // Prepare buddy info item.
-                            View buddyInfoItem = findViewById(keyInt);
-                            if (buddyInfoItem != null) {
-                                TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
-                                if (titleView != null) {
-                                    titleView.setText(title);
+            // Check for this is info response (not info edit)...
+            if(isInfoResponse) {
+                // ... and info present.
+                if (isInfoPresent) {
+                    Bundle bundle = intent.getExtras();
+                    // Show info blocks.
+                    findViewById(R.id.base_info).setVisibility(View.VISIBLE);
+                    findViewById(R.id.extended_info).setVisibility(View.VISIBLE);
+                    // Show info titles.
+                    findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
+                    findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
+                    findViewById(R.id.info_about_me_title).setVisibility(View.VISIBLE);
+                    // Show footers
+                    findViewById(R.id.info_base_footer).setVisibility(View.VISIBLE);
+                    findViewById(R.id.info_extended_footer).setVisibility(View.VISIBLE);
+                    findViewById(R.id.info_about_me_footer).setVisibility(View.VISIBLE);
+                    // Iterate by info keys.
+                    for (String key : bundle.keySet()) {
+                        if (StringUtil.isNumeric(key)) {
+                            int keyInt = Integer.valueOf(key);
+                            String[] extra = intent.getStringArrayExtra(key);
+                            // Strange, but... Let's check extra is not empty.
+                            if (extra != null && extra.length >= 1) {
+                                String title = getString(Integer.parseInt(extra[0]));
+                                String value = extra[1];
+                                // Prepare buddy info item.
+                                View buddyInfoItem = findViewById(keyInt);
+                                if (buddyInfoItem != null) {
+                                    TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
+                                    if (titleView != null) {
+                                        titleView.setText(title);
+                                    }
+                                    TextView valueView = (TextView) buddyInfoItem.findViewById(R.id.info_value);
+                                    if (valueView != null) {
+                                        valueView.setText(value);
+                                    }
+                                    buddyInfoItem.setVisibility(View.VISIBLE);
                                 }
-                                TextView valueView = (TextView) buddyInfoItem.findViewById(R.id.info_value);
-                                if (valueView != null) {
-                                    valueView.setText(value);
+                                // Correct user-defined values for sharing.
+                                if (keyInt == R.id.friendly_name) {
+                                    setBuddyNick(value);
+                                } else if (keyInt == R.id.first_name) {
+                                    setFirstName(value);
+                                } else if (keyInt == R.id.last_name) {
+                                    setLastName(value);
+                                } else if (keyInt == R.id.about_me) {
+                                    setAboutMe(value);
                                 }
-                                buddyInfoItem.setVisibility(View.VISIBLE);
-                            }
-                            // Correct user-defined values for sharing.
-                            if (keyInt == R.id.friendly_name) {
-                                setBuddyNick(value);
-                            } else if (keyInt == R.id.first_name) {
-                                setFirstName(value);
-                            } else if (keyInt == R.id.last_name) {
-                                setLastName(value);
-                            } else if (keyInt == R.id.about_me) {
-                                setAboutMe(value);
                             }
                         }
                     }
+                    updateBuddyNick();
+                    updateAboutMe();
+                } else {
+                    Logger.log("No info case :(");
+                    onBuddyInfoRequestError();
                 }
-                updateBuddyNick();
-                updateAboutMe();
-            } else {
-                Logger.log("No info case :(");
-                onBuddyInfoRequestError();
             }
         } else {
             Logger.log("Wrong buddy info!");

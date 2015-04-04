@@ -218,8 +218,8 @@ public class BitmapCache {
     public void invalidateHash(String hash) {
         Set<String> cacheKeySet = bitmapLruCache.snapshot().keySet();
         // Find and remove cache keys, assigned with specified hash.
-        for(String cacheKey : cacheKeySet) {
-            if(isCacheKeyFromHash(cacheKey, hash)) {
+        for (String cacheKey : cacheKeySet) {
+            if (isCacheKeyFromHash(cacheKey, hash)) {
                 bitmapLruCache.remove(cacheKey);
             }
         }

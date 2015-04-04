@@ -188,7 +188,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     protected void sendManualBitmap() {
         // Check for manual avatar exists.
-        if(manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
+        if (manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
             // This will cache avatar with specified hash and also for current account.
             TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, manualAvatar, manualAvatarVirtualHash, avatarHash));
         }

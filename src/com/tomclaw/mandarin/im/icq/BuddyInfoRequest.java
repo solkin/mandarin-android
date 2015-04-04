@@ -83,7 +83,7 @@ public class BuddyInfoRequest extends WimRequest {
                 String bigBuddyIcon = user.optString("bigBuddyIcon");
                 String largeIconId = user.optString("largeIconId");
                 // Check avatar fields be able to modify.
-                if(!TextUtils.isEmpty(iconId) && !TextUtils.isEmpty(buddyIcon) && iconId.length() > 4 &&
+                if (!TextUtils.isEmpty(iconId) && !TextUtils.isEmpty(buddyIcon) && iconId.length() > 4 &&
                         !TextUtils.isEmpty(largeIconId) && largeIconId.length() > 4) {
                     // Cut four first bytes and replace icon type.
                     iconId = iconId.substring(4);
@@ -93,7 +93,7 @@ public class BuddyInfoRequest extends WimRequest {
                     String hash = HttpUtil.getUrlHash(buddyIcon);
                     Log.d(Settings.LOG_TAG, "large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
-                    if(BitmapCache.getInstance().checkBitmapInCache(hash)) {
+                    if (BitmapCache.getInstance().checkBitmapInCache(hash)) {
                         QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {
@@ -103,13 +103,13 @@ public class BuddyInfoRequest extends WimRequest {
                     }
                 } else {
                     String url = bigBuddyIcon;
-                    if(TextUtils.isEmpty(url)) {
+                    if (TextUtils.isEmpty(url)) {
                         url = buddyIcon;
                     }
-                    if(!TextUtils.isEmpty(url)) {
+                    if (!TextUtils.isEmpty(url)) {
                         String hash = HttpUtil.getUrlHash(url);
                         // Check for such avatar is already loaded.
-                        if(BitmapCache.getInstance().checkBitmapInCache(hash)) {
+                        if (BitmapCache.getInstance().checkBitmapInCache(hash)) {
                             QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
                             intent.putExtra(BUDDY_AVATAR_HASH, hash);
                         } else {
@@ -121,7 +121,7 @@ public class BuddyInfoRequest extends WimRequest {
                 }
                 JSONObject profile = user.optJSONObject("profile");
                 // Sometimes profile may not present. Check it right now.
-                if(profile == null) {
+                if (profile == null) {
                     intent.putExtra(NO_INFO_CASE, true);
                 } else {
                     // Obtain buddy info from profile.

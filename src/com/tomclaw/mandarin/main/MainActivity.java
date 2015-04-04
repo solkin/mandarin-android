@@ -105,9 +105,9 @@ public class MainActivity extends ChiefActivity {
             Parcelable[] rawMessages = intent.getParcelableArrayExtra(
                     NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage message = (NdefMessage) rawMessages[0];
-            for(NdefRecord record : message.getRecords()) {
+            for (NdefRecord record : message.getRecords()) {
                 // Check for only Mandarin's mime-type record and media type.
-                if(record.getTnf() == NdefRecord.TNF_MIME_MEDIA &&
+                if (record.getTnf() == NdefRecord.TNF_MIME_MEDIA &&
                         Arrays.equals(record.getType(), Settings.MIME_TYPE.getBytes())) {
                     String json = new String(record.getPayload());
                     NfcBuddyInfo nfcBuddyInfo = GsonSingleton.getInstance().fromJson(json, NfcBuddyInfo.class);

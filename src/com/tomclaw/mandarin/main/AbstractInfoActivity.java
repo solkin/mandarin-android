@@ -120,7 +120,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             public void onClick(View v) {
                 View container = findViewById(R.id.buddy_image_container);
                 int targetHeight;
-                if(container.getWidth() != container.getHeight()) {
+                if (container.getWidth() != container.getHeight()) {
                     targetHeight = container.getWidth();
                 } else {
                     targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
@@ -144,7 +144,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     public NdefMessage createNdefMessage(NfcEvent event) {
         NfcBuddyInfo nfcBuddyInfo = new NfcBuddyInfo(accountType, buddyId, buddyNick, buddyStatus);
         return new NdefMessage(
-                new NdefRecord[] {
+                new NdefRecord[]{
                         createMime(Settings.MIME_TYPE, GsonSingleton.getInstance().toJson(nfcBuddyInfo)),
                         NdefRecord.createApplicationRecord(getPackageName())
                 });
@@ -227,7 +227,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             // Hide the progress bar.
             hideProgressBar();
             // Checking for avatar hash is new and cool.
-            if(!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
+            if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
                 avatarHash = requestAvatarHash;
                 ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
                 Animation fadeIn = new AlphaAnimation(0, 1);
@@ -237,7 +237,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, getAvatarHash(), R.drawable.ic_default_avatar, true);
             }
             // Check for this is info response (not info edit)...
-            if(isInfoResponse) {
+            if (isInfoResponse) {
                 // ... and info present.
                 if (isInfoPresent) {
                     Bundle bundle = intent.getExtras();

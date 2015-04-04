@@ -1245,7 +1245,7 @@ public class QueryHelper {
 
     public static void updateBuddyOrAccountAvatar(AccountRoot accountRoot, String buddyId, String hash) {
         // Check for destination buddy is account.
-        if(TextUtils.equals(buddyId,accountRoot.getUserId())) {
+        if (TextUtils.equals(buddyId, accountRoot.getUserId())) {
             accountRoot.setAvatarHash(hash);
             accountRoot.updateAccount();
         }

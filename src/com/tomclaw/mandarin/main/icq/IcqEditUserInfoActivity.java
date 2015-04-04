@@ -54,25 +54,25 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
             // Check for this is field key.
             if (StringUtil.isNumeric(key)) {
                 int keyInt = Integer.valueOf(key);
-                if(keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
+                if (keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
                         keyInt == R.id.website || keyInt == R.id.about_me || keyInt == R.id.city) {
                     EditText editText = (EditText) findViewById(keyInt);
                     editText.setText(bundle.getString(key));
-                } else if(keyInt == R.id.gender) {
+                } else if (keyInt == R.id.gender) {
                     Spinner spinner = (Spinner) findViewById(R.id.gender_selector);
                     spinner.setSelection(bundle.getInt(key));
-                } else if(keyInt == R.id.children) {
+                } else if (keyInt == R.id.children) {
                     Spinner spinner = (Spinner) findViewById(R.id.children_selector);
                     int value = bundle.getInt(key);
-                    if(value > spinner.getCount() - 1) {
+                    if (value > spinner.getCount() - 1) {
                         value = spinner.getCount() - 1;
                     }
                     spinner.setSelection(value);
-                } else if(keyInt == R.id.smoking) {
+                } else if (keyInt == R.id.smoking) {
                     Spinner spinner = (Spinner) findViewById(R.id.smoking_selector);
                     int value = bundle.getBoolean(key) ? 1 : 0;
                     spinner.setSelection(value);
-                } else if(keyInt == R.id.birth_date) {
+                } else if (keyInt == R.id.birth_date) {
                     DatePickerView birthDateView = (DatePickerView) findViewById(R.id.birth_date);
                     long birthDate = bundle.getLong(key);
                     birthDateView.setDate(birthDate);

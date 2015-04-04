@@ -5,8 +5,8 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
 /**
-* Created by Solkin on 15.03.2015.
-*/
+ * Created by Solkin on 15.03.2015.
+ */
 public class ResizeAnimation extends Animation {
     private final int startHeight;
     private final int targetHeight;

@@ -184,7 +184,7 @@ public class RequestHelper {
     }
 
     public static void requestLargeAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
-                                           String appSession, String url) {
+                                          String appSession, String url) {
         LargeAvatarRequest largeAvatarRequest = new LargeAvatarRequest(buddyId, url);
         insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, false, accountDbId,
                 url, appSession, largeAvatarRequest);

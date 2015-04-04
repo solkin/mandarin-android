@@ -102,7 +102,7 @@ public class DocumentPickerActivity extends Activity {
         }
 
         actionBar = getActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getString(R.string.select_file));
             actionBar.setIcon(R.drawable.ic_ab_logo);

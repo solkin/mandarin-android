@@ -2,17 +2,14 @@ package com.tomclaw.mandarin.main.views;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.main.RangePickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**

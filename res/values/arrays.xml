@@ -6,10 +6,16 @@
         <item>@string/filter_show_online_only</item>
     </string-array>
 
-    <string-array name="gender_spinner_strings">
+    <string-array name="gender_search_spinner_strings">
         <item>@string/gender_female</item>
         <item>@string/gender_male</item>
         <item>@string/gender_any</item>
+    </string-array>
+
+    <string-array name="gender_edit_spinner_strings">
+        <item>@string/gender_not_selected</item>
+        <item>@string/gender_male</item>
+        <item>@string/gender_female</item>
     </string-array>
 
     <string-array name="children_spinner_strings">
@@ -22,8 +28,8 @@
     </string-array>
 
     <string-array name="smoking_spinner_strings">
-        <item>@string/yes</item>
         <item>@string/no</item>
+        <item>@string/yes</item>
     </string-array>
 
     <string-array name="pref_roster_mode_strings">

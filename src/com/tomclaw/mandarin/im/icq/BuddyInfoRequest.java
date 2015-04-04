@@ -36,6 +36,7 @@ public class BuddyInfoRequest extends WimRequest {
     public static final String BUDDY_STATUS = "buddy_status";
 
     public static final String NO_INFO_CASE = "no_info_case";
+    public static final String INFO_RESPONSE = "info_response";
 
     public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
     public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
@@ -63,6 +64,7 @@ public class BuddyInfoRequest extends WimRequest {
     protected int parseJson(JSONObject response) throws JSONException {
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
+        intent.putExtra(INFO_RESPONSE, true);
         intent.putExtra(ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
         intent.putExtra(BUDDY_ID, buddyId);
         // Start to JSON parsing.
@@ -109,7 +111,7 @@ public class BuddyInfoRequest extends WimRequest {
                     putExtra(intent, R.id.first_name, R.string.first_name, profile.optString("firstName"));
                     putExtra(intent, R.id.last_name, R.string.last_name, profile.optString("lastName"));
                     String gender = profile.optString("gender");
-                    if (!TextUtils.equals(gender, "unknown")) {
+                    if (!TextUtils.isEmpty(gender) && !TextUtils.equals(gender, "unknown")) {
                         String genderString = gender.equals("male") ?
                                 context.getString(R.string.male) : context.getString(R.string.female);
                         putExtra(intent, R.id.gender, R.string.gender, genderString);

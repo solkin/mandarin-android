@@ -1,9 +1,12 @@
 package com.tomclaw.mandarin.main;
 
+import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -12,6 +15,7 @@ import android.view.animation.OvershootInterpolator;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.Request;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
@@ -55,6 +59,14 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         // Initialize info activity layout.
         setContentView(getLayout());
 
+        // Preparing for action bar.
+        ActionBar bar = getActionBar();
+        if (bar != null) {
+            bar.setDisplayShowTitleEnabled(true);
+            bar.setDisplayHomeAsUpEnabled(true);
+            bar.setTitle(R.string.account_info);
+        }
+
         // Buddy avatar.
         ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
@@ -76,6 +88,26 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         });
 
         afterCreate();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_user_info_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.edit_user_info_complete:
+                sendEditUserInfoRequest();
+                finish();
+                return true;
+        }
+        return false;
     }
 
     protected abstract void afterCreate();
@@ -135,4 +167,6 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     public void onCoreServiceDown() {
 
     }
+
+    protected abstract void sendEditUserInfoRequest();
 }

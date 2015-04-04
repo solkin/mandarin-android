@@ -270,6 +270,7 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_any">Does not matter</string>
+    <string name="gender_not_selected">Not selected</string>
     <string name="buddy_info_search">Search criteria</string>
     <string name="keyword_search">ID or name</string>
     <string name="age_and_gender_search">Age &amp; gender</string>
@@ -369,4 +370,5 @@
     <string name="use_login_and_password">I already have login and password</string>
     <string name="register_using_phone">Have no account yet?\n<u>Register it using your phone number!</u></string>
     <string name="user_info_edit">Edit info</string>
+    <string name="edit_user_info_complete">Complete</string>
 </resources>

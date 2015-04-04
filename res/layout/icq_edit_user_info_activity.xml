@@ -52,11 +52,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="12dp"
-                    android:layout_below="@+id/buddy_image_container">
+                    android:layout_below="@+id/buddy_image_container" android:weightSum="1">
                 <TextView
                         style="@style/UserInfoFieldTitle"
                         android:text="@string/friendly_name"/>
                 <EditText
+                        android:id="@+id/friendly_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textCapWords"
@@ -77,6 +78,7 @@
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/first_name"/>
                         <EditText
+                                android:id="@+id/first_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapWords"
@@ -93,6 +95,7 @@
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/last_name"/>
                         <EditText
+                                android:id="@+id/last_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapWords"
@@ -157,9 +160,20 @@
                 </LinearLayout>
                 <TextView
                         style="@style/UserInfoFieldTitle"
+                        android:text="@string/city"
+                        android:paddingTop="12dp"/>
+                <EditText
+                        android:id="@+id/city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        style="@style/UserInfoEditField"/>
+                <TextView
+                        style="@style/UserInfoFieldTitle"
                         android:text="@string/website"
                         android:paddingTop="12dp"/>
                 <EditText
+                        android:id="@+id/website"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
@@ -169,6 +183,7 @@
                         android:text="@string/about_me"
                         android:paddingTop="12dp"/>
                 <EditText
+                        android:id="@+id/about_me"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="3"

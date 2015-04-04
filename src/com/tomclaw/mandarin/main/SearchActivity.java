@@ -47,7 +47,7 @@ public class SearchActivity extends ChiefActivity {
         setContentView(R.layout.search_activity);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.search_gender_spinner_item,
-                getResources().getStringArray(R.array.gender_spinner_strings));
+                getResources().getStringArray(R.array.gender_search_spinner_strings));
         adapter.setDropDownViewResource(R.layout.search_gender_spinner_dropdown_item);
         Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
         genderSelector.setAdapter(adapter);

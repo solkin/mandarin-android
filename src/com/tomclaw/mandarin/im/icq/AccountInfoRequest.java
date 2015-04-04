@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
- * Date: 12/12/13
+ * Date: 25/03/15
  * Time: 7:49 PM
  */
 public class AccountInfoRequest extends WimRequest {
@@ -31,22 +30,13 @@ public class AccountInfoRequest extends WimRequest {
     public static final String ACCOUNT_DB_ID = "account_db_id";
     public static final String ACCOUNT_TYPE = "account_type";
     public static final String BUDDY_ID = "buddy_id";
-    public static final String BUDDY_NICK = "buddy_nick";
     public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
-    public static final String BUDDY_STATUS = "buddy_status";
 
     public static final String NO_INFO_CASE = "no_info_case";
 
-    public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
-    public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
-
     private String buddyId;
 
-    /**
-     * Date format helper
-     */
-    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
+    @SuppressWarnings("unused")
     public AccountInfoRequest() {
     }
 
@@ -105,14 +95,13 @@ public class AccountInfoRequest extends WimRequest {
                     intent.putExtra(NO_INFO_CASE, true);
                 } else {
                     // Obtain buddy info from profile.
-                    putExtra(intent, R.id.friendly_name, R.string.friendly_name, profile.optString("friendlyName"));
-                    putExtra(intent, R.id.first_name, R.string.first_name, profile.optString("firstName"));
-                    putExtra(intent, R.id.last_name, R.string.last_name, profile.optString("lastName"));
+                    putExtra(intent, R.id.friendly_name, profile.optString("friendlyName"));
+                    putExtra(intent, R.id.first_name, profile.optString("firstName"));
+                    putExtra(intent, R.id.last_name, profile.optString("lastName"));
                     String gender = profile.optString("gender");
-                    if (!TextUtils.equals(gender, "unknown")) {
-                        String genderString = gender.equals("male") ?
-                                context.getString(R.string.male) : context.getString(R.string.female);
-                        putExtra(intent, R.id.gender, R.string.gender, genderString);
+                    if (!TextUtils.isEmpty(gender) && !TextUtils.equals(gender, "unknown")) {
+                        int genderValue = gender.equals("male") ? 1 : 2;
+                        putExtra(intent, R.id.gender, genderValue);
                     }
                     JSONArray homeAddress = profile.optJSONArray("homeAddress");
                     if (homeAddress != null) {
@@ -124,23 +113,18 @@ public class AccountInfoRequest extends WimRequest {
                             city += homeAddress.getJSONObject(c).optString("city");
                         }
                         if (!TextUtils.isEmpty(city)) {
-                            putExtra(intent, R.id.city, R.string.city, city);
+                            putExtra(intent, R.id.city, city);
                         }
                     }
 
-                    int childrenCount = profile.optInt("children");
-                    if (childrenCount > 0) {
-                        putExtra(intent, R.id.children, R.string.children, childrenCount);
-                    } else {
-                        putExtra(intent, R.id.children, R.string.children, false);
-                    }
-                    putExtra(intent, R.id.smoking, R.string.smoking, profile.optBoolean("smoking"));
-                    putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
+                    putExtra(intent, R.id.children, profile.optInt("children"));
+                    putExtra(intent, R.id.smoking, profile.optBoolean("smoking"));
+                    putExtra(intent, R.id.website, profile.optString("website1"));
                     long birthDate = profile.optLong("birthDate") * 1000;
                     if (birthDate > 0) {
-                        putExtra(intent, R.id.birth_date, R.string.birth_date, simpleDateFormat.format(birthDate));
+                        putExtra(intent, R.id.birth_date, birthDate);
                     }
-                    putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));
+                    putExtra(intent, R.id.about_me, profile.optString("aboutMe"));
                 }
             }
         } else {
@@ -160,28 +144,31 @@ public class AccountInfoRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("infoLevel", "mid"));
-        params.add(new Pair<String, String>("t", buddyId));
-        params.add(new Pair<String, String>("mdir", "1"));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("infoLevel", "mid"));
+        params.add(new Pair<>("t", buddyId));
+        params.add(new Pair<>("mdir", "1"));
         return params;
     }
 
-    private void putExtra(Intent intent, int key, int title, long value) {
-        putExtra(intent, key, title, String.valueOf(value));
+    private void putExtra(Intent intent, int key, int value) {
+        intent.putExtra(String.valueOf(key), value);
     }
 
-    private void putExtra(Intent intent, int key, int title, boolean value) {
-        Context context = getAccountRoot().getContext();
-        putExtra(intent, key, title, context.getString(value ? R.string.info_yes : R.string.info_no));
+    private void putExtra(Intent intent, int key, long value) {
+        intent.putExtra(String.valueOf(key), value);
     }
 
-    private void putExtra(Intent intent, int key, int title, String value) {
+    private void putExtra(Intent intent, int key, boolean value) {
+        intent.putExtra(String.valueOf(key), value);
+    }
+
+    private void putExtra(Intent intent, int key, String value) {
         if (TextUtils.isEmpty(value.trim())) {
             return;
         }
-        intent.putExtra(String.valueOf(key), new String[]{String.valueOf(title), value});
+        intent.putExtra(String.valueOf(key), value);
     }
 }

@@ -183,6 +183,11 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
+        // Check for this is info response and not edit info response.
+        boolean isInfoResponse = intent.getBooleanExtra(BuddyInfoRequest.INFO_RESPONSE, false);
+        if(!isInfoResponse) {
+            return;
+        }
         // Check for info present in this intent.
         boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
         int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
@@ -220,13 +225,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                 // Iterate by info keys.
                 for (String key : bundle.keySet()) {
                     if (StringUtil.isNumeric(key)) {
+                        int keyInt = Integer.valueOf(key);
                         String[] extra = intent.getStringArrayExtra(key);
                         // Strange, but... Let's check extra is not empty.
                         if (extra != null && extra.length >= 1) {
                             String title = getString(Integer.parseInt(extra[0]));
                             String value = extra[1];
                             // Prepare buddy info item.
-                            View buddyInfoItem = findViewById(Integer.valueOf(key));
+                            View buddyInfoItem = findViewById(keyInt);
                             if (buddyInfoItem != null) {
                                 TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
                                 if (titleView != null) {
@@ -239,13 +245,13 @@ public abstract class AbstractInfoActivity extends ChiefActivity implements Chie
                                 buddyInfoItem.setVisibility(View.VISIBLE);
                             }
                             // Correct user-defined values for sharing.
-                            if (Integer.valueOf(key) == R.id.friendly_name) {
+                            if (keyInt == R.id.friendly_name) {
                                 setBuddyNick(value);
-                            } else if (Integer.valueOf(key) == R.id.first_name) {
+                            } else if (keyInt == R.id.first_name) {
                                 setFirstName(value);
-                            } else if (Integer.valueOf(key) == R.id.last_name) {
+                            } else if (keyInt == R.id.last_name) {
                                 setLastName(value);
-                            } else if (Integer.valueOf(key) == R.id.about_me) {
+                            } else if (keyInt == R.id.about_me) {
                                 setAboutMe(value);
                             }
                         }

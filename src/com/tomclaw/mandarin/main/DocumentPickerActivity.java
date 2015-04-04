@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,7 @@ import java.io.FileReader;
 import java.util.*;
 
 /**
+ * File picker activity
  * Created by solkin on 05.11.14.
  */
 public class DocumentPickerActivity extends Activity {
@@ -37,9 +39,9 @@ public class DocumentPickerActivity extends Activity {
     private ListAdapter listAdapter;
     private File currentDir;
     private TextView emptyView;
-    private List<ListItem> items = new ArrayList<ListItem>();
+    private List<ListItem> items = new ArrayList<>();
     private boolean receiverRegistered = false;
-    private List<HistoryEntry> history = new ArrayList<HistoryEntry>();
+    private List<HistoryEntry> history = new ArrayList<>();
     private long sizeLimit = 1024 * 1024 * 1024;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -100,9 +102,11 @@ public class DocumentPickerActivity extends Activity {
         }
 
         actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(getString(R.string.select_file));
-        actionBar.setIcon(R.drawable.ic_ab_logo);
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getString(R.string.select_file));
+            actionBar.setIcon(R.drawable.ic_ab_logo);
+        }
 
         setContentView(R.layout.document_pick_layout);
         listAdapter = new ListAdapter(this);
@@ -237,6 +241,7 @@ public class DocumentPickerActivity extends Activity {
         }
     }
 
+    @SuppressLint("SdCardPath")
     private boolean listFiles(File dir) {
         if (!dir.canRead()) {
             if (dir.getAbsolutePath().startsWith(Environment.getExternalStorageDirectory().toString())
@@ -316,6 +321,7 @@ public class DocumentPickerActivity extends Activity {
                 .show();
     }
 
+    @SuppressLint("SdCardPath")
     private void listRoots() {
         currentDir = null;
         items.clear();
@@ -334,8 +340,8 @@ public class DocumentPickerActivity extends Activity {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("/proc/mounts"));
             String line;
-            HashMap<String, ArrayList<String>> aliases = new HashMap<String, ArrayList<String>>();
-            ArrayList<String> result = new ArrayList<String>();
+            HashMap<String, ArrayList<String>> aliases = new HashMap<>();
+            ArrayList<String> result = new ArrayList<>();
             String extDevice = null;
             while ((line = reader.readLine()) != null) {
                 if ((!line.contains("/mnt") && !line.contains("/storage") && !line.contains("/sdcard")) || line.contains("asec") || line.contains("tmpfs") || line.contains("none")) {
@@ -401,6 +407,7 @@ public class DocumentPickerActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private String getRootSubtitle(String path) {
         StatFs stat = new StatFs(path);
         long total, free;

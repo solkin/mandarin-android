@@ -273,6 +273,7 @@
     <string name="gender_male">Мужской</string>
     <string name="gender_female">Женский</string>
     <string name="gender_any">Любой</string>
+    <string name="gender_not_selected">Не выбран</string>
     <string name="buddy_info_search">Анкетные данные</string>
     <string name="keyword_search">ID, имя или фамилия</string>
     <string name="age_and_gender_search">Возраст и пол</string>
@@ -374,4 +375,5 @@
     <string name="use_login_and_password">У меня есть логин и пароль</string>
     <string name="register_using_phone">Ещё нет учётной записи?\n<u>Зарегистрируйтесь, используя Ваш номер телефона!</u></string>
     <string name="user_info_edit">Редактировать</string>
+    <string name="edit_user_info_complete">Готово</string>
 </resources>

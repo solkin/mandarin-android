@@ -35,7 +35,6 @@ public class DatePickerView extends TextView {
             public void onClick(View v) {
                 DatePickerDialog dialog = new DatePickerDialog(context,
                         new DatePickerDialog.OnDateSetListener() {
-
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
@@ -53,10 +52,10 @@ public class DatePickerView extends TextView {
         this.year = year;
         this.month = month;
         this.day = day;
-        if (year == 0 && month == 0 && day == 0) {
-            setText(R.string.date_not_set);
-        } else {
+        if (isDateSet()) {
             setText(simpleDateFormat.format(new GregorianCalendar(year, month, day).getTimeInMillis()));
+        } else {
+            setText(R.string.date_not_set);
         }
     }
 
@@ -71,6 +70,10 @@ public class DatePickerView extends TextView {
 
     public boolean isDateSet() {
         return day != 0 || month != 0 || year != 0;
+    }
+
+    public long getDate() {
+        return new GregorianCalendar(year, month, day).getTimeInMillis();
     }
 
     public int getYear() {

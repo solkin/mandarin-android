@@ -10,13 +10,20 @@ import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.RangePickerDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Solkin on 04.04.2015.
  */
 public class DatePickerView extends TextView {
+
+    /**
+     * Date format helper
+     */
+    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     private int year, month, day;
 
@@ -32,7 +39,7 @@ public class DatePickerView extends TextView {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                updateText(dayOfMonth, monthOfYear + 1, year);
+                                updateText(year, monthOfYear, dayOfMonth);
                             }
                         }, year, month, day);
                 dialog.show();
@@ -42,15 +49,14 @@ public class DatePickerView extends TextView {
         updateText(0, 0, 0);
     }
 
-    private void updateText(int day, int month, int year) {
-        this.day = day;
-        this.month = month;
+    private void updateText(int year, int month, int day) {
         this.year = year;
-        if (day == 0 && month == 0 && year == 0) {
+        this.month = month;
+        this.day = day;
+        if (year == 0 && month == 0 && day == 0) {
             setText(R.string.date_not_set);
         } else {
-            String ageToString = getContext().getResources().getString(R.string.date_format, day, month, year);
-            setText(ageToString);
+            setText(simpleDateFormat.format(new GregorianCalendar(year, month, day).getTimeInMillis()));
         }
     }
 
@@ -58,9 +64,9 @@ public class DatePickerView extends TextView {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
         updateText(
-                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.YEAR));
+                calendar.get(Calendar.DAY_OF_MONTH));
     }
 
     public boolean isDateSet() {

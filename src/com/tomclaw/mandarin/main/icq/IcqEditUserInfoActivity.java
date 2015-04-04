@@ -19,11 +19,6 @@ import java.util.Calendar;
  */
 public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
-    /**
-     * Date format helper
-     */
-    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
     @Override
     protected void afterCreate() {
         ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, R.layout.user_info_gender_spinner_item,

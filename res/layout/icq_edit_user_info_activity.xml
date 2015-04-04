@@ -114,6 +114,18 @@
                         android:gravity="left"
                         android:fontFamily="sans-serif"
                         style="?android:spinnerStyle"/>
+                <TextView
+                        style="@style/UserInfoFieldTitle"
+                        android:text="@string/birth_date"
+                        android:paddingTop="12dp"/>
+                <com.tomclaw.mandarin.main.views.DatePickerView
+                        android:id="@+id/birth_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:gravity="left"
+                        android:fontFamily="sans-serif"
+                        style="?android:spinnerStyle"/>
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

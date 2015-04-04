@@ -371,4 +371,6 @@
     <string name="register_using_phone">Have no account yet?\n<u>Register it using your phone number!</u></string>
     <string name="user_info_edit">Edit info</string>
     <string name="edit_user_info_complete">Complete</string>
+    <string name="date_not_set">Not set</string>
+    <string name="date_format">%1$d.%2$d.%3$d</string>
 </resources>

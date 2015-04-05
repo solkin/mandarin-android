@@ -2,10 +2,7 @@ package com.tomclaw.mandarin.main.icq;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
@@ -86,5 +83,33 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
     @Override
     protected void sendEditUserInfoRequest() {
+        String friendlyName = getTextValue(R.id.friendly_name);
+        String firstName = getTextValue(R.id.first_name);
+        String lastName = getTextValue(R.id.last_name);
+        int gender = getSpinnerValue(R.id.gender_selector);
+        long birthDate = getDateValue(R.id.birth_date);
+        int childrenCount = getSpinnerValue(R.id.children_selector);
+        boolean smoking = getSpinnerValue(R.id.smoking_selector) == 1;
+        String city = getTextValue(R.id.city);
+        String webSite = getTextValue(R.id.website);
+        String aboutMe = getTextValue(R.id.about_me);
+
+        RequestHelper.updateUserInfo(getContentResolver(), getAccountDbId(), friendlyName, firstName,
+                lastName, gender, birthDate, childrenCount, smoking, city, webSite, aboutMe);
+    }
+
+    private String getTextValue(int viewId) {
+        TextView textView = (TextView) findViewById(viewId);
+        return textView.getText().toString();
+    }
+
+    private int getSpinnerValue(int viewId) {
+        Spinner spinner = (Spinner) findViewById(viewId);
+        return spinner.getSelectedItemPosition();
+    }
+
+    private long getDateValue(int viewId) {
+        DatePickerView datePickerView = (DatePickerView) findViewById(viewId);
+        return datePickerView.getDate();
     }
 }

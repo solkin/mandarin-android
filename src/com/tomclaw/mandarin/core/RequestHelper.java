@@ -200,6 +200,15 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadAvatarRequest);
     }
 
+    public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,
+                                      String firstName, String lastName, int gender, long birthDate, int childrenCount,
+                                      boolean smoking, String city, String webSite,
+                                      String aboutMe) {
+        UpdateInfoRequest updateInfoRequest = new UpdateInfoRequest(friendlyName, firstName, lastName, gender,
+                birthDate, childrenCount, smoking, city, webSite, aboutMe);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, updateInfoRequest);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

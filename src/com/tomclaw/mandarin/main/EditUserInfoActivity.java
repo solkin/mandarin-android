@@ -328,10 +328,12 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             EditUserInfoActivity activity = getWeakObject();
             if (activity != null) {
                 BitmapCache bitmapCache = BitmapCache.getInstance();
+                // Remove all cached avatars.
+                bitmapCache.invalidateHash(virtualHash);
+                bitmapCache.invalidateHash(avatarHash);
+                // Same new bitmaps.
                 bitmapCache.saveBitmapSync(virtualHash, avatar);
                 bitmapCache.saveBitmapSync(avatarHash, avatar);
-                // Remove all cached avatars for avatarHash.
-                bitmapCache.invalidateHash(avatarHash);
                 // Update profile.
                 QueryHelper.updateAccountAvatar(activity.getContentResolver(), accountDbId, avatarHash);
             }

@@ -215,7 +215,11 @@ public class BitmapCache {
         return new File(getBitmapFilePath(hash)).exists();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void invalidateHash(String hash) {
+        // Remove file first.
+        new File(getBitmapFilePath(hash)).delete();
+        // Create Lru cache snapshot.
         Set<String> cacheKeySet = bitmapLruCache.snapshot().keySet();
         // Find and remove cache keys, assigned with specified hash.
         for (String cacheKey : cacheKeySet) {
@@ -223,6 +227,7 @@ public class BitmapCache {
                 bitmapLruCache.remove(cacheKey);
             }
         }
+
     }
 
     private String getBitmapFilePath(String hash) {

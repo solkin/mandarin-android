@@ -39,12 +39,12 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 finish();
                 return true;
             case R.id.user_info_edit:
-                // TODO: open activity only if account is connected.
                 startActivity(new Intent(this, IcqEditUserInfoActivity.class)
                                 .putExtra(IcqEditUserInfoActivity.ACCOUNT_DB_ID, getAccountDbId())
                                 .putExtra(IcqEditUserInfoActivity.ACCOUNT_TYPE, getAccountType())
                                 .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash())
                 );
+                finish();
                 return true;
             case R.id.account_shutdown:
                 try {

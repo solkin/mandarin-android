@@ -7,6 +7,7 @@ import com.tomclaw.mandarin.im.icq.WimConstants;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -27,12 +28,12 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
         HttpURLConnection urlConnection = null;
         try {
             boolean isGetRequest = getHttpRequestType().equals(HttpUtil.GET);
-            url = new URL(isGetRequest ? getUrlWithParameters() : getUrl());
+            url = new URL(isUrlWithParameters() ? getUrlWithParameters() : getUrl());
             urlConnection = (HttpURLConnection) url.openConnection();
             // Executing request.
             InputStream in = isGetRequest ?
                     HttpUtil.executeGet(urlConnection) :
-                    HttpUtil.executePost(urlConnection, HttpUtil.prepareParameters(getParams()));
+                    HttpUtil.executePost(urlConnection, getBody());
             int result = parseResponse(in);
             // Almost done. Close stream.
             in.close();
@@ -64,12 +65,20 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
      */
     protected abstract int parseResponse(InputStream httpResponseStream) throws Throwable;
 
+    protected byte[] getBody() throws IOException {
+        return HttpUtil.stringToArray(HttpUtil.prepareParameters(getParams()));
+    }
+
     /**
      * Returns request-specific base Url (most of all from WellKnownUrls).
      *
      * @return Request-specific base Url.
      */
     protected abstract String getUrl();
+
+    protected boolean isUrlWithParameters() {
+        return getHttpRequestType().equals(HttpUtil.GET);
+    }
 
     /**
      * Returns parameters, must be appended to the Get request.

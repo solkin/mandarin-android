@@ -190,6 +190,16 @@ public class RequestHelper {
                 url, appSession, largeAvatarRequest);
     }
 
+    public static void requestUploadAvatar(ContentResolver contentResolver, int accountDbId, String hash) {
+        UploadAvatarRequest uploadAvatarRequest;
+        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_NORMAL_AVATAR, hash);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadAvatarRequest);
+        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_BIG_AVATAR, hash);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadAvatarRequest);
+        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_LARGE_AVATAR, hash);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, uploadAvatarRequest);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

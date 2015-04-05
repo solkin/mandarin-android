@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
 import com.tomclaw.mandarin.main.views.DatePickerView;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -40,10 +42,6 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
     @Override
     protected int getLayout() {
         return R.layout.icq_edit_user_info_activity;
-    }
-
-    @Override
-    protected void onUserInfoRequestError() {
     }
 
     @Override
@@ -83,7 +81,7 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
     @Override
     protected void sendManualAvatarRequest(String hash) {
-
+        RequestHelper.requestUploadAvatar(getContentResolver(), getAccountDbId(), hash);
     }
 
     @Override

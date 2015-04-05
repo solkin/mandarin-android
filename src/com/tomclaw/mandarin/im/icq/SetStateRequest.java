@@ -21,8 +21,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class SetStateRequest extends WimRequest {
 
-    public static final String BUDDY_STATUS_TITLE = "buddy_status_title";
-    public static final String BUDDY_STATUS_MESSAGE = "buddy_status_message";
     public static final String STATE_REQUESTED = "state_requested";
     public static final String STATE_APPLIED = "state_applied";
     public static final String SET_STATE_SUCCESS = "set_state_success";
@@ -77,10 +75,10 @@ public class SetStateRequest extends WimRequest {
         String statusValue = StatusUtil.getStatusValue(getAccountRoot().getAccountType(), statusIndex);
 
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("view", statusValue));
-        params.add(new Pair<String, String>("away", ""));
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("view", statusValue));
+        params.add(new Pair<>("away", ""));
         return params;
     }
 }

@@ -260,6 +260,18 @@ public class QueryHelper {
         return queryBuilder.delete(contentResolver, Settings.ACCOUNT_RESOLVER_URI) != 0;
     }
 
+    public static void updateAccountAvatar(ContentResolver contentResolver, int accountDbId, String avatarHash) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, avatarHash);
+        modifyAccount(contentResolver, accountDbId, contentValues);
+    }
+
+    private static void modifyAccount(ContentResolver contentResolver, int accountDbId, ContentValues contentValues) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
+        queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
+    }
+
     public static void modifyBuddyDraft(ContentResolver contentResolver, int buddyDbId, String buddyDraft) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DRAFT, buddyDraft);

@@ -23,6 +23,7 @@ public class MyInfo implements Unobfuscatable {
     private String userType;
     private String attachedPhoneNumber;
     private String buddyIcon;
+    private String bigBuddyIcon;
 
     public String getAimId() {
         return aimId;
@@ -71,6 +72,10 @@ public class MyInfo implements Unobfuscatable {
 
     public String getBuddyIcon() {
         return buddyIcon;
+    }
+
+    public String getBigBuddyIcon() {
+        return bigBuddyIcon;
     }
 
     public void setState(String state) {

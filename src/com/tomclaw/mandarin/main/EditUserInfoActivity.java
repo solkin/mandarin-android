@@ -128,11 +128,17 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         return false;
     }
 
+    public int getAccountDbId() {
+        return accountDbId;
+    }
+
     protected abstract void afterCreate();
 
     protected abstract int getLayout();
 
-    protected abstract void onUserInfoRequestError();
+    protected void onUserInfoRequestError() {
+        Toast.makeText(this, R.string.error_show_account_info, Toast.LENGTH_SHORT).show();
+    }
 
     private void hideProgressBar() {
         // findViewById(R.id.progress_bar).setVisibility(View.GONE);
@@ -177,6 +183,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             // Sending protocol buddy info request.
             RequestHelper.requestAccountInfo(contentResolver, appSession, accountDbId);
         } catch (Throwable ignored) {
+            hideProgressBar();
             onUserInfoRequestError();
         }
     }
@@ -190,7 +197,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         // Check for manual avatar exists.
         if (manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
             // This will cache avatar with specified hash and also for current account.
-            TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, manualAvatar, manualAvatarVirtualHash, avatarHash));
+            TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, accountDbId, manualAvatar, manualAvatarVirtualHash, avatarHash));
         }
     }
 
@@ -304,11 +311,13 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     public static class UpdateAvatarTask extends WeakObjectTask<EditUserInfoActivity> {
 
         private final Bitmap avatar;
+        private final int accountDbId;
         private final String virtualHash;
         private final String avatarHash;
 
-        public UpdateAvatarTask(EditUserInfoActivity object, Bitmap avatar, String virtualHash, String avatarHash) {
+        public UpdateAvatarTask(EditUserInfoActivity object, int accountDbId, Bitmap avatar, String virtualHash, String avatarHash) {
             super(object);
+            this.accountDbId = accountDbId;
             this.avatar = avatar;
             this.virtualHash = virtualHash;
             this.avatarHash = avatarHash;
@@ -323,6 +332,8 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 bitmapCache.saveBitmapSync(avatarHash, avatar);
                 // Remove all cached avatars for avatarHash.
                 bitmapCache.invalidateHash(avatarHash);
+                // Update profile.
+                QueryHelper.updateAccountAvatar(activity.getContentResolver(), accountDbId, avatarHash);
             }
         }
 

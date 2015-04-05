@@ -8,6 +8,8 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -70,34 +72,11 @@ public class HttpUtil {
         return hash;
     }
 
-    public static void writeStringToConnection(HttpURLConnection connection, String data) throws IOException {
-        OutputStream outputStream = connection.getOutputStream();
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        writer.write(data);
-        writer.flush();
-        writer.close();
-    }
-
-    public static String readStringFromConnection(HttpURLConnection connection) throws IOException {
-        InputStream in = connection.getInputStream();
-        String response = streamToString(in);
-        in.close();
-        return response;
-    }
-
-    public static InputStream executePost(HttpURLConnection connection, String data) throws IOException {
-        connection.setRequestMethod(POST);
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-
-        HttpUtil.writeStringToConnection(connection, data);
-        // Open connection to response.
-        connection.connect();
-
-        return getResponse(connection);
-    }
-
     public static String executePost(String urlString, HttpParamsBuilder params) throws IOException {
+        return executePost(urlString, stringToArray(params.build()));
+    }
+
+    public static String executePost(String urlString, byte[] data) throws IOException {
         InputStream responseStream = null;
         HttpURLConnection connection = null;
         try {
@@ -108,7 +87,7 @@ public class HttpUtil {
             connection.setReadTimeout(TIMEOUT_SOCKET);
 
             // Execute request.
-            responseStream = HttpUtil.executePost(connection, params.build());
+            responseStream = HttpUtil.executePost(connection, data);
             return HttpUtil.streamToString(responseStream);
         } catch (IOException ex) {
             throw new IOException(ex);
@@ -123,6 +102,24 @@ public class HttpUtil {
             } catch (IOException ignored) {
             }
         }
+    }
+
+    public static InputStream executePost(HttpURLConnection connection, String data) throws IOException {
+        return executePost(connection, stringToArray(data));
+    }
+
+    public static InputStream executePost(HttpURLConnection connection, byte[] data) throws IOException {
+        connection.setRequestMethod(POST);
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        // Write data into output stream.
+        OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(data);
+        outputStream.flush();
+        // Open connection to response.
+        connection.connect();
+
+        return getResponse(connection);
     }
 
     public static InputStream executeGet(HttpURLConnection connection) throws IOException {
@@ -156,5 +153,9 @@ public class HttpUtil {
             byteArrayOutputStream.write(buffer, 0, read);
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public static byte[] stringToArray(String string) throws IOException {
+        return string.getBytes(HttpUtil.UTF8_ENCODING);
     }
 }

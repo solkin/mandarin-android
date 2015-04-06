@@ -7,6 +7,8 @@ import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONArray;
@@ -80,7 +82,14 @@ public class AccountInfoRequest extends WimRequest {
                     String hash = HttpUtil.getUrlHash(buddyIcon);
                     Log.d(Settings.LOG_TAG, "large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
-                    if (BitmapCache.getInstance().checkBitmapInCache(hash)) {
+                    String avatarHash;
+                    try {
+                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(getAccountRoot(), buddyId);
+                    } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
+                        // No buddy - no avatar.
+                        avatarHash = null;
+                    }
+                    if (TextUtils.equals(avatarHash, hash)) {
                         QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {

@@ -266,6 +266,27 @@ public class QueryHelper {
         modifyAccount(contentResolver, accountDbId, contentValues);
     }
 
+    public static String getAccountAvatarHash(ContentResolver contentResolver, int accountDbId)
+            throws AccountNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified accounts. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            if (cursor != null && cursor.moveToFirst()) {
+                int avatarHashColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
+                return cursor.getString(avatarHashColumnIndex);
+            }
+        } finally {
+            // Closing cursor.
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        throw new AccountNotFoundException();
+    }
+
     private static void modifyAccount(ContentResolver contentResolver, int accountDbId, ContentValues contentValues) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
@@ -1107,6 +1128,15 @@ public class QueryHelper {
         return getBuddyCursor(contentResolver, queryBuilder);
     }
 
+    public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int accountDbId, String buddyId)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        // Obtain specified buddy. If exist.
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        return getBuddyCursor(contentResolver, queryBuilder);
+    }
+
     public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
             throws BuddyNotFoundException {
         return getBuddyCursor(contentResolver, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
@@ -1137,6 +1167,16 @@ public class QueryHelper {
         BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
         try {
             return buddyCursor.getBuddyDraft();
+        } finally {
+            buddyCursor.close();
+        }
+    }
+
+    public static String getBuddyAvatarHash(ContentResolver contentResolver, int accountDbId, String buddyId)
+            throws BuddyNotFoundException {
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, accountDbId, buddyId);
+        try {
+            return buddyCursor.getBuddyAvatarHash();
         } finally {
             buddyCursor.close();
         }
@@ -1267,5 +1307,14 @@ public class QueryHelper {
                     accountRoot.getAccountDbId(), buddyId, hash);
         } catch (BuddyNotFoundException ignored) {
         }
+    }
+
+    public static String getBuddyOrAccountAvatarHash(AccountRoot accountRoot, String buddyId)
+            throws AccountNotFoundException, BuddyNotFoundException {
+        // Check for destination buddy is account.
+        if (TextUtils.equals(buddyId, accountRoot.getUserId())) {
+            return getAccountAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId());
+        }
+        return getBuddyAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId(), buddyId);
     }
 }

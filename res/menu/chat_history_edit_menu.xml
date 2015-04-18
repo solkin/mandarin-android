@@ -2,7 +2,7 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/message_copy"
-          android:icon="@drawable/content_copy"
+          android:icon="@drawable/ic_copy"
           android:showAsAction="ifRoom|withText"
           android:title="@string/message_copy">
     </item>
@@ -15,7 +15,7 @@
           android:showAsAction="ifRoom|withText"
           android:title="@string/message_remove"/>
     <item android:id="@+id/message_unread"
-          android:icon="@drawable/action_unread"
+          android:icon="@drawable/ic_unread"
           android:showAsAction="ifRoom|withText"
           android:title="@string/message_unread"/>
 </menu>

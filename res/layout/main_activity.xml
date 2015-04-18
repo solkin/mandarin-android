@@ -69,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/add_account"
-                    android:drawableLeft="@drawable/content_new"
+                    android:drawableLeft="@drawable/ic_add"
                     android:drawablePadding="4dp"
                     android:paddingLeft="4dp"
                     style="@style/Button.NavBar"/>

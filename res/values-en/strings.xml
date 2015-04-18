@@ -374,4 +374,5 @@
     <string name="date_not_set">Not set</string>
     <string name="date_format">%1$d.%2$d.%3$d</string>
     <string name="avatar_changing_error">An error occurred during the installation of the avatar. Please try another image.</string>
+    <string name="reset">Reset</string>
 </resources>

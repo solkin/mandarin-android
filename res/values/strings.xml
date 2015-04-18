@@ -381,4 +381,5 @@
     <string name="avatar_changing_error">Произошла ошибка при установке аватара. Пожалуйста, попробуйте другое
         изображение.
     </string>
+    <string name="reset">Сбросить</string>
 </resources>

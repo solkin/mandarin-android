@@ -39,10 +39,17 @@ public class DatePickerView extends TextView {
                                 updateText(year, monthOfYear, dayOfMonth);
                             }
                         }, year, month, day);
-                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel),
+                dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.reset),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateText(0, 0, 0);
                     }
                 });
                 dialog.show();

@@ -74,7 +74,7 @@ public class SetStateRequest extends WimRequest {
     protected List<Pair<String, String>> getParams() {
         String statusValue = StatusUtil.getStatusValue(getAccountRoot().getAccountType(), statusIndex);
 
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
+        List<Pair<String, String>> params = new ArrayList<>();
         params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
         params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
         params.add(new Pair<>("view", statusValue));

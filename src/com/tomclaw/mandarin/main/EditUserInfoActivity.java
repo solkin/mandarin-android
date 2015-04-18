@@ -15,6 +15,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
@@ -141,7 +142,10 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     }
 
     private void hideProgressBar() {
-        // findViewById(R.id.progress_bar).setVisibility(View.GONE);
+        ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.content_view_switcher);
+        if(viewSwitcher != null) {
+            viewSwitcher.showNext();
+        }
     }
 
     @Override

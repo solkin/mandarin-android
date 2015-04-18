@@ -113,8 +113,8 @@
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/gender"/>
                         <Spinner
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:id="@+id/gender_selector"
                                 android:textSize="16sp"
                                 android:gravity="left"
@@ -133,7 +133,7 @@
                                 android:text="@string/birth_date"/>
                         <com.tomclaw.mandarin.main.views.DatePickerView
                                 android:id="@+id/birth_date"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="16sp"
                                 android:gravity="left"
@@ -157,8 +157,8 @@
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/children"/>
                         <Spinner
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:id="@+id/children_selector"
                                 android:textSize="16sp"
                                 android:gravity="left"
@@ -176,8 +176,8 @@
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/smoking"/>
                         <Spinner
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:id="@+id/smoking_selector"
                                 android:textSize="16sp"
                                 android:gravity="left"
@@ -185,26 +185,46 @@
                                 style="?android:spinnerStyle"/>
                     </LinearLayout>
                 </LinearLayout>
-                <TextView
-                        style="@style/UserInfoFieldTitle"
-                        android:text="@string/city"
-                        android:paddingTop="12dp"/>
-                <EditText
-                        android:id="@+id/city"
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        style="@style/UserInfoEditField"/>
-                <TextView
-                        style="@style/UserInfoFieldTitle"
-                        android:text="@string/website"
-                        android:paddingTop="12dp"/>
-                <EditText
-                        android:id="@+id/website"
+                        android:orientation="horizontal"
+                        android:paddingTop="12dp">
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="8dp">
+                        <TextView
+                                style="@style/UserInfoFieldTitle"
+                                android:text="@string/city"/>
+                        <EditText
+                                android:id="@+id/city"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textEmailAddress"
+                                style="@style/UserInfoEditField"/>
+                    </LinearLayout>
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        style="@style/UserInfoEditField"/>
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="0dp">
+                        <TextView
+                                style="@style/UserInfoFieldTitle"
+                                android:text="@string/website"/>
+                        <EditText
+                                android:id="@+id/website"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textEmailAddress"
+                                style="@style/UserInfoEditField"/>
+                    </LinearLayout>
+                </LinearLayout>
                 <TextView
                         style="@style/UserInfoFieldTitle"
                         android:text="@string/about_me"

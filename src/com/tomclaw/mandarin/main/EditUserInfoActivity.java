@@ -161,8 +161,8 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     private void hideProgressBar() {
         ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.content_view_switcher);
-        if(viewSwitcher != null) {
-            viewSwitcher.showNext();
+        if(viewSwitcher.getDisplayedChild() == 0) {
+            viewSwitcher.setDisplayedChild(1);
         }
         // Now we means that info received and user ready to modify info.
         if(!isInfoReceived) {
@@ -287,6 +287,22 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         Animation fadeIn = new AlphaAnimation(0, 1);
         fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
         fadeIn.setDuration(750);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+                // Duplicate avatar for layer below.
+                contactBadgeUpdate.setBitmap(manualAvatar);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
         contactBadgeManual.setAnimation(fadeIn);
         contactBadgeManual.setBitmap(bitmap);
     }

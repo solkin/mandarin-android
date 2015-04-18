@@ -30,16 +30,6 @@
                         android:id="@+id/buddy_image_manual"
                         android:scaleType="centerCrop"/>
             </FrameLayout>
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_below="@+id/buddy_image_container">
-                <View
-                        android:layout_width="wrap_content"
-                        android:layout_height="4dp"
-                        android:background="@drawable/block_info_divider_gradient"/>
-            </LinearLayout>
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

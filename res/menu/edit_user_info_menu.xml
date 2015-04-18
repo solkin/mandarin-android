@@ -4,5 +4,6 @@
     <item android:id="@+id/edit_user_info_complete"
           android:showAsAction="always"
           android:title="@string/edit_user_info_complete"
-          android:icon="@drawable/ic_action_accept"/>
+          android:icon="@drawable/ic_action_accept"
+          android:actionLayout="@layout/complete_button"/>
 </menu>

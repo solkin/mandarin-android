@@ -14,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
@@ -44,6 +45,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     private Bitmap manualAvatar;
     private String manualAvatarVirtualHash;
+    private boolean isInfoReceived;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,8 +111,24 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.edit_user_info_menu, menu);
+        final MenuItem item = menu.findItem(R.id.edit_user_info_complete);
+        TextView actionView = ((TextView) item.getActionView());
+        actionView.setText(actionView.getText().toString().toUpperCase());
+        actionView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                menu.performIdentifierAction(item.getItemId(), 0);
+            }
+        });
+
+        if (isInfoReceived) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
         return true;
     }
 
@@ -145,6 +163,11 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.content_view_switcher);
         if(viewSwitcher != null) {
             viewSwitcher.showNext();
+        }
+        // Now we means that info received and user ready to modify info.
+        if(!isInfoReceived) {
+            isInfoReceived = true;
+            invalidateOptionsMenu();
         }
     }
 

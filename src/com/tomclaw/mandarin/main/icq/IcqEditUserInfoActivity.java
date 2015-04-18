@@ -83,7 +83,7 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
     @Override
     protected void sendEditUserInfoRequest() {
-        String friendlyName = getFirstName();
+        String friendlyName = getUserNick();
         String firstName = getFirstName();
         String lastName = getLastName();
         int gender = getSpinnerValue(R.id.gender_selector);

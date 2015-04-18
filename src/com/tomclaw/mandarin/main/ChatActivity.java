@@ -220,9 +220,7 @@ public class ChatActivity extends ChiefActivity {
         if (selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
             smileyText = " " + smileyText;
         }
-        if (selectionEnd < messageText.length() && message.charAt(selectionEnd) != ' ') {
-            smileyText += " ";
-        }
+        smileyText += " ";
         // Inserting smile into current message.
         message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
         messageText.setText(message);

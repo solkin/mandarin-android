@@ -108,6 +108,18 @@ public class RequestDispatcher {
 
         @SuppressWarnings("unchecked")
         private boolean dispatch(Cursor requestCursor, Cursor accountCursor) {
+            // Check for we are ready to dispatch.
+            if(requestCursor == null || accountCursor == null) {
+                Logger.log("Something strange! Request or account cursor is null.");
+                try {
+                    // Let's sleep for a while.
+                    sleep(1000);
+                } catch (InterruptedException ignored) {
+                    // No-no-no, here can not be exception.
+                }
+                return true;
+            }
+            // Yeah, we are ready. Wait for notify from request or account cursor.
             synchronized (sync) {
                 Logger.log("Dispatching requests.");
                 // Checking for at least one request in database.

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.icq.IcqEditUserInfoActivity;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
@@ -26,6 +27,8 @@ import java.util.Collections;
  */
 public class AccountInfoActivity extends AbstractInfoActivity {
 
+    private static final int REQUEST_USER_INFO_EDIT = 0x09;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.account_info_menu, menu);
@@ -39,12 +42,12 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 finish();
                 return true;
             case R.id.user_info_edit:
-                startActivity(new Intent(this, IcqEditUserInfoActivity.class)
+                startActivityForResult(new Intent(this, IcqEditUserInfoActivity.class)
                                 .putExtra(IcqEditUserInfoActivity.ACCOUNT_DB_ID, getAccountDbId())
                                 .putExtra(IcqEditUserInfoActivity.ACCOUNT_TYPE, getAccountType())
-                                .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash())
+                                .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash()),
+                        REQUEST_USER_INFO_EDIT
                 );
-                finish();
                 return true;
             case R.id.account_shutdown:
                 try {
@@ -108,5 +111,24 @@ public class AccountInfoActivity extends AbstractInfoActivity {
     @Override
     public void onBuddyInfoRequestError() {
         Toast.makeText(this, R.string.error_show_account_info, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_USER_INFO_EDIT) {
+            if(resultCode == RESULT_OK) {
+                // Obtain fresh info.
+                String buddyNick = data.getStringExtra(EditUserInfoActivity.USER_NICK);
+                String firstName = data.getStringExtra(EditUserInfoActivity.FIRST_NAME);
+                String lastName = data.getStringExtra(EditUserInfoActivity.LAST_NAME);
+                String avatarHash = data.getStringExtra(EditUserInfoActivity.AVATAR_HASH);
+                // Update buddy nick.
+                updateBuddyNick(buddyNick, firstName, lastName);
+                // Update avatar.
+                updateAvatar(avatarHash, false);
+                // Re-request buddy info from server.
+                refreshBuddyInfo();
+            }
+        }
     }
 }

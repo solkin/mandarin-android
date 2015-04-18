@@ -161,7 +161,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         return buddyNickView.getText().toString();
     }
 
-    private void updateBuddyNick() {
+    protected void updateBuddyNick() {
         String nick = getBuddyName();
         if (TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
             nick = getBuddyNick();
@@ -171,6 +171,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             }
         }
         buddyNickView.setText(nick);
+    }
+
+    protected void updateBuddyNick(String buddyNick, String fistName, String lastName) {
+        setBuddyNick(buddyNick);
+        setFirstName(firstName);
+        setLastName(lastName);
+        buddyNickView.setText("");
+        updateBuddyNick();
     }
 
     private void updateAboutMe() {
@@ -188,8 +196,16 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         findViewById(R.id.progress_bar).setVisibility(View.GONE);
     }
 
+    private void showProgressBar() {
+        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onCoreServiceReady() {
+        requestBuddyInfo();
+    }
+
+    private void requestBuddyInfo() {
         try {
             String appSession = getServiceInteraction().getAppSession();
             ContentResolver contentResolver = getContentResolver();
@@ -205,6 +221,29 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             Logger.log("Unable to publish buddy info request due to exception.", ex);
             onBuddyInfoRequestError();
         }
+
+    }
+
+    protected void refreshBuddyInfo() {
+        showProgressBar();
+        // Hide info blocks.
+        setInfoBlocksVisibility(View.GONE);
+        // Sending protocol buddy info request.
+        requestBuddyInfo();
+    }
+
+    private void setInfoBlocksVisibility(int visibility) {
+        // Info blocks.
+        findViewById(R.id.base_info).setVisibility(visibility);
+        findViewById(R.id.extended_info).setVisibility(visibility);
+        // Info titles.
+        findViewById(R.id.info_base_title).setVisibility(visibility);
+        findViewById(R.id.info_extended_title).setVisibility(visibility);
+        findViewById(R.id.info_about_me_title).setVisibility(visibility);
+        // Footers
+        findViewById(R.id.info_base_footer).setVisibility(visibility);
+        findViewById(R.id.info_extended_footer).setVisibility(visibility);
+        findViewById(R.id.info_about_me_footer).setVisibility(visibility);
     }
 
     @Override
@@ -228,13 +267,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             hideProgressBar();
             // Checking for avatar hash is new and cool.
             if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
-                avatarHash = requestAvatarHash;
-                ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
-                Animation fadeIn = new AlphaAnimation(0, 1);
-                fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
-                fadeIn.setDuration(750);
-                contactBadgeUpdate.setAnimation(fadeIn);
-                BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, getAvatarHash(), R.drawable.ic_default_avatar, true);
+                updateAvatar(requestAvatarHash, true);
             }
             // Check for this is info response (not info edit)...
             if (isInfoResponse) {
@@ -242,16 +275,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 if (isInfoPresent) {
                     Bundle bundle = intent.getExtras();
                     // Show info blocks.
-                    findViewById(R.id.base_info).setVisibility(View.VISIBLE);
-                    findViewById(R.id.extended_info).setVisibility(View.VISIBLE);
-                    // Show info titles.
-                    findViewById(R.id.info_base_title).setVisibility(View.VISIBLE);
-                    findViewById(R.id.info_extended_title).setVisibility(View.VISIBLE);
-                    findViewById(R.id.info_about_me_title).setVisibility(View.VISIBLE);
-                    // Show footers
-                    findViewById(R.id.info_base_footer).setVisibility(View.VISIBLE);
-                    findViewById(R.id.info_extended_footer).setVisibility(View.VISIBLE);
-                    findViewById(R.id.info_about_me_footer).setVisibility(View.VISIBLE);
+                    setInfoBlocksVisibility(View.VISIBLE);
                     // Iterate by info keys.
                     for (String key : bundle.keySet()) {
                         if (StringUtil.isNumeric(key)) {
@@ -297,6 +321,31 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         } else {
             Logger.log("Wrong buddy info!");
         }
+    }
+
+    protected void updateAvatar(String hash, boolean animation) {
+        avatarHash = hash;
+        ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
+        fadeIn.setDuration(animation ? 750 : 0);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+                BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        contactBadgeUpdate.setAnimation(fadeIn);
+        BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.ic_default_avatar, true);
     }
 
     public int getAccountDbId() {

@@ -83,9 +83,9 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
     @Override
     protected void sendEditUserInfoRequest() {
-        String friendlyName = getTextValue(R.id.friendly_name);
-        String firstName = getTextValue(R.id.first_name);
-        String lastName = getTextValue(R.id.last_name);
+        String friendlyName = getFirstName();
+        String firstName = getFirstName();
+        String lastName = getLastName();
         int gender = getSpinnerValue(R.id.gender_selector);
         long birthDate = getDateValue(R.id.birth_date);
         int childrenCount = getSpinnerValue(R.id.children_selector);
@@ -96,6 +96,21 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
 
         RequestHelper.updateUserInfo(getContentResolver(), getAccountDbId(), friendlyName, firstName,
                 lastName, gender, birthDate, childrenCount, smoking, city, webSite, aboutMe);
+    }
+
+    @Override
+    protected String getUserNick() {
+        return getTextValue(R.id.friendly_name);
+    }
+
+    @Override
+    protected String getFirstName() {
+        return getTextValue(R.id.first_name);
+    }
+
+    @Override
+    protected String getLastName() {
+        return getTextValue(R.id.last_name);
     }
 
     private String getTextValue(int viewId) {

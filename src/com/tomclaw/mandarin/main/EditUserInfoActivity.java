@@ -39,6 +39,10 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     public static final String ACCOUNT_TYPE = "account_type";
     public static final String AVATAR_HASH = "buddy_avatar_hash";
 
+    public static final String USER_NICK = "user_nick";
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+
     private int accountDbId;
     private String accountType;
     private String avatarHash;
@@ -64,6 +68,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         if (accountDbId == GlobalProvider.ROW_INVALID) {
             // Nothing we can do in this case. Only show toast and close activity.
             onUserInfoRequestError();
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
@@ -136,16 +141,29 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                setResult(RESULT_CANCELED);
                 finish();
                 return true;
             case R.id.edit_user_info_complete:
                 sendManualBitmap();
                 sendEditUserInfoRequest();
+                String hash = TextUtils.isEmpty(manualAvatarVirtualHash) ? avatarHash : manualAvatarVirtualHash;
+                setResult(RESULT_OK, new Intent()
+                        .putExtra(USER_NICK, getUserNick())
+                        .putExtra(FIRST_NAME, getFirstName())
+                        .putExtra(LAST_NAME, getLastName())
+                        .putExtra(AVATAR_HASH, hash));
                 finish();
                 return true;
         }
         return false;
     }
+
+    protected abstract String getUserNick();
+
+    protected abstract String getFirstName();
+
+    protected abstract String getLastName();
 
     public int getAccountDbId() {
         return accountDbId;
@@ -217,7 +235,6 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     @Override
     public void onCoreServiceDown() {
-
     }
 
     protected void sendManualBitmap() {

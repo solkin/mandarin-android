@@ -58,7 +58,7 @@ public class BuddyPresenceRequest extends WimRequest {
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {
-            Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<String, ShortBuddyInfo>();
+            Map<String, ShortBuddyInfo> shortInfoMap = new HashMap<>();
             JSONObject data = responseObject.getJSONObject(WimConstants.DATA_OBJECT);
             JSONArray users = data.getJSONArray("users");
             for (int i = 0; i < users.length(); i++) {
@@ -112,8 +112,8 @@ public class BuddyPresenceRequest extends WimRequest {
                             buddyInfo.setHomeAddress(city);
                         }
                     }
-                    long birthDate = profile.optLong("birthDate") * 1000;
-                    if (birthDate > 0) {
+                    if(profile.has("birthDate")) {
+                        long birthDate = profile.optLong("birthDate") * 1000;
                         buddyInfo.setBirthDate(birthDate);
                     }
                     buddyInfo.setItemStatic(isKeywordNumeric && TextUtils.equals(buddyId, searchOptions.getKeyword()));
@@ -139,10 +139,10 @@ public class BuddyPresenceRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("mdir", "1"));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("mdir", "1"));
         // Checking for keyword is user id and this is first result page.
         if (StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
                 !buddyIds.contains(searchOptions.getKeyword())) {
@@ -156,6 +156,6 @@ public class BuddyPresenceRequest extends WimRequest {
     }
 
     private static Pair<String, String> createBuddyPair(String buddyId) {
-        return new Pair<String, String>("t", buddyId);
+        return new Pair<>("t", buddyId);
     }
 }

@@ -173,8 +173,8 @@ public class BuddyInfoRequest extends WimRequest {
                     }
                     putExtra(intent, R.id.smoking, R.string.smoking, profile.optBoolean("smoking"));
                     putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
-                    long birthDate = profile.optLong("birthDate") * 1000;
-                    if (birthDate > 0) {
+                    if(profile.has("birthDate")) {
+                        long birthDate = profile.optLong("birthDate") * 1000;
                         putExtra(intent, R.id.birth_date, R.string.birth_date, DATE_FORMAT.format(birthDate));
                     }
                     putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));

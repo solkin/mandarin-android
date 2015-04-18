@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -80,7 +82,9 @@ public class UpdateInfoRequest extends WimRequest {
             params.add(new Pair<>("set", getFieldValue("children", childrenCount)));
             params.add(new Pair<>("set", getFieldValue("smoking", smoking)));
             params.add(new Pair<>("set", getFieldValue("website1", webSite)));
-            params.add(new Pair<>("set", getFieldValue("birthDate", birthDate / 1000)));
+            if(birthDate > new GregorianCalendar(0, 0, 0).getTimeInMillis()) {
+                params.add(new Pair<>("set", getFieldValue("birthDate", birthDate / 1000)));
+            }
             params.add(new Pair<>("set", getFieldValue("aboutMe", aboutMe)));
         } catch (UnsupportedEncodingException ignored) {
             // Never come here.

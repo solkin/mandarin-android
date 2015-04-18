@@ -6,7 +6,7 @@
           android:showAsAction="ifRoom"
           android:title="@string/rename_buddy_short"/>
     <item android:id="@+id/remove_buddy_menu"
-          android:icon="@drawable/content_discard"
+          android:icon="@drawable/ic_delete"
           android:showAsAction="ifRoom"
           android:title="@string/remove_buddy_short"/>
 </menu>

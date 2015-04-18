@@ -236,6 +236,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         // Info blocks.
         findViewById(R.id.base_info).setVisibility(visibility);
         findViewById(R.id.extended_info).setVisibility(visibility);
+        findViewById(R.id.about_me).setVisibility(visibility);
         // Info titles.
         findViewById(R.id.info_base_title).setVisibility(visibility);
         findViewById(R.id.info_extended_title).setVisibility(visibility);

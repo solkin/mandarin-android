@@ -1,8 +1,9 @@
 package com.tomclaw.mandarin.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.format.DateFormat;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -16,21 +17,26 @@ public class TimeHelper {
     /**
      * Date and time format helpers
      */
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
-    private static final SimpleDateFormat simpleTimeFormat12 = new SimpleDateFormat("h:mm a");
-    private static final SimpleDateFormat simpleTimeFormat24 = new SimpleDateFormat("HH:mm");
-    private static final SimpleDateFormat simpleTimeFormatSeconds = new SimpleDateFormat("mm:ss");
+    private static final DateFormat DATE_INSTANCE = SimpleDateFormat.getDateInstance();
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("h:mm a");
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm");
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat SIMPLE_TIME_FORMAT_SECONDS = new SimpleDateFormat("mm:ss");
+
+
 
     public TimeHelper(Context context) {
         this.context = context;
     }
 
-    private SimpleDateFormat getTimeFormat() {
-        return DateFormat.is24HourFormat(context) ? simpleTimeFormat24 : simpleTimeFormat12;
+    private DateFormat getTimeFormat() {
+        return android.text.format.DateFormat.is24HourFormat(context) ? TIME_FORMAT_24 : TIME_FORMAT_12;
     }
 
     public String getFormattedDate(long timestamp) {
-        return simpleDateFormat.format(timestamp);
+        return DATE_INSTANCE.format(timestamp);
     }
 
     public String getFormattedTime(long timestamp) {
@@ -52,6 +58,6 @@ public class TimeHelper {
     }
 
     public String getTime(long timestamp) {
-        return simpleTimeFormatSeconds.format(timestamp);
+        return SIMPLE_TIME_FORMAT_SECONDS.format(timestamp);
     }
 }

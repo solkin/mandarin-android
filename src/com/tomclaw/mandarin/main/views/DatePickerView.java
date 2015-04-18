@@ -9,6 +9,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -21,7 +22,7 @@ public class DatePickerView extends TextView {
     /**
      * Date format helper
      */
-    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private static final transient DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     private int year, month, day;
 
@@ -64,7 +65,7 @@ public class DatePickerView extends TextView {
         this.month = month;
         this.day = day;
         if (isDateSet()) {
-            setText(simpleDateFormat.format(new GregorianCalendar(year, month, day).getTimeInMillis()));
+            setText(DATE_FORMAT.format(new GregorianCalendar(year, month, day).getTimeInMillis()));
         } else {
             setText(R.string.date_not_set);
         }

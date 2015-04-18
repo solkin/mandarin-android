@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class BuddyInfoRequest extends WimRequest {
     /**
      * Date format helper
      */
-    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private static final transient DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     public BuddyInfoRequest() {
     }
@@ -174,7 +175,7 @@ public class BuddyInfoRequest extends WimRequest {
                     putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
                     long birthDate = profile.optLong("birthDate") * 1000;
                     if (birthDate > 0) {
-                        putExtra(intent, R.id.birth_date, R.string.birth_date, simpleDateFormat.format(birthDate));
+                        putExtra(intent, R.id.birth_date, R.string.birth_date, DATE_FORMAT.format(birthDate));
                     }
                     putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));
                 }

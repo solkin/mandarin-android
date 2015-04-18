@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
@@ -38,6 +39,12 @@ public class DatePickerView extends TextView {
                                 updateText(year, monthOfYear, dayOfMonth);
                             }
                         }, year, month, day);
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
                 dialog.show();
             }
         });

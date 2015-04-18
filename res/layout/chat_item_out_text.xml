@@ -11,16 +11,15 @@
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:id="@+id/outgoing_message"
                   android:baselineAligned="false">
         <LinearLayout android:orientation="vertical"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:gravity="right">
+                      android:gravity="end">
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:id="@+id/out_time"
-                      android:layout_gravity="right"
+                      android:layout_gravity="end"
                       android:textColor="?chat_time_color"/>
             <ImageView
                     android:layout_width="wrap_content"

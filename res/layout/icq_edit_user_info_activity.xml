@@ -43,7 +43,6 @@
                     android:id="@+id/change_avatar_button"
                     android:src="@drawable/fab_photo_selector"/>
             <LinearLayout
-                    android:id="@+id/user_info_block"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"

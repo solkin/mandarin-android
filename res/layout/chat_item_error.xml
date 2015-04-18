@@ -11,11 +11,9 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/error_message"
             android:background="?attr/chat_error_bubble">
         <com.tomclaw.mandarin.main.views.TightTextView
                 style="@style/Chat.Message"
-                android:text="@string/error_bubble"
-                android:id="@+id/error_text"/>
+                android:text="@string/error_bubble"/>
     </LinearLayout>
 </LinearLayout>

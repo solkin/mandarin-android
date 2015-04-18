@@ -36,7 +36,6 @@
             android:layout_marginBottom="48dp"/>
 
     <LinearLayout
-            android:id="@+id/progressLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"

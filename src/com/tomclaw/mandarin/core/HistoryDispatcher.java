@@ -171,7 +171,7 @@ public class HistoryDispatcher {
                     if (multipleSenders) {
                         title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
                         content = nickNamesBuilder.toString();
-                        actionIcon = R.drawable.social_reply;
+                        actionIcon = R.drawable.ic_reply;
                         actionButton = context.getString(R.string.reply_now);
                         actionIntent = replyNowIntent;
                         inboxStyle.setBigContentTitle(title);
@@ -180,7 +180,7 @@ public class HistoryDispatcher {
                     } else {
                         title = nickNamesBuilder.toString();
                         content = message;
-                        actionIcon = R.drawable.social_chat;
+                        actionIcon = R.drawable.ic_chat;
                         actionButton = context.getString(R.string.dialogs);
                         actionIntent = openChatsIntent;
                         readButton = context.getString(R.string.mark_as_read);

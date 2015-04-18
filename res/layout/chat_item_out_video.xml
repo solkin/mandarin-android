@@ -12,7 +12,6 @@
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:id="@+id/outgoing_message"
                   android:baselineAligned="false">
         <LinearLayout android:orientation="vertical"
                       android:layout_width="wrap_content"
@@ -82,7 +81,6 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_action_error"/>
                     <TextView
-                            android:id="@+id/out_error_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/out_file_error"

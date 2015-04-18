@@ -4,13 +4,13 @@
     <item android:id="@+id/user_info_edit"
           android:showAsAction="always"
           android:title="@string/user_info_edit"
-          android:icon="@drawable/content_edit"/>
+          android:icon="@drawable/ic_edit"/>
     <item android:id="@+id/account_shutdown"
           android:showAsAction="always"
           android:title="@string/account_shutdown"
           android:icon="@drawable/action_shutdown"/>
     <item android:id="@+id/account_remove"
-          android:showAsAction="ifRoom"
+          android:showAsAction="never"
           android:title="@string/account_remove"
           android:icon="@drawable/content_discard"/>
 </menu>

@@ -211,10 +211,6 @@ public class BitmapCache {
         bitmapLruCache.put(cacheKey, bitmap);
     }
 
-    public boolean checkBitmapInCache(String hash) {
-        return new File(getBitmapFilePath(hash)).exists();
-    }
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void invalidateHash(String hash) {
         // Remove file first.

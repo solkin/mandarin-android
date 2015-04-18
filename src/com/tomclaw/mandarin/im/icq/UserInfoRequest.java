@@ -27,7 +27,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
  * Date: 25/03/15
  * Time: 7:49 PM
  */
-public class AccountInfoRequest extends WimRequest {
+public class UserInfoRequest extends WimRequest {
 
     public static final String ACCOUNT_DB_ID = "account_db_id";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -39,10 +39,10 @@ public class AccountInfoRequest extends WimRequest {
     private String buddyId;
 
     @SuppressWarnings("unused")
-    public AccountInfoRequest() {
+    public UserInfoRequest() {
     }
 
-    public AccountInfoRequest(String buddyId) {
+    public UserInfoRequest(String buddyId) {
         this.buddyId = buddyId;
     }
 

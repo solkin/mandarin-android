@@ -197,11 +197,11 @@ public class BuddyInfoRequest extends WimRequest {
     @Override
     protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("infoLevel", "mid"));
-        params.add(new Pair<String, String>("t", buddyId));
-        params.add(new Pair<String, String>("mdir", "1"));
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("infoLevel", "mid"));
+        params.add(new Pair<>("t", buddyId));
+        params.add(new Pair<>("mdir", "1"));
         return params;
     }
 

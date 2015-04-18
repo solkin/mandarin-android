@@ -181,7 +181,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             String appSession = getServiceInteraction().getAppSession();
             ContentResolver contentResolver = getContentResolver();
             // Sending protocol buddy info request.
-            RequestHelper.requestAccountInfo(contentResolver, appSession, accountDbId);
+            RequestHelper.requestUserInfo(contentResolver, appSession, accountDbId);
         } catch (Throwable ignored) {
             hideProgressBar();
             onUserInfoRequestError();
@@ -320,7 +320,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             this.accountDbId = accountDbId;
             this.avatar = avatar;
             this.virtualHash = virtualHash;
-            this.avatarHash = avatarHash;
+            this.avatarHash = TextUtils.isEmpty(avatarHash) ? virtualHash : avatarHash;
         }
 
         @Override

@@ -91,7 +91,9 @@ public class RequestDispatcher {
             do {
                 // Registering created observers.
                 requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
-                requestCursor.registerContentObserver(requestObserver);
+                if (requestCursor != null) {
+                    requestCursor.registerContentObserver(requestObserver);
+                }
                 /**
                  * Needs to control account set change.
                  * If account was deleted - drop all associated requests.
@@ -256,6 +258,7 @@ public class RequestDispatcher {
             requestCursor.close();
             accountCursor.close();
             requestCursor.unregisterContentObserver(requestObserver);
+            accountCursor.unregisterContentObserver(requestObserver);
             return true;
         }
     }

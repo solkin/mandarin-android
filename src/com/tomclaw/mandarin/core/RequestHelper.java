@@ -100,7 +100,7 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddyInfoRequest);
     }
 
-    public static void requestAccountInfo(ContentResolver contentResolver, String appSession, int accountDbId) {
+    public static void requestUserInfo(ContentResolver contentResolver, String appSession, int accountDbId) {
         Cursor cursor = contentResolver.query(Settings.ACCOUNT_RESOLVER_URI, null,
                 GlobalProvider.ROW_AUTO_ID + "='" + accountDbId + "'", null, null);
         // Oh, cursor may be null sometimes.
@@ -108,8 +108,8 @@ public class RequestHelper {
             // Cursor may have more than only one entry.
             if (cursor.moveToFirst()) {
                 String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
-                AccountInfoRequest accountInfoRequest = new AccountInfoRequest(userId);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, accountInfoRequest);
+                UserInfoRequest userInfoRequest = new UserInfoRequest(userId);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, userInfoRequest);
             }
             cursor.close();
         }

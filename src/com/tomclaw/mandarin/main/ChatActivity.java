@@ -87,7 +87,9 @@ public class ChatActivity extends ChiefActivity {
 
         timeHelper = new TimeHelper(this);
 
-        final int buddyDbId = getIntentBuddyDbId(getIntent());
+        Intent intent = getIntent();
+        final int buddyDbId = getIntentBuddyDbId(intent);
+        SharingData sharingData = getIntentSharingData(intent);
 
         startTitleObservation(buddyDbId);
         buddyObserver.touch();
@@ -113,6 +115,7 @@ public class ChatActivity extends ChiefActivity {
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
         setMessageTextFromDraft(buddyDbId);
+        applySharingData(sharingData);
         messageText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -446,6 +449,7 @@ public class ChatActivity extends ChiefActivity {
         saveMessageTextAsDraft();
 
         int buddyDbId = getIntentBuddyDbId(intent);
+        SharingData sharingData = getIntentSharingData(intent);
 
         // Checking for buddy db id is really correct.
         if (buddyDbId == -1) {
@@ -463,6 +467,7 @@ public class ChatActivity extends ChiefActivity {
         chatList.setAdapter(chatHistoryAdapter);
 
         setMessageTextFromDraft(buddyDbId);
+        applySharingData(sharingData);
     }
 
     @Override
@@ -560,6 +565,17 @@ public class ChatActivity extends ChiefActivity {
             buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
         }
         return buddyDbId;
+    }
+
+    private SharingData getIntentSharingData(Intent intent) {
+        Bundle bundle = intent.getExtras();
+        SharingData sharingData = null;
+        // Checking for bundle condition.
+        if (bundle != null) {
+            // Setup sharing data object.
+            sharingData = (SharingData) bundle.getSerializable(SharingActivity.EXTRA_SHARING_DATA);
+        }
+        return sharingData;
     }
 
     private void startTitleObservation(final int buddyDbId) {
@@ -676,6 +692,27 @@ public class ChatActivity extends ChiefActivity {
                 chatList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
             }
         }, 300);
+    }
+
+    private void applySharingData(SharingData sharingData) {
+        if(sharingData != null && sharingData.isValid()) {
+            if(sharingData.getUri() != null) {
+                // Process obtained Uris.
+                for(Uri uri : sharingData.getUri()) {
+                    onFilePicked(uri);
+                }
+            } else {
+                String share;
+                if(TextUtils.isEmpty(sharingData.getSubject())) {
+                    share = sharingData.getText();
+                } else {
+                    share = sharingData.getSubject().concat("\n").concat(sharingData.getText());
+                }
+                // Set text to field and move cursor to the end.
+                messageText.setText(share);
+                messageText.setSelection(share.length());
+            }
+        }
     }
 
     @Override

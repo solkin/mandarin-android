@@ -16,13 +16,14 @@ import java.util.Map;
 /**
  * Created by solkin on 04.08.14.
  */
-public class RosterGroupAdapter extends RosterStickyAdapter {
+public class RosterSharingAdapter extends RosterStickyAdapter {
 
-    private transient Map<String, Integer> groupsMap;
 
-    public RosterGroupAdapter(Activity context, LoaderManager loaderManager, int filter) {
-        super(context, loaderManager, filter);
-        groupsMap = new HashMap<>();
+    private static final long GROUP_DIALOGS = 1;
+    private static final long GROUP_CONTACTS = 2;
+
+    public RosterSharingAdapter(Activity context, LoaderManager loaderManager) {
+        super(context, loaderManager, FILTER_ALL_BUDDIES);
     }
 
     @Override
@@ -34,8 +35,15 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        ((TextView) convertView.findViewById(R.id.header_text))
-                .setText(String.valueOf(cursor.getString(COLUMN_ROSTER_BUDDY_GROUP).toUpperCase()));
+        TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
+        int headerTitle;
+        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
+        if(dialogOpened) {
+            headerTitle = R.string.dialogs;
+        } else {
+            headerTitle = R.string.buddies;
+        }
+        headerTextView.setText(getContext().getResources().getString(headerTitle));
         return convertView;
     }
 
@@ -45,18 +53,16 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        String groupName = cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
-        Integer groupId = groupsMap.get(groupName);
-        if (groupId == null) {
-            groupId = groupsMap.size();
-            groupsMap.put(groupName, groupId);
-        }
-        return groupId;
+        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
+        return dialogOpened ? GROUP_DIALOGS : GROUP_CONTACTS;
     }
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_GROUP).andOrder()
+        queryBuilder.descending(GlobalProvider.ROSTER_BUDDY_DIALOG).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
+
+        /*queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_DIALOG + " > 0 THEN "+GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME+" ELSE " + GlobalProvider.ROSTER_BUDDY_DIALOG + " END)").andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);*/
     }
 }

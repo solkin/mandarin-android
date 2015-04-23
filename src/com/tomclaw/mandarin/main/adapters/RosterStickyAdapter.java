@@ -60,6 +60,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
     protected static int COLUMN_ROSTER_BUDDY_DRAFT;
     protected static int COLUMN_ROSTER_BUDDY_GROUP_ID;
     protected static int COLUMN_ROSTER_BUDDY_GROUP;
+    protected static int COLUMN_ROSTER_BUDDY_DIALOG;
 
     /**
      * Variables
@@ -84,6 +85,10 @@ public abstract class RosterStickyAdapter extends CursorAdapter
     public void initLoader() {
         // Initialize loader for dialogs Id.
         loaderManager.restartLoader(ADAPTER_STICKY_ID, null, this);
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     /**
@@ -184,6 +189,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
         COLUMN_ROSTER_BUDDY_GROUP_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_GROUP_ID);
         COLUMN_ROSTER_BUDDY_GROUP = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_GROUP);
+        COLUMN_ROSTER_BUDDY_DIALOG = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DIALOG);
         swapCursor(cursor);
     }
 

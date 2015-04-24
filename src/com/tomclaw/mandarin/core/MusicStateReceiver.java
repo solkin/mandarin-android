@@ -17,13 +17,14 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     public static final String EXTRA_MUSIC_STATUS_MESSAGE = "music_status_message";
     public static final String EXTRA_MUSIC_EVENT = "music_event";
+    public static final String EXTRA_MUSIC_TOGGLED_EVENT = "music_toggled";
 
     private static final int PROCESS_EVENT_DELAY = 1500;
 
     @Override
     public void onReceive(Context context, final Intent intent) {
         if (PreferenceHelper.isMusicAutoStatus(context)) {
-            final WeakReference<Context> contextWeakReference = new WeakReference<Context>(context);
+            final WeakReference<Context> contextWeakReference = new WeakReference<>(context);
             MainExecutor.executeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -57,6 +58,10 @@ public class MusicStateReceiver extends BroadcastReceiver {
                     }
                 }
             }, PROCESS_EVENT_DELAY);
+        } else {
+            Intent serviceIntent = new Intent(context, CoreService.class)
+                    .putExtra(EXTRA_MUSIC_TOGGLED_EVENT, true);
+            context.startService(serviceIntent);
         }
     }
 

@@ -35,6 +35,8 @@ public class CoreService extends Service {
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
+    public static final String EXTRA_RESTART_FLAG = "restart_flag";
+    public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
 
     public static final int RESTART_TIMEOUT = 5000;
 
@@ -141,12 +143,13 @@ public class CoreService extends Service {
         if (intent != null) {
             onIntentReceived(intent);
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     private void onIntentReceived(Intent intent) {
         // Parse music event info.
         boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
+        boolean musicToggledEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_TOGGLED_EVENT, false);
         // Checking for this is music event and we must process fresh data or
         // music is not longer playing and we must reset auto status.
         if (musicEvent || !MusicStateReceiver.isMusicActive(this)) {
@@ -166,16 +169,37 @@ public class CoreService extends Service {
             uploadDispatcher.backgroundQueueNotify();
         }
         // Read messages event maybe?
-        boolean isReadMessages = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
-        if (isReadMessages) {
+        boolean readMessagesEvent = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
+        if (readMessagesEvent) {
             QueryHelper.readAllMessages(getContentResolver());
+        }
+        // Or maybe this is auto-restart event?
+        boolean restartFlag = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);
+
+        if(!sessionHolder.hasActiveAccounts()) {
+            Logger.log("Service started without active accounts.");
+            if(restartFlag || musicEvent || musicToggledEvent || networkEvent || readMessagesEvent) {
+                Logger.log("Service was started from auto-event. No active accounts. Stopping self.");
+                stopSelf();
+                System.exit(0);
+            }
+        }
+        boolean activityEvent = intent.getBooleanExtra(EXTRA_ACTIVITY_START_EVENT, false);
+        if(activityEvent) {
+            Logger.log("Service was started from activity.");
         }
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        if (Settings.FORCE_RESTART || Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Intent restartServiceIntent = new Intent(this, CoreService.class);
+        // Maybe, service was started from activity?
+        boolean activityEvent = rootIntent.getBooleanExtra(EXTRA_ACTIVITY_START_EVENT, false);
+        if(activityEvent) {
+            Logger.log("Service removed was started from activity and will be restarted soon.");
+        }
+        if (Settings.FORCE_RESTART && (sessionHolder.hasActiveAccounts() || activityEvent)) {
+            Intent restartServiceIntent = new Intent(this, CoreService.class)
+                    .putExtra(EXTRA_RESTART_FLAG, true);
 
             PendingIntent restartServicePendingIntent = PendingIntent.getService(
                     this, 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);

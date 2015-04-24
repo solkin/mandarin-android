@@ -29,9 +29,9 @@ public class ConnectivityReceiver extends BroadcastReceiver {
     }
 
     public static void sendEventToService(Context context, boolean isConnected) {
-        Intent serviceIntent = new Intent(context, CoreService.class);
-        serviceIntent.putExtra(EXTRA_NETWORK_EVENT, true);
-        serviceIntent.putExtra(EXTRA_CONNECTIVITY_STATUS, isConnected);
+        Intent serviceIntent = new Intent(context, CoreService.class)
+                .putExtra(EXTRA_NETWORK_EVENT, true)
+                .putExtra(EXTRA_CONNECTIVITY_STATUS, isConnected);
         context.startService(serviceIntent);
     }
 }

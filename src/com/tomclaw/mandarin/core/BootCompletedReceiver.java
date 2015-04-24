@@ -13,7 +13,7 @@ import com.tomclaw.mandarin.util.Logger;
  */
 public class BootCompletedReceiver extends BroadcastReceiver {
 
-    private static final String EXTRA_BOOT_EVENT = "boot_event";
+    public static final String EXTRA_BOOT_EVENT = "boot_event";
 
     @Override
     public void onReceive(final Context context, final Intent intent) {

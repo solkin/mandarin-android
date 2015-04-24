@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.tomclaw.mandarin.util.Logger;
@@ -33,5 +34,11 @@ public class ConnectivityReceiver extends BroadcastReceiver {
                 .putExtra(EXTRA_NETWORK_EVENT, true)
                 .putExtra(EXTRA_CONNECTIVITY_STATUS, isConnected);
         context.startService(serviceIntent);
+    }
+
+    public IntentFilter getIntentFilter() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        return filter;
     }
 }

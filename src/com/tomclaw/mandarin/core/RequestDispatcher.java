@@ -108,169 +108,177 @@ public class RequestDispatcher {
 
         @SuppressWarnings("unchecked")
         private boolean dispatch(Cursor requestCursor, Cursor accountCursor) {
-            // Check for we are ready to dispatch.
-            if(requestCursor == null || accountCursor == null) {
-                Logger.log("Something strange! Request or account cursor is null.");
-                try {
-                    // Let's sleep for a while.
-                    sleep(1000);
-                } catch (InterruptedException ignored) {
-                    // No-no-no, here can not be exception.
+            try {
+                // Check for we are ready to dispatch.
+                if(requestCursor == null || accountCursor == null) {
+                    Logger.log("Something strange! Request or account cursor is null.");
+                    try {
+                        // Let's sleep for a while.
+                        sleep(1000);
+                    } catch (InterruptedException ignored) {
+                        // No-no-no, here can not be exception.
+                    }
+                    return true;
                 }
-                return true;
-            }
-            // Yeah, we are ready. Wait for notify from request or account cursor.
-            synchronized (sync) {
-                Logger.log("Dispatching requests.");
-                // Checking for at least one request in database.
-                if (requestCursor.moveToFirst()) {
-                    do {
-                        Logger.log("Request...");
-                        // Obtain necessary column index.
-                        int rowColumnIndex = requestCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-                        int classColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
-                        int sessionColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_SESSION);
-                        int persistentColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_PERSISTENT);
-                        int accountColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
-                        int stateColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
-                        int bundleColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
-                        int tagColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_TAG);
-                        /**
-                         * Если сессия совпадает, то постоянство задачи значения не имеет.
-                         * Если задача непостоянная, сессия отличается, то задача отклоняется.
-                         * Если задача постоянная, сессия отличается, то надо смотреть на статус:
-                         *      В очереди:  задача отправляется, как и в случае "обработано".
-                         *                  Обновляется ключ сессии приложения.
-                         *      Обработано: задача может быть не доставленной до сервера, переотправить.
-                         *                  Обновляется ключ сессии приложения.
-                         *      Отправлено: задача была отправлена, не нуждается в отправке, хотя ответа явно
-                         *                  не будет и задачу можно удалить.
-                         */
-                        // Obtain values.
-                        int requestDbId = requestCursor.getInt(rowColumnIndex);
-                        boolean isPersistent = requestCursor.getInt(persistentColumnIndex) == 1;
-                        String requestAppSession = requestCursor.getString(sessionColumnIndex);
-                        int requestState = requestCursor.getInt(stateColumnIndex);
-                        // Checking for session is equals.
-                        if (TextUtils.equals(requestAppSession, CoreService.getAppSession())) {
-                            if (requestState != Request.REQUEST_PENDING) {
-                                Logger.log("Processed request of current session.");
-                                continue;
-                            }
-                            Logger.log("Normal request and will be processed now.");
-                        } else {
-                            boolean isDecline = false;
-                            boolean isBreak = false;
-                            // Checking for query is persistent.
-                            if (isPersistent) {
-                                switch (requestState) {
-                                    case Request.REQUEST_PENDING: {
-                                        // Persistent request, might be processed at anytime.
-                                        Logger.log("Persistent request, might be processed at anytime.");
-                                        break;
-                                    }
-                                    case Request.REQUEST_SENT: {
-                                        // Request sent, processed by server,
-                                        // but we have no answer. Decline.
-                                        Logger.log("Request sent, processed by server, " +
-                                                "but we have no answer. Decline.");
-                                        isDecline = true;
-                                        break;
-                                    }
+                // Yeah, we are ready. Wait for notify from request or account cursor.
+                synchronized (sync) {
+                    Logger.log("Dispatching requests.");
+                    // Checking for at least one request in database.
+                    if (requestCursor.moveToFirst()) {
+                        do {
+                            Logger.log("Request...");
+                            // Obtain necessary column index.
+                            int rowColumnIndex = requestCursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+                            int classColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_CLASS);
+                            int sessionColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_SESSION);
+                            int persistentColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_PERSISTENT);
+                            int accountColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_ACCOUNT_DB_ID);
+                            int stateColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_STATE);
+                            int bundleColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_BUNDLE);
+                            int tagColumnIndex = requestCursor.getColumnIndex(GlobalProvider.REQUEST_TAG);
+                            /**
+                             * Если сессия совпадает, то постоянство задачи значения не имеет.
+                             * Если задача непостоянная, сессия отличается, то задача отклоняется.
+                             * Если задача постоянная, сессия отличается, то надо смотреть на статус:
+                             *      В очереди:  задача отправляется, как и в случае "обработано".
+                             *                  Обновляется ключ сессии приложения.
+                             *      Обработано: задача может быть не доставленной до сервера, переотправить.
+                             *                  Обновляется ключ сессии приложения.
+                             *      Отправлено: задача была отправлена, не нуждается в отправке, хотя ответа явно
+                             *                  не будет и задачу можно удалить.
+                             */
+                            // Obtain values.
+                            int requestDbId = requestCursor.getInt(rowColumnIndex);
+                            boolean isPersistent = requestCursor.getInt(persistentColumnIndex) == 1;
+                            String requestAppSession = requestCursor.getString(sessionColumnIndex);
+                            int requestState = requestCursor.getInt(stateColumnIndex);
+                            // Checking for session is equals.
+                            if (TextUtils.equals(requestAppSession, CoreService.getAppSession())) {
+                                if (requestState != Request.REQUEST_PENDING) {
+                                    Logger.log("Processed request of current session.");
+                                    continue;
                                 }
+                                Logger.log("Normal request and will be processed now.");
                             } else {
-                                // Decline request.
-                                isDecline = true;
-                                Logger.log("Another session and not persistent request.");
+                                boolean isDecline = false;
+                                boolean isBreak = false;
+                                // Checking for query is persistent.
+                                if (isPersistent) {
+                                    switch (requestState) {
+                                        case Request.REQUEST_PENDING: {
+                                            // Persistent request, might be processed at anytime.
+                                            Logger.log("Persistent request, might be processed at anytime.");
+                                            break;
+                                        }
+                                        case Request.REQUEST_SENT: {
+                                            // Request sent, processed by server,
+                                            // but we have no answer. Decline.
+                                            Logger.log("Request sent, processed by server, " +
+                                                    "but we have no answer. Decline.");
+                                            isDecline = true;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    // Decline request.
+                                    isDecline = true;
+                                    Logger.log("Another session and not persistent request.");
+                                }
+                                // Checking for request is obsolete and must be declined.
+                                if (isDecline) {
+                                    contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
+                                            GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                                    break;
+                                }
                             }
-                            // Checking for request is obsolete and must be declined.
-                            if (isDecline) {
+
+                            String requestClass = requestCursor.getString(classColumnIndex);
+                            int requestAccountDbId = requestCursor.getInt(accountColumnIndex);
+                            String requestBundle = requestCursor.getString(bundleColumnIndex);
+                            String requestTag = requestCursor.getString(tagColumnIndex);
+
+                            Logger.log("Request received: "
+                                    + "class = " + requestClass + "; "
+                                    + "session = " + requestAppSession + "; "
+                                    + "persistent = " + isPersistent + "; "
+                                    + "account = " + requestAccountDbId + "; "
+                                    + "state = " + requestState + "; "
+                                    + "bundle = " + requestBundle + "");
+
+                            int requestResult = Request.REQUEST_DELETE;
+                            Request request = null;
+                            try {
+                                // Obtain account root and request class (type).
+                                AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
+                                // Checking for account online.
+                                if (accountRoot.isOffline()) {
+                                    // Account is offline now. Let's send this request later.
+                                    continue;
+                                }
+                                // Preparing request.
+                                request = (Request) GsonSingleton.getInstance().fromJson(
+                                        requestBundle, Class.forName(requestClass));
+                                executingRequestTag = requestTag;
+                                requestResult = request.onRequest(accountRoot, service);
+                            } catch (AccountNotFoundException e) {
+                                Logger.log("RequestDispatcher: account not found by request db id. " +
+                                        "Cancelling.");
+                            } catch (Throwable ex) {
+                                Logger.log("Exception while loading request class: " + requestClass, ex);
+                            } finally {
+                                executingRequestTag = null;
+                            }
+                            // Checking for request result.
+                            if (requestResult == Request.REQUEST_DELETE) {
+                                // Result is delete-type.
+                                Logger.log("Result is delete-type");
                                 contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                         GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            } else if (requestResult == Request.REQUEST_PENDING) {
+                                // Request wasn't completed. We'll retry request a little bit later.
+                                Logger.log("Request wasn't completed. We'll retry request a little bit later.");
                                 break;
+                            } else {
+                                // Updating this request.
+                                Logger.log("Updating this request");
+                                String requestJson = GsonSingleton.getInstance().toJson(request);
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
+                                contentValues.put(GlobalProvider.REQUEST_BUNDLE, requestJson);
+                                contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
+                                        GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                             }
-                        }
-
-                        String requestClass = requestCursor.getString(classColumnIndex);
-                        int requestAccountDbId = requestCursor.getInt(accountColumnIndex);
-                        String requestBundle = requestCursor.getString(bundleColumnIndex);
-                        String requestTag = requestCursor.getString(tagColumnIndex);
-
-                        Logger.log("Request received: "
-                                + "class = " + requestClass + "; "
-                                + "session = " + requestAppSession + "; "
-                                + "persistent = " + isPersistent + "; "
-                                + "account = " + requestAccountDbId + "; "
-                                + "state = " + requestState + "; "
-                                + "bundle = " + requestBundle + "");
-
-                        int requestResult = Request.REQUEST_DELETE;
-                        Request request = null;
-                        try {
-                            // Obtain account root and request class (type).
-                            AccountRoot accountRoot = sessionHolder.getAccount(requestAccountDbId);
-                            // Checking for account online.
-                            if (accountRoot.isOffline()) {
-                                // Account is offline now. Let's send this request later.
-                                continue;
-                            }
-                            // Preparing request.
-                            request = (Request) GsonSingleton.getInstance().fromJson(
-                                    requestBundle, Class.forName(requestClass));
-                            executingRequestTag = requestTag;
-                            requestResult = request.onRequest(accountRoot, service);
-                        } catch (AccountNotFoundException e) {
-                            Logger.log("RequestDispatcher: account not found by request db id. " +
-                                    "Cancelling.");
-                        } catch (Throwable ex) {
-                            Logger.log("Exception while loading request class: " + requestClass, ex);
-                        } finally {
-                            executingRequestTag = null;
-                        }
-                        // Checking for request result.
-                        if (requestResult == Request.REQUEST_DELETE) {
-                            // Result is delete-type.
-                            Logger.log("Result is delete-type");
-                            contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
-                                    GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                        } else if (requestResult == Request.REQUEST_PENDING) {
-                            // Request wasn't completed. We'll retry request a little bit later.
-                            Logger.log("Request wasn't completed. We'll retry request a little bit later.");
+                            // Breaking. We'll receive change event from observer.
                             break;
-                        } else {
-                            // Updating this request.
-                            Logger.log("Updating this request");
-                            String requestJson = GsonSingleton.getInstance().toJson(request);
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
-                            contentValues.put(GlobalProvider.REQUEST_BUNDLE, requestJson);
-                            contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
-                                    GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
-                        }
-                        // Breaking. We'll receive change event from observer.
-                        break;
-                    } while (requestCursor.moveToNext());
-                }
-                try {
-                    if (requestCursor.getCount() > 0) {
-                        // Wait for specified daley or until notifying.
-                        Logger.log("Wait for specified delay or until notifying");
-                        sync.wait(PENDING_REQUEST_DELAY);
-                        Logger.log("... pending time went.");
-                    } else {
-                        // Wait until notifying. Try it.
-                        Logger.log("Wait until notifying");
-                        sync.wait();
-                        Logger.log("... notified!");
+                        } while (requestCursor.moveToNext());
                     }
-                } catch (InterruptedException ignored) {
-                    // Notified.
+                    try {
+                        if (requestCursor.getCount() > 0) {
+                            // Wait for specified daley or until notifying.
+                            Logger.log("Wait for specified delay or until notifying");
+                            sync.wait(PENDING_REQUEST_DELAY);
+                            Logger.log("... pending time went.");
+                        } else {
+                            // Wait until notifying. Try it.
+                            Logger.log("Wait until notifying");
+                            sync.wait();
+                            Logger.log("... notified!");
+                        }
+                    } catch (InterruptedException ignored) {
+                        // Notified.
+                    }
+                }
+            } finally {
+                // Unregister used cursor from events, close non-null cursors.
+                if (requestCursor != null) {
+                    requestCursor.unregisterContentObserver(requestObserver);
+                    requestCursor.close();
+                }
+                if (accountCursor != null) {
+                    accountCursor.unregisterContentObserver(requestObserver);
+                    accountCursor.close();
                 }
             }
-            requestCursor.close();
-            accountCursor.close();
-            requestCursor.unregisterContentObserver(requestObserver);
-            accountCursor.unregisterContentObserver(requestObserver);
             return true;
         }
     }

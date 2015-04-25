@@ -86,7 +86,7 @@ public abstract class BaseHistoryView extends LinearLayout {
                     alpha = 1f;
                     stateImage = 0;
             }
-            if(stateImage == 0) {
+            if (stateImage == 0) {
                 deliveryState.setVisibility(INVISIBLE);
             } else {
                 deliveryState.setVisibility(VISIBLE);

@@ -6,15 +6,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.MainExecutor;
+import com.tomclaw.mandarin.core.ServiceInteraction;
+import com.tomclaw.mandarin.core.ServiceTask;
+import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.ChiefActivity;
@@ -22,12 +27,7 @@ import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.tasks.AccountInfoTask;
-import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.SelectionHelper;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by solkin on 24/04/14.
@@ -107,15 +107,40 @@ public class AccountsDrawerLayout extends DrawerLayout {
         ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list.
         accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
-        accountsAdapter.setOnAvatarClickListener(new AccountsAdapter.OnAvatarClickListener() {
+        accountsAdapter.setOnAccountClickListener(new AccountsAdapter.OnAccountClickListener() {
 
             @Override
-            public void onAvatarClicked(int accountDbId, boolean isConnected) {
-                if (isConnected) {
-                    // Account is online and we can show it's brief info.
+            public void onAccountClicked(int accountDbId, boolean isConnecting) {
+                if (!isConnecting) {
+                    // Account is online or offline and we can show it's brief info.
                     final AccountInfoTask accountInfoTask =
                             new AccountInfoTask(activity, accountDbId);
                     TaskExecutor.getInstance().execute(accountInfoTask);
+                    closeAccountsPanel();
+                }
+            }
+        });
+        accountsAdapter.setOnStatusClickListener(new AccountsAdapter.OnStatusClickListener() {
+            @Override
+            public void onStatusClicked(int accountDbId, String accountType, String userId, int statusIndex,
+                                        String statusTitle, String statusMessage, boolean isConnecting) {
+                // Checking for account is connecting now and we must wait for some time.
+                if (isConnecting) {
+                    int toastMessage;
+                    if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                        toastMessage = R.string.account_shutdowning;
+                    } else {
+                        toastMessage = R.string.account_connecting;
+                    }
+                    Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Checking for account is offline and we need to connect.
+                    if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                        showConnectionDialog(accountType, userId);
+                    } else {
+                        // Account is online and we can change status.
+                        showChangeStatusDialog(accountType, userId, statusIndex, statusTitle, statusMessage);
+                    }
                     closeAccountsPanel();
                 }
             }
@@ -177,42 +202,6 @@ public class AccountsDrawerLayout extends DrawerLayout {
         });
         // Bind to our new adapter.
         accountsList.setAdapter(accountsAdapter);
-        accountsList.setMultiChoiceModeListener(new AccountsMultiChoiceModeListener());
-        accountsList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = accountsAdapter.getCursor();
-                if (cursor != null && cursor.moveToPosition(position)) {
-                    final int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                    final String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
-                    final String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
-                    final int statusIndex = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS));
-                    final String statusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_TITLE));
-                    final String statusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE));
-                    final int accountConnecting = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING));
-
-                    // Checking for account is connecting now and we must wait for some time.
-                    if (accountConnecting == 1) {
-                        int toastMessage;
-                        if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                            toastMessage = R.string.account_shutdowning;
-                        } else {
-                            toastMessage = R.string.account_connecting;
-                        }
-                        Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Checking for account is offline and we need to connect.
-                        if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                            showConnectionDialog(accountType, userId);
-                        } else {
-                            // Account is online and we can change status.
-                            showChangeStatusDialog(accountType, userId, statusIndex, statusTitle, statusMessage);
-                        }
-                        closeAccountsPanel();
-                    }
-                }
-            }
-        });
     }
 
     public void setTitle(String title) {
@@ -332,61 +321,5 @@ public class AccountsDrawerLayout extends DrawerLayout {
         });
         builder.setNegativeButton(R.string.connect_no, null);
         builder.show();
-    }
-
-    private class AccountsMultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
-
-        private SelectionHelper<Integer, Integer> selectionHelper;
-
-        @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged(position, (int) id, checked);
-            mode.setTitle(String.format(activity.getString(R.string.selected_items), selectionHelper.getSelectedCount()));
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            selectionHelper = new SelectionHelper<Integer, Integer>();
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            inflater.inflate(R.menu.accounts_edit_menu, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.remove_account_menu:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                    builder.setTitle(R.string.remove_accounts_title);
-                    builder.setMessage(R.string.remove_accounts_text);
-                    builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Collection<Integer> selectedAccounts = new ArrayList<Integer>(selectionHelper.getSelectedIds());
-                            AccountsRemoveTask task = new AccountsRemoveTask(activity, selectedAccounts);
-                            TaskExecutor.getInstance().execute(task);
-                            // Action picked, so close the CAB
-                            mode.finish();
-                        }
-                    });
-                    builder.setNegativeButton(R.string.do_not_remove, null);
-                    builder.show();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.clearSelection();
-        }
     }
 }

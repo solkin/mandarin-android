@@ -30,7 +30,13 @@ public class AccountInfoActivity extends AbstractInfoActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.account_info_menu, menu);
+        int menuResource;
+        if (getBuddyStatus() == StatusUtil.STATUS_OFFLINE) {
+            menuResource = R.menu.account_info_offline_menu;
+        } else {
+            menuResource = R.menu.account_info_menu;
+        }
+        getMenuInflater().inflate(menuResource, menu);
         return true;
     }
 

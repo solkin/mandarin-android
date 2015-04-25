@@ -17,7 +17,14 @@
     <color name="connecting_status_filter">#88000000</color>
     <color name="status_title_color">#FFFAFAFA</color>
     <color name="status_message_color">#FFFAFAFA</color>
-    <color name="account_nick_color">#FFFAFAFA</color>
+    <color name="user_nick_color">#FFFAFAFA</color>
+    <color name="user_id_color">#FFFAFAFA</color>
+    <color name="user_item_divider_color">#141414</color>
+    <color name="user_item_background_color">#222222</color>
+    <color name="user_item_selected_color">#191919</color>
+    <color name="user_item_id_color">#727272</color>
+    <color name="user_item_nick_color">#ffffff</color>
+    <color name="user_item_status_color">#b6b6b6</color>
     <color name="tint_color">#70000000</color>
     <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>
@@ -153,11 +160,13 @@
         <item name="android:subtitleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle</item>
     </style>
     <style name="Button.NavBar" parent="android:Widget.Button">
-        <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-light</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">?attr/button_navbar_text</item>
         <item name="android:background">?attr/button_navbar_background</item>
         <item name="android:gravity">left|center_vertical</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:paddingLeft">12dp</item>
     </style>
     <style name="Button.Flat" parent="android:Widget.Button">
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-light</item>

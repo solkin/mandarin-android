@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +22,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.main.views.ContactBadge;
+import com.tomclaw.mandarin.main.views.ContactImage;
 import com.tomclaw.mandarin.util.Logger;
 
 /**
@@ -58,7 +62,8 @@ public class AccountsAdapter extends CursorAdapter implements
     /**
      * Listeners
      */
-    private OnAvatarClickListener onAvatarClickListener;
+    private OnAccountClickListener onAccountClickListener;
+    private OnStatusClickListener onStatusClickListener;
     private OnAccountsStateListener onAccountsStateListener;
 
     public AccountsAdapter(Context context, LoaderManager loaderManager) {
@@ -106,59 +111,68 @@ public class AccountsAdapter extends CursorAdapter implements
             userNick = userId;
         }
         ((TextView) view.findViewById(R.id.user_nick)).setText(userNick);
-        TextView statusTitleView = ((TextView) view.findViewById(R.id.status_title));
-        TextView statusMessageView = ((TextView) view.findViewById(R.id.status_message));
+        ((TextView) view.findViewById(R.id.user_id)).setText(userId);
+        TextView statusMessageView = ((TextView) view.findViewById(R.id.user_status_message));
         ImageView statusImage = ((ImageView) view.findViewById(R.id.status_icon));
         // Statuses.
         final int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
+        final String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
+        final String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
         final boolean isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1;
         final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
         final boolean isConnected = (!isConnecting && statusIndex != StatusUtil.STATUS_OFFLINE);
 
         // Stable status string.
-        String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
-        String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
+        String userStatusTitle = statusTitle;
+        String userStatusMessage = statusMessage;
         if (statusIndex == StatusUtil.STATUS_OFFLINE
-                || TextUtils.equals(statusTitle, statusMessage)) {
+                || TextUtils.equals(userStatusTitle, userStatusMessage)) {
             // User status is offline now or status message is only status title.
             // No status message could be displayed.
-            statusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
-            statusMessage = "";
+            userStatusTitle = StatusUtil.getStatusTitle(accountType, statusIndex);
+            userStatusMessage = "";
         }
 
-        statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
-        statusTitleView.setText(statusTitle);
+        SpannableString statusString;
 
-        int statusMessageHint;
+        String statusMessageHint;
         if (isConnecting) {
             statusImage.setColorFilter(CONNECTING_STATUS_FILTER);
-            statusMessage = "";
-            statusMessageHint = (statusIndex == StatusUtil.STATUS_OFFLINE ?
+            statusString = new SpannableString("");
+            statusMessageHint = context.getString(statusIndex == StatusUtil.STATUS_OFFLINE ?
                     R.string.disconnecting : R.string.connecting);
         } else {
             statusImage.clearColorFilter();
-            if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                statusMessageHint = R.string.click_to_connect_hint;
-            } else {
-                statusMessageHint = R.string.status_message_hint;
-            }
+            statusString = new SpannableString(userStatusTitle + " " + userStatusMessage);
+            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, userStatusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            statusMessageHint = "";
         }
 
-        statusMessageView.setText(statusMessage);
+        statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
+        statusMessageView.setText(statusString);
         statusMessageView.setHint(statusMessageHint);
-
 
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
-        ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.user_badge);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
+        ContactImage userAvatar = (ContactImage) view.findViewById(R.id.user_badge);
+        BitmapCache.getInstance().getBitmapAsync(userAvatar, avatarHash, R.drawable.ic_default_avatar, false);
 
-        contactBadge.setOnClickListener(new View.OnClickListener() {
+        View userContainer = view.findViewById(R.id.user_container);
+        userContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onAvatarClickListener != null) {
+                if (onAccountClickListener != null) {
+                    onAccountClickListener.onAccountClicked(accountDbId, isConnecting);
+                }
+            }
+        });
 
-                    onAvatarClickListener.onAvatarClicked(accountDbId, isConnected);
+        View statusContainer = view.findViewById(R.id.status_container);
+        statusContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onStatusClickListener != null) {
+                    onStatusClickListener.onStatusClicked(accountDbId, accountType, userId, statusIndex, statusTitle, statusMessage, isConnecting);
                 }
             }
         });
@@ -228,17 +242,27 @@ public class AccountsAdapter extends CursorAdapter implements
         onAccountsStateListener.onAccountsStateChanged(state);
     }
 
-    public void setOnAvatarClickListener(OnAvatarClickListener onAvatarClickListener) {
-        this.onAvatarClickListener = onAvatarClickListener;
+    public void setOnAccountClickListener(OnAccountClickListener onAccountClickListener) {
+        this.onAccountClickListener = onAccountClickListener;
+    }
+
+    public void setOnStatusClickListener(OnStatusClickListener onStatusClickListener) {
+        this.onStatusClickListener = onStatusClickListener;
     }
 
     public void setOnAccountsStateListener(OnAccountsStateListener onAccountsStateListener) {
         this.onAccountsStateListener = onAccountsStateListener;
     }
 
-    public interface OnAvatarClickListener {
+    public interface OnAccountClickListener {
 
-        public void onAvatarClicked(int accountDbId, boolean isConnected);
+        void onAccountClicked(int accountDbId, boolean isConnecting);
+    }
+
+    public interface OnStatusClickListener {
+
+        void onStatusClicked(int accountDbId, String accountType, String userId, int statusIndex,
+                             String statusTitle, String statusMessage, boolean isConnecting);
     }
 
     public interface OnAccountsStateListener {

@@ -352,7 +352,7 @@ public class QueryHelper {
                                      int messageType, String cookie, String messageText)
             throws BuddyNotFoundException {
         insertTextMessage(contentResolver, isCollapseMessages, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                messageType, 2, cookie, 0, messageText);
+                messageType, GlobalProvider.HISTORY_MESSAGE_STATE_SENDING, cookie, 0, messageText);
     }
 
     public static void insertTextMessage(ContentResolver contentResolver, boolean isCollapseMessages,
@@ -430,16 +430,18 @@ public class QueryHelper {
                                                  String previewHash, String contentTag)
             throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, 2, cookie, 0, "", contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash, contentTag);
+                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, GlobalProvider.HISTORY_MESSAGE_STATE_SENDING,
+                cookie, 0, "", contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(),
+                name, previewHash, contentTag);
     }
 
     public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
                                                  long time, String originalMessage, Uri uri, String name, int contentType,
                                                  long contentSize, String previewHash, String contentTag) throws BuddyNotFoundException {
         insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, 2, cookie, time, originalMessage, contentType, contentSize,
-                GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(), name, previewHash, contentTag);
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED,
+                cookie, time, originalMessage, contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                uri.toString(), name, previewHash, contentTag);
     }
 
     public static void insertFileMessage(ContentResolver contentResolver, int accountDbId, int buddyDbId,
@@ -554,7 +556,7 @@ public class QueryHelper {
             return;
         }
         // If this is not unknown or error state, we will update only incrementing state.
-        if (messageState > 1) {
+        if (messageState > GlobalProvider.HISTORY_MESSAGE_STATE_ERROR) {
             queryBuilder.and().less(GlobalProvider.HISTORY_MESSAGE_STATE, messageState);
         }
         // Plain message modify by cookies.

@@ -28,7 +28,6 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/message_delivery"
                     android:src="@drawable/ic_delivered"
-                    android:tint="?chat_icons_tint"
                     android:layout_marginTop="6dp"/>
         </LinearLayout>
         <LinearLayout android:orientation="vertical"

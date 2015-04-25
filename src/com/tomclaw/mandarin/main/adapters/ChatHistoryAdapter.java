@@ -44,13 +44,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.layout.chat_item_out_video,
             R.layout.chat_item_out_file
     };
-    private static final int[] MESSAGE_STATES = new int[]{
-            R.drawable.ic_dot,
-            R.drawable.ic_error,
-            R.drawable.ic_dot,
-            R.drawable.ic_sent,
-            R.drawable.ic_delivered
-    };
 
     private TimeHelper timeHelper;
 

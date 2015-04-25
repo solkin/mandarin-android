@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import org.json.JSONException;
@@ -61,7 +62,8 @@ public class IcqMessageRequest extends WimRequest {
         } else if (statusCode >= 460 && statusCode <= 606) {
             // Target error. Mark message as error and delete request from pending operations.
             String requestId = responseObject.getString(REQUEST_ID);
-            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), 1, requestId);
+            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(),
+                    GlobalProvider.HISTORY_MESSAGE_STATE_ERROR, requestId);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or McDonald's.
@@ -77,14 +79,14 @@ public class IcqMessageRequest extends WimRequest {
     @Override
     protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("autoResponse", "false"));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("message", message));
-        params.add(new Pair<String, String>("notifyDelivery", "true"));
-        params.add(new Pair<String, String>("offlineIM", "true"));
-        params.add(new Pair<String, String>("r", cookie));
-        params.add(new Pair<String, String>("t", to));
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("autoResponse", "false"));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("message", message));
+        params.add(new Pair<>("notifyDelivery", "true"));
+        params.add(new Pair<>("offlineIM", "true"));
+        params.add(new Pair<>("r", cookie));
+        params.add(new Pair<>("t", to));
         return params;
     }
 }

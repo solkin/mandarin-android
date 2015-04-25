@@ -111,6 +111,12 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_MESSAGE_TYPE_INCOMING = 1;
     public static final int HISTORY_MESSAGE_TYPE_OUTGOING = 2;
 
+    public static final int HISTORY_MESSAGE_STATE_UNDETERMINED = 0;
+    public static final int HISTORY_MESSAGE_STATE_ERROR = 1;
+    public static final int HISTORY_MESSAGE_STATE_SENDING = 2;
+    public static final int HISTORY_MESSAGE_STATE_SENT = 3;
+    public static final int HISTORY_MESSAGE_STATE_DELIVERED = 4;
+
     public static final int HISTORY_CONTENT_TYPE_TEXT = 0;
     public static final int HISTORY_CONTENT_TYPE_PICTURE = 1;
     public static final int HISTORY_CONTENT_TYPE_VIDEO = 2;

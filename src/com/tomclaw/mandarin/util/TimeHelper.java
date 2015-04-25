@@ -26,7 +26,6 @@ public class TimeHelper {
     private static final DateFormat SIMPLE_TIME_FORMAT_SECONDS = new SimpleDateFormat("mm:ss");
 
 
-
     public TimeHelper(Context context) {
         this.context = context;
     }

@@ -21,7 +21,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     private static final int PROCESS_EVENT_DELAY = 1500;
 
-    private static final String[] EVENTS = new String[] {
+    private static final String[] EVENTS = new String[]{
             "com.android.music.metachanged",
             "com.android.music.playstatechanged",
             "com.android.music.playbackcomplete",
@@ -123,7 +123,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     public IntentFilter getIntentFilter() {
         IntentFilter filter = new IntentFilter();
-        for(String event : EVENTS) {
+        for (String event : EVENTS) {
             filter.addAction(event);
         }
         return filter;

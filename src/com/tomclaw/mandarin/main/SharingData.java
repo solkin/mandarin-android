@@ -28,9 +28,9 @@ public class SharingData implements Serializable {
     public SharingData(String subject, String text, List<Uri> uris) {
         this.subject = subject;
         this.text = text;
-        if(uris != null) {
+        if (uris != null) {
             this.uris = new ArrayList<>();
-            for(Uri uri : uris) {
+            for (Uri uri : uris) {
                 this.uris.add(uri.toString());
             }
         }
@@ -73,9 +73,9 @@ public class SharingData implements Serializable {
     }
 
     public List<Uri> getUri() {
-        if(uris != null) {
+        if (uris != null) {
             List<Uri> uris = new ArrayList<>();
-            for(String uri : this.uris) {
+            for (String uri : this.uris) {
                 uris.add(Uri.parse(uri));
             }
             return uris;

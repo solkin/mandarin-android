@@ -179,11 +179,11 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     private void hideProgressBar() {
         ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.content_view_switcher);
-        if(viewSwitcher.getDisplayedChild() == 0) {
+        if (viewSwitcher.getDisplayedChild() == 0) {
             viewSwitcher.setDisplayedChild(1);
         }
         // Now we means that info received and user ready to modify info.
-        if(!isInfoReceived) {
+        if (!isInfoReceived) {
             isInfoReceived = true;
             invalidateOptionsMenu();
         }

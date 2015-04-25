@@ -110,7 +110,7 @@ public class RequestDispatcher {
         private boolean dispatch(Cursor requestCursor, Cursor accountCursor) {
             try {
                 // Check for we are ready to dispatch.
-                if(requestCursor == null || accountCursor == null) {
+                if (requestCursor == null || accountCursor == null) {
                     Logger.log("Something strange! Request or account cursor is null.");
                     try {
                         // Let's sleep for a while.

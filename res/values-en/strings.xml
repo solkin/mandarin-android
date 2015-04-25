@@ -308,20 +308,33 @@
     <string name="upload_failed">File sending failed</string>
     <string name="file_for">for %s</string>
     <string name="default_locale">US</string>
-    <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">Privacy Policy</a>.</string>
+    <string name="privacy_policy">By continuing, you accept the<a href="http://www.icq.com/legal/privacypolicy/en">
+        Privacy Policy</a>.
+    </string>
     <string name="select_country">Select country</string>
-    <string name="phone_number_faq"><u>Why does Mandarin use my phone number?</u></string>
-    <string name="phone_number_faq_message">Mandarin uses your phone number as your \"identity\". Once you\'ve entered your phone number, you will receive an access code via SMS to activate your account. This is the best way to get fast, secure and simple access to your new or existing account.</string>
+    <string name="phone_number_faq">
+        <u>Why does Mandarin use my phone number?</u>
+    </string>
+    <string name="phone_number_faq_message">Mandarin uses your phone number as your \"identity\". Once you\'ve entered
+        your phone number, you will receive an access code via SMS to activate your account. This is the best way to get
+        fast, secure and simple access to your new or existing account.
+    </string>
     <string name="got_it">Got it</string>
-    <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code below.</string>
+    <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code
+        below.
+    </string>
     <string name="resend_code_time">Resend code (%1$s)</string>
     <string name="resend_code">Resend code</string>
     <string name="checking_phone_number">Checking entered phone number…</string>
     <string name="phone_auth_error">Error</string>
-    <string name="checking_phone_protocol_error">Incorrect phone number. Please, check country code, entered number and try again.</string>
+    <string name="checking_phone_protocol_error">Incorrect phone number. Please, check country code, entered number and
+        try again.
+    </string>
     <string name="phone_auth_network_error">Network error. Check the internet connection and try again.</string>
     <string name="checking_sms_code">Checking entered code…</string>
-    <string name="checking_sms_error">Unable to validate phone number. Check entered code, internet connection and try again.</string>
+    <string name="checking_sms_error">Unable to validate phone number. Check entered code, internet connection and try
+        again.
+    </string>
     <string name="requesting_sms_code">Requesting activation code…</string>
     <string name="file_download_title">Receiving file</string>
     <string name="download_failed">File receiving failed</string>
@@ -368,12 +381,16 @@
     <string name="no_video_picker">No special video choosing application</string>
     <string name="use_phone_number">Login with phone number</string>
     <string name="use_login_and_password">I already have login and password</string>
-    <string name="register_using_phone">Have no account yet?\n<u>Register it using your phone number!</u></string>
+    <string name="register_using_phone">Have no account yet?\n
+        <u>Register it using your phone number!</u>
+    </string>
     <string name="user_info_edit">Edit info</string>
     <string name="edit_user_info_complete">Complete</string>
     <string name="date_not_set">Not set</string>
     <string name="date_format">%1$d.%2$d.%3$d</string>
-    <string name="avatar_changing_error">An error occurred during the installation of the avatar. Please try another image.</string>
+    <string name="avatar_changing_error">An error occurred during the installation of the avatar. Please try another
+        image.
+    </string>
     <string name="reset">Reset</string>
     <string name="buddies">Buddies</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.util.Pair;
-import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import org.json.JSONException;
@@ -9,7 +8,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -62,9 +60,9 @@ public class UpdateInfoRequest extends WimRequest {
     @Override
     protected List<Pair<String, String>> getParams() {
         String genderString;
-        if(gender == 1) {
+        if (gender == 1) {
             genderString = "male";
-        } else if(gender == 2) {
+        } else if (gender == 2) {
             genderString = "female";
         } else {
             genderString = "unknown";
@@ -82,7 +80,7 @@ public class UpdateInfoRequest extends WimRequest {
             params.add(new Pair<>("set", getFieldValue("children", childrenCount)));
             params.add(new Pair<>("set", getFieldValue("smoking", smoking)));
             params.add(new Pair<>("set", getFieldValue("website1", webSite)));
-            if(birthDate > new GregorianCalendar(0, 0, 0).getTimeInMillis()) {
+            if (birthDate > new GregorianCalendar(0, 0, 0).getTimeInMillis()) {
                 params.add(new Pair<>("set", getFieldValue("birthDate", birthDate / 1000)));
             }
             params.add(new Pair<>("set", getFieldValue("aboutMe", aboutMe)));

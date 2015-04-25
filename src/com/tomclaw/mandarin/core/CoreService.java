@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -180,7 +179,7 @@ public class CoreService extends Service {
         // Or maybe this is after-boot event?
         boolean bootEvent = intent.getBooleanExtra(BootCompletedReceiver.EXTRA_BOOT_EVENT, false);
         // Checking for this is boot event and no any active account.
-        if(bootEvent && !sessionHolder.hasActiveAccounts()) {
+        if (bootEvent && !sessionHolder.hasActiveAccounts()) {
             Logger.log("Service started after device boot, but no active accounts. Stopping self.");
             stopSelf();
             System.exit(0);

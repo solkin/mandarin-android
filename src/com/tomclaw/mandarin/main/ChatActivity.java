@@ -695,15 +695,15 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void applySharingData(SharingData sharingData) {
-        if(sharingData != null && sharingData.isValid()) {
-            if(sharingData.getUri() != null) {
+        if (sharingData != null && sharingData.isValid()) {
+            if (sharingData.getUri() != null) {
                 // Process obtained Uris.
-                for(Uri uri : sharingData.getUri()) {
+                for (Uri uri : sharingData.getUri()) {
                     onFilePicked(uri);
                 }
             } else {
                 String share;
-                if(TextUtils.isEmpty(sharingData.getSubject())) {
+                if (TextUtils.isEmpty(sharingData.getSubject())) {
                     share = sharingData.getText();
                 } else {
                     share = sharingData.getSubject().concat("\n").concat(sharingData.getText());

@@ -10,9 +10,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by solkin on 04.08.14.
  */
@@ -38,7 +35,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
         int headerTitle;
         boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
-        if(dialogOpened) {
+        if (dialogOpened) {
             headerTitle = R.string.dialogs;
         } else {
             headerTitle = R.string.buddies;

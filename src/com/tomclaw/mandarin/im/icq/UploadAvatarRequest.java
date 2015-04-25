@@ -90,7 +90,7 @@ public class UploadAvatarRequest extends WimRequest {
     @Override
     protected List<Pair<String, String>> getParams() {
         String typeString;
-        switch(type) {
+        switch (type) {
             case TYPE_BIG_AVATAR: {
                 typeString = "bigBuddyIcon";
                 break;

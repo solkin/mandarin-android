@@ -36,7 +36,7 @@ public class DatePickerView extends TextView {
                 int initMonth = month;
                 int initDay = day;
                 // Check if date set or not. If not set - start choosing from current date.
-                if(isDateSet()) {
+                if (isDateSet()) {
                     initYear = year;
                     initMonth = month;
                     initDay = day;
@@ -56,10 +56,10 @@ public class DatePickerView extends TextView {
                         }, initYear, initMonth, initDay);
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
                 dialog.show();
             }
         });

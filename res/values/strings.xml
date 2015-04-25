@@ -311,22 +311,34 @@
     <string name="upload_failed">Отправка файла не удалась</string>
     <string name="file_for">для %s</string>
     <string name="default_locale">RU</string>
-    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику Конфиденциальности</a>.</string>
+    <string name="privacy_policy">Продолжая, Вы принимаете<a href="http://www.icq.com/legal/privacypolicy/ru">Политику
+        Конфиденциальности</a>.
+    </string>
     <string name="select_country">Выберите страну</string>
-    <string name="phone_number_faq"><u>Для чего Мандарину мой номер телефона?</u></string>
-    <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ для доступа к Вашей новой или существующей учётной записи.</string>
+    <string name="phone_number_faq">
+        <u>Для чего Мандарину мой номер телефона?</u>
+    </string>
+    <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер
+        телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ
+        для доступа к Вашей новой или существующей учётной записи.
+    </string>
     <string name="got_it">Понятно</string>
-    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код ниже.</string>
+    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код
+        ниже.
+    </string>
     <string name="resend_code_time">Переотправить код (%s)</string>
     <string name="resend_code">Переотправить код</string>
     <string name="checking_phone_number">Проверка введённого номера…</string>
     <string name="phone_auth_error">Ошибка</string>
-    <string name="checking_phone_protocol_error">Введён неверный номер телефона. Пожалуйста, проверьте код страны, введённый номер и
+    <string name="checking_phone_protocol_error">Введён неверный номер телефона. Пожалуйста, проверьте код страны,
+        введённый номер и
         повторите попытку.
     </string>
     <string name="phone_auth_network_error">Ошибка сети. Проверьте интернет-соединение и повторите попытку.</string>
     <string name="checking_sms_code">Проверка введённого кода подтверждения…</string>
-    <string name="checking_sms_error">Не удалось проверить номер телефона. Проверьте правильность введённого кода подтверждения, интернет-соединение и повторите попытку.</string>
+    <string name="checking_sms_error">Не удалось проверить номер телефона. Проверьте правильность введённого кода
+        подтверждения, интернет-соединение и повторите попытку.
+    </string>
     <string name="requesting_sms_code">Запрос кода подтверждения…</string>
     <string name="file_download_title">Получение файла</string>
     <string name="download_failed">Получение файла не удалось</string>
@@ -373,7 +385,9 @@
     <string name="no_video_picker">Отсутствует специальное приложение для выбора видео</string>
     <string name="use_phone_number">Войти по номеру телефона</string>
     <string name="use_login_and_password">У меня есть логин и пароль</string>
-    <string name="register_using_phone">Ещё нет учётной записи?\n<u>Зарегистрируйтесь, используя Ваш номер телефона!</u></string>
+    <string name="register_using_phone">Ещё нет учётной записи?\n
+        <u>Зарегистрируйтесь, используя Ваш номер телефона!</u>
+    </string>
     <string name="user_info_edit">Редактировать</string>
     <string name="edit_user_info_complete">Готово</string>
     <string name="date_not_set">Не установлено</string>

@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.nfc.NdefMessage;
@@ -392,6 +391,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         public BuddyInfoRequestTask(AbstractInfoActivity object) {
             super(object);
         }
+
         private String appSession;
 
         @Override
@@ -402,7 +402,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         @Override
         public void onSuccessMain() {
             AbstractInfoActivity activity = getWeakObject();
-            if(activity != null) {
+            if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 int accountDbId = activity.getAccountDbId();
                 String buddyId = activity.getBuddyId();
@@ -421,7 +421,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         public void onFailMain() {
             Logger.log("Unable to publish buddy info request due to exception.");
             AbstractInfoActivity activity = getWeakObject();
-            if(activity != null) {
+            if (activity != null) {
                 activity.onBuddyInfoRequestError();
             }
         }

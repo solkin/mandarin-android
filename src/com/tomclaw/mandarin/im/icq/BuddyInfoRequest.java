@@ -6,7 +6,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -173,7 +176,7 @@ public class BuddyInfoRequest extends WimRequest {
                     }
                     putExtra(intent, R.id.smoking, R.string.smoking, profile.optBoolean("smoking"));
                     putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
-                    if(profile.has("birthDate")) {
+                    if (profile.has("birthDate")) {
                         long birthDate = profile.optLong("birthDate") * 1000;
                         putExtra(intent, R.id.birth_date, R.string.birth_date, DATE_FORMAT.format(birthDate));
                     }

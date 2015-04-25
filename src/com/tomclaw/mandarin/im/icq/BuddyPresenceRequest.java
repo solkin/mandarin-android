@@ -112,7 +112,7 @@ public class BuddyPresenceRequest extends WimRequest {
                             buddyInfo.setHomeAddress(city);
                         }
                     }
-                    if(profile.has("birthDate")) {
+                    if (profile.has("birthDate")) {
                         long birthDate = profile.optLong("birthDate") * 1000;
                         buddyInfo.setBirthDate(birthDate);
                     }

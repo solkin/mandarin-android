@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.icq.IcqEditUserInfoActivity;
 import com.tomclaw.mandarin.main.tasks.AccountsRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
@@ -115,8 +114,8 @@ public class AccountInfoActivity extends AbstractInfoActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_USER_INFO_EDIT) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_USER_INFO_EDIT) {
+            if (resultCode == RESULT_OK) {
                 // Obtain fresh info.
                 String buddyNick = data.getStringExtra(EditUserInfoActivity.USER_NICK);
                 String firstName = data.getStringExtra(EditUserInfoActivity.FIRST_NAME);

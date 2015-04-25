@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.Status;
 import com.tomclaw.mandarin.im.StatusCatalogue;
-import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created with IntelliJ IDEA.

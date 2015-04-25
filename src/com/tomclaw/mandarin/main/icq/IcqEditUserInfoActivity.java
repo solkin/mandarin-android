@@ -2,7 +2,10 @@ package com.tomclaw.mandarin.main.icq;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;

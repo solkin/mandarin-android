@@ -24,7 +24,7 @@
             android:layout_gravity="center_vertical"
             android:background="#5c5c5c"
             android:layout_width="1px"
-            android:layout_height="28dp" />
+            android:layout_height="28dp"/>
 
     <FrameLayout
             android:id="@+id/done_button"

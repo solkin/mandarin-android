@@ -280,7 +280,7 @@ public class QueryHelper {
             }
         } finally {
             // Closing cursor.
-            if(cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }

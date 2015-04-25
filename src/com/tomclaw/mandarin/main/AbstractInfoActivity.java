@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.nfc.NdefMessage;
@@ -206,22 +207,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     }
 
     private void requestBuddyInfo() {
-        try {
-            String appSession = getServiceInteraction().getAppSession();
-            ContentResolver contentResolver = getContentResolver();
-            boolean accountActive = QueryHelper.isAccountActive(contentResolver, accountDbId);
-            if (accountActive) {
-                // Sending protocol buddy info request.
-                RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
-            } else {
-                // Account is not active, so we cannot load more info.
-                hideProgressBar();
-            }
-        } catch (Throwable ex) {
-            Logger.log("Unable to publish buddy info request due to exception.", ex);
-            onBuddyInfoRequestError();
-        }
-
+        TaskExecutor.getInstance().execute(new BuddyInfoRequestTask(this));
     }
 
     protected void refreshBuddyInfo() {
@@ -399,5 +385,45 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    public static class BuddyInfoRequestTask extends ServiceTask<AbstractInfoActivity> {
+
+        public BuddyInfoRequestTask(AbstractInfoActivity object) {
+            super(object);
+        }
+        private String appSession;
+
+        @Override
+        public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+            appSession = interaction.getAppSession();
+        }
+
+        @Override
+        public void onSuccessMain() {
+            AbstractInfoActivity activity = getWeakObject();
+            if(activity != null) {
+                ContentResolver contentResolver = activity.getContentResolver();
+                int accountDbId = activity.getAccountDbId();
+                String buddyId = activity.getBuddyId();
+                boolean accountActive = QueryHelper.isAccountActive(contentResolver, accountDbId);
+                if (accountActive) {
+                    // Sending protocol buddy info request.
+                    RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
+                } else {
+                    // Account is not active, so we cannot load more info.
+                    activity.hideProgressBar();
+                }
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            Logger.log("Unable to publish buddy info request due to exception.");
+            AbstractInfoActivity activity = getWeakObject();
+            if(activity != null) {
+                activity.onBuddyInfoRequestError();
+            }
+        }
     }
 }

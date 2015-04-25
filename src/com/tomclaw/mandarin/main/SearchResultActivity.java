@@ -85,7 +85,7 @@ public class SearchResultActivity extends ChiefActivity {
     }
 
     private void requestItems(final int offset) {
-        TaskExecutor.getInstance().execute(new ServiceTask(this) {
+        TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(this) {
             @Override
             public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                 String appSession = interaction.getAppSession();

@@ -75,7 +75,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         final View.OnClickListener connectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
                     @Override
                     public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                         interaction.connectAccounts();
@@ -86,7 +86,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         final View.OnClickListener disconnectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
                     @Override
                     public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                         interaction.disconnectAccounts();
@@ -255,7 +255,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
             public void onClick(DialogInterface dialog, int which) {
                 final int selectedStatusIndex = spinnerAdapter.getStatus(
                         statusSpinner.getSelectedItemPosition());
-                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
                     @Override
                     public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                         // Trying to connect account.
@@ -319,7 +319,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                         statusSpinner.getSelectedItemPosition());
                 final String statusTitleString = StatusUtil.getStatusTitle(accountType, selectedStatusIndex);
                 final String statusMessageString = statusMessage.getText().toString();
-                TaskExecutor.getInstance().execute(new ServiceTask(activity) {
+                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
                     @Override
                     public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
                         // Trying to update account status.

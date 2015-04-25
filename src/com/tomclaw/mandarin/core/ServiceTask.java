@@ -5,21 +5,22 @@ import com.tomclaw.mandarin.main.ChiefActivity;
 /**
  * Created by Solkin on 08.07.2014.
  */
-public abstract class ServiceTask extends WeakObjectTask<ChiefActivity>
+public abstract class ServiceTask<A extends ChiefActivity> extends WeakObjectTask<A>
         implements ChiefActivity.CoreServiceListener {
 
-    public ServiceTask(ChiefActivity object) {
+    public ServiceTask(A object) {
         super(object);
     }
 
     @Override
     public final void executeBackground() throws Throwable {
-        ChiefActivity activity = getWeakObject();
+        A activity = getWeakObject();
         if (activity != null) {
             ServiceInteraction interaction = activity.getServiceInteraction();
             activity.removeCoreServiceListener(this);
             if (interaction == null || !activity.isCoreServiceReady()) {
                 activity.addCoreServiceListener(this);
+                activity.startCoreService();
                 onServiceRestarting();
             } else {
                 executeServiceTask(interaction);

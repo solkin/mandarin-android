@@ -110,7 +110,6 @@ public class HttpUtil {
         connection.setRequestMethod(POST);
         connection.setDoOutput(true);
         connection.setDoInput(true);
-        connection.setUseCaches(false);
         // Write data into output stream.
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(data);
@@ -125,7 +124,6 @@ public class HttpUtil {
         connection.setRequestMethod(GET);
         connection.setDoInput(true);
         connection.setDoOutput(false);
-        connection.setUseCaches(false);
         connection.setConnectTimeout(TIMEOUT_CONNECTION);
         connection.setReadTimeout(TIMEOUT_SOCKET);
 

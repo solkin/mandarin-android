@@ -52,12 +52,18 @@ public class IcqMessageRequest extends WimRequest {
             // to provide message stated in fetch events.
             QueryHelper.addMessageCookie(getAccountRoot().getContentResolver(), requestId, msgId);
             // Checking for message state.
+            int messageState = GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED;
             for (int i = 0; i < IM_STATES.length; i++) {
                 if (state.equals(IM_STATES[i])) {
-                    QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), i, requestId, msgId);
+                    messageState = i;
                     break;
                 }
             }
+            if (messageState < GlobalProvider.HISTORY_MESSAGE_STATE_SENT
+                    && messageState != GlobalProvider.HISTORY_MESSAGE_STATE_ERROR) {
+                messageState = GlobalProvider.HISTORY_MESSAGE_STATE_SENT;
+            }
+            QueryHelper.updateMessageState(getAccountRoot().getContentResolver(), messageState, requestId, msgId);
             return REQUEST_DELETE;
         } else if (statusCode >= 460 && statusCode <= 606) {
             // Target error. Mark message as error and delete request from pending operations.

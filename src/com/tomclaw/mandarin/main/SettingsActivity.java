@@ -2,9 +2,11 @@ package com.tomclaw.mandarin.main;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -12,6 +14,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.mandarin.core.MusicStateReceiver;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 
@@ -91,6 +94,14 @@ public class SettingsActivity extends Activity {
                 Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
                 startActivity(intent);
+            } else if (TextUtils.equals(key, getString(R.string.pref_autorun))) {
+                // Enable or disable application start after boot.
+                int state = PreferenceHelper.isAutorun(context) ?
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+                ComponentName component = new ComponentName(context, BootCompletedReceiver.class);
+                getPackageManager().setComponentEnabledSetting(component, state,
+                        PackageManager.DONT_KILL_APP);
             }
         }
     }

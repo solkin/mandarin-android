@@ -92,17 +92,6 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="right">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/inc_time"
-                    android:layout_gravity="right"
-                    android:textColor="?chat_time_color"/>
-        </LinearLayout>
+        <include layout="@layout/time_inc_block"/>
     </LinearLayout>
 </com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView>

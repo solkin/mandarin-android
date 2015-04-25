@@ -59,7 +59,7 @@
         <item name="header_line_color">#d9d9d9</item>
 
         <item name="chat_date_color">#FF111111</item>
-        <item name="chat_time_color">#FF111111</item>
+        <item name="chat_time_color">#FF727272</item>
         <item name="chat_text_color">#FF111111</item>
 
         <item name="chat_date_back">@drawable/ic_date_back_light</item>

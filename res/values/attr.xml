@@ -8,6 +8,7 @@
     <attr name="chat_date_color" format="color|reference"/>
     <attr name="chat_time_color" format="color|reference"/>
     <attr name="chat_text_color" format="color|reference"/>
+    <attr name="chat_delivery_alpha" format="float|reference"/>
 
     <attr name="chat_background_doodle" format="reference"/>
 

@@ -61,6 +61,7 @@
         <item name="chat_date_color">#FF111111</item>
         <item name="chat_time_color">#FF727272</item>
         <item name="chat_text_color">#FF111111</item>
+        <item name="chat_delivery_alpha">1</item>
 
         <item name="chat_date_back">@drawable/ic_date_back_light</item>
         <item name="chat_inc_bubble">@drawable/ic_inc_bubble_light</item>
@@ -106,8 +107,9 @@
         <item name="header_line_color">#90444444</item>
 
         <item name="chat_date_color">#FFDADADA</item>
-        <item name="chat_time_color">#FFDADADA</item>
+        <item name="chat_time_color">#CCDADADA</item>
         <item name="chat_text_color">#FFDADADA</item>
+        <item name="chat_delivery_alpha">0.7</item>
 
         <item name="chat_date_back">@drawable/ic_date_back_dark</item>
         <item name="chat_inc_bubble">@drawable/ic_inc_bubble_dark</item>

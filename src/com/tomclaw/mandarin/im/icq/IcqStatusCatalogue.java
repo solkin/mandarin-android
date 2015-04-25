@@ -28,7 +28,6 @@ public class IcqStatusCatalogue extends StatusCatalogue {
         for (int index = 0; index < statusValues.length; index++) {
             Status status = new Status(statusDrawables.getResourceId(index, R.drawable.status_icq_offline),
                     statusTitles[index], statusValues[index]);
-            Logger.log("status value: " + status.getValue());
             indexMap.put(statusValues[index], index);
             statusList.add(index, status);
             if (index < statusConnect.length) {

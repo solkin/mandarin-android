@@ -1263,7 +1263,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopDownloadingTask extends ServiceTask {
+    public class StopDownloadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1293,7 +1293,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopUploadingTask extends ServiceTask {
+    public class StopUploadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;

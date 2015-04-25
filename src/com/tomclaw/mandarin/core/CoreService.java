@@ -35,6 +35,8 @@ public class CoreService extends Service {
     public static final int STATE_DOWN = 0x00;
     public static final int STATE_LOADING = 0x01;
     public static final int STATE_UP = 0x02;
+    public static final String EXTRA_RESTART_FLAG = "restart_flag";
+    public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
 
     public static final int RESTART_TIMEOUT = 5000;
 
@@ -128,6 +130,11 @@ public class CoreService extends Service {
         downloadDispatcher.startObservation();
         uploadDispatcher.startObservation();
         historyDispatcher.startObservation();
+        // Register broadcast receivers.
+        MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
+        registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
+        ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
+        registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
         // Service is now ready.
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");
@@ -141,7 +148,7 @@ public class CoreService extends Service {
         if (intent != null) {
             onIntentReceived(intent);
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     private void onIntentReceived(Intent intent) {
@@ -166,17 +173,26 @@ public class CoreService extends Service {
             uploadDispatcher.backgroundQueueNotify();
         }
         // Read messages event maybe?
-        boolean isReadMessages = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
-        if (isReadMessages) {
+        boolean readMessagesEvent = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
+        if (readMessagesEvent) {
             QueryHelper.readAllMessages(getContentResolver());
+        }
+        // Or maybe this is after-boot event?
+        boolean bootEvent = intent.getBooleanExtra(BootCompletedReceiver.EXTRA_BOOT_EVENT, false);
+        // Checking for this is boot event and no any active account.
+        if(bootEvent && !sessionHolder.hasActiveAccounts()) {
+            Logger.log("Service started after device boot, but no active accounts. Stopping self.");
+            stopSelf();
+            System.exit(0);
         }
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        if (Settings.FORCE_RESTART || Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Intent restartServiceIntent = new Intent(this, CoreService.class);
-
+        // Schedule restarting.
+        if (Settings.FORCE_RESTART && sessionHolder.hasActiveAccounts()) {
+            Intent restartServiceIntent = new Intent(this, CoreService.class)
+                    .putExtra(EXTRA_RESTART_FLAG, true);
             PendingIntent restartServicePendingIntent = PendingIntent.getService(
                     this, 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
             AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

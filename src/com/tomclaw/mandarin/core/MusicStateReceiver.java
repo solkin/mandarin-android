@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
@@ -20,10 +21,52 @@ public class MusicStateReceiver extends BroadcastReceiver {
 
     private static final int PROCESS_EVENT_DELAY = 1500;
 
+    private static final String[] EVENTS = new String[] {
+            "com.android.music.metachanged",
+            "com.android.music.playstatechanged",
+            "com.android.music.playbackcomplete",
+            "com.android.music.queuechanged",
+
+            "com.sec.android.app.music.metachanged",
+            "com.sec.android.app.music.playstatechanged",
+            "com.sec.android.app.music.playbackcomplete",
+            "com.sec.android.app.music.queuechanged",
+
+            "com.rdio.android.metachanged",
+            "com.rdio.android.playstatechanged",
+            "com.rdio.android.playbackcomplete",
+            "com.rdio.android.queuechanged",
+
+            "com.andrew.apollo.metachanged",
+            "com.andrew.apollo.playstatechanged",
+            "com.andrew.apollo.playbackcomplete",
+            "com.andrew.apollo.queuechanged",
+
+            "com.htc.music.metachanged",
+            "com.htc.music.playstatechanged",
+            "com.htc.music.playbackcomplete",
+            "com.htc.music.queuechanged",
+
+            "com.miui.player.metachanged",
+            "com.miui.player.playstatechanged",
+            "com.miui.player.playbackcomplete",
+            "com.miui.player.queuechanged",
+
+            "com.sonyericsson.music.metachanged",
+            "com.sonyericsson.music.playstatechanged",
+            "com.sonyericsson.music.playbackcomplete",
+            "com.sonyericsson.music.queuechanged",
+
+            "com.samsung.sec.android.MusicPlayer.metachanged",
+            "com.samsung.sec.android.MusicPlayer.playstatechanged",
+            "com.samsung.sec.android.MusicPlayer.playbackcomplete",
+            "com.samsung.sec.android.MusicPlayer.queuechanged"
+    };
+
     @Override
     public void onReceive(Context context, final Intent intent) {
         if (PreferenceHelper.isMusicAutoStatus(context)) {
-            final WeakReference<Context> contextWeakReference = new WeakReference<Context>(context);
+            final WeakReference<Context> contextWeakReference = new WeakReference<>(context);
             MainExecutor.executeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -76,5 +119,13 @@ public class MusicStateReceiver extends BroadcastReceiver {
     public static boolean isMusicActive(Context context) {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         return audioManager.isMusicActive();
+    }
+
+    public IntentFilter getIntentFilter() {
+        IntentFilter filter = new IntentFilter();
+        for(String event : EVENTS) {
+            filter.addAction(event);
+        }
+        return filter;
     }
 }

@@ -143,4 +143,14 @@ public class SessionHolder {
         }
         throw new AccountNotFoundException();
     }
+
+    public boolean hasActiveAccounts() {
+        for (AccountRoot accountRoot : accountRootList) {
+            // Checking for account is in stable online.
+            if (!accountRoot.isOffline()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

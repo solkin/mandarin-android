@@ -40,7 +40,7 @@ public abstract class ChiefActivity extends Activity {
         Logger.log("ChiefActivity onCreate");
         super.onCreate(savedInstanceState);
 
-        coreServiceListeners = new ArrayList<CoreServiceListener>();
+        coreServiceListeners = new ArrayList<>();
 
         isDarkTheme = PreferenceHelper.isDarkTheme(this);
         updateTheme();
@@ -111,7 +111,8 @@ public abstract class ChiefActivity extends Activity {
         /** Checking for core service is down **/
         if (!checkCoreService()) {
             /** Starting service **/
-            Intent intent = new Intent(this, CoreService.class);
+            Intent intent = new Intent(this, CoreService.class)
+                    .putExtra(CoreService.EXTRA_ACTIVITY_START_EVENT, true);
             startService(intent);
         }
         /** Bind in any case **/

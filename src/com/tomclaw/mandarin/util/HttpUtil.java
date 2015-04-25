@@ -128,6 +128,8 @@ public class HttpUtil {
         connection.setDoInput(true);
         connection.setDoOutput(false);
         connection.setUseCaches(false);
+        connection.setConnectTimeout(TIMEOUT_CONNECTION);
+        connection.setReadTimeout(TIMEOUT_SOCKET);
 
         return getResponse(connection);
     }

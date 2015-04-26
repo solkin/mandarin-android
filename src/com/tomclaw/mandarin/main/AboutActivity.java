@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -50,7 +50,7 @@ public class AboutActivity extends ChiefActivity {
             }
         });
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setIcon(R.drawable.ic_ab_logo);
     }

@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main.views;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,7 +48,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         this.activity = activity;
         setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        final ActionBar actionBar = activity.getActionBar();
+        final ActionBar actionBar = activity.getSupportActionBar();
         drawerToggle = new ActionBarDrawerToggle(activity, this,
                 R.drawable.ic_drawer, R.string.dialogs, R.string.accounts) {
 

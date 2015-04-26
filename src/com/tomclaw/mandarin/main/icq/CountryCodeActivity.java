@@ -1,12 +1,13 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.*;
+import android.support.v7.widget.SearchView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.CountriesProvider;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * Created by Solkin on 02.10.2014.
  */
-public class CountryCodeActivity extends Activity {
+public class CountryCodeActivity extends ActionBarActivity {
 
     public static String EXTRA_COUNTRY_SHORT_NAME = "country_short_name";
 
@@ -29,13 +30,13 @@ public class CountryCodeActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         setTheme(PreferenceHelper.isDarkTheme(this) ?
                 R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
 
+        super.onCreate(savedInstanceState);
+
         // Initialize action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);

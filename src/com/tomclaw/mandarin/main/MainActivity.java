@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -54,7 +54,7 @@ public class MainActivity extends ChiefActivity {
 
         setContentView(R.layout.main_activity);
 
-        final ActionBar bar = getActionBar();
+        final ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
         bar.setTitle(R.string.dialogs);
@@ -194,7 +194,7 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
-        getActionBar().setTitle(title);
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -231,7 +231,7 @@ public class MainActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<Integer, Integer>();
+            selectionHelper = new SelectionHelper<>();
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
@@ -282,7 +282,7 @@ public class MainActivity extends ChiefActivity {
 
         private BuddyInfoAccountCallback(Context context, NfcBuddyInfo nfcBuddyInfo) {
             this.nfcBuddyInfo = nfcBuddyInfo;
-            this.weakContext = new WeakReference<Context>(context);
+            this.weakContext = new WeakReference<>(context);
         }
 
         @Override

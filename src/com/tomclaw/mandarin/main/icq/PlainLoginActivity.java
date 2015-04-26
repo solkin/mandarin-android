@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -45,9 +45,8 @@ public class PlainLoginActivity extends ChiefActivity {
 
         setContentView(R.layout.icq_uin_login);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
         View view = findViewById(R.id.register_using_phone_view);

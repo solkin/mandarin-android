@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -62,7 +62,7 @@ public class SmsCodeActivity extends ChiefActivity {
         setContentView(R.layout.sms_code_activity);
 
         // Initialize action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(false);

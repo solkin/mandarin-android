@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,12 +25,12 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         super.onCreate(savedInstanceState);
         // We want to receive service state notifications.
         addCoreServiceListener(this);
-        getActionBar().hide();
+        getSupportActionBar().hide();
     }
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setTitle(R.string.account);
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());

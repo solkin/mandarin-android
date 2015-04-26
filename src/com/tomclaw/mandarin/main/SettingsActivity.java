@@ -1,15 +1,15 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.support.v4.preference.PreferenceFragment;
+import android.support.v7.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -24,28 +24,28 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
  * Date: 9/30/13
  * Time: 7:37 PM
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
 
     private SharedPreferences preferences;
     private OnSettingsChangedListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         setTheme(PreferenceHelper.isDarkTheme(this) ?
                 R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+
+        super.onCreate(savedInstanceState);
 
         listener = new OnSettingsChangedListener();
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(listener);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setIcon(R.drawable.ic_ab_logo);
 
         // Display the fragment as the main content.
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
     }
@@ -93,6 +93,7 @@ public class SettingsActivity extends Activity {
             } else if (TextUtils.equals(key, getString(R.string.pref_dark_theme))) {
                 Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
+                overridePendingTransition(0, 0);
                 startActivity(intent);
             } else if (TextUtils.equals(key, getString(R.string.pref_autorun))) {
                 // Enable or disable application start after boot.

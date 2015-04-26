@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -100,7 +100,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         Logger.log("AccountInfoActivity onCreate");
 
         // Preparing for action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);

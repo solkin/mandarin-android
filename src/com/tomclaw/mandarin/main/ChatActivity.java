@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.*;
+import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -79,7 +82,7 @@ public class ChatActivity extends ChiefActivity {
         setContentView(R.layout.chat_activity);
 
         // Initialize action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setTitle(R.string.dialogs);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
@@ -625,7 +628,7 @@ public class ChatActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ActionBar actionBar = getActionBar();
+                        ActionBar actionBar = getSupportActionBar();
                         actionBar.setTitle(title);
                         actionBar.setSubtitle(subtitle);
                         actionBar.setIcon(icon);

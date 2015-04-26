@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -31,7 +32,7 @@ import java.util.HashMap;
 /**
  * Created by Solkin on 04.11.2014.
  */
-public class PhotoPickerActivity extends Activity {
+public class PhotoPickerActivity extends ActionBarActivity {
 
     private static final int PICK_IMAGE_RESULT_CODE = 4;
     public static final String SELECTED_ENTRIES = "selected_entries";
@@ -58,15 +59,15 @@ public class PhotoPickerActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         setTheme(PreferenceHelper.isDarkTheme(this) ?
                 R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.photo_picker_activity);
 
         // Preparing for action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
@@ -106,7 +107,7 @@ public class PhotoPickerActivity extends Activity {
                         return;
                     }
                     selectedAlbum = albums.get(i);
-                    getActionBar().setTitle(selectedAlbum.bucketName);
+                    getSupportActionBar().setTitle(selectedAlbum.bucketName);
                     mediaGrid.setAdapter(new PhotosAdapter(getBaseContext(), selectedAlbum));
                     fixLayoutInternal();
                 } else {
@@ -187,7 +188,7 @@ public class PhotoPickerActivity extends Activity {
         if (selectedAlbum != null) {
             selectedAlbum = null;
             mediaGrid.setAdapter(new AlbumsAdapter(this, albums));
-            getActionBar().setTitle(getString(R.string.gallery));
+            getSupportActionBar().setTitle(getString(R.string.gallery));
             fixLayoutInternal();
             return;
         }

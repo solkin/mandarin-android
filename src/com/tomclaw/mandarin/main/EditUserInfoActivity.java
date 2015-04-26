@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -77,7 +77,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         setContentView(getLayout());
 
         // Preparing for action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);

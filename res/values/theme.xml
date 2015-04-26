@@ -70,7 +70,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
-        <item name="android:windowTranslucentNavigation">false</item>
 
         <!-- Dropdown Spinner Attributes -->
         <item name="actionDropDownStyle">@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar</item>
@@ -130,6 +129,8 @@
         <item name="windowActionModeOverlay">true</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
+        <item name="drop_down_style">?spinnerStyle</item>
 
         <item name="android:windowBackground">@color/background_tint_color</item>
         <item name="android:colorBackgroundCacheHint">@null</item>

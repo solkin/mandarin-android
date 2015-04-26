@@ -2,6 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -50,7 +51,7 @@
                 android:textSize="18sp"
                 android:padding="10dp"
                 android:gravity="center"
-                style="?android:spinnerStyle"
+                style="?drop_down_style"
                 android:layout_weight="0.5"/>
         <Spinner
                 android:layout_width="match_parent"
@@ -60,7 +61,6 @@
                 android:padding="10dp"
                 android:gravity="center"
                 android:fontFamily="sans-serif-light"
-                style="?android:spinnerStyle"
                 android:layout_weight="0.5"/>
     </LinearLayout>
     <CheckBox

@@ -67,7 +67,7 @@
                             android:id="@+id/friendly_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textCapWords"
+                            android:inputType="textCapWords|textPersonName|textNoSuggestions"
                             style="@style/UserInfoEditField"/>
                     <LinearLayout
                             android:layout_width="match_parent"
@@ -88,7 +88,7 @@
                                     android:id="@+id/first_name"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="textCapWords"
+                                    android:inputType="textCapWords|textPersonName|textNoSuggestions"
                                     style="@style/UserInfoEditField"/>
                         </LinearLayout>
                         <LinearLayout
@@ -105,7 +105,7 @@
                                     android:id="@+id/last_name"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="textCapWords"
+                                    android:inputType="textCapWords|textPersonName|textNoSuggestions"
                                     style="@style/UserInfoEditField"/>
                         </LinearLayout>
                     </LinearLayout>
@@ -130,8 +130,7 @@
                                     android:id="@+id/gender_selector"
                                     android:textSize="16sp"
                                     android:gravity="left"
-                                    android:fontFamily="sans-serif"
-                                    style="?android:spinnerStyle"/>
+                                    android:fontFamily="sans-serif"/>
                         </LinearLayout>
                         <LinearLayout
                                 android:layout_width="match_parent"
@@ -150,7 +149,7 @@
                                     android:textSize="16sp"
                                     android:gravity="left"
                                     android:fontFamily="sans-serif"
-                                    style="?android:spinnerStyle"/>
+                                    style="?drop_down_style"/>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -174,8 +173,7 @@
                                     android:id="@+id/children_selector"
                                     android:textSize="16sp"
                                     android:gravity="left"
-                                    android:fontFamily="sans-serif"
-                                    style="?android:spinnerStyle"/>
+                                    android:fontFamily="sans-serif"/>
                         </LinearLayout>
                         <LinearLayout
                                 android:layout_width="match_parent"
@@ -193,8 +191,7 @@
                                     android:id="@+id/smoking_selector"
                                     android:textSize="16sp"
                                     android:gravity="left"
-                                    android:fontFamily="sans-serif"
-                                    style="?android:spinnerStyle"/>
+                                    android:fontFamily="sans-serif"/>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout

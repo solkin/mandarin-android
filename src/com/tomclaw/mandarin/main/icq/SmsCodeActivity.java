@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.support.v7.app.ActionBar;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;

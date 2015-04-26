@@ -57,13 +57,19 @@
     <color name="info_block_text_color">#ffffff</color>
     <color name="info_block_divider_color">#141414</color>
     <color name="dark_color">#222222</color>
+
     <style name="Theme.Mandarin.Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorAccent">@color/orange_normal</item>
         <item name="colorPrimary">@color/dark_color</item>
+        <item name="colorPrimaryDark">@color/dark_color</item>
 
         <item name="android:actionBarStyle">@style/ActionBar.Theme.Light</item>
 
         <item name="android:windowBackground">@color/light_back_color</item>
+
+        <item name="drop_down_style">?spinnerStyle</item>
+
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
         <item name="header_head_color">#d9d9d9</item>
         <item name="header_back_color">#e6e6e6</item>
@@ -105,9 +111,11 @@
         <item name="info_item_title_text_color">#727272</item>
         <item name="info_item_value_text_color">#222222</item>
     </style>
+
     <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat">
         <item name="colorAccent">@color/orange_normal</item>
         <item name="colorPrimary">@color/dark_color</item>
+        <item name="colorPrimaryDark">@color/dark_color</item>
 
         <item name="actionBarStyle">@style/ActionBar.Theme.Opaque.Translucent</item>
 
@@ -156,17 +164,26 @@
         <item name="info_item_title_text_color">#b6b6b6</item>
         <item name="info_item_value_text_color">#ffffff</item>
     </style>
+
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
     <style name="ActionBar.Theme.Light" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
     </style>
+
     <style name="ActionBar.Theme.Opaque" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title</item>
         <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle</item>
     </style>
+
     <style name="ActionBar.Theme.Opaque.Translucent" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/tint_color</item>
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title</item>
         <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle</item>
     </style>
+
     <style name="Button.NavBar" parent="android:Widget.Button">
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
         <item name="android:textSize">14sp</item>
@@ -176,22 +193,27 @@
         <item name="android:drawablePadding">12dp</item>
         <item name="android:paddingLeft">12dp</item>
     </style>
+
     <style name="Button.Flat" parent="android:Widget.Button">
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-light</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
     </style>
+
     <style name="Button.Green" parent="Button.Flat">
         <item name="android:background">@drawable/green_button_selector</item>
     </style>
+
     <style name="Button.Blue" parent="Button.Flat">
         <item name="android:background">@drawable/blue_button_selector</item>
     </style>
+
     <style name="Button.Orange" parent="Button.Flat">
         <item name="android:background">@drawable/orange_button_selector</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
     </style>
+
     <style name="Button.White" parent="Button.Flat">
         <item name="android:background">@drawable/white_button_selector</item>
         <item name="android:textColor">#454545</item>
@@ -340,10 +362,6 @@
     <style name="UserInfoEditField">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/edit_text_light_selector</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
         <item name="android:textSize">16sp</item>
     </style>
 </resources>

@@ -38,16 +38,7 @@
     </orderEntry>
     <orderEntry type="module" module-name="smileys-mandarin" />
     <orderEntry type="module" module-name="sticky-list-headers" />
-    <orderEntry type="module" module-name="appcompat" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/appcompat/libs/android-support-v7-appcompat.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="preferencefragment" />
+    <orderEntry type="module" module-name="appcompat" />
   </component>
 </module>

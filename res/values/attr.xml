@@ -40,6 +40,8 @@
     <attr name="info_item_title_text_color" format="color|reference"/>
     <attr name="info_item_value_text_color" format="color|reference"/>
 
+    <attr name="drop_down_style" format="reference"/>
+
     <declare-styleable name="PreviewImageView">
         <attr name="preview_placeholder_tint" format="color|reference"/>
     </declare-styleable>

@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.main;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +17,7 @@ import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -180,7 +183,8 @@ public class ChatActivity extends ChiefActivity {
                     } else {
                         smileysFooter.setVisibility(LinearLayout.VISIBLE);
                     }
-                    popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, 0);
+
+                    popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, getSoftButtonsBarHeight());
                 }
             }
         });
@@ -215,6 +219,23 @@ public class ChatActivity extends ChiefActivity {
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
         Logger.log("chat activity start time: " + (System.currentTimeMillis() - time));
+    }
+
+    @SuppressLint("NewApi")
+    private int getSoftButtonsBarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight) {
+                return realHeight - usableHeight;
+            } else {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private String getMessageText() {
@@ -292,7 +313,7 @@ public class ChatActivity extends ChiefActivity {
             previousHeightDifference = heightDifference;
             if (heightDifference > minKeyboardHeight) {
                 isKeyboardVisible = true;
-                updateKeyboardHeight(heightDifference);
+                updateKeyboardHeight(heightDifference - getSoftButtonsBarHeight());
             } else {
                 isKeyboardVisible = false;
             }
@@ -635,10 +656,6 @@ public class ChatActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        /*ActionBar actionBar = getSupportActionBar();
-                        actionBar.setTitle(title);
-                        actionBar.setSubtitle(subtitle);
-                        actionBar.setIcon(icon);*/
                         buddyNick.setText(title);
                         buddyStatusMessage.setText(subtitle);
                         buddyStatusIcon.setImageResource(icon);

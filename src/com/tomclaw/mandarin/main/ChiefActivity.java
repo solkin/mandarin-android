@@ -5,7 +5,7 @@ import android.app.ActivityManager;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -21,7 +21,7 @@ import java.util.List;
  * Date: 09.01.13
  * Time: 20:22
  */
-public abstract class ChiefActivity extends ActionBarActivity {
+public abstract class ChiefActivity extends AppCompatActivity {
 
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;

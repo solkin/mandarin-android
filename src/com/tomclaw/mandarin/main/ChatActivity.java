@@ -51,6 +51,9 @@ public class ChatActivity extends ChiefActivity {
     private ChatListView chatList;
     private ChatHistoryAdapter chatHistoryAdapter;
     private EditText messageText;
+    private TextView buddyNick;
+    private TextView buddyStatusMessage;
+    private ImageView buddyStatusIcon;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -83,10 +86,12 @@ public class ChatActivity extends ChiefActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        buddyNick = (TextView) toolbar.findViewById(R.id.buddy_nick);
+        buddyStatusMessage = (TextView) toolbar.findViewById(R.id.buddy_status_message);
+        buddyStatusIcon = (ImageView) toolbar.findViewById(R.id.buddy_status_icon);
+
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();
-        bar.setTitle(R.string.dialogs);
-        bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
 
@@ -630,10 +635,13 @@ public class ChatActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ActionBar actionBar = getSupportActionBar();
+                        /*ActionBar actionBar = getSupportActionBar();
                         actionBar.setTitle(title);
                         actionBar.setSubtitle(subtitle);
-                        actionBar.setIcon(icon);
+                        actionBar.setIcon(icon);*/
+                        buddyNick.setText(title);
+                        buddyStatusMessage.setText(subtitle);
+                        buddyStatusIcon.setImageResource(icon);
                     }
                 });
             }

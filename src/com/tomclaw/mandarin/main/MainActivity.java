@@ -35,6 +35,7 @@ public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
+    private Toolbar toolbar;
 
     private AccountsDrawerLayout drawerLayout;
 
@@ -55,13 +56,15 @@ public class MainActivity extends ChiefActivity {
 
         setContentView(R.layout.main_activity);
 
-        final ActionBar bar = getSupportActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setTitle(R.string.dialogs);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.dialogs);
 
         drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.init(this);
+        drawerLayout.init(this, toolbar);
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
@@ -195,7 +198,7 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
-        getSupportActionBar().setTitle(title);
+        toolbar.setTitle(title);
     }
 
     @Override

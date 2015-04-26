@@ -11,12 +11,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.*;
 import android.widget.*;
+import android.support.v7.widget.Toolbar;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 /**
  * Created by Solkin on 04.11.2014.
  */
-public class PhotoPickerActivity extends ActionBarActivity {
+public class PhotoPickerActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_RESULT_CODE = 4;
     public static final String SELECTED_ENTRIES = "selected_entries";
@@ -66,13 +67,14 @@ public class PhotoPickerActivity extends ActionBarActivity {
 
         setContentView(R.layout.photo_picker_activity);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Preparing for action bar.
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
-            bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(R.string.gallery);
-            bar.setIcon(R.drawable.ic_ab_logo);
         }
 
         albums = loadGalleryPhotosAlbums();

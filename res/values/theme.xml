@@ -56,20 +56,27 @@
     <color name="info_block_background_color">#222222</color>
     <color name="info_block_text_color">#ffffff</color>
     <color name="info_block_divider_color">#141414</color>
-    <color name="dark_color">#222222</color>
+    <color name="accent_color">@color/orange_normal</color>
+    <color name="primary_color">#222222</color>
+    <color name="primary_dark_color">#0c0c0c</color>
 
     <style name="Theme.Mandarin.Light" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorAccent">@color/orange_normal</item>
-        <item name="colorPrimary">@color/dark_color</item>
-        <item name="colorPrimaryDark">@color/dark_color</item>
-
-        <item name="android:actionBarStyle">@style/ActionBar.Theme.Light</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryDark">@color/primary_dark_color</item>
 
         <item name="android:windowBackground">@color/light_back_color</item>
 
-        <item name="drop_down_style">?spinnerStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <!-- Dropdown Spinner Attributes -->
+        <item name="actionDropDownStyle">@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
+        <item name="drop_down_style">?spinnerStyle</item>
 
         <item name="header_head_color">#d9d9d9</item>
         <item name="header_back_color">#e6e6e6</item>
@@ -113,11 +120,15 @@
     </style>
 
     <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat">
-        <item name="colorAccent">@color/orange_normal</item>
-        <item name="colorPrimary">@color/dark_color</item>
-        <item name="colorPrimaryDark">@color/dark_color</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryDark">@color/primary_dark_color</item>
 
-        <item name="actionBarStyle">@style/ActionBar.Theme.Opaque.Translucent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
         <item name="android:windowBackground">@color/background_tint_color</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
@@ -163,6 +174,13 @@
         <item name="block_info_divider_background">#aa141414</item>
         <item name="info_item_title_text_color">#b6b6b6</item>
         <item name="info_item_value_text_color">#ffffff</item>
+    </style>
+
+    <style name="Toolbar.Theme" parent="Widget.AppCompat.Toolbar">
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
@@ -231,8 +249,13 @@
         <item name="android:textColor">?chat_text_color</item>
     </style>
     <style name="Theme.Mandarin.Intro" parent="Theme.AppCompat">
-        <item name="actionBarStyle">@style/ActionBar.Theme.Opaque.Intro</item>
         <item name="windowActionBarOverlay">true</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryDark">@color/primary_dark_color</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
     <style name="ActionBar.Theme.Opaque.Intro" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="windowActionBarOverlay">true</item>

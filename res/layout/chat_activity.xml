@@ -6,6 +6,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/chat_root">
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                style="@style/Toolbar.Theme"/>
+
     <com.tomclaw.mandarin.main.ChatListView
             android:layout_width="match_parent"
             android:layout_height="0dip"

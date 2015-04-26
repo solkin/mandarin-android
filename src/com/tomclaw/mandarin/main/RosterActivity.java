@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.*;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.*;
 import android.widget.*;
@@ -44,6 +46,9 @@ public class RosterActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.roster_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);

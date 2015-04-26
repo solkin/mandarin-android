@@ -13,7 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -30,7 +31,7 @@ import java.util.*;
  * File picker activity
  * Created by solkin on 05.11.14.
  */
-public class DocumentPickerActivity extends ActionBarActivity {
+public class DocumentPickerActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_RESULT_CODE = 4;
 
@@ -102,14 +103,17 @@ public class DocumentPickerActivity extends ActionBarActivity {
             registerReceiver(receiver, filter);
         }
 
+        setContentView(R.layout.document_pick_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getString(R.string.select_file));
-            actionBar.setIcon(R.drawable.ic_ab_logo);
         }
 
-        setContentView(R.layout.document_pick_layout);
         listAdapter = new ListAdapter(this);
         emptyView = (TextView) findViewById(R.id.searchEmptyView);
         emptyView.setOnTouchListener(new View.OnTouchListener() {

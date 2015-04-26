@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main;
 import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,11 +41,14 @@ public class SearchActivity extends ChiefActivity {
             return;
         }
 
+        setContentView(R.layout.search_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-
-        setContentView(R.layout.search_activity);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.search_gender_spinner_item,
                 getResources().getStringArray(R.array.gender_search_spinner_strings));

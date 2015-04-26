@@ -7,7 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -31,7 +32,7 @@ import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
 /**
  * Created by Solkin on 28.09.2014.
  */
-public class PhoneLoginActivity extends ActionBarActivity {
+public class PhoneLoginActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_COUNTRY = 1;
     private static final int REQUEST_SMS_NUMBER = 2;
@@ -51,6 +52,9 @@ public class PhoneLoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.icq_phone_login);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();

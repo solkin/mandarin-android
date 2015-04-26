@@ -1,8 +1,8 @@
 package com.tomclaw.mandarin.main;
 
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -79,6 +79,9 @@ public class ChatActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.chat_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();

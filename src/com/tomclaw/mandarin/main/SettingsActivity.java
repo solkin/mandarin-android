@@ -9,7 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -24,7 +25,7 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
  * Date: 9/30/13
  * Time: 7:37 PM
  */
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private OnSettingsChangedListener listener;
@@ -36,18 +37,17 @@ public class SettingsActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.settings_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         listener = new OnSettingsChangedListener();
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(listener);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setIcon(R.drawable.ic_ab_logo);
-
-        // Display the fragment as the main content.
-        getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment())
-                .commit();
     }
 
     @Override

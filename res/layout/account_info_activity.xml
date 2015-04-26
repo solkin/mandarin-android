@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/info_block_background_color">
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        <include layout="@layout/info_header"/>
-        <include layout="@layout/info_status"/>
-        <include layout="@layout/info_block"/>
+            style="@style/Toolbar.Theme"/>
+    <ScrollView android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/info_block_background_color">
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-            <ProgressBar
-                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <include layout="@layout/info_header"/>
+            <include layout="@layout/info_status"/>
+            <include layout="@layout/info_block"/>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/progress_bar"
-                    android:padding="20dp"/>
+                    android:gravity="center">
+                <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/progress_bar"
+                        android:padding="20dp"/>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v7.widget.Toolbar;
 import android.text.*;
 import android.text.style.UnderlineSpan;
 import android.view.KeyEvent;
@@ -60,6 +61,9 @@ public class SmsCodeActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.sms_code_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();

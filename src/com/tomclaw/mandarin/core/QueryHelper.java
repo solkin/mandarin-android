@@ -674,6 +674,25 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static void fastReadMessages(ContentResolver contentResolver, int buddyDbId,
+                                    long messageDbIdFirst, long messageDbIdLast) {
+
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                .and().moreOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdFirst)
+                .and().lessOrEquals(GlobalProvider.ROW_AUTO_ID, messageDbIdLast)
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
+
+        // Plain messages modify by buddy db id and messages db id.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 0);
+
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
     public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
         messagesByIds(messageIds).delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
     }
@@ -1294,6 +1313,19 @@ public class QueryHelper {
                 .finishComplexExpression();
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
+    public static void updateOnScreenMessages(ContentResolver contentResolver) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
+                .and()
+                .startComplexExpression()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 1)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 0)
+                .finishComplexExpression();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 

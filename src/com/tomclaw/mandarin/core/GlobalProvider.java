@@ -239,6 +239,7 @@ public class GlobalProvider extends ContentProvider {
 
     private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
     private static final String SHOWN_COUNT = "shown_count";
+    private static final String ON_SCREEN_COUNT = "on_screen_count";
 
     private static final String COUNT_QUERY = new StringBuilder()
             .append("SELECT").append(' ')
@@ -248,6 +249,12 @@ public class GlobalProvider extends ContentProvider {
             .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
             .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
             .append(')').append(' ').append("AS").append(' ').append(UNREAD_UNSHOWN_COUNT).append(',')
+            .append('(')
+            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
+            .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(1).append(' ')
+            .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
+            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
+            .append(')').append(' ').append("AS").append(' ').append(ON_SCREEN_COUNT).append(',')
             .append('(')
             .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
             .append("WHERE").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(-1).append(' ')
@@ -269,6 +276,7 @@ public class GlobalProvider extends ContentProvider {
     public static String KEY_NOTIFICATION_DATA = "key_notification_data";
     public static String KEY_UNSHOWN = "key_unshown";
     public static String KEY_JUST_SHOWN = "key_just_shown";
+    public static String KEY_ON_SCREEN = "key_on_screen";
 
     // URI id.
     private static final int URI_REQUEST = 1;
@@ -443,16 +451,19 @@ public class GlobalProvider extends ContentProvider {
         } else if (method.equals(METHOD_GET_MESSAGES_COUNT)) {
             Cursor cursor = sqLiteDatabase.rawQuery(COUNT_QUERY, null);
             Bundle bundle = new Bundle();
-            int unshown = 0, justShown = 0;
+            int unshown = 0, justShown = 0, onScreen = 0;
             if (cursor.moveToFirst()) {
                 int unreadUnshownColumn = cursor.getColumnIndex(UNREAD_UNSHOWN_COUNT);
                 int shownColumn = cursor.getColumnIndex(SHOWN_COUNT);
+                int onScreenColumn = cursor.getColumnIndex(ON_SCREEN_COUNT);
                 unshown = cursor.getInt(unreadUnshownColumn);
                 justShown = cursor.getInt(shownColumn);
+                onScreen = cursor.getInt(onScreenColumn);
             }
             cursor.close();
             bundle.putInt(KEY_UNSHOWN, unshown);
             bundle.putInt(KEY_JUST_SHOWN, justShown);
+            bundle.putInt(KEY_ON_SCREEN, onScreen);
             return bundle;
         }
         return null;

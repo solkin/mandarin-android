@@ -87,8 +87,7 @@
     <string name="pref_notifications_title">Уведомления</string>
     <string name="pref_title_notification_sound">Сигнал уведомления</string>
     <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
-    <string name="pref_title_system_notifications">Стандартные уведомления</string>
-    <string name="pref_summary_system_notifications">Использовать стандартные настройки для уведомлений</string>
+    <string name="pref_title_sound">Звук</string>
     <string name="pref_title_vibrate">Вибрация</string>
     <string name="buddy_status">Статус</string>
     <string name="pref_chat_title">Переписка</string>
@@ -207,6 +206,8 @@
     <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
     <string name="pref_title_lights">Светодиод</string>
     <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
+    <string name="pref_title_quite_chat">Бесшумный чат</string>
+    <string name="pref_summary_quite_chat">Если сообщение пришло в открытый диалог, оповещать только короткой вибрацией</string>
     <string name="draft_indicator_text">Черновик</string>
 
     <string name="accounts_connect">Подключиться</string>

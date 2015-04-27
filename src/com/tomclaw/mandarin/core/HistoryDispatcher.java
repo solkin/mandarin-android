@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
@@ -18,6 +19,8 @@ import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +29,8 @@ import java.util.ArrayList;
  * Time: 15:40
  */
 public class HistoryDispatcher {
+
+    private static final long HISTORY_DISPATCH_DELAY = 250;
 
     public static String EXTRA_READ_MESSAGES = "read_messages";
 
@@ -61,21 +66,34 @@ public class HistoryDispatcher {
 
     private class HistoryObserver extends ContentObserver {
 
+        ExecutorService executor;
         HistoryDispatcherTask historyDispatcherTask;
+        Runnable taskWrapper;
 
         /**
          * Creates a content observer.
          */
         public HistoryObserver() {
             super(null);
+            executor = Executors.newSingleThreadExecutor();
             historyDispatcherTask = new HistoryDispatcherTask();
+            taskWrapper = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(HISTORY_DISPATCH_DELAY);
+                    } catch (InterruptedException ignored) {
+                    }
+                    TaskExecutor.getInstance().execute(historyDispatcherTask);
+                }
+            };
         }
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             Logger.log("HistoryObserver: onChange [selfChange = " + selfChange + "]");
-            TaskExecutor.getInstance().execute(historyDispatcherTask);
+            executor.submit(taskWrapper);
         }
     }
 
@@ -86,17 +104,18 @@ public class HistoryDispatcher {
         public void executeBackground() throws Throwable {
             long time = System.currentTimeMillis();
             // Obtain last unread for buddy. If exist.
-            Bundle bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_UNREAD, null, null);
-            ArrayList<NotificationData> unreadList =
-                    (ArrayList<NotificationData>) bundle.getSerializable(GlobalProvider.KEY_NOTIFICATION_DATA);
-            // Checking for unread messages exist. If no, we must cancel notification.
-            if (unreadList != null && !unreadList.isEmpty()) {
-                bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_MESSAGES_COUNT, null, null);
-                int unshown = bundle.getInt(GlobalProvider.KEY_UNSHOWN);
-                int justShown = bundle.getInt(GlobalProvider.KEY_JUST_SHOWN);
-                // Checking for non-shown messages exist.
-                // If yes - we must update notification with all unread messages. If no - nothing to do now.
-                if (unshown > 0 || justShown > 0) {
+            Bundle bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_MESSAGES_COUNT, null, null);
+            int unshown = bundle.getInt(GlobalProvider.KEY_UNSHOWN);
+            int justShown = bundle.getInt(GlobalProvider.KEY_JUST_SHOWN);
+            int onScreen = bundle.getInt(GlobalProvider.KEY_ON_SCREEN);
+            // Checking for non-shown messages exist.
+            // If yes - we must update notification with all unread messages. If no - nothing to do now.
+            if (unshown > 0 || justShown > 0 || onScreen > 0) {
+                bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_UNREAD, null, null);
+                ArrayList<NotificationData> unreadList =
+                        (ArrayList<NotificationData>) bundle.getSerializable(GlobalProvider.KEY_NOTIFICATION_DATA);
+                // Checking for unread messages exist. If no, we must cancel notification.
+                if (unreadList != null && !unreadList.isEmpty()) {
                     boolean isAlarmRequired = (unshown > 0);
                     // Notification styles for multiple and single sender respectively.
                     NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
@@ -208,18 +227,13 @@ public class HistoryDispatcher {
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
                             .setLargeIcon(largeIcon);
                     if (isAlarmRequired && isNotificationCompleted()) {
-                        if (PreferenceHelper.isSystemNotifications(context)) {
-                            notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-                        } else {
+                        if (PreferenceHelper.isSound(context)) {
                             notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
-                            int defaults = 0;
-                            if (PreferenceHelper.isVibrate(context)) {
-                                defaults |= Notification.DEFAULT_VIBRATE;
-                            }
-                            notificationBuilder.setDefaults(defaults);
                         }
-                        if (PreferenceHelper.isSystemNotifications(context)
-                                || PreferenceHelper.isLights(context)) {
+                        if (PreferenceHelper.isVibrate(context)) {
+                            notificationBuilder.setVibrate(new long[]{0, 100, 150, 200});
+                        }
+                        if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(Settings.LED_COLOR_RGB,
                                     Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
                         }
@@ -231,12 +245,18 @@ public class HistoryDispatcher {
                     // Update shown messages flag.
                     QueryHelper.updateShownMessagesFlag(contentResolver);
                 } else {
-                    Logger.log("HistoryObserver: Non-shown messages not found");
+                    Logger.log("HistoryObserver: No unread messages found");
+                    onNotificationCancel();
+                    notificationManager.cancel(NOTIFICATION_ID);
+                }
+                if(onScreen > 0) {
+                    Logger.log("HistoryObserver: Vibrate a little");
+                    Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(80);
+                    QueryHelper.updateOnScreenMessages(contentResolver);
                 }
             } else {
-                Logger.log("HistoryObserver: No unread messages found");
-                onNotificationCancel();
-                notificationManager.cancel(NOTIFICATION_ID);
+                Logger.log("HistoryObserver: Non-shown messages not found");
             }
             Logger.log("History dispatching time: " + (System.currentTimeMillis() - time));
             // Call to update unread count.

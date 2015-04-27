@@ -689,7 +689,7 @@ public class ChatActivity extends ChiefActivity {
         // so we must check it here. After activity restored, messages will be read automatically.
         // Also, activity might be gone to destroy in a moments.
         if (!isPaused && !isGoToDestroy) {
-            TaskExecutor.getInstance().execute(new ReadMessagesTask(getContentResolver(), buddyDbId,
+            TaskExecutor.getInstance().execute(new ReadMessagesTask(this, buddyDbId,
                     firstMessageDbId, lastMessageDbId));
         }
     }
@@ -920,15 +920,15 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ReadMessagesTask extends WeakObjectTask<ContentResolver> {
+    private class ReadMessagesTask extends WeakObjectTask<Context> {
 
         private final int buddyDbId;
         private final long firstMessageDbId;
         private final long lastMessageDbId;
 
-        public ReadMessagesTask(ContentResolver contentResolver, int buddyDbId,
+        public ReadMessagesTask(Context context, int buddyDbId,
                                 long firstMessageDbId, long lastMessageDbId) {
-            super(contentResolver);
+            super(context);
             this.buddyDbId = buddyDbId;
             this.firstMessageDbId = firstMessageDbId;
             this.lastMessageDbId = lastMessageDbId;
@@ -936,8 +936,13 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void executeBackground() throws MessageNotFoundException {
-            ContentResolver contentResolver = getWeakObject();
-            if (contentResolver != null) {
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                if(PreferenceHelper.isQuiteChat(context)) {
+                    QueryHelper.fastReadMessages(contentResolver,
+                            buddyDbId, firstMessageDbId, lastMessageDbId);
+                }
                 QueryHelper.readMessages(contentResolver,
                         buddyDbId, firstMessageDbId, lastMessageDbId);
             }

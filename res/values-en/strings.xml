@@ -88,8 +88,7 @@
     <string name="pref_notifications_title">Notifications</string>
     <string name="pref_title_notification_sound">Notification sound</string>
     <string name="pref_summary_notification_sound">Play tone signal</string>
-    <string name="pref_title_system_notifications">Default notification</string>
-    <string name="pref_summary_system_notifications">Use system-wide settings for notifications</string>
+    <string name="pref_title_sound">Sound</string>
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="buddy_status">Status</string>
     <string name="pref_chat_title">Conversation</string>
@@ -208,6 +207,8 @@
     <string name="update_after_track_switch">Status will be updated after track switch</string>
     <string name="pref_title_lights">LED</string>
     <string name="pref_summary_lights">Blink LED if a message was received while the screen is locked</string>
+    <string name="pref_title_quite_chat">Quite chat</string>
+    <string name="pref_summary_quite_chat">Short vibration only for messages, came into an active dialog</string>
     <string name="draft_indicator_text">Draft</string>
 
     <string name="accounts_connect">Connect</string>

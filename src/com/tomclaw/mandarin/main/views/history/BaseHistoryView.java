@@ -62,28 +62,22 @@ public abstract class BaseHistoryView extends LinearLayout {
             dateLayout.setVisibility(GONE);
         }
         if (hasDeliveryState()) {
-            float alpha;
             int stateImage;
             switch (historyItem.getMessageState()) {
                 case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
-                    alpha = 1f;
                     stateImage = R.drawable.ic_error;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
-                    alpha = 0.45f;
-                    stateImage = 0;
+                    stateImage = R.drawable.sending_anim;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
-                    alpha = 1f;
                     stateImage = 0;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
-                    alpha = 1f;
                     stateImage = R.drawable.ic_delivered;
                     break;
                 default:
-                    alpha = 1f;
                     stateImage = 0;
             }
             if (stateImage == 0) {
@@ -92,7 +86,6 @@ public abstract class BaseHistoryView extends LinearLayout {
                 deliveryState.setVisibility(VISIBLE);
                 deliveryState.setImageResource(stateImage);
             }
-            setAlpha(alpha);
         }
         timeView.setText(historyItem.getMessageTimeText());
     }

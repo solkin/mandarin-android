@@ -29,8 +29,8 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_show_temp, R.bool.pref_show_temp_default);
     }
 
-    public static boolean isSystemNotifications(Context context) {
-        return getBooleanPreference(context, R.string.pref_system_notifications, R.bool.pref_system_notifications_default);
+    public static boolean isSound(Context context) {
+        return getBooleanPreference(context, R.string.pref_sound, R.bool.pref_sound_default);
     }
 
     public static boolean isVibrate(Context context) {
@@ -39,6 +39,10 @@ public class PreferenceHelper {
 
     public static boolean isLights(Context context) {
         return getBooleanPreference(context, R.string.pref_lights, R.bool.pref_lights_default);
+    }
+
+    public static boolean isQuiteChat(Context context) {
+        return getBooleanPreference(context, R.string.pref_quite_chat, R.bool.pref_quite_chat_default);
     }
 
     public static boolean isAutorun(Context context) {

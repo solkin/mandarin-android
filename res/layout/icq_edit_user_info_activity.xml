@@ -23,8 +23,7 @@
         <ScrollView
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/info_block_background_color">
+                android:layout_height="match_parent">
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -137,8 +136,9 @@
                                         android:layout_height="wrap_content"
                                         android:id="@+id/gender_selector"
                                         android:textSize="16sp"
-                                        android:gravity="left"
-                                        android:fontFamily="sans-serif"/>
+                                        android:paddingLeft="4dp"
+                                        android:paddingTop="8dp"
+                                        android:gravity="left"/>
                             </LinearLayout>
                             <LinearLayout
                                     android:layout_width="match_parent"
@@ -154,9 +154,10 @@
                                         android:id="@+id/birth_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:paddingLeft="4dp"
+                                        android:paddingTop="8dp"
                                         android:textSize="16sp"
                                         android:gravity="left"
-                                        android:fontFamily="sans-serif"
                                         style="?drop_down_style"/>
                             </LinearLayout>
                         </LinearLayout>
@@ -178,10 +179,11 @@
                                 <Spinner
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:paddingLeft="4dp"
+                                        android:paddingTop="8dp"
                                         android:id="@+id/children_selector"
                                         android:textSize="16sp"
-                                        android:gravity="left"
-                                        android:fontFamily="sans-serif"/>
+                                        android:gravity="left"/>
                             </LinearLayout>
                             <LinearLayout
                                     android:layout_width="match_parent"
@@ -197,9 +199,10 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:id="@+id/smoking_selector"
+                                        android:paddingLeft="4dp"
+                                        android:paddingTop="8dp"
                                         android:textSize="16sp"
-                                        android:gravity="left"
-                                        android:fontFamily="sans-serif"/>
+                                        android:gravity="left"/>
                             </LinearLayout>
                         </LinearLayout>
                         <LinearLayout

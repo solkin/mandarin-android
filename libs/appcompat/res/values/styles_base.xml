@@ -160,11 +160,13 @@
         <item name="android:textSize">@dimen/abc_text_size_subtitle_material_toolbar</item>
     </style>
 
-    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse" parent="TextAppearance.AppCompat.Title.Inverse">
+    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+           parent="TextAppearance.AppCompat.Title.Inverse">
         <item name="android:textSize">@dimen/abc_text_size_title_material_toolbar</item>
     </style>
 
-    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" parent="TextAppearance.AppCompat.Subhead.Inverse">
+    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+           parent="TextAppearance.AppCompat.Subhead.Inverse">
         <item name="android:textSize">@dimen/abc_text_size_subtitle_material_toolbar</item>
     </style>
 
@@ -392,7 +394,7 @@
         <item name="android:padding">@dimen/abc_switch_padding</item>
     </style>
 
-    <style name="Base.TextAppearance.AppCompat.Widget.Switch" parent="TextAppearance.AppCompat.Button" />
+    <style name="Base.TextAppearance.AppCompat.Widget.Switch" parent="TextAppearance.AppCompat.Button"/>
 
     <style name="Base.Widget.AppCompat.RatingBar" parent="android:Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/abc_ratingbar_full_material</item>
@@ -426,7 +428,8 @@
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="Base.Widget.AppCompat.Button.ButtonBar.AlertDialog" parent="Widget.AppCompat.Button.Borderless.Colored">
+    <style name="Base.Widget.AppCompat.Button.ButtonBar.AlertDialog"
+           parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:minWidth">64dp</item>
         <item name="android:maxLines">2</item>
         <item name="android:minHeight">@dimen/abc_alert_dialog_button_bar_height</item>
@@ -438,7 +441,7 @@
         <item name="android:paddingRight">8dp</item>
     </style>
 
-    <style name="Base.TextAppearance.AppCompat.Widget.TextView.SpinnerItem" parent="TextAppearance.AppCompat.Menu" />
+    <style name="Base.TextAppearance.AppCompat.Widget.TextView.SpinnerItem" parent="TextAppearance.AppCompat.Menu"/>
 
     <style name="Base.DialogWindowTitleBackground.AppCompat" parent="android:Widget">
         <item name="android:background">@null</item>
@@ -479,6 +482,6 @@
         <item name="singleChoiceItemLayout">@layout/select_dialog_singlechoice_material</item>
     </style>
 
-    <style name="Base.AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat" />
+    <style name="Base.AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat"/>
 
 </resources>

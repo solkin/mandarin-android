@@ -1,8 +1,8 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +50,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());
-        if(!isStartHelper()) {
+        if (!isStartHelper()) {
             bar.show();
         }
 

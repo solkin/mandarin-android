@@ -74,6 +74,8 @@
         <!-- Dropdown Spinner Attributes -->
         <item name="actionDropDownStyle">@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar</item>
 
+        <item name="alertDialogTheme">@style/AlertDialogCustomLight</item>
+
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
         <item name="drop_down_style">?spinnerStyle</item>
@@ -117,6 +119,10 @@
         <item name="block_info_divider_background">#eeeeee</item>
         <item name="info_item_title_text_color">#727272</item>
         <item name="info_item_value_text_color">#222222</item>
+
+        <item name="positive_dialog_button_color">@color/accent_color</item>
+        <item name="negative_dialog_button_color">#727272</item>
+        <item name="neutral_dialog_button_color">#222222</item>
     </style>
 
     <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat">
@@ -129,6 +135,8 @@
         <item name="windowActionModeOverlay">true</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
+        <item name="alertDialogTheme">@style/AlertDialogCustomDark</item>
 
         <item name="drop_down_style">?spinnerStyle</item>
 
@@ -176,6 +184,34 @@
         <item name="block_info_divider_background">#aa141414</item>
         <item name="info_item_title_text_color">#b6b6b6</item>
         <item name="info_item_value_text_color">#ffffff</item>
+
+        <item name="positive_dialog_button_color">@color/accent_color</item>
+        <item name="negative_dialog_button_color">#dddddd</item>
+        <item name="neutral_dialog_button_color">#b6b6b6</item>
+    </style>
+
+    <style name="AlertDialogCustomLight" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/NeutralDialogButton</item>
+    </style>
+
+    <style name="AlertDialogCustomDark" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/NeutralDialogButton</item>
+    </style>
+
+    <style name="PositiveDialogButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">?positive_dialog_button_color</item>
+    </style>
+
+    <style name="NegativeDialogButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">?negative_dialog_button_color</item>
+    </style>
+
+    <style name="NeutralDialogButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">?neutral_dialog_button_color</item>
     </style>
 
     <style name="Toolbar.Theme" parent="Widget.AppCompat.Toolbar">
@@ -383,6 +419,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
     <style name="UserInfoEditField">
         <item name="android:layout_width">match_parent</item>

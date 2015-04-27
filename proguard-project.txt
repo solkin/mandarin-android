@@ -24,6 +24,7 @@
 }
 -keep class com.tomclaw.mandarin.util.Unobfuscatable
 -keep class * implements com.tomclaw.mandarin.util.Unobfuscatable
+-keep class android.support.v7.widget.SearchView { *; }
 -keepclassmembernames class * implements com.tomclaw.mandarin.util.Unobfuscatable {
   !transient <fields>;
 }

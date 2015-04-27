@@ -4,14 +4,15 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:padding="12dp">
+              android:paddingTop="16dp"
+              android:paddingLeft="24dp"
+              android:paddingRight="24dp">
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/select_status_description"
-            android:fontFamily="sans-serif"
-            android:textSize="18sp"
-            android:paddingBottom="10dp"/>
+            android:textSize="16sp"
+            android:paddingBottom="12dp"/>
 
     <Spinner
             android:layout_width="match_parent"

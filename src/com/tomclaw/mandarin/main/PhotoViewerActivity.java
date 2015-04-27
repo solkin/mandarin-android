@@ -1,13 +1,13 @@
 package com.tomclaw.mandarin.main;
 
 import android.support.v7.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +28,7 @@ import com.tomclaw.mandarin.util.FileHelper;
 /**
  * Created by Solkin on 05.12.2014.
  */
-public class PhotoViewerActivity extends ActionBarActivity {
+public class PhotoViewerActivity extends AppCompatActivity {
 
     public static final String EXTRA_PICTURE_URI = "picture_uri";
     public static final String EXTRA_PICTURE_NAME = "picture_name";
@@ -63,6 +63,11 @@ public class PhotoViewerActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.photo_viewer_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Extract picture path we must show.
         Bundle extras = getIntent().getExtras();
         String uriString = extras.getString(EXTRA_PICTURE_URI);
@@ -77,19 +82,12 @@ public class PhotoViewerActivity extends ActionBarActivity {
             uri = Uri.parse(uriString);
         }
 
-        supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
-        setContentView(R.layout.photo_viewer_activity);
-
         // Preparing for action bar.
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
-            int actionBarColor = getResources().getColor(R.color.photo_view_action_bar_color);
-            bar.setBackgroundDrawable(new ColorDrawable(actionBarColor));
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(name);
-            bar.setIcon(R.drawable.ic_ab_logo);
         }
 
         photoViewFailedView = findViewById(R.id.photo_view_failed);

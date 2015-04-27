@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:orientation="vertical"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
@@ -10,6 +11,13 @@
             android:id="@+id/touch_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            style="@style/Toolbar.Theme"
+            android:background="@color/photo_view_action_bar_color"/>
 
     <TextView
             android:id="@+id/photo_view_failed"

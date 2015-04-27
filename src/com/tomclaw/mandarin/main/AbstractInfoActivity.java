@@ -8,6 +8,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -78,6 +79,9 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
         // Initialize info activity layout.
         setContentView(getLayout());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
         buddyIdView.setText(getBuddyId());

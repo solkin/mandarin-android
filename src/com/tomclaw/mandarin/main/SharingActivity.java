@@ -1,8 +1,10 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import com.tomclaw.mandarin.R;
@@ -30,6 +32,9 @@ public class SharingActivity extends ChiefActivity {
         parseIntent();
 
         setContentView(R.layout.sharing_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.sharing_list_view);
@@ -59,10 +64,18 @@ public class SharingActivity extends ChiefActivity {
             }
         });
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

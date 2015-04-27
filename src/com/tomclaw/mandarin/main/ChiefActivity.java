@@ -1,11 +1,11 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -21,7 +21,7 @@ import java.util.List;
  * Date: 09.01.13
  * Time: 20:22
  */
-public abstract class ChiefActivity extends Activity {
+public abstract class ChiefActivity extends AppCompatActivity {
 
     private BroadcastReceiver broadcastReceiver;
     private ServiceInteraction serviceInteraction;
@@ -38,13 +38,14 @@ public abstract class ChiefActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.log("ChiefActivity onCreate");
-        super.onCreate(savedInstanceState);
-
-        coreServiceListeners = new ArrayList<>();
 
         isDarkTheme = PreferenceHelper.isDarkTheme(this);
         updateTheme();
         updateIcon();
+
+        super.onCreate(savedInstanceState);
+
+        coreServiceListeners = new ArrayList<>();
 
         setContentView(R.layout.progress);
         /** Starting service **/
@@ -59,7 +60,7 @@ public abstract class ChiefActivity extends Activity {
     }
 
     public void updateIcon() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setIcon(R.drawable.ic_ab_logo);
         }
@@ -276,11 +277,11 @@ public abstract class ChiefActivity extends Activity {
         /**
          * Activity notification, service if now ready
          */
-        public void onCoreServiceReady();
+        void onCoreServiceReady();
 
         /**
          * Activity notification, service going down
          */
-        public void onCoreServiceDown();
+        void onCoreServiceDown();
     }
 }

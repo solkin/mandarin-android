@@ -1,10 +1,13 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -20,7 +23,7 @@ import java.util.List;
 /**
  * Created by Solkin on 02.10.2014.
  */
-public class CountryCodeActivity extends Activity {
+public class CountryCodeActivity extends AppCompatActivity {
 
     public static String EXTRA_COUNTRY_SHORT_NAME = "country_short_name";
 
@@ -29,19 +32,21 @@ public class CountryCodeActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         setTheme(PreferenceHelper.isDarkTheme(this) ?
                 R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
 
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.country_code_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Initialize action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
-        bar.setIcon(R.drawable.ic_ab_logo);
-
-        setContentView(R.layout.country_code_activity);
 
         countryCodeAdapter = new CountryCodeAdapter(this, CountriesProvider.getInstance().getCountries(this));
         StickyListHeadersListView listView = (StickyListHeadersListView) findViewById(R.id.countries_list_view);

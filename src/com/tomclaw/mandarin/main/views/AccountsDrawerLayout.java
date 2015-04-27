@@ -1,13 +1,13 @@
 package com.tomclaw.mandarin.main.views;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -23,6 +23,7 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.ChiefActivity;
+import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.main.adapters.AccountsAdapter;
 import com.tomclaw.mandarin.main.adapters.StatusSpinnerAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
@@ -44,25 +45,24 @@ public class AccountsDrawerLayout extends DrawerLayout {
         super(context, attrs);
     }
 
-    public void init(final ChiefActivity activity) {
+    public void init(final MainActivity activity, final Toolbar toolbar) {
         this.activity = activity;
         setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        final ActionBar actionBar = activity.getActionBar();
         drawerToggle = new ActionBarDrawerToggle(activity, this,
-                R.drawable.ic_drawer, R.string.dialogs, R.string.accounts) {
+                toolbar, R.string.dialogs, R.string.accounts) {
 
             // Called when a drawer has settled in a completely closed state.
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                actionBar.setTitle(title);
+                toolbar.setTitle(title);
                 activity.invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             // Called when a drawer has settled in a completely open state.
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                actionBar.setTitle(drawerTitle);
+                toolbar.setTitle(drawerTitle);
                 activity.invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };

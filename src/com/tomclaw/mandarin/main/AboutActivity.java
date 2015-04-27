@@ -1,21 +1,24 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 
 /**
  * Created by solkin on 01/03/14.
  */
-public class AboutActivity extends ChiefActivity {
+public class AboutActivity extends AppCompatActivity {
 
     private static final String MARKET_DETAILS_URI = "market://details?id=";
     private static final String MARKET_DEVELOPER_URI = "market://search?q=";
@@ -24,9 +27,15 @@ public class AboutActivity extends ChiefActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(PreferenceHelper.isDarkTheme(this) ?
+                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.about_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         TextView appVersionView = (TextView) findViewById(R.id.app_version);
         PackageManager manager = getPackageManager();
@@ -50,9 +59,8 @@ public class AboutActivity extends ChiefActivity {
             }
         });
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setIcon(R.drawable.ic_ab_logo);
     }
 
     @Override
@@ -69,10 +77,6 @@ public class AboutActivity extends ChiefActivity {
     @Override
     public void onBackPressed() {
         finish();
-    }
-
-    @Override
-    public void onCoreServiceIntent(Intent intent) {
     }
 
     private void rateApplication() {

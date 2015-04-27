@@ -11,6 +11,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            style="@style/Toolbar.Theme"
+            android:background="@color/photo_view_action_bar_color"/>
+
     <TextView
             android:id="@+id/photo_view_failed"
             android:layout_width="match_parent"

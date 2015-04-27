@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,6 +8,8 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -34,6 +35,7 @@ public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
+    private Toolbar toolbar;
 
     private AccountsDrawerLayout drawerLayout;
 
@@ -54,13 +56,15 @@ public class MainActivity extends ChiefActivity {
 
         setContentView(R.layout.main_activity);
 
-        final ActionBar bar = getActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setTitle(R.string.dialogs);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.dialogs);
 
         drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.init(this);
+        drawerLayout.init(this, toolbar);
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
@@ -194,7 +198,7 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
-        getActionBar().setTitle(title);
+        toolbar.setTitle(title);
     }
 
     @Override
@@ -231,7 +235,7 @@ public class MainActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<Integer, Integer>();
+            selectionHelper = new SelectionHelper<>();
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
@@ -282,7 +286,7 @@ public class MainActivity extends ChiefActivity {
 
         private BuddyInfoAccountCallback(Context context, NfcBuddyInfo nfcBuddyInfo) {
             this.nfcBuddyInfo = nfcBuddyInfo;
-            this.weakContext = new WeakReference<Context>(context);
+            this.weakContext = new WeakReference<>(context);
         }
 
         @Override

@@ -1,8 +1,10 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChiefActivity;
@@ -25,17 +27,32 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         super.onCreate(savedInstanceState);
         // We want to receive service state notifications.
         addCoreServiceListener(this);
-        getActionBar().hide();
+
+        // Initialize add account activity.
+        setContentView(R.layout.icq_intro);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().hide();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getActionBar();
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setTitle(R.string.account);
+        ActionBar bar = getSupportActionBar();
+        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());
-        // Initialize add account activity.
-        setContentView(R.layout.icq_intro);
+        if (!isStartHelper()) {
+            bar.show();
+        }
 
         findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
             @Override

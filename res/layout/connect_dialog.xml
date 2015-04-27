@@ -4,13 +4,14 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:padding="12dp">
+              android:paddingTop="16dp"
+              android:paddingLeft="24dp"
+              android:paddingRight="24dp">
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/connect_account_message"
-            android:fontFamily="sans-serif"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:paddingBottom="10dp"/>
 
     <Spinner

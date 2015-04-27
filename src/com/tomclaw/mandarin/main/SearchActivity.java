@@ -1,8 +1,9 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,22 +41,24 @@ public class SearchActivity extends ChiefActivity {
             return;
         }
 
-        ActionBar actionBar = getActionBar();
+        setContentView(R.layout.search_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        setContentView(R.layout.search_activity);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.search_gender_spinner_item,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.search_gender_spinner_item,
                 getResources().getStringArray(R.array.gender_search_spinner_strings));
         adapter.setDropDownViewResource(R.layout.search_gender_spinner_dropdown_item);
-        Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
-        genderSelector.setAdapter(adapter);
+        genderSpinner = (Spinner) findViewById(R.id.gender_selector);
+        genderSpinner.setAdapter(adapter);
 
         keywordEdit = (TextView) findViewById(R.id.keyword_edit);
         cityEdit = (TextView) findViewById(R.id.city_edit);
         agePickerView = (AgePickerView) findViewById(R.id.age_range);
-        genderSpinner = (Spinner) findViewById(R.id.gender_selector);
         onlineBox = (CheckBox) findViewById(R.id.online_check);
     }
 

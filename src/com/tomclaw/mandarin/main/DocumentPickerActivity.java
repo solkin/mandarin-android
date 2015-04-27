@@ -1,9 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
@@ -29,7 +30,7 @@ import java.util.*;
  * File picker activity
  * Created by solkin on 05.11.14.
  */
-public class DocumentPickerActivity extends Activity {
+public class DocumentPickerActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_RESULT_CODE = 4;
 
@@ -80,10 +81,10 @@ public class DocumentPickerActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstance) {
-        super.onCreate(savedInstance);
-
         setTheme(PreferenceHelper.isDarkTheme(this) ?
                 R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+
+        super.onCreate(savedInstance);
 
         if (!receiverRegistered) {
             receiverRegistered = true;
@@ -101,14 +102,17 @@ public class DocumentPickerActivity extends Activity {
             registerReceiver(receiver, filter);
         }
 
-        actionBar = getActionBar();
+        setContentView(R.layout.document_pick_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getString(R.string.select_file));
-            actionBar.setIcon(R.drawable.ic_ab_logo);
         }
 
-        setContentView(R.layout.document_pick_layout);
         listAdapter = new ListAdapter(this);
         emptyView = (TextView) findViewById(R.id.searchEmptyView);
         emptyView.setOnTouchListener(new View.OnTouchListener() {

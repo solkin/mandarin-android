@@ -1,18 +1,23 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -49,6 +54,9 @@ public class ChatActivity extends ChiefActivity {
     private ChatListView chatList;
     private ChatHistoryAdapter chatHistoryAdapter;
     private EditText messageText;
+    private TextView buddyNick;
+    private TextView buddyStatusMessage;
+    private ImageView buddyStatusIcon;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -78,10 +86,15 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        buddyNick = (TextView) toolbar.findViewById(R.id.buddy_nick);
+        buddyStatusMessage = (TextView) toolbar.findViewById(R.id.buddy_status_message);
+        buddyStatusIcon = (ImageView) toolbar.findViewById(R.id.buddy_status_icon);
+
         // Initialize action bar.
-        ActionBar bar = getActionBar();
-        bar.setTitle(R.string.dialogs);
-        bar.setDisplayShowTitleEnabled(true);
+        ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
 
@@ -170,7 +183,8 @@ public class ChatActivity extends ChiefActivity {
                     } else {
                         smileysFooter.setVisibility(LinearLayout.VISIBLE);
                     }
-                    popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, 0);
+
+                    popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, getSoftButtonsBarHeight());
                 }
             }
         });
@@ -205,6 +219,23 @@ public class ChatActivity extends ChiefActivity {
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
         Logger.log("chat activity start time: " + (System.currentTimeMillis() - time));
+    }
+
+    @SuppressLint("NewApi")
+    private int getSoftButtonsBarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight) {
+                return realHeight - usableHeight;
+            } else {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private String getMessageText() {
@@ -282,7 +313,7 @@ public class ChatActivity extends ChiefActivity {
             previousHeightDifference = heightDifference;
             if (heightDifference > minKeyboardHeight) {
                 isKeyboardVisible = true;
-                updateKeyboardHeight(heightDifference);
+                updateKeyboardHeight(heightDifference - getSoftButtonsBarHeight());
             } else {
                 isKeyboardVisible = false;
             }
@@ -625,10 +656,9 @@ public class ChatActivity extends ChiefActivity {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ActionBar actionBar = getActionBar();
-                        actionBar.setTitle(title);
-                        actionBar.setSubtitle(subtitle);
-                        actionBar.setIcon(icon);
+                        buddyNick.setText(title);
+                        buddyStatusMessage.setText(subtitle);
+                        buddyStatusIcon.setImageResource(icon);
                     }
                 });
             }

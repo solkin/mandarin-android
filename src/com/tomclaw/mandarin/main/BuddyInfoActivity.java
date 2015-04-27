@@ -1,10 +1,10 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +57,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         Logger.log("BuddyInfoActivity onCreate");
 
         // Preparing for action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);

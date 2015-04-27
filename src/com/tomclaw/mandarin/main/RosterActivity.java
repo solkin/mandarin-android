@@ -1,12 +1,14 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.*;
 import android.widget.*;
@@ -44,6 +46,9 @@ public class RosterActivity extends ChiefActivity {
 
         setContentView(R.layout.roster_activity);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
         final RosterStickyAdapter generalAdapter;
@@ -78,9 +83,8 @@ public class RosterActivity extends ChiefActivity {
         });
         generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());
 
-        final ActionBar mActionBar = getActionBar();
+        final ActionBar mActionBar = getSupportActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setDisplayShowHomeEnabled(true);
         mActionBar.setDisplayShowTitleEnabled(false);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(mActionBar.getThemedContext(),
                 R.array.roster_filter_strings, android.R.layout.simple_spinner_dropdown_item);
@@ -173,7 +177,7 @@ public class RosterActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<Integer, Integer>();
+            selectionHelper = new SelectionHelper<>();
             updateMenu(mode, menu);
             return true;
         }
@@ -261,7 +265,7 @@ public class RosterActivity extends ChiefActivity {
         }
 
         private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
-            final Collection<Integer> selectedBuddies = new ArrayList<Integer>(buddyDbIds);
+            final Collection<Integer> selectedBuddies = new ArrayList<>(buddyDbIds);
             boolean isMultiple = buddyDbIds.size() > 1;
             String message;
             if (isMultiple) {
@@ -290,7 +294,7 @@ public class RosterActivity extends ChiefActivity {
         WeakReference<Context> weakContext;
 
         private SearchAccountCallback(Context context) {
-            this.weakContext = new WeakReference<Context>(context);
+            this.weakContext = new WeakReference<>(context);
         }
 
         @Override

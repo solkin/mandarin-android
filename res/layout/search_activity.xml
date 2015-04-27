@@ -4,72 +4,83 @@
               xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="8dp">
-    <TextView
-            android:text="@string/buddy_info_search"
-            style="?android:attr/listSeparatorTextViewStyle"/>
-    <EditText
-            android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_height="wrap_content"
-            android:id="@+id/keyword_edit"
-            android:hint="@string/keyword_search"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-light"
-            android:singleLine="true"
-            android:lines="1"
-            android:maxLines="1"
-            android:scrollHorizontally="true"/>
-    <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/city_edit"
-            android:hint="@string/city_search"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-light"
-            android:singleLine="true"
-            android:lines="1"
-            android:maxLines="1"
-            android:scrollHorizontally="true"/>
-    <TextView
-            android:text="@string/age_and_gender_search"
-            style="?android:attr/listSeparatorTextViewStyle" android:layout_marginTop="10dp"/>
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        <com.tomclaw.mandarin.main.views.AgePickerView
+            style="@style/Toolbar.Theme"/>
+
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:padding="8dp">
+
+        <TextView
+                android:text="@string/buddy_info_search"
+                style="?android:attr/listSeparatorTextViewStyle"/>
+        <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/age_range"
-                android:fontFamily="sans-serif-light"
-                mandarin:ageMin="16"
-                mandarin:ageMax="99"
-                mandarin:valueMin="19"
-                mandarin:valueMax="26"
+                android:id="@+id/keyword_edit"
+                android:hint="@string/keyword_search"
                 android:textSize="18sp"
-                android:padding="10dp"
-                android:gravity="center"
-                style="?android:spinnerStyle"
-                android:layout_weight="0.5"/>
-        <Spinner
+                android:fontFamily="sans-serif-light"
+                android:singleLine="true"
+                android:lines="1"
+                android:maxLines="1"
+                android:scrollHorizontally="true"/>
+        <EditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/gender_selector"
+                android:layout_height="wrap_content"
+                android:id="@+id/city_edit"
+                android:hint="@string/city_search"
                 android:textSize="18sp"
-                android:padding="10dp"
-                android:gravity="center"
                 android:fontFamily="sans-serif-light"
-                style="?android:spinnerStyle"
-                android:layout_weight="0.5"/>
+                android:singleLine="true"
+                android:lines="1"
+                android:maxLines="1"
+                android:scrollHorizontally="true"/>
+        <TextView
+                android:text="@string/age_and_gender_search"
+                style="?android:attr/listSeparatorTextViewStyle" android:layout_marginTop="10dp"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <com.tomclaw.mandarin.main.views.AgePickerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/age_range"
+                    android:fontFamily="sans-serif-light"
+                    mandarin:ageMin="16"
+                    mandarin:ageMax="99"
+                    mandarin:valueMin="19"
+                    mandarin:valueMax="26"
+                    android:textSize="18sp"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    style="?drop_down_style"
+                    android:layout_weight="0.5"/>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/gender_selector"
+                    android:textSize="18sp"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif-light"
+                    android:layout_weight="0.5"/>
+        </LinearLayout>
+        <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/buddy_online_search"
+                android:id="@+id/online_check"
+                android:checked="false"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light"
+                android:layout_marginTop="10dp"/>
     </LinearLayout>
-    <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/buddy_online_search"
-            android:id="@+id/online_check"
-            android:checked="false"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-light"
-            android:layout_marginTop="10dp"/>
 </LinearLayout>

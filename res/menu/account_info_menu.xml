@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/user_info_edit"
-          android:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:title="@string/user_info_edit"
           android:icon="@drawable/ic_edit"/>
     <item android:id="@+id/account_shutdown"
-          android:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:title="@string/account_shutdown"
           android:icon="@drawable/ic_disconnect"/>
     <item android:id="@+id/account_remove"
-          android:showAsAction="never"
+          app:showAsAction="never"
           android:title="@string/account_remove"
-          android:icon="@drawable/ic_disconnect"/>
+          android:icon="@drawable/ic_delete"/>
 </menu>

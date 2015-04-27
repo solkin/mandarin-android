@@ -1,10 +1,10 @@
 package com.tomclaw.mandarin.main;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -100,7 +100,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         Logger.log("AccountInfoActivity onCreate");
 
         // Preparing for action bar.
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);

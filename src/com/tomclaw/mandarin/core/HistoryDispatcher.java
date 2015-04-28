@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  */
 public class HistoryDispatcher {
 
-    private static final long HISTORY_DISPATCH_DELAY = 250;
+    private static final long HISTORY_DISPATCH_DELAY = 350;
 
     public static String EXTRA_READ_MESSAGES = "read_messages";
 

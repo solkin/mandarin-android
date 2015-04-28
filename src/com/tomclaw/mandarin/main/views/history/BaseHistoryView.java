@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.main.views.history;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -62,29 +64,30 @@ public abstract class BaseHistoryView extends LinearLayout {
             dateLayout.setVisibility(GONE);
         }
         if (hasDeliveryState()) {
-            int stateImage;
+            Drawable drawable;
             switch (historyItem.getMessageState()) {
                 case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
-                    stateImage = R.drawable.ic_error;
+                    drawable = getResources().getDrawable(R.drawable.ic_error);
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
-                    stateImage = R.drawable.sending_anim;
+                    drawable = getResources().getDrawable(R.drawable.sending_anim);
+                    ((AnimationDrawable) drawable).start();
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
-                    stateImage = 0;
+                    drawable = null;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
-                    stateImage = R.drawable.ic_delivered;
+                    drawable = getResources().getDrawable(R.drawable.ic_delivered);
                     break;
                 default:
-                    stateImage = 0;
+                    drawable = null;
             }
-            if (stateImage == 0) {
+            if (drawable == null) {
                 deliveryState.setVisibility(INVISIBLE);
             } else {
                 deliveryState.setVisibility(VISIBLE);
-                deliveryState.setImageResource(stateImage);
+                deliveryState.setImageDrawable(drawable);
             }
         }
         timeView.setText(historyItem.getMessageTimeText());

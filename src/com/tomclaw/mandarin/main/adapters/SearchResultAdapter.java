@@ -73,6 +73,6 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         onlineIndicator.setBackgroundResource(info.isOnline() ? R.drawable.green_indicator : R.drawable.red_indicator);
         // Avatar.
         ContactImage contactBadge = (ContactImage) view.findViewById(R.id.buddy_image);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, info.getAvatarHash(), R.drawable.ic_default_avatar, false);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, info.getAvatarHash(), R.drawable.def_avatar_0x48, false);
     }
 }

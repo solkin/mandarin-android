@@ -155,7 +155,7 @@ public class AccountsAdapter extends CursorAdapter implements
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
         ContactImage userAvatar = (ContactImage) view.findViewById(R.id.user_badge);
-        BitmapCache.getInstance().getBitmapAsync(userAvatar, avatarHash, R.drawable.ic_default_avatar, false);
+        BitmapCache.getInstance().getBitmapAsync(userAvatar, avatarHash, R.drawable.def_avatar_0x48, false);
 
         View userContainer = view.findViewById(R.id.user_container);
         userContainer.setOnClickListener(new View.OnClickListener() {

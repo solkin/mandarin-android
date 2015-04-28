@@ -17,7 +17,7 @@
                 android:layout_height="52dp"
                 android:id="@+id/buddy_badge"
                 android:layout_gravity="center_horizontal|top"
-                android:src="@drawable/ic_default_avatar"/>
+                android:src="@drawable/def_avatar_0x48"/>
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"

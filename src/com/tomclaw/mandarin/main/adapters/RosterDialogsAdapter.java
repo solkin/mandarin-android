@@ -189,7 +189,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
         ContactBadge contactBadge = ((ContactBadge) view.findViewById(R.id.buddy_badge));
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0x48, false);
         // On-avatar click listener.
         final int buddyDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
         final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);

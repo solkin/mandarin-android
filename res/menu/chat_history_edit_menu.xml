@@ -13,10 +13,9 @@
           android:title="@string/message_share"/>
     <item android:id="@+id/message_remove"
           android:icon="@drawable/ic_delete"
-          app:showAsAction="ifRoom|withText"
+          app:showAsAction="never"
           android:title="@string/message_remove"/>
     <item android:id="@+id/message_unread"
-          android:icon="@drawable/ic_unread"
-          app:showAsAction="ifRoom|withText"
+          app:showAsAction="never"
           android:title="@string/message_unread"/>
 </menu>

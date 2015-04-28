@@ -90,7 +90,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
         // Buddy avatar.
         ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.ic_default_avatar, false);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, false);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,7 +212,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
                 fadeIn.setDuration(750);
                 contactBadgeUpdate.setAnimation(fadeIn);
-                BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.ic_default_avatar, true);
+                BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.def_avatar_0, true);
             }
             if (isInfoPresent) {
                 onUserInfoReceived(intent);

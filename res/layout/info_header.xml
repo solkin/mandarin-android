@@ -12,7 +12,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/buddy_image"
-                android:src="@drawable/ic_default_avatar"
+                android:src="@drawable/def_avatar_0"
                 android:scaleType="centerCrop"/>
         <com.tomclaw.mandarin.main.views.ContactImage
                 android:layout_width="match_parent"

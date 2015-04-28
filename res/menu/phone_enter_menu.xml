@@ -4,7 +4,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/phone_enter_menu"
           android:title="@string/next"
-          android:icon="@drawable/ic_action_forward"
           app:showAsAction="always|withText"
           app:actionLayout="@layout/phone_login_button"/>
 </menu>

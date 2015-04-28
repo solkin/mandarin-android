@@ -91,7 +91,6 @@ public class HistoryDispatcher {
 
         @Override
         public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
             Logger.log("HistoryObserver: onChange [selfChange = " + selfChange + "]");
             executor.submit(taskWrapper);
         }

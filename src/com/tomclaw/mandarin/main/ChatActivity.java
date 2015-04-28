@@ -34,10 +34,7 @@ import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.util.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -532,7 +529,7 @@ public class ChatActivity extends ChiefActivity {
                     if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
                         Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
                         if (bundle != null) {
-                            List<PhotoEntry> photoEntries = new ArrayList<PhotoEntry>();
+                            List<PhotoEntry> photoEntries = new ArrayList<>();
                             for (String key : bundle.keySet()) {
                                 photoEntries.add((PhotoEntry) bundle.getSerializable(key));
                             }
@@ -689,8 +686,10 @@ public class ChatActivity extends ChiefActivity {
         // so we must check it here. After activity restored, messages will be read automatically.
         // Also, activity might be gone to destroy in a moments.
         if (!isPaused && !isGoToDestroy) {
-            TaskExecutor.getInstance().execute(new ReadMessagesTask(this, buddyDbId,
-                    firstMessageDbId, lastMessageDbId));
+            // Ultra high-demand thread required.
+            // But this thread way must be rewritten.
+            new Thread(new ReadMessagesTask(this, buddyDbId,
+                    firstMessageDbId, lastMessageDbId)).start();
         }
     }
 
@@ -727,10 +726,29 @@ public class ChatActivity extends ChiefActivity {
     private void applySharingData(SharingData sharingData) {
         if (sharingData != null && sharingData.isValid()) {
             if (sharingData.getUri() != null) {
+                scrollBottom();
+                int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                MessageCallback callback = new MessageCallback() {
+
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        Logger.log("sending file failed");
+                    }
+                };
                 // Process obtained Uris.
+                List<UriFile> uriFiles = new ArrayList<>();
                 for (Uri uri : sharingData.getUri()) {
-                    onFilePicked(uri);
+                    try {
+                        uriFiles.add(UriFile.create(this, uri));
+                    } catch (Throwable ignored) {
+                    }
                 }
+                TaskExecutor.getInstance().execute(
+                        new SendFileTask(this, buddyDbId, uriFiles, callback));
             } else {
                 String share;
                 if (TextUtils.isEmpty(sharingData.getSubject())) {
@@ -776,7 +794,7 @@ public class ChatActivity extends ChiefActivity {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<Integer, Long>();
+            selectionHelper = new SelectionHelper<>();
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.chat_history_edit_menu, menu);
             return true;
@@ -853,7 +871,7 @@ public class ChatActivity extends ChiefActivity {
         }
 
         private void unreadSelectedMessages(final ActionMode mode) {
-            final Collection<Long> selectedIds = new ArrayList<Long>(selectionHelper.getSelectedIds());
+            final Collection<Long> selectedIds = new ArrayList<>(selectionHelper.getSelectedIds());
             if (!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
                 new AlertDialog.Builder(ChatActivity.this)
                         .setTitle(R.string.unread_messages)
@@ -1065,14 +1083,20 @@ public class ChatActivity extends ChiefActivity {
     private class SendFileTask extends PleaseWaitTask {
 
         private final int buddyDbId;
-        private UriFile uriFile;
+        private List<UriFile> uriFiles;
         private final MessageCallback callback;
+        private Random random;
 
         public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
+            this(activity, buddyDbId, Collections.singletonList(uriFile), callback);
+        }
+
+        public SendFileTask(ChiefActivity activity, int buddyDbId, List<UriFile> uriFiles, MessageCallback callback) {
             super(activity);
             this.buddyDbId = buddyDbId;
-            this.uriFile = uriFile;
+            this.uriFiles = uriFiles;
             this.callback = callback;
+            this.random = new Random();
         }
 
         @Override
@@ -1080,32 +1104,35 @@ public class ChatActivity extends ChiefActivity {
             Context context = getWeakObject();
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
-                String cookie = String.valueOf(System.currentTimeMillis());
-                // Checking file type, size and other required information.
-                long size = uriFile.getSize();
-                int contentType = uriFile.getContentType();
-                String hash = HttpUtil.getUrlHash(uriFile.toString());
-                String tag = cookie + ":" + uriFile.getPath();
-                // Check for image in bitmap cache first.
-                Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash, BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false);
-                if (bitmap == null) {
-                    // Try to create thumbnail from selected Uri.
-                    bitmap = uriFile.getThumbnail(context);
+                for (UriFile uriFile : uriFiles) {
+                    String cookie = String.valueOf(System.currentTimeMillis() + uriFile.hashCode() + random.nextLong());
+                    // Checking file type, size and other required information.
+                    long size = uriFile.getSize();
+                    int contentType = uriFile.getContentType();
+                    String hash = HttpUtil.getUrlHash(uriFile.toString());
+                    String tag = cookie + ":" + uriFile.getPath();
+                    // Check for image in bitmap cache first.
+                    Bitmap bitmap = BitmapCache.getInstance().getBitmapSync(hash,
+                            BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false);
+                    if (bitmap == null) {
+                        // Try to create thumbnail from selected Uri.
+                        bitmap = uriFile.getThumbnail(context);
+                    }
+                    // Check and store bitmap in bitmap cache.
+                    if (bitmap == null) {
+                        // No bitmap - no hash.
+                        hash = "";
+                    } else {
+                        // Cache bitmap in Ram immediately
+                        BitmapCache.getInstance().cacheBitmapOriginal(hash, bitmap);
+                        // ... and async saving in storage.
+                        BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
+                    }
+                    QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+                            uriFile.getName(), contentType, size, hash, tag);
+                    // Sending protocol message request.
+                    RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
                 }
-                // Check and store bitmap in bitmap cache.
-                if (bitmap == null) {
-                    // No bitmap - no hash.
-                    hash = "";
-                } else {
-                    // Cache bitmap in Ram immediately
-                    BitmapCache.getInstance().cacheBitmapOriginal(hash, bitmap);
-                    // ... and async saving in storage.
-                    BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
-                }
-                QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                        uriFile.getName(), contentType, size, hash, tag);
-                // Sending protocol message request.
-                RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
             }
         }
 

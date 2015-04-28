@@ -194,6 +194,19 @@ public class QueryHelper {
         return queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
     }
 
+    public static int getAccountsCount(ContentResolver contentResolver) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            return cursor.getCount();
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     /**
      * Insert account into database and update it's account db id and context.
      *

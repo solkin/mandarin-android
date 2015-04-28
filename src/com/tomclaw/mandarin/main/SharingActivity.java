@@ -7,11 +7,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.main.adapters.RosterSharingAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
+import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.util.Logger;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -86,6 +88,18 @@ public class SharingActivity extends ChiefActivity {
 
     private void parseIntent() {
         sharingData = new SharingData(getIntent());
+        if (!sharingData.isValid()) {
+            Toast.makeText(this, R.string.invalid_file, Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (QueryHelper.getAccountsCount(getContentResolver()) == 0) {
+            // This will start account creation.
+            Intent accountAddIntent = new Intent(this, IntroActivity.class);
+            accountAddIntent.putExtra(IntroActivity.EXTRA_START_HELPER, true);
+            accountAddIntent.putExtra(IntroActivity.EXTRA_RELAY_INTENT, getIntent());
+            overridePendingTransition(0, 0);
+            startActivity(accountAddIntent);
+            finish();
+        }
     }
 
     @Override

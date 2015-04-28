@@ -394,4 +394,5 @@
     </string>
     <string name="reset">Reset</string>
     <string name="buddies">Buddies</string>
+    <string name="invalid_file">Sorry, this file (text) cannot be shared</string>
 </resources>

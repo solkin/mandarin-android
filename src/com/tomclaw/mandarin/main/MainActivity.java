@@ -45,7 +45,7 @@ public class MainActivity extends ChiefActivity {
         super.onCreate(savedInstanceState);
         // Check for start helper needs to be shown.
         if (PreferenceHelper.isShowStartHelper(this)) {
-            // This will start
+            // This will start account creation.
             Intent accountAddIntent = new Intent(this, IntroActivity.class);
             accountAddIntent.putExtra(IntroActivity.EXTRA_START_HELPER, true);
             overridePendingTransition(0, 0);

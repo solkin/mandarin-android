@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main.icq;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -19,6 +20,7 @@ import com.tomclaw.mandarin.main.MainActivity;
 public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
     public static final String EXTRA_START_HELPER = "start_helper";
+    public static final String EXTRA_RELAY_INTENT = "pending_intent";
     public static final int RESULT_LOGIN_COMPLETED = 1;
     public static final int RESULT_REDIRECT_PHONE_LOGIN = 2;
 
@@ -80,6 +82,10 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         return getIntent().getBooleanExtra(EXTRA_START_HELPER, false);
     }
 
+    private Intent getRelayIntent() {
+        return getIntent().getParcelableExtra(EXTRA_RELAY_INTENT);
+    }
+
     private void startPhoneLogin() {
         startActivityForResult(new Intent(getBaseContext(), PhoneLoginActivity.class), RESULT_LOGIN_COMPLETED);
     }
@@ -93,7 +99,10 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESULT_LOGIN_COMPLETED) {
             if (resultCode == RESULT_OK) {
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = getRelayIntent();
+                if(intent == null) {
+                    intent = new Intent(this, MainActivity.class);
+                }
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();

@@ -8,13 +8,12 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,8 +32,7 @@ public class RequestDispatcher {
     private final ContentResolver contentResolver;
     private int requestType;
     private DispatcherRunnable runnable;
-    private ExecutorService executor;
-    private Future<?> future;
+    private ThreadPoolExecutor executor;
     private RequestObserver requestObserver;
 
     private volatile String executingRequestTag;
@@ -48,9 +46,15 @@ public class RequestDispatcher {
         // Variables.
         contentResolver = service.getContentResolver();
         // Initializing executor and observer.
-        executor = Executors.newSingleThreadExecutor();
+        initExecutor();
         runnable = new DispatcherRunnable();
         requestObserver = new RequestObserver();
+    }
+
+    private void initExecutor() {
+        executor = new ThreadPoolExecutor(1, 1,
+                0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(2));
     }
 
     public void startObservation() {
@@ -60,7 +64,7 @@ public class RequestDispatcher {
         contentResolver.registerContentObserver(
                 Settings.ACCOUNT_RESOLVER_URI, true, requestObserver);
         // Almost done. Starting.
-        requestObserver.onChange(true);
+        notifyQueue();
     }
 
     /**
@@ -74,9 +78,9 @@ public class RequestDispatcher {
             // Task is executing this moment.
             // Interrupt thread as faster as it can be!
             // Task will receive interrupt exception.
-            if (future != null) {
-                future.cancel(true);
-            }
+            executor.shutdownNow();
+            initExecutor();
+            notifyQueue();
             return true;
         } else {
             // Huh... Task is only in scheduled queue.
@@ -94,8 +98,8 @@ public class RequestDispatcher {
         @Override
         public void run() {
             QueryBuilder queryBuilder = new QueryBuilder();
-            queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType)
-                    .and().columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
+            queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType).and()
+                    .columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
             // Registering created observers.
             Cursor requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
             // Check for we are ready to dispatch.
@@ -114,8 +118,11 @@ public class RequestDispatcher {
         private void dispatch(Cursor requestCursor) {
             // Yeah, we are ready.
             log("Dispatching requests.");
+            int requests = 0;
             // Checking for at least one request in database.
             if (requestCursor.moveToFirst()) {
+                requests = requestCursor.getCount();
+                log("Found requests: " + requests);
                 do {
                     log("Request...");
                     // Obtain necessary column index.
@@ -147,6 +154,7 @@ public class RequestDispatcher {
                     if (TextUtils.equals(requestAppSession, CoreService.getAppSession())) {
                         if (requestState != Request.REQUEST_PENDING) {
                             log("Processed request of current session.");
+                            requests--;
                             continue;
                         }
                         log("Normal request and will be processed now.");
@@ -179,6 +187,7 @@ public class RequestDispatcher {
                         if (isDecline) {
                             contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                     GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            requests--;
                             break;
                         }
                     }
@@ -204,6 +213,7 @@ public class RequestDispatcher {
                         // Checking for account online.
                         if (accountRoot.isOffline()) {
                             // Account is offline now. Let's send this request later.
+                            requests--;
                             continue;
                         }
                         // Preparing request.
@@ -225,6 +235,7 @@ public class RequestDispatcher {
                         log("Result is delete-type");
                         contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
                                 GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                        requests--;
                     } else if (requestResult == Request.REQUEST_PENDING) {
                         // Request wasn't completed. We'll retry request a little bit later.
                         log("Request wasn't completed. We'll retry request a little bit later.");
@@ -239,11 +250,10 @@ public class RequestDispatcher {
                         contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
                                 GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
                     }
-                    // Breaking. We'll receive change event from observer.
-                    break;
                 } while (requestCursor.moveToNext());
             }
-            if (requestCursor.getCount() > 0) {
+            log("Dispatching completed, pending requests: " + requests);
+            if (requests > 0) {
                 // Pending guarantee dispatching after delay.
                 log("Pending guarantee dispatching after delay");
                 backgroundQueueNotify(PENDING_REQUEST_DELAY);
@@ -260,7 +270,13 @@ public class RequestDispatcher {
     }
 
     public void notifyQueue() {
-        future = executor.submit(runnable);
+        try {
+            executor.submit(runnable);
+            log("Queue notification accepted.");
+        } catch (RejectedExecutionException ignored) {
+            // All right, this is useless task.
+            log("Queue notification received, but we already have notification.");
+        }
     }
 
     public void backgroundQueueNotify() {

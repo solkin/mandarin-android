@@ -2,10 +2,6 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/user_info_edit"
-          app:showAsAction="ifRoom"
-          android:title="@string/user_info_edit"
-          android:icon="@drawable/ic_edit"/>
     <item android:id="@+id/account_shutdown"
           app:showAsAction="ifRoom"
           android:title="@string/account_shutdown"

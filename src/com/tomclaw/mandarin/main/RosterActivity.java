@@ -21,6 +21,7 @@ import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStatusAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
+import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -203,6 +204,11 @@ public class RosterActivity extends ChiefActivity {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.buddy_info_menu: {
+                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
+                    TaskExecutor.getInstance().execute(new BuddyInfoTask(RosterActivity.this, buddyDbId));
+                    break;
+                }
                 case R.id.rename_buddy_menu: {
                     int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
                     renameSelectedBuddy(buddyDbId);

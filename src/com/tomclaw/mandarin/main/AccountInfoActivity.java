@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.TaskExecutor;
@@ -45,14 +46,6 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-                return true;
-            case R.id.user_info_edit:
-                startActivityForResult(new Intent(this, IcqEditUserInfoActivity.class)
-                                .putExtra(IcqEditUserInfoActivity.ACCOUNT_DB_ID, getAccountDbId())
-                                .putExtra(IcqEditUserInfoActivity.ACCOUNT_TYPE, getAccountType())
-                                .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash()),
-                        REQUEST_USER_INFO_EDIT
-                );
                 return true;
             case R.id.account_shutdown:
                 try {
@@ -106,11 +99,32 @@ public class AccountInfoActivity extends AbstractInfoActivity {
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(R.string.account_info);
         }
+
+        findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editUserInfo();
+            }
+        });
+    }
+
+    private void editUserInfo() {
+        startActivityForResult(new Intent(this, IcqEditUserInfoActivity.class)
+                        .putExtra(IcqEditUserInfoActivity.ACCOUNT_DB_ID, getAccountDbId())
+                        .putExtra(IcqEditUserInfoActivity.ACCOUNT_TYPE, getAccountType())
+                        .putExtra(IcqEditUserInfoActivity.AVATAR_HASH, getAvatarHash()),
+                REQUEST_USER_INFO_EDIT
+        );
     }
 
     @Override
     protected int getLayout() {
         return R.layout.account_info_activity;
+    }
+
+    @Override
+    protected int getDefaultAvatar() {
+        return R.drawable.def_avatar_0;
     }
 
     @Override

@@ -130,6 +130,11 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         return R.layout.buddy_info_activity;
     }
 
+    @Override
+    protected int getDefaultAvatar() {
+        return R.drawable.def_avatar;
+    }
+
     public void onBuddyInfoRequestError() {
         Toast.makeText(this, R.string.error_show_buddy_info, Toast.LENGTH_SHORT).show();
     }

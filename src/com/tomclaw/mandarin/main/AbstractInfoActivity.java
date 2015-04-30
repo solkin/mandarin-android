@@ -118,7 +118,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
         // Buddy avatar.
         ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), R.drawable.def_avatar_0, false);
+        BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), getDefaultAvatar(), false);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +160,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     }
 
     protected abstract int getLayout();
+
+    protected abstract int getDefaultAvatar();
 
     public String getBuddyName() {
         return buddyNickView.getText().toString();
@@ -329,7 +331,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 public void onAnimationEnd(Animation animation) {
                     ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
                     contactBadge.clearAnimation();
-                    BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, true);
+                    BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, getDefaultAvatar(), true);
                 }
 
                 @Override
@@ -340,7 +342,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         } else {
             contactBadgeUpdate.clearAnimation();
         }
-        BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.def_avatar_0, true);
+        BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, getDefaultAvatar(), true);
     }
 
     public int getAccountDbId() {

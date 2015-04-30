@@ -1,14 +1,16 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
@@ -17,6 +19,8 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,9 +32,37 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
     private ViewSwitcher buttonSwitcher;
 
+    private List<ResolveInfo> resolveInfoList;
+    private Intent sendIntent;
+    private MenuItem.OnMenuItemClickListener onMenuItemClickListener;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.buddy_info_menu, menu);
+        SubMenu shareMenu = menu.findItem(R.id.buddy_info_share).getSubMenu();
+        shareMenu.clear();
+
+        PackageManager packageManager = getPackageManager();
+        sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getShareString());
+        sendIntent.setType("text/plain");
+        resolveInfoList = packageManager
+                .queryIntentActivities(sendIntent, 0);
+
+        onMenuItemClickListener = new ShareMenuItemClickListener();
+
+        int i = 0;
+        for (ResolveInfo resolveInfo : resolveInfoList) {
+            try {
+                shareMenu.add(0, i, i, resolveInfo.loadLabel(packageManager))
+                        .setIcon(resolveInfo.loadIcon(packageManager))
+                        .setOnMenuItemClickListener(onMenuItemClickListener);
+                i++;
+            } catch (Throwable ignored) {
+                // Bad package.
+            }
+        }
         return true;
     }
 
@@ -41,7 +73,6 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 finish();
                 return true;
             case R.id.buddy_info_share:
-                startActivity(createShareIntent());
                 return true;
             case R.id.buddy_info_copy:
                 StringUtil.copyStringToClipboard(this, getShareString(), R.string.buddy_info_copied);
@@ -213,6 +244,29 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 Toast.makeText(context, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
                 buttonSwitcher.showPrevious();
             }
+        }
+    }
+
+    /**
+     * Reusable listener for handling share item clicks.
+     */
+    private class ShareMenuItemClickListener implements MenuItem.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            if (sendIntent != null) {
+                ResolveInfo resolveInfo = resolveInfoList.get(item.getItemId());
+                final ActivityInfo activity = resolveInfo.activityInfo;
+                final ComponentName name = new ComponentName(activity.applicationInfo.packageName, activity.name);
+                sendIntent.setComponent(name);
+                final String action = sendIntent.getAction();
+                if (Intent.ACTION_SEND.equals(action) ||
+                        Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+                    sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }
+                startActivity(sendIntent);
+            }
+            return true;
         }
     }
 }

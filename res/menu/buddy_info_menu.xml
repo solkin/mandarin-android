@@ -9,5 +9,9 @@
     <item android:id="@+id/buddy_info_share"
           android:icon="@drawable/ic_share"
           app:showAsAction="ifRoom|withText"
-          android:title="@string/buddy_info_share"/>
+          android:title="@string/buddy_info_share">
+        <menu>
+            <item android:id="@+id/nfc_share" android:title="@string/nfc_share"/>
+        </menu>
+    </item>
 </menu>

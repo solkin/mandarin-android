@@ -8,19 +8,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
- * Created by solkin on 04.08.14.
+ * Created with IntelliJ IDEA.
+ * User: Solkin
+ * Date: 13.10.13
+ * Time: 17:44
  */
-public class RosterSharingAdapter extends RosterStickyAdapter {
+public class RosterStatusAdapter extends RosterStickyAdapter {
 
-
-    private static final long GROUP_DIALOGS = 1;
-    private static final long GROUP_CONTACTS = 2;
-
-    public RosterSharingAdapter(Activity context, LoaderManager loaderManager) {
-        super(context, loaderManager, FILTER_ALL_BUDDIES);
+    public RosterStatusAdapter(Activity context, LoaderManager loaderManager, int filter) {
+        super(context, loaderManager, filter);
     }
 
     @Override
@@ -32,15 +32,9 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
-        int headerTitle;
-        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
-        if (dialogOpened) {
-            headerTitle = R.string.dialogs;
-        } else {
-            headerTitle = R.string.buddies;
-        }
-        headerTextView.setText(getContext().getResources().getString(headerTitle));
+        boolean isOnline = cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS) != StatusUtil.STATUS_OFFLINE;
+        String headerText = getContext().getString(isOnline ? R.string.status_online : R.string.status_offline);
+        ((TextView) convertView.findViewById(R.id.header_text)).setText(headerText.toUpperCase());
         return convertView;
     }
 
@@ -50,14 +44,13 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
-        return dialogOpened ? GROUP_DIALOGS : GROUP_CONTACTS;
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS) != StatusUtil.STATUS_OFFLINE ? 1 : 0;
     }
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_DIALOG + " > 0 THEN " +
-                GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " ELSE -1 END)").andOrder()
+        queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + " != " +
+                StatusUtil.STATUS_OFFLINE + " THEN 1 ELSE 0 END)").andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

@@ -82,7 +82,7 @@ public class BitmapCache {
         }
         Bitmap bitmap = getBitmapSyncFromCache(hash, width, height);
         // Checking for there is no cached bitmap and reset is really required.
-        if (bitmap == null && BitmapTask.isResetRequired(imageView, hash)) {
+        if (TextUtils.isEmpty(hash) || (bitmap == null && BitmapTask.isResetRequired(imageView, hash))) {
             imageView.setPlaceholder(defaultResource);
         }
         imageView.setHash(hash);

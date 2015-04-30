@@ -23,6 +23,8 @@
         <com.tomclaw.mandarin.main.ChatListView
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
+                android:paddingBottom="10dp"
+                android:clipToPadding="false"
                 android:id="@+id/chat_list"
                 android:dividerHeight="0dp" android:fastScrollEnabled="false"
                 android:divider="@android:color/transparent"

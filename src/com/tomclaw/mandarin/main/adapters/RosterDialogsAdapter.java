@@ -84,7 +84,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
                         + GlobalProvider.ROSTER_BUDDY_OPERATION + "!=" + GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE,
                 null, "(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + " > 0 THEN 1 ELSE 0 END) DESC, "
                 + GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " DESC, "
-                + GlobalProvider.ROSTER_BUDDY_NICK + " ASC");
+                + GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD + " ASC");
     }
 
     @Override

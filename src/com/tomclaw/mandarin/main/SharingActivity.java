@@ -3,7 +3,9 @@ package com.tomclaw.mandarin.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +27,8 @@ public class SharingActivity extends ChiefActivity {
     public static final String EXTRA_SHARING_DATA = "sharing_data";
 
     private SharingData sharingData;
+    private RosterStickyAdapter generalAdapter;
+    private SearchView.OnQueryTextListener onQueryTextListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class SharingActivity extends ChiefActivity {
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.sharing_list_view);
-        final RosterStickyAdapter generalAdapter = new RosterSharingAdapter(this,
+        generalAdapter = new RosterSharingAdapter(this,
                 getLoaderManager());
         // Accepting adapter.
         generalList.setAdapter(generalAdapter);
@@ -66,6 +70,19 @@ public class SharingActivity extends ChiefActivity {
             }
         });
 
+        onQueryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                generalAdapter.getFilter().filter(newText);
+                return false;
+            }
+        };
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
@@ -73,11 +90,23 @@ public class SharingActivity extends ChiefActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            finish();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.country_code_menu, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        // Configure the search info and add event listener.
+        searchView.setOnQueryTextListener(onQueryTextListener);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+                return true;
+            }
         }
-        return super.onOptionsItemSelected(menuItem);
+        return false;
     }
 
     @Override
@@ -104,6 +133,5 @@ public class SharingActivity extends ChiefActivity {
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-
     }
 }

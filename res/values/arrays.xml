@@ -35,11 +35,13 @@
     <string-array name="pref_roster_mode_strings">
         <item>@string/group_by_alphabet</item>
         <item>@string/group_by_groups</item>
+        <item>@string/group_by_status</item>
     </string-array>
 
     <string-array name="pref_roster_mode_values">
         <item>@string/roster_mode_alphabet</item>
         <item>@string/roster_mode_groups</item>
+        <item>@string/roster_mode_status</item>
     </string-array>
 
     <string-array name="pref_files_auto_receive_strings">
@@ -70,6 +72,7 @@
 
     <string name="roster_mode_alphabet">alphabet</string>
     <string name="roster_mode_groups">groups</string>
+    <string name="roster_mode_status">status</string>
 
     <string name="auto_receive_mobile_and_wi_fi">mobile_and_wi_fi</string>
     <string name="auto_receive_mobile_less_size">mobile_less_size</string>

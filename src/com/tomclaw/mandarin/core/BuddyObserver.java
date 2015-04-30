@@ -2,9 +2,8 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import com.tomclaw.mandarin.im.BuddyCursor;
-import com.tomclaw.mandarin.util.QueryBuilder;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by solkin on 05/05/14.
@@ -12,15 +11,14 @@ import com.tomclaw.mandarin.util.QueryBuilder;
 public abstract class BuddyObserver extends ContentObserver {
 
     private ContentResolver contentResolver;
-
-    private QueryBuilder queryBuilder;
+    private int buddyDbId;
 
     public BuddyObserver(ContentResolver contentResolver, int buddyDbId) {
         super(null);
 
         this.contentResolver = contentResolver;
+        this.buddyDbId = buddyDbId;
 
-        queryBuilder = new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
         observe();
     }
 
@@ -34,11 +32,24 @@ public abstract class BuddyObserver extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange) {
-        Cursor buddyCursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        if (buddyCursor.moveToFirst()) {
-            onBuddyInfoChanged(new BuddyCursor(buddyCursor));
-            buddyCursor.close();
-        }
+        MainExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                BuddyCursor buddyCursor = null;
+                try {
+                    buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
+                    onBuddyInfoChanged(buddyCursor);
+                } catch (Throwable ignored) {
+                    // Sadly.
+                    Logger.log("Unable to get buddy cursor in buddy observer", ignored);
+                } finally {
+                    if(buddyCursor != null) {
+                        buddyCursor.close();
+                    }
+                }
+            }
+        });
+
     }
 
     public abstract void onBuddyInfoChanged(BuddyCursor buddyCursor);

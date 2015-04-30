@@ -18,6 +18,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
+import com.tomclaw.mandarin.main.adapters.RosterStatusAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
@@ -56,6 +57,8 @@ public class RosterActivity extends ChiefActivity {
         String rosterMode = PreferenceHelper.getRosterMode(this);
         if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
             generalAdapter = new RosterGroupAdapter(this, getLoaderManager(), getFilterValue());
+        } else if(TextUtils.equals(rosterMode, getString(R.string.roster_mode_status))) {
+            generalAdapter = new RosterStatusAdapter(this, getLoaderManager(), getFilterValue());
         } else {
             generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());
         }

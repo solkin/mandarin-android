@@ -151,12 +151,11 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             case R.id.edit_user_info_complete:
                 sendManualBitmap();
                 sendEditUserInfoRequest();
-                String hash = TextUtils.isEmpty(manualAvatarVirtualHash) ? avatarHash : manualAvatarVirtualHash;
                 setResult(RESULT_OK, new Intent()
                         .putExtra(USER_NICK, getUserNick())
                         .putExtra(FIRST_NAME, getFirstName())
                         .putExtra(LAST_NAME, getLastName())
-                        .putExtra(AVATAR_HASH, hash));
+                        .putExtra(AVATAR_HASH, avatarHash));
                 finish();
                 return true;
         }
@@ -264,7 +263,13 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             }
             case CROP_AVATAR_REQUEST_CODE: {
                 if (resultCode == RESULT_OK) {
-                    TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, data.getData()));
+                    Uri uri = data.getData();
+                    if (uri == null && !TextUtils.isEmpty(data.getAction())) {
+                        uri = Uri.parse(data.getAction());
+                    }
+                    if (uri != null) {
+                        TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
+                    }
                 }
                 break;
             }

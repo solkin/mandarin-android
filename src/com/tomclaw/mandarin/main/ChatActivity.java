@@ -610,56 +610,7 @@ public class ChatActivity extends ChiefActivity {
         if (buddyObserver != null) {
             buddyObserver.stop();
         }
-        buddyObserver = new BuddyObserver(getContentResolver(), buddyDbId) {
-            @Override
-            public void onBuddyInfoChanged(final BuddyCursor buddyCursor) {
-                final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
-                        buddyCursor.getBuddyStatus());
-                final String title = buddyCursor.getBuddyNick();
-                final String subtitle;
-
-                long lastTyping = buddyCursor.getBuddyLastTyping();
-                // Checking for typing no more than 5 minutes.
-                if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
-                    subtitle = getString(R.string.typing);
-                } else {
-                    long lastSeen = buddyCursor.getBuddyLastSeen();
-                    if (lastSeen > 0) {
-                        String lastSeenText;
-                        String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
-                        String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
-
-                        Calendar today = Calendar.getInstance();
-                        today = TimeHelper.clearTimes(today);
-
-                        Calendar yesterday = Calendar.getInstance();
-                        yesterday.add(Calendar.DAY_OF_YEAR, -1);
-                        yesterday = TimeHelper.clearTimes(yesterday);
-
-                        if (lastSeen * 1000 > today.getTimeInMillis()) {
-                            lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
-                        } else if (lastSeen * 1000 > yesterday.getTimeInMillis()) {
-                            lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
-                        } else {
-                            lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
-                        }
-
-                        subtitle = lastSeenText;
-                    } else {
-                        subtitle = buddyCursor.getBuddyStatusTitle();
-                    }
-                }
-
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        buddyNick.setText(title);
-                        buddyStatusMessage.setText(subtitle);
-                        buddyStatusIcon.setImageResource(icon);
-                    }
-                });
-            }
-        };
+        buddyObserver = new ChatBuddyObserver(getContentResolver(), buddyDbId);
     }
 
     private void setMessageTextFromDraft(int buddyDbId) {
@@ -1382,6 +1333,62 @@ public class ChatActivity extends ChiefActivity {
                 QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
             }
+        }
+    }
+
+    public class ChatBuddyObserver extends BuddyObserver {
+
+        public ChatBuddyObserver(ContentResolver contentResolver, int buddyDbId) {
+            super(contentResolver, buddyDbId);
+        }
+
+        @Override
+        public void onBuddyInfoChanged(final BuddyCursor buddyCursor) {
+            final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
+                    buddyCursor.getBuddyStatus());
+            final String title = buddyCursor.getBuddyNick();
+            final String subtitle;
+
+            long lastTyping = buddyCursor.getBuddyLastTyping();
+            // Checking for typing no more than 5 minutes.
+            if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
+                subtitle = getString(R.string.typing);
+            } else {
+                long lastSeen = buddyCursor.getBuddyLastSeen();
+                if (lastSeen > 0) {
+                    String lastSeenText;
+                    String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
+                    String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
+
+                    Calendar today = Calendar.getInstance();
+                    today = TimeHelper.clearTimes(today);
+
+                    Calendar yesterday = Calendar.getInstance();
+                    yesterday.add(Calendar.DAY_OF_YEAR, -1);
+                    yesterday = TimeHelper.clearTimes(yesterday);
+
+                    if (lastSeen * 1000 > today.getTimeInMillis()) {
+                        lastSeenText = getString(R.string.last_seen_time, lastSeenTime);
+                    } else if (lastSeen * 1000 > yesterday.getTimeInMillis()) {
+                        lastSeenText = getString(R.string.last_seen_date, getString(R.string.yesterday), lastSeenTime);
+                    } else {
+                        lastSeenText = getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
+                    }
+
+                    subtitle = lastSeenText;
+                } else {
+                    subtitle = buddyCursor.getBuddyStatusTitle();
+                }
+            }
+
+            MainExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    buddyNick.setText(title);
+                    buddyStatusMessage.setText(subtitle);
+                    buddyStatusIcon.setImageResource(icon);
+                }
+            });
         }
     }
 }

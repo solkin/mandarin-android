@@ -288,6 +288,7 @@
 
     <string name="group_by_alphabet">По алфавиту</string>
     <string name="group_by_groups">По группам</string>
+    <string name="group_by_status">По статусу</string>
     <string name="pref_title_roster_mode">Отображение контактов</string>
     <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
     <string name="app_version">Версия %1$s (%2$s)</string>

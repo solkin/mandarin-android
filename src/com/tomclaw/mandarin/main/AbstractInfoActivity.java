@@ -316,25 +316,30 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     protected void updateAvatar(String hash, boolean animation) {
         avatarHash = hash;
         ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
-        Animation fadeIn = new AlphaAnimation(0, 1);
-        fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
-        fadeIn.setDuration(animation ? 750 : 0);
-        fadeIn.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
+        if (animation) {
+            Animation fadeIn = new AlphaAnimation(0, 1);
+            fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
+            fadeIn.setDuration(750);
+            fadeIn.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
-                BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, true);
-            }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+                    contactBadge.clearAnimation();
+                    BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, true);
+                }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        contactBadgeUpdate.setAnimation(fadeIn);
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            contactBadgeUpdate.setAnimation(fadeIn);
+        } else {
+            contactBadgeUpdate.clearAnimation();
+        }
         BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.def_avatar_0, true);
     }
 

@@ -65,6 +65,7 @@ public abstract class BaseHistoryView extends LinearLayout {
         }
         if (hasDeliveryState()) {
             Drawable drawable;
+            boolean animated = false;
             switch (historyItem.getMessageState()) {
                 case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
                     drawable = getResources().getDrawable(R.drawable.ic_error);
@@ -72,7 +73,7 @@ public abstract class BaseHistoryView extends LinearLayout {
                 case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
                     drawable = getResources().getDrawable(R.drawable.sending_anim);
-                    ((AnimationDrawable) drawable).start();
+                    animated = true;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
                     drawable = null;
@@ -88,6 +89,11 @@ public abstract class BaseHistoryView extends LinearLayout {
             } else {
                 deliveryState.setVisibility(VISIBLE);
                 deliveryState.setImageDrawable(drawable);
+                if(animated) {
+                    AnimationDrawable animatedState = ((AnimationDrawable) drawable);
+                    animatedState.stop();
+                    animatedState.start();
+                }
             }
         }
         timeView.setText(historyItem.getMessageTimeText());

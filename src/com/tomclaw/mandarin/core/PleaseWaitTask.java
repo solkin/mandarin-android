@@ -30,7 +30,7 @@ public abstract class PleaseWaitTask extends WeakObjectTask<Context> {
         Context context = getWeakObject();
         if (context != null) {
             ProgressDialog progressDialog = ProgressDialog.show(context, null, context.getString(getWaitStringId()));
-            weakProgressDialog = new WeakReference<ProgressDialog>(progressDialog);
+            weakProgressDialog = new WeakReference<>(progressDialog);
         }
     }
 

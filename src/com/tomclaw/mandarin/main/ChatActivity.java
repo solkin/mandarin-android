@@ -94,6 +94,7 @@ public class ChatActivity extends ChiefActivity {
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
+        bar.setDisplayShowTitleEnabled(false);
 
         timeHelper = new TimeHelper(this);
 

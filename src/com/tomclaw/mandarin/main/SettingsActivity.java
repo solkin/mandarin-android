@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -64,15 +63,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         return true;
-    }
-
-    public static class SettingsFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            // Load the preferences from an XML resource.
-            addPreferencesFromResource(R.xml.preferences);
-        }
     }
 
     public class OnSettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {

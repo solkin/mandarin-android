@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
+              android:layout_width="wrap_content"
               android:layout_height="match_parent">
     <TextView
             android:id="@+id/buddy_nick"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18dp"
             android:textColor="@color/abc_primary_text_material_dark"
@@ -13,7 +13,7 @@
             android:singleLine="true"
             android:ellipsize="marquee"/>
     <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
@@ -26,7 +26,7 @@
                 android:contentDescription="@string/buddy_status"/>
         <TextView
                 android:id="@+id/buddy_status_message"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14dp"
                 android:includeFontPadding="false"

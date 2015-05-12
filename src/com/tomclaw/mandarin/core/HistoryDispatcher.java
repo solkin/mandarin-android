@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  */
 public class HistoryDispatcher {
 
-    private static final long HISTORY_DISPATCH_DELAY = 500;
+    private static final long HISTORY_DISPATCH_DELAY = 750;
 
     public static String EXTRA_READ_MESSAGES = "read_messages";
 
@@ -224,7 +224,8 @@ public class HistoryDispatcher {
                             .addAction(actionIcon, actionButton, actionIntent)
                             .addAction(R.drawable.ic_action_read, readButton, readAllIntent)
                             .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
-                            .setLargeIcon(largeIcon);
+                            .setLargeIcon(largeIcon)
+                            .setColor(context.getResources().getColor(R.color.accent_color));
                     if (isAlarmRequired && isNotificationCompleted()) {
                         if (PreferenceHelper.isSound(context)) {
                             notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));

@@ -97,7 +97,10 @@
                 android:defaultValue="@string/pref_notification_sound_default"
                 android:ringtoneType="notification"
                 android:showDefault="true"
-                android:showSilent="true"/>
+                android:showSilent="false"
+                android:selectable="true"
+                android:persistent="true"
+                android:enabled="true"/>
         <CheckBoxPreference
                 android:key="@string/pref_vibrate"
                 android:title="@string/pref_title_vibrate"

@@ -12,5 +12,5 @@
             android:id="@+id/settings_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            class="com.tomclaw.mandarin.main.SettingsActivity$SettingsFragment"/>
+            class="com.tomclaw.mandarin.main.SettingsFragment"/>
 </LinearLayout>

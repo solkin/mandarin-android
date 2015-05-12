@@ -18,6 +18,7 @@ import android.view.*;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.StringUtil;
 
@@ -185,6 +186,12 @@ public class DocumentPickerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.document_picker_activity_menu, menu);
+
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.system_picker_menu, intent, PICK_FILE_RESULT_CODE);
         return true;
     }
 
@@ -193,16 +200,6 @@ public class DocumentPickerActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
-                break;
-            }
-            case R.id.system_picker_menu: {
-                try {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("*/*");
-                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
-                } catch (Throwable ignored) {
-                    // No such application?!
-                }
                 break;
             }
         }

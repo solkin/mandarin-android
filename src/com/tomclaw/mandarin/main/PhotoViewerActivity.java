@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.animation.*;
 import android.widget.Button;
@@ -20,8 +23,11 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.main.views.TouchImageView;
+import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
+
+import java.util.List;
 
 /**
  * Created by Solkin on 05.12.2014.
@@ -152,6 +158,12 @@ public class PhotoViewerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.photo_viewer_activity_menu, menu);
+
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, FileHelper.getMimeType(name));
+
+        AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;
     }
 
@@ -160,13 +172,6 @@ public class PhotoViewerActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
-                return true;
-            }
-            case R.id.view_in_external_app_menu: {
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(uri, FileHelper.getMimeType(name));
-                startActivity(intent);
                 return true;
             }
         }

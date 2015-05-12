@@ -23,6 +23,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.main.views.ThumbnailView;
+import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.Logger;
 
@@ -161,6 +162,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.photo_picker_activity_menu, menu);
+
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+
+        AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.system_picker_menu, intent, PICK_IMAGE_RESULT_CODE);
         return true;
     }
 
@@ -170,16 +176,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
             case android.R.id.home: {
                 onBackPressed();
                 return true;
-            }
-            case R.id.system_picker_menu: {
-                try {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, PICK_IMAGE_RESULT_CODE);
-                } catch (Throwable ignored) {
-                    // No such application?!
-                }
-                break;
             }
         }
         return false;

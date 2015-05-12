@@ -8,14 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
@@ -149,6 +153,10 @@ public class HistoryDispatcher {
                                 // Obtain avatar for notification.
                                 largeIcon = BitmapCache.getInstance().getBitmapSync(
                                         avatarHash, largeIconSize, largeIconSize, true, true);
+                                // Make round avatar for lollipop and newer.
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    largeIcon = BitmapHelper.getRoundBitmap(largeIcon);
+                                }
                             }
                         } else {
                             nickNamesBuilder.append(", ");

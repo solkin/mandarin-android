@@ -1,17 +1,14 @@
 package com.tomclaw.mandarin.util;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import com.tomclaw.mandarin.R;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -26,16 +23,17 @@ public class AppsMenuHelper {
     }
 
     public static void fillMenuItemSubmenu(AppCompatActivity activity, Menu menu, int menuId, Intent intent, int requestCode) {
+        // Find specified menu id in menu and clear its submenu.
         SubMenu subMenu = menu.findItem(menuId).getSubMenu();
         subMenu.clear();
-
+        // Obtain list of packages for specified intent.
         PackageManager packageManager = activity.getPackageManager();
         List<ResolveInfo> resolveInfoList = packageManager
                 .queryIntentActivities(intent, 0);
-
+        // Prepare click listener.
         MenuItem.OnMenuItemClickListener onMenuItemClickListener =
                 new AppsMenuHelper.ShareMenuItemClickListener(activity, resolveInfoList, intent, requestCode);
-
+        // Fill menu item with submenu elements with app name and icon.
         int i = 0;
         for (ResolveInfo resolveInfo : resolveInfoList) {
             try {

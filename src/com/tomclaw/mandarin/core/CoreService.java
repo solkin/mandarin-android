@@ -38,9 +38,11 @@ public class CoreService extends Service {
     public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
 
     public static final int RESTART_TIMEOUT = 5000;
+    public static final int MAINTENANCE_TIMEOUT = 15000;
 
     private int serviceState;
     private long serviceCreateTime;
+    private boolean serviceCommandReceived;
     private static final String appSession = String.valueOf(System.currentTimeMillis())
             .concat(String.valueOf(new Random().nextInt()));
 
@@ -138,6 +140,8 @@ public class CoreService extends Service {
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");
         Logger.log("core service start time: " + (System.currentTimeMillis() - time));
+        // Schedule restart immediately after service creation.
+        scheduleRestart(true);
     }
 
     @Override
@@ -145,7 +149,14 @@ public class CoreService extends Service {
         Logger.log("onStartCommand flags = " + flags + " startId = " + startId);
         // Check for intent is really cool.
         if (intent != null) {
-            onIntentReceived(intent);
+            boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);
+            if (serviceCommandReceived && restartEvent) {
+                Logger.logWithPrefix("W", "Received extra start command restart event.");
+                scheduleRestart(true);
+            } else {
+                onIntentReceived(intent);
+                serviceCommandReceived = true;
+            }
         }
         return START_NOT_STICKY;
     }
@@ -184,11 +195,27 @@ public class CoreService extends Service {
             stopSelf();
             System.exit(0);
         }
+        // Check for service restarted automatically while there is no connected accounts.
+        boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);
+        if(restartEvent) {
+            Logger.logWithPrefix("W", "Service was restarted automatically.");
+            if(!sessionHolder.hasActiveAccounts()) {
+                Logger.logWithPrefix("W", "No active accounts. Stopping self.");
+                stopSelf();
+                System.exit(0);
+            }
+        }
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        // Schedule restarting.
+        scheduleRestart(false);
+        super.onTaskRemoved(rootIntent);
+    }
+
+    private void scheduleRestart(boolean maintenance) {
+        // Schedule service restarting.
+        Logger.logWithPrefix("W", "Attempting to schedule restart.");
         if (Settings.FORCE_RESTART && sessionHolder.hasActiveAccounts()) {
             Intent restartServiceIntent = new Intent(this, CoreService.class)
                     .putExtra(EXTRA_RESTART_FLAG, true);
@@ -197,10 +224,10 @@ public class CoreService extends Service {
             AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmService.set(
                     AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + RESTART_TIMEOUT,
+                    SystemClock.elapsedRealtime() + (maintenance ? MAINTENANCE_TIMEOUT : RESTART_TIMEOUT),
                     restartServicePendingIntent);
+            Logger.logWithPrefix("W", "Restart scheduled.");
         }
-        super.onTaskRemoved(rootIntent);
     }
 
     @Override

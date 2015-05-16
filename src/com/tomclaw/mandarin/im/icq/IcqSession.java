@@ -61,7 +61,7 @@ public class IcqSession {
 
     private static final int timeoutSocket = 70 * 1000;
     private static final int timeoutConnection = 60 * 1000;
-    private static final int timeoutSession = 60 * 60 * 1000;
+    private static final int timeoutSession = 15 * 60 * 1000;
 
     private IcqAccountRoot icqAccountRoot;
 

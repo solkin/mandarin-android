@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top">
-
         <GridView
                 android:id="@+id/media_grid"
                 android:paddingBottom="4dp"
@@ -62,5 +61,6 @@
 
         <include layout="@layout/photo_picker_buttons"/>
 
+        <include layout="@layout/toolbar_shadow_view"/>
     </FrameLayout>
 </LinearLayout>

@@ -10,41 +10,45 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             style="@style/Toolbar.Theme"/>
-
-    <ListView android:id="@+id/search_result_list"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:visibility="gone"/>
-
-    <ViewSwitcher android:id="@android:id/empty"
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ListView android:id="@+id/search_result_list"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-            <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/buddy_search_progress"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-light"
-                    android:paddingTop="12dp"/>
-        </LinearLayout>
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="@string/buddy_search_no_result"
-                      android:textSize="18sp"
-                      android:fontFamily="sans-serif-light"/>
-        </LinearLayout>
-    </ViewSwitcher>
+                  android:layout_height="match_parent"
+                  android:visibility="gone"/>
+
+        <ViewSwitcher android:id="@android:id/empty"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+                <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buddy_search_progress"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-light"
+                        android:paddingTop="12dp"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:text="@string/buddy_search_no_result"
+                          android:textSize="18sp"
+                          android:fontFamily="sans-serif-light"/>
+            </LinearLayout>
+        </ViewSwitcher>
+        <include layout="@layout/toolbar_shadow_view"/>
+    </FrameLayout>
 </LinearLayout>

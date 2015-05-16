@@ -12,11 +12,15 @@
             android:layout_width="match_parent"
             style="@style/Toolbar.Theme"
             android:minHeight="?attr/actionBarSize"/>
-
-    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+    <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/sharing_list_view"
-            android:layout_gravity="center"
-            app:isDrawingListUnderStickyHeader="false"/>
+            android:layout_height="match_parent">
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/sharing_list_view"
+                android:layout_gravity="center"
+                app:isDrawingListUnderStickyHeader="false"/>
+        <include layout="@layout/toolbar_shadow_view"/>
+    </FrameLayout>
 </LinearLayout>

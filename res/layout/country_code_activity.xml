@@ -11,12 +11,16 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             style="@style/Toolbar.Theme"/>
-
-    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+    <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/countries_list_view"
-            android:layout_gravity="center"
-            android:choiceMode="singleChoice"
-            app:isDrawingListUnderStickyHeader="false"/>
+            android:layout_height="match_parent">
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/countries_list_view"
+                android:layout_gravity="center"
+                android:choiceMode="singleChoice"
+                app:isDrawingListUnderStickyHeader="false"/>
+        <include layout="@layout/toolbar_shadow_view"/>
+    </FrameLayout>
 </LinearLayout>

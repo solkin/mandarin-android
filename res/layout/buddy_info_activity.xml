@@ -8,53 +8,58 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             style="@style/Toolbar.Theme"/>
-    <ScrollView android:id="@+id/content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/info_block_background_color">
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                <include layout="@layout/info_header"/>
-                <ViewSwitcher
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="36dp"
-                        android:paddingLeft="0dp"
-                        android:paddingRight="12dp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/button_switcher"
-                        android:inAnimation="@android:anim/fade_in"
-                        android:outAnimation="@android:anim/fade_out">
-                    <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/add_buddy_button"
-                            android:src="@drawable/fab_add_contact_selector"/>
-                    <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/open_dialog_button"
-                            android:src="@drawable/fab_message_selector"/>
-                </ViewSwitcher>
-            </RelativeLayout>
-            <include layout="@layout/info_status"/>
-            <include layout="@layout/info_block"/>
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ScrollView android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/info_block_background_color">
             <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center">
-                <ProgressBar
-                        android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <include layout="@layout/info_header"/>
+                    <ViewSwitcher
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="36dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="12dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:id="@+id/button_switcher"
+                            android:inAnimation="@android:anim/fade_in"
+                            android:outAnimation="@android:anim/fade_out">
+                        <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/add_buddy_button"
+                                android:src="@drawable/fab_add_contact_selector"/>
+                        <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/open_dialog_button"
+                                android:src="@drawable/fab_message_selector"/>
+                    </ViewSwitcher>
+                </RelativeLayout>
+                <include layout="@layout/info_status"/>
+                <include layout="@layout/info_block"/>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/progress_bar"
-                        android:padding="20dp"/>
+                        android:gravity="center">
+                    <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/progress_bar"
+                            android:padding="20dp"/>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+        <include layout="@layout/toolbar_shadow_view"/>
+    </FrameLayout>
 </LinearLayout>

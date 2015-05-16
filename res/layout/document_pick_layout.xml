@@ -24,5 +24,6 @@
                   android:id="@+id/searchEmptyView"
                   android:visibility="gone"
                   android:layout_gravity="top"/>
+        <include layout="@layout/toolbar_shadow_view"/>
     </FrameLayout>
 </LinearLayout>

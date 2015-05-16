@@ -11,4 +11,5 @@
     <dimen name="preview_height">172dp</dimen>
     <dimen name="preview_bitmap">256px</dimen>
     <dimen name="buddy_info_avatar_height">216dp</dimen>
+    <dimen name="toolbar_shadow_size">3dp</dimen>
 </resources>

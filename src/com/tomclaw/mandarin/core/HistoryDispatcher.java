@@ -12,8 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
@@ -239,7 +237,7 @@ public class HistoryDispatcher {
                             notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
                         }
                         if (PreferenceHelper.isVibrate(context)) {
-                            notificationBuilder.setVibrate(new long[]{0, 100, 150, 200});
+                            notificationBuilder.setVibrate(new long[]{0, 500, 150, 500});
                         }
                         if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(Settings.LED_COLOR_RGB,
@@ -260,7 +258,7 @@ public class HistoryDispatcher {
                 if(onScreen > 0) {
                     Logger.log("HistoryObserver: Vibrate a little");
                     Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(80);
+                    v.vibrate(100);
                     QueryHelper.updateOnScreenMessages(contentResolver);
                 }
             } else {

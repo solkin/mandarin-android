@@ -27,6 +27,7 @@ public class CoreService extends Service {
     private RequestDispatcher downloadDispatcher;
     private RequestDispatcher uploadDispatcher;
     private HistoryDispatcher historyDispatcher;
+    private AccountsDispatcher accountsDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
     public static final String EXTRA_STAFF_PARAM = "staff";
@@ -36,6 +37,7 @@ public class CoreService extends Service {
     public static final int STATE_UP = 0x02;
     public static final String EXTRA_RESTART_FLAG = "restart_flag";
     public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
+    public static final String EXTRA_ON_CONNECTED_EVENT = "on_connected";
 
     public static final int RESTART_TIMEOUT = 5000;
     public static final int MAINTENANCE_TIMEOUT = 15000;
@@ -124,6 +126,7 @@ public class CoreService extends Service {
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         uploadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_UPLOAD);
         historyDispatcher = new HistoryDispatcher(this);
+        accountsDispatcher = new AccountsDispatcher(this, sessionHolder);
         Logger.log("CoreService serviceInit");
         // Loading all data for this application session.
         sessionHolder.load();
@@ -131,6 +134,7 @@ public class CoreService extends Service {
         downloadDispatcher.startObservation();
         uploadDispatcher.startObservation();
         historyDispatcher.startObservation();
+        accountsDispatcher.startObservation();
         // Register broadcast receivers.
         MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
         registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
@@ -194,6 +198,12 @@ public class CoreService extends Service {
             Logger.log("Service started after device boot, but no active accounts. Stopping self.");
             stopSelf();
             System.exit(0);
+        }
+        // Check for this is connection event from accounts dispatcher.
+        boolean connectedEvent = intent.getBooleanExtra(EXTRA_ON_CONNECTED_EVENT, false);
+        if (connectedEvent) {
+            Logger.logWithPrefix("W", "Received account connected event. Scheduling restart.");
+            scheduleRestart(true);
         }
         // Check for service restarted automatically while there is no connected accounts.
         boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);

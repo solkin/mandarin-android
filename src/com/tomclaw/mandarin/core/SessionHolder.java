@@ -28,7 +28,7 @@ public class SessionHolder {
         this.context = context;
         // Obtain content resolver to perform queries.
         contentResolver = context.getContentResolver();
-        accountRootList = new ArrayList<AccountRoot>();
+        accountRootList = new ArrayList<>();
     }
 
     public void load() {

@@ -23,6 +23,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
@@ -43,31 +44,19 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private static final int ADAPTER_DIALOGS_ID = -2;
 
     /**
-     * Columns
-     */
-    private static int COLUMN_ROW_AUTO_ID;
-    private static int COLUMN_ROSTER_BUDDY_ID;
-    private static int COLUMN_ROSTER_BUDDY_NICK;
-    private static int COLUMN_ROSTER_BUDDY_STATUS;
-    private static int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
-    private static int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
-    private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
-    private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
-    private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
-    private static int COLUMN_ROSTER_BUDDY_DRAFT;
-    private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
-
-    /**
      * Variables
      */
     private Context context;
     private LayoutInflater inflater;
     private RosterAdapterCallback adapterCallback;
 
+    private BuddyCursor buddyCursor;
+
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
+        this.buddyCursor = new BuddyCursor();
         // Initialize loader for dialogs Id.
         loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -76,7 +65,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         // Notifying listener.
         if (adapterCallback != null) {
-            adapterCallback.onRosterUpdate();
+            adapterCallback.onRosterLoadingStarted();
         }
         return new CursorLoader(context,
                 Settings.BUDDY_RESOLVER_URI, null,
@@ -89,22 +78,14 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        // Detecting columns.
-        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-        COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
-        COLUMN_ROSTER_BUDDY_NICK = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK);
-        COLUMN_ROSTER_BUDDY_STATUS = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS);
-        COLUMN_ROSTER_BUDDY_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE);
-        COLUMN_ROSTER_BUDDY_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE);
-        COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE);
-        COLUMN_ROSTER_BUDDY_UNREAD_COUNT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
-        COLUMN_ROSTER_BUDDY_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
-        COLUMN_ROSTER_BUDDY_DRAFT = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DRAFT);
-        COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
         swapCursor(cursor);
         // Notifying listener.
-        if (adapterCallback != null && cursor.getCount() == 0) {
-            adapterCallback.onRosterEmpty();
+        if (adapterCallback != null) {
+            if (cursor.getCount() == 0) {
+                adapterCallback.onRosterEmpty();
+            } else {
+                adapterCallback.onRosterUpdate();
+            }
         }
     }
 
@@ -115,6 +96,20 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        buddyCursor.switchCursor(newCursor);
+        return super.swapCursor(newCursor);
+    }
+
+    public boolean moveToFirst() {
+        return buddyCursor.moveToFirst();
+    }
+
+    public BuddyCursor getBuddyCursor() {
+        return buddyCursor;
     }
 
     /**
@@ -147,14 +142,14 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, Context context, Cursor cursor) {
         // Status image.
-        String accountType = cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE);
-        int statusIndex = cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS);
+        String accountType = buddyCursor.getBuddyAccountType();
+        int statusIndex = buddyCursor.getBuddyStatus();
         int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
         // Status text.
-        String statusTitle = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
-        String statusMessage = cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
+        String statusTitle = buddyCursor.getBuddyStatusTitle();
+        String statusMessage = buddyCursor.getBuddyStatusMessage();
         if (statusIndex == StatusUtil.STATUS_OFFLINE
                 || TextUtils.equals(statusTitle, statusMessage)) {
             // Buddy status is offline now or status message is only status title.
@@ -162,7 +157,7 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             statusMessage = "";
         }
         SpannableString statusString;
-        long lastTyping = cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
+        long lastTyping = buddyCursor.getBuddyLastTyping();
         // Checking for typing no more than 5 minutes.
         if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
             statusString = new SpannableString(context.getString(R.string.typing));
@@ -171,9 +166,9 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         // Unread count.
-        int unreadCount = cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
+        int unreadCount = buddyCursor.getBuddyUnreadCount();
         // Applying values.
-        ((TextView) view.findViewById(R.id.buddy_nick)).setText(cursor.getString(COLUMN_ROSTER_BUDDY_NICK));
+        ((TextView) view.findViewById(R.id.buddy_nick)).setText(buddyCursor.getBuddyNick());
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
         ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
         if (unreadCount > 0) {
@@ -183,15 +178,15 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
         // Draft message.
-        String buddyDraft = cursor.getString(COLUMN_ROSTER_BUDDY_DRAFT);
+        String buddyDraft = buddyCursor.getBuddyDraft();
         view.findViewById(R.id.draft_indicator).setVisibility(
                 TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
-        final String avatarHash = cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
+        final String avatarHash = buddyCursor.getBuddyAvatarHash();
         ContactBadge contactBadge = ((ContactBadge) view.findViewById(R.id.buddy_badge));
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
         // On-avatar click listener.
-        final int buddyDbId = cursor.getInt(COLUMN_ROW_AUTO_ID);
+        final int buddyDbId = buddyCursor.getBuddyDbId();
         final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,11 +197,11 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     public int getBuddyDbId(int position) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(COLUMN_ROW_AUTO_ID);
+        return cursor.getBuddyDbId();
     }
 
     public RosterAdapterCallback getAdapterCallback() {
@@ -219,8 +214,10 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     public interface RosterAdapterCallback {
 
-        public void onRosterUpdate();
+        public void onRosterLoadingStarted();
 
         public void onRosterEmpty();
+
+        public void onRosterUpdate();
     }
 }

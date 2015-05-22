@@ -8,15 +8,16 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
+import android.view.ActionMode;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
@@ -30,6 +31,7 @@ import net.hockeyapp.android.CrashManagerListener;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class MainActivity extends ChiefActivity {
 
@@ -38,6 +40,7 @@ public class MainActivity extends ChiefActivity {
     private Toolbar toolbar;
 
     private AccountsDrawerLayout drawerLayout;
+    private MultiChoiceModeListener multiChoiceModeListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,11 +60,8 @@ public class MainActivity extends ChiefActivity {
         setContentView(R.layout.main_activity);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.dialogs);
         setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.dialogs);
 
         drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.init(this, toolbar);
@@ -72,7 +72,7 @@ public class MainActivity extends ChiefActivity {
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
         dialogsAdapter.setAdapterCallback(new RosterDialogsAdapter.RosterAdapterCallback() {
             @Override
-            public void onRosterUpdate() {
+            public void onRosterLoadingStarted() {
                 // Disable placeholder when loading started.
                 dialogsList.setEmptyView(null);
             }
@@ -81,6 +81,13 @@ public class MainActivity extends ChiefActivity {
             public void onRosterEmpty() {
                 // Show empty view only for really empty list.
                 dialogsList.setEmptyView(findViewById(android.R.id.empty));
+            }
+
+            @Override
+            public void onRosterUpdate() {
+                if (multiChoiceModeListener != null) {
+                    multiChoiceModeListener.updateMenu();
+                }
             }
         });
         dialogsList = (ListView) findViewById(R.id.chats_list_view);
@@ -225,22 +232,49 @@ public class MainActivity extends ChiefActivity {
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
         private SelectionHelper<Integer, Integer> selectionHelper;
+        private ActionMode actionMode;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             selectionHelper.onStateChanged(position, (int) id, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
+            updateMenu(mode, mode.getMenu());
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Create selection helper to store selected messages.
             selectionHelper = new SelectionHelper<>();
+            multiChoiceModeListener = this;
+            actionMode = mode;
+            updateMenu(mode, menu);
+            return true;
+        }
+
+        public void updateMenu() {
+            updateMenu(actionMode, actionMode.getMenu());
+        }
+
+        private void updateMenu(ActionMode mode, Menu menu) {
             // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
             // Assumes that you have menu resources
-            inflater.inflate(R.menu.chat_list_edit_menu, menu);
-            return true;
+            menu.clear();
+            // Checking for unread dialogs.
+            int menuRes = R.menu.chat_list_edit_menu;
+            Collection<Integer> selectedIds = selectionHelper.getSelectedIds();
+            dialogsAdapter.getBuddyCursor().moveToFirst();
+            BuddyCursor cursor = dialogsAdapter.getBuddyCursor();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                for (int selectedId : selectedIds) {
+                    if (selectedId == cursor.getBuddyDbId() &&
+                            cursor.getBuddyUnreadCount() > 0) {
+                        menuRes = R.menu.chat_list_unread_edit_menu;
+                        break;
+                    }
+                }
+            }
+            inflater.inflate(menuRes, menu);
         }
 
         @Override
@@ -251,6 +285,20 @@ public class MainActivity extends ChiefActivity {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.select_all_chats_menu: {
+                    for (int c = 0; c < dialogsAdapter.getCount(); c++) {
+                        dialogsList.setItemChecked(c, true);
+                    }
+                    return false;
+                }
+                case R.id.mark_as_read_chat_menu: {
+                    try {
+                        QueryHelper.readAllMessages(getContentResolver(), selectionHelper.getSelectedIds());
+                    } catch (Exception ignored) {
+                        // Nothing to do in this case.
+                    }
+                    break;
+                }
                 case R.id.close_chat_menu: {
                     try {
                         QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);
@@ -258,12 +306,6 @@ public class MainActivity extends ChiefActivity {
                         // Nothing to do in this case.
                     }
                     break;
-                }
-                case R.id.select_all_chats_menu: {
-                    for (int c = 0; c < dialogsAdapter.getCount(); c++) {
-                        dialogsList.setItemChecked(c, true);
-                    }
-                    return false;
                 }
                 default: {
                     return false;
@@ -276,6 +318,7 @@ public class MainActivity extends ChiefActivity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             selectionHelper.clearSelection();
+            multiChoiceModeListener = null;
         }
     }
 

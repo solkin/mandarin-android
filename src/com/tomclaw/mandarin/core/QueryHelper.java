@@ -668,6 +668,35 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static void readAllMessages(ContentResolver contentResolver, Collection<Integer> buddyDbIds) {
+        // Check for no buddies.
+        if(buddyDbIds.isEmpty()) {
+            return;
+        }
+        // Plain messages modify by type, read and shown state.
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_READ, 1);
+        contentValues.put(GlobalProvider.HISTORY_NOTICE_SHOWN, -1);
+
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.startComplexExpression();
+        boolean isFirst = true;
+        for (int buddyDbId : buddyDbIds) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                queryBuilder.or();
+            }
+            queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+        }
+        queryBuilder.finishComplexExpression()
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
+                .and().columnEquals(GlobalProvider.HISTORY_MESSAGE_READ, 0)
+                .and().columnEquals(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
+
+        queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
     public static void readMessages(ContentResolver contentResolver, int buddyDbId,
                                     long messageDbIdFirst, long messageDbIdLast) {
 

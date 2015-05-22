@@ -30,6 +30,10 @@ public class SelectionHelper<K, V> {
         selection.put(position, id);
     }
 
+    public boolean isChecked(K position) {
+        return selection.containsKey(position);
+    }
+
     public void setUnchecked(K position) {
         selection.remove(position);
     }

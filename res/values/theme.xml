@@ -11,9 +11,9 @@
     <color name="orange_indicator_color">@color/orange_normal</color>
     <color name="green_indicator_color">#ff5cb85c</color>
     <color name="red_indicator_color">#ffe74c3c</color>
-    <color name="button_navbar_normal">#11000000</color>
+    <color name="button_navbar_normal">#00000000</color>
     <color name="button_navbar_pressed">#55000000</color>
-    <color name="button_navbar_ripple">#333333</color>
+    <color name="button_navbar_ripple">#555555</color>
     <color name="connecting_status_filter">#88000000</color>
     <color name="status_title_color">#FFFAFAFA</color>
     <color name="status_message_color">#FFFAFAFA</color>
@@ -106,7 +106,7 @@
 
         <item name="profile_panel_background">#EE232323</item>
         <item name="separator_navbar">#44000000</item>
-        <item name="button_navbar_text">#ffdddddd</item>
+        <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>
 
         <item name="chat_background_doodle">@drawable/chat_background_doodle_light</item>
@@ -171,7 +171,7 @@
 
         <item name="profile_panel_background">#EE151515</item>
         <item name="separator_navbar">#44000000</item>
-        <item name="button_navbar_text">#ffdddddd</item>
+        <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>
 
         <item name="chat_background_doodle">@android:color/transparent</item>
@@ -248,8 +248,8 @@
         <item name="android:textColor">?attr/button_navbar_text</item>
         <item name="android:background">?attr/button_navbar_background</item>
         <item name="android:gravity">left|center_vertical</item>
-        <item name="android:drawablePadding">12dp</item>
-        <item name="android:paddingLeft">12dp</item>
+        <item name="android:drawablePadding">32dp</item>
+        <item name="android:paddingLeft">16dp</item>
     </style>
 
     <style name="Button.Flat" parent="android:Widget.Button">

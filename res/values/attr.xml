@@ -28,7 +28,7 @@
 
     <attr name="profile_panel_background" format="color|reference"/>
     <attr name="separator_navbar" format="color|reference"/>
-    <attr name="button_navbar_text" format="color|reference"/>
+    <attr name="button_navbar_text" format="reference"/>
     <attr name="button_navbar_background" format="color|reference"/>
 
     <attr name="info_block_background" format="color|reference"/>

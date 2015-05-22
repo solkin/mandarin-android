@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.main.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +29,16 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
     private final String accountType;
     private final List<Integer> statusList;
 
-    private static final int DROPDOWN_PADDING = 10;
+    private static int DROPDOWN_PADDING;
+    private static int DROPDOWN_PADDING_LEFT;
 
     public StatusSpinnerAdapter(Context context, String accountType, List<Integer> statusList) {
         super(context, R.layout.status_item, statusList);
         inflater = LayoutInflater.from(context);
         this.accountType = accountType;
         this.statusList = statusList;
+        DROPDOWN_PADDING = getPxFromDp(4);
+        DROPDOWN_PADDING_LEFT = getPxFromDp(10);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View view = getView(position, convertView, parent);
-        view.setPadding(DROPDOWN_PADDING, DROPDOWN_PADDING, DROPDOWN_PADDING, DROPDOWN_PADDING);
+        view.setPadding(DROPDOWN_PADDING_LEFT, DROPDOWN_PADDING, DROPDOWN_PADDING, DROPDOWN_PADDING);
         return view;
     }
 
@@ -83,5 +88,10 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
             throw new StatusNotFoundException();
         }
         return statusPosition;
+    }
+
+    private int getPxFromDp(int dp) {
+        Resources r = getContext().getResources();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
     }
 }

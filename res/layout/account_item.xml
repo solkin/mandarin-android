@@ -71,6 +71,7 @@
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:textColor="@color/user_item_status_color"
+                android:textColorHint="@color/user_item_status_hint_color"
                 android:text="@string/status_online"/>
     </LinearLayout>
     <View

@@ -26,6 +26,7 @@
     <color name="user_item_id_color">#727272</color>
     <color name="user_item_nick_color">#ffffff</color>
     <color name="user_item_status_color">#b6b6b6</color>
+    <color name="user_item_status_hint_color">#555555</color>
     <color name="tint_color">#70000000</color>
     <color name="intro_tint_color">#aa000000</color>
     <color name="background_tint_color">#CC000000</color>

@@ -63,7 +63,7 @@
     <color name="primary_color">#222222</color>
     <color name="primary_dark_color">#0c0c0c</color>
 
-    <style name="Theme.Mandarin.Light" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.Mandarin.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorAccent">@color/accent_color</item>
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryDark">@color/primary_dark_color</item>
@@ -128,7 +128,7 @@
         <item name="neutral_dialog_button_color">#222222</item>
     </style>
 
-    <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat">
+    <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/accent_color</item>
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryDark">@color/primary_dark_color</item>

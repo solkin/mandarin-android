@@ -2,12 +2,12 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
         }
@@ -35,17 +35,17 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.header_text))
-                .setText(String.valueOf(cursor.getString(COLUMN_ROSTER_BUDDY_GROUP).toUpperCase()));
+                .setText(cursor.getBuddyGroup().toUpperCase());
         return convertView;
     }
 
     @Override
     public long getHeaderId(int position) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        String groupName = cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
+        String groupName = cursor.getBuddyGroup();
         Integer groupId = groupsMap.get(groupName);
         if (groupId == null) {
             groupId = groupsMap.size();
@@ -57,6 +57,7 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
         queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_GROUP).andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

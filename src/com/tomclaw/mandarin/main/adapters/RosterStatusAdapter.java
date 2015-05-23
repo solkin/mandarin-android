@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
@@ -25,14 +26,14 @@ public class RosterStatusAdapter extends RosterStickyAdapter {
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
         }
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        boolean isOnline = cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS) != StatusUtil.STATUS_OFFLINE;
+        boolean isOnline = cursor.getBuddyStatus() != StatusUtil.STATUS_OFFLINE;
         String headerText = getContext().getString(isOnline ? R.string.status_online : R.string.status_offline);
         ((TextView) convertView.findViewById(R.id.header_text)).setText(headerText.toUpperCase());
         return convertView;
@@ -40,17 +41,18 @@ public class RosterStatusAdapter extends RosterStickyAdapter {
 
     @Override
     public long getHeaderId(int position) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS) != StatusUtil.STATUS_OFFLINE ? 1 : 0;
+        return cursor.getBuddyStatus() != StatusUtil.STATUS_OFFLINE ? 1 : 0;
     }
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
         queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + " != " +
                 StatusUtil.STATUS_OFFLINE + " THEN 1 ELSE 0 END)").andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

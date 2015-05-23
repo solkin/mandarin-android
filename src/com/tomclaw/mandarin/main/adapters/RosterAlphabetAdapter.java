@@ -2,12 +2,12 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -24,7 +24,7 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
         }
@@ -32,22 +32,23 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.header_text)).setText(String.valueOf(
-                Character.toUpperCase((char) cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX))));
+                Character.toUpperCase((char) cursor.getBuddyAlphabetIndex())));
         return convertView;
     }
 
     @Override
     public long getHeaderId(int position) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
+        return cursor.getBuddyAlphabetIndex();
     }
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_STATUS).andOrder()
-                .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
+        queryBuilder.ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD).andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_STATUS);
     }
 }

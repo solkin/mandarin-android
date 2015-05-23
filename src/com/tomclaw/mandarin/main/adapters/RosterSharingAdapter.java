@@ -2,12 +2,12 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**
@@ -25,7 +25,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
         }
@@ -34,7 +34,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         }
         TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
         int headerTitle;
-        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
+        boolean dialogOpened = cursor.getBuddyDialog();
         if (dialogOpened) {
             headerTitle = R.string.dialogs;
         } else {
@@ -46,11 +46,11 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
 
     @Override
     public long getHeaderId(int position) {
-        Cursor cursor = getCursor();
+        BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        boolean dialogOpened = cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) == 1;
+        boolean dialogOpened = cursor.getBuddyDialog();
         return dialogOpened ? GROUP_DIALOGS : GROUP_CONTACTS;
     }
 
@@ -58,6 +58,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
         queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_DIALOG + " > 0 THEN " +
                 GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " ELSE -1 END)").andOrder()
+                .ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }
 }

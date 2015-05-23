@@ -104,10 +104,6 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         return super.swapCursor(newCursor);
     }
 
-    public boolean moveToFirst() {
-        return buddyCursor.moveToFirst();
-    }
-
     public BuddyCursor getBuddyCursor() {
         return buddyCursor;
     }

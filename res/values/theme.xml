@@ -219,10 +219,11 @@
         <item name="android:textColor">?neutral_dialog_button_color</item>
     </style>
 
-    <style name="Toolbar.Theme" parent="Widget.AppCompat.Toolbar">
+    <style name="ToolbarTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
     </style>
 

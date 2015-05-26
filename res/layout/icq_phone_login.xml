@@ -13,9 +13,7 @@
             android:layout_alignParentBottom="true"/>
     <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            style="@style/Toolbar.Theme"
+            style="@style/ToolbarTheme"
             android:background="@android:color/transparent"/>
     <TextView
             android:text="@string/enter_phone_number"

@@ -8,9 +8,7 @@
 
     <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            style="@style/Toolbar.Theme">
+            style="@style/ToolbarTheme">
         <include layout="@layout/chat_toolbar_layout"/>
     </android.support.v7.widget.Toolbar>
     <FrameLayout

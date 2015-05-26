@@ -76,7 +76,7 @@ public abstract class BaseHistoryView extends LinearLayout {
                     animated = true;
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
-                    drawable = null;
+                    drawable = getResources().getDrawable(R.drawable.ic_sent);
                     break;
                 case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
                     drawable = getResources().getDrawable(R.drawable.ic_delivered);

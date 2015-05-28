@@ -2,7 +2,10 @@ package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
@@ -11,12 +14,10 @@ import com.tomclaw.mandarin.main.RangePickerDialog;
 /**
  * Created by Solkin on 11.07.2014.
  */
-public class AgePickerView extends TextView {
+public class AgePickerView extends PseudoSpinnerView {
 
-    private int ageMin = 14;
-    private int ageMax = 99;
-    private int valueMin = 19;
-    private int valueMax = 26;
+    private int ageMin, ageMax;
+    private int valueMin, valueMax;
 
     public AgePickerView(final Context context, AttributeSet attrs) {
         super(context, attrs);

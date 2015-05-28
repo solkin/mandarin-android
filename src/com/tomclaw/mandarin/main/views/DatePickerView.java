@@ -17,7 +17,7 @@ import java.util.GregorianCalendar;
 /**
  * Created by Solkin on 04.04.2015.
  */
-public class DatePickerView extends TextView {
+public class DatePickerView extends PseudoSpinnerView {
 
     /**
      * Date format helper
@@ -32,9 +32,7 @@ public class DatePickerView extends TextView {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                int initYear = year;
-                int initMonth = month;
-                int initDay = day;
+                int initYear, initMonth, initDay;
                 // Check if date set or not. If not set - start choosing from current date.
                 if (isDateSet()) {
                     initYear = year;

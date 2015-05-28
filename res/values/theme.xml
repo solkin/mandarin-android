@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="background_split_action_bar">#FF555555</color>
-    <color name="item_background_action_bar">#FFFFFFFF</color>
     <color name="chat_gradient_light_start">#FFDBDBDB</color>
     <color name="chat_gradient_light_end">#FFEDEDED</color>
     <color name="chat_gradient_dark_start">#FF040404</color>
@@ -82,7 +80,7 @@
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
-        <item name="drop_down_style">?spinnerStyle</item>
+        <item name="spinner_triangle_color">#6d6d6d</item>
 
         <item name="header_head_color">#d9d9d9</item>
         <item name="header_back_color">#e6e6e6</item>
@@ -143,12 +141,12 @@
 
         <item name="alertDialogTheme">@style/AlertDialogCustomDark</item>
 
-        <item name="drop_down_style">?spinnerStyle</item>
-
         <item name="android:windowBackground">@color/background_tint_color</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowShowWallpaper">true</item>
         <item name="android:windowAnimationStyle">@null</item>
+
+        <item name="spinner_triangle_color">#bbbebd</item>
 
         <item name="header_head_color">#80333333</item>
         <item name="header_back_color">#99444444</item>
@@ -424,5 +422,15 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
+    </style>
+    <style name="FormHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 </resources>

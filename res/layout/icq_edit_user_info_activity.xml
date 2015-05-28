@@ -159,7 +159,8 @@
                                             android:paddingTop="8dp"
                                             android:textSize="16sp"
                                             android:gravity="left"
-                                            style="?drop_down_style"/>
+                                            android:background="@drawable/abc_spinner_mtrl_am_alpha"
+                                            style="?spinnerStyle"/>
                                 </LinearLayout>
                             </LinearLayout>
                             <LinearLayout

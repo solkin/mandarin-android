@@ -200,8 +200,10 @@ public class MainActivity extends ChiefActivity {
     @Override
     public void onBackPressed() {
         if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
+            // Close drawer if opened.
             drawerLayout.closeDrawers();
         } else {
+            // Finish otherwise.
             finish();
         }
     }

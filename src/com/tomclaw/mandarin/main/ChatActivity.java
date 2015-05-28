@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +32,7 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
+import com.tomclaw.mandarin.main.views.ScrollingTextView;
 import com.tomclaw.mandarin.util.*;
 
 import java.io.File;
@@ -52,7 +54,7 @@ public class ChatActivity extends ChiefActivity {
     private ChatHistoryAdapter chatHistoryAdapter;
     private EditText messageText;
     private TextView buddyNick;
-    private TextView buddyStatusMessage;
+    private ScrollingTextView buddyStatusMessage;
     private ImageView buddyStatusIcon;
 
     private View popupView;
@@ -87,7 +89,7 @@ public class ChatActivity extends ChiefActivity {
         setSupportActionBar(toolbar);
 
         buddyNick = (TextView) toolbar.findViewById(R.id.buddy_nick);
-        buddyStatusMessage = (TextView) toolbar.findViewById(R.id.buddy_status_message);
+        buddyStatusMessage = (ScrollingTextView) toolbar.findViewById(R.id.buddy_status_message);
         buddyStatusIcon = (ImageView) toolbar.findViewById(R.id.buddy_status_icon);
 
         // Initialize action bar.
@@ -1358,7 +1360,7 @@ public class ChatActivity extends ChiefActivity {
                 long lastSeen = buddyCursor.getBuddyLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
-                    String lastSeenDate = timeHelper.getFormattedDate(lastSeen * 1000);
+                    String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
                     String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
 
                     Calendar today = Calendar.getInstance();

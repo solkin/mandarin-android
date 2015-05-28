@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 
 /**
@@ -12,22 +13,30 @@ import android.util.AttributeSet;
  */
 public class ScrollingTextView extends TightTextView {
 
-    public ScrollingTextView(Context context, AttributeSet attrs,
-                             int defStyle) {
+    public ScrollingTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init();
     }
 
     public ScrollingTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public ScrollingTextView(Context context) {
         super(context);
+        init();
+    }
+
+    private void init() {
+        setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        setMarqueeRepeatLimit(-1);
+        setSingleLine();
+        setHorizontallyScrolling(true);
     }
 
     @Override
-    protected void onFocusChanged(boolean focused, int direction,
-                                  Rect previouslyFocusedRect) {
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         if (focused) {
             super.onFocusChanged(focused, direction, previouslyFocusedRect);
         }

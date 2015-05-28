@@ -38,12 +38,9 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/buddy_status_message"
                     android:layout_gravity="left|center_vertical"
-                    android:singleLine="true"
-                    android:lines="1"
                     android:textSize="15sp"
-                    android:scrollHorizontally="true"
                     android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
+                    android:fadingEdge="horizontal"
                     android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>

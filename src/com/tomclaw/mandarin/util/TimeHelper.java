@@ -19,6 +19,8 @@ public class TimeHelper {
      */
     private static final DateFormat DATE_INSTANCE = SimpleDateFormat.getDateInstance();
     @SuppressLint("SimpleDateFormat")
+    private static final DateFormat DATE_FORMAT_SHORT = new SimpleDateFormat("dd.MM.yy");
+    @SuppressLint("SimpleDateFormat")
     private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("h:mm a");
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm");
@@ -32,6 +34,10 @@ public class TimeHelper {
 
     private DateFormat getTimeFormat() {
         return android.text.format.DateFormat.is24HourFormat(context) ? TIME_FORMAT_24 : TIME_FORMAT_12;
+    }
+
+    public String getShortFormattedDate(long timestamp) {
+        return DATE_FORMAT_SHORT.format(timestamp);
     }
 
     public String getFormattedDate(long timestamp) {

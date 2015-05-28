@@ -25,17 +25,16 @@
                 android:layout_height="20dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="@string/buddy_status"/>
-        <TextView
+        <com.tomclaw.mandarin.main.views.ScrollingTextView
                 android:id="@+id/buddy_status_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14dp"
                 android:includeFontPadding="false"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="sans-serif"
                 android:paddingLeft="4dp"
-                android:lines="1"
-                android:singleLine="true"
                 android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
                 android:textColor="@color/abc_secondary_text_material_dark"/>
     </LinearLayout>
 </LinearLayout>

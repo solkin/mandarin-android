@@ -199,7 +199,11 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
+            drawerLayout.closeDrawers();
+        } else {
+            finish();
+        }
     }
 
     @Override

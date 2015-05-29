@@ -67,7 +67,7 @@
     <color name="link_text_material_light">@color/material_deep_teal_500</color>
 
     <!-- Text & foreground colors -->
-    <eat-comment/>
+    <eat-comment />
 
     <color name="primary_text_default_material_light">#de000000</color>
     <color name="secondary_text_default_material_light">#8a000000</color>
@@ -87,7 +87,7 @@
     <color name="secondary_text_disabled_material_dark">#36ffffff</color>
 
     <!-- Primary & accent colors -->
-    <eat-comment/>
+    <eat-comment />
 
     <color name="material_deep_teal_200">#ff80cbc4</color>
     <color name="material_deep_teal_500">#ff009688</color>

@@ -270,7 +270,7 @@
     </plurals>
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
-    <string name="gender_any">Does not matter</string>
+    <string name="gender_any">No matter</string>
     <string name="gender_not_selected">Not selected</string>
     <string name="buddy_info_search">Search criteria</string>
     <string name="keyword_search">ID or name</string>
@@ -281,7 +281,7 @@
     <string name="open_dialog">Open dialog</string>
     <string name="defaultGroupName">Main</string>
     <string name="authorizationMsg">Hello! Please add me to your buddylist.</string>
-    <string name="age_any">Does not matter</string>
+    <string name="age_any">No matter</string>
 
     <string name="group_by_alphabet">Group by name</string>
     <string name="group_by_groups">Use existing groups</string>

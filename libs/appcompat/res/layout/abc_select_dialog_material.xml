@@ -21,15 +21,15 @@
     Assign an ID so its state will be saved/restored.
 -->
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/select_dialog_listview"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:cacheColorHint="@null"
-          android:divider="?attr/listDividerAlertDialog"
-          android:scrollbars="vertical"
-          android:overScrollMode="ifContentScrolls"
-          android:fadingEdge="none"
-          android:paddingTop="@dimen/abc_dialog_list_padding_vertical_material"
-          android:paddingBottom="@dimen/abc_dialog_list_padding_vertical_material"
-          android:clipToPadding="false"
-          style="@style/Widget.AppCompat.ListView"/>
+      android:id="@+id/select_dialog_listview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:cacheColorHint="@null"
+      android:divider="?attr/listDividerAlertDialog"
+      android:scrollbars="vertical"
+      android:overScrollMode="ifContentScrolls"
+      android:fadingEdge="none"
+      android:paddingTop="@dimen/abc_dialog_list_padding_vertical_material"
+      android:paddingBottom="@dimen/abc_dialog_list_padding_vertical_material"
+      android:clipToPadding="false"
+      style="@style/Widget.AppCompat.ListView" />

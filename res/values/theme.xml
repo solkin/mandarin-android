@@ -82,6 +82,9 @@
 
         <item name="spinner_triangle_color">#6d6d6d</item>
 
+        <item name="buddy_primary_color">@color/primary_text_default_material_light</item>
+        <item name="buddy_secondary_color">@color/secondary_text_default_material_light</item>
+
         <item name="header_head_color">#d9d9d9</item>
         <item name="header_back_color">#e6e6e6</item>
         <item name="header_font_color">#ff6600</item>
@@ -147,6 +150,9 @@
         <item name="android:windowAnimationStyle">@null</item>
 
         <item name="spinner_triangle_color">#bbbebd</item>
+
+        <item name="buddy_primary_color">@color/primary_text_default_material_dark</item>
+        <item name="buddy_secondary_color">@color/secondary_text_default_material_dark</item>
 
         <item name="header_head_color">#80333333</item>
         <item name="header_back_color">#99444444</item>

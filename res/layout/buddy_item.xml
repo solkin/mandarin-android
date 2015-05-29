@@ -32,13 +32,15 @@
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"
-                    android:textSize="17sp"/>
+                    android:textSize="17sp"
+                    android:textColor="?attr/buddy_primary_color"/>
             <com.tomclaw.mandarin.main.views.ScrollingTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/buddy_status_message"
                     android:layout_gravity="left|center_vertical"
                     android:textSize="15sp"
+                    android:textColor="?attr/buddy_secondary_color"
                     android:ellipsize="marquee"
                     android:fadingEdge="horizontal"
                     android:fontFamily="sans-serif-light"/>
@@ -47,7 +49,9 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" android:gravity="center" android:visibility="gone"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
             android:id="@+id/draft_indicator">
         <TextView
                 android:layout_width="wrap_content"

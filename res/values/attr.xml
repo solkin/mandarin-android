@@ -46,6 +46,9 @@
     <attr name="negative_dialog_button_color" format="color|reference"/>
     <attr name="neutral_dialog_button_color" format="color|reference"/>
 
+    <attr name="buddy_primary_color" format="color|reference"/>
+    <attr name="buddy_secondary_color" format="color|reference"/>
+
     <declare-styleable name="PreviewImageView">
         <attr name="preview_placeholder_tint" format="color|reference"/>
     </declare-styleable>

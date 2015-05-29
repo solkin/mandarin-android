@@ -35,7 +35,8 @@
                     android:layout_gravity="left|center_vertical"
                     android:singleLine="true"
                     android:textStyle="bold"
-                    android:textSize="17sp"/>
+                    android:textSize="17sp"
+                    android:textColor="?attr/buddy_primary_color"/>
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -44,6 +45,7 @@
                     android:singleLine="true"
                     android:lines="1"
                     android:textSize="15sp"
+                    android:textColor="?attr/buddy_secondary_color"
                     android:fontFamily="sans-serif-light"/>
             <TextView
                     android:layout_width="wrap_content"
@@ -52,9 +54,9 @@
                     android:text="@string/status_online"
                     android:gravity="center"
                     android:background="@drawable/green_indicator"
-                    android:textColor="#ffffffff"
+                    android:textColor="@android:color/white"
                     android:textSize="13sp"
-                    android:fontFamily="sans-serif-light"
+                    android:layout_marginTop="2dp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="4dp"

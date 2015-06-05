@@ -136,8 +136,9 @@ public class BitmapCache {
         String cacheKey = getCacheKey(hash, width, height);
         Bitmap bitmap = bitmapLruCache.get(cacheKey);
         if (bitmap == null) {
+            FileInputStream inputStream = null;
             try {
-                FileInputStream inputStream = new FileInputStream(getBitmapFilePath(hash));
+                inputStream = new FileInputStream(getBitmapFilePath(hash));
                 if (width != BITMAP_SIZE_ORIGINAL && height != BITMAP_SIZE_ORIGINAL) {
                     bitmap = BitmapHelper.decodeSampledBitmapFromStream(inputStream, width, height);
                 } else {
@@ -174,6 +175,13 @@ public class BitmapCache {
                 Logger.log("Bitmap '" + hash + "' not found!");
             } catch (Throwable ex) {
                 Logger.log("Couldn't cache '" + hash + "' bitmap!", ex);
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException ignored) {
+                    }
+                }
             }
         }
         return bitmap;

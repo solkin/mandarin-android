@@ -57,7 +57,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     private GridView mediaGrid;
     private AlbumEntry selectedAlbum = null;
     private int itemWidth, itemHeight;
-    private HashMap<Integer, PhotoEntry> selectedPhotos = new HashMap<Integer, PhotoEntry>();
+    private HashMap<Integer, PhotoEntry> selectedPhotos = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,8 +253,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
     }
 
     public ArrayList<AlbumEntry> loadGalleryPhotosAlbums() {
-        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
-        SparseArray<AlbumEntry> albums = new SparseArray<AlbumEntry>();
+        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
+        SparseArray<AlbumEntry> albums = new SparseArray<>();
         AlbumEntry allPhotosAlbum = null;
         String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
         Integer cameraAlbumId = null;
@@ -306,13 +306,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            Log.d("tmessages", "", e);
+            Logger.log("exception in gallery loading", e);
         } finally {
             if (cursor != null) {
                 try {
                     cursor.close();
-                } catch (Exception e) {
-                    Log.d("tmessages", "", e);
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -421,12 +420,10 @@ public class PhotoPickerActivity extends AppCompatActivity {
             view.setLayoutParams(params);
             PhotoEntry photoEntry = selectedAlbum.photos.get(position);
             ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
-            // imageView.setTag(position);
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
             updateSelectedPhoto(view, photoEntry);
-            boolean showing = false;//PhotoViewer.getInstance().isShowingImage(photoEntry.path);
-            //imageView.imageReceiver.setVisible(!showing, false);
+            boolean showing = false;
             View frameView = view.findViewById(R.id.photo_frame);
             frameView.setVisibility(showing ? View.GONE : View.VISIBLE);
             ImageView checkImageView = (ImageView) view.findViewById(R.id.photo_check);

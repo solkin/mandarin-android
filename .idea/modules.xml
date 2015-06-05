@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/libs/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/libs/appcompat/appcompat.iml" />
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" filepath="$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/preferencefragment-compat/preferencefragment-compat.iml" filepath="$PROJECT_DIR$/libs/preferencefragment-compat/preferencefragment-compat.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" filepath="$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" filepath="$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" />

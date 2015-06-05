@@ -27,9 +27,10 @@ public class BitmapHelper {
 
     public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri, int reqWidth, int reqHeight) {
         Bitmap bitmap;
+        InputStream inputStream = null;
         try {
-            bitmap = decodeSampledBitmapFromStream(
-                    context.getContentResolver().openInputStream(uri), reqWidth, reqHeight);
+            inputStream = context.getContentResolver().openInputStream(uri);
+            bitmap = decodeSampledBitmapFromStream(inputStream, reqWidth, reqHeight);
 
             int orientation = getOrientation(context, uri);
             if (orientation != 0) {
@@ -42,6 +43,13 @@ public class BitmapHelper {
             }
         } catch (Throwable ignored) {
             bitmap = null;
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
         return bitmap;
     }
@@ -55,15 +63,21 @@ public class BitmapHelper {
             // First decode with inJustDecodeBounds=true to check dimensions
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
             BitmapFactory.decodeStream(inputStream, null, options);
 
             // Calculate inSampleSize
-            final int widthSample = options.outWidth / reqWidth;
-            final int heightSample = options.outHeight / reqHeight;
+            final float widthSample = options.outWidth / reqWidth;
+            final float heightSample = options.outHeight / reqHeight;
+
+            float scaleFactor = Math.max(widthSample, heightSample);
+            if (scaleFactor < 1) {
+                scaleFactor = 1;
+            }
 
             options.inJustDecodeBounds = false;
-            options.inSampleSize = Math.min(widthSample, heightSample);
+            options.inSampleSize = (int) scaleFactor;
+            options.inDither = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
 
             // Decode bitmap with inSampleSize set
             inputStream.reset();
@@ -87,8 +101,6 @@ public class BitmapHelper {
         try {
             retriever.setDataSource(context, uri);
             bitmap = retriever.getFrameAtTime(-1);
-        } catch (IllegalArgumentException ex) {
-            // Assume this is a corrupt video file
         } catch (RuntimeException ex) {
             // Assume this is a corrupt video file.
         } finally {

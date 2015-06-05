@@ -254,7 +254,12 @@ public class ChatActivity extends ChiefActivity {
         if (selectionStart > 0 && message.charAt(selectionStart - 1) != ' ') {
             smileyText = " " + smileyText;
         }
-        smileyText += " ";
+        // If cursor is inside text and char right of it not whitespace or this is end of the text,
+        // then add whitespace.
+        if((selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') ||
+                selectionEnd == messageText.length()) {
+            smileyText += " ";
+        }
         // Inserting smile into current message.
         message = message.substring(0, selectionStart) + smileyText + message.substring(selectionEnd);
         messageText.setText(message);

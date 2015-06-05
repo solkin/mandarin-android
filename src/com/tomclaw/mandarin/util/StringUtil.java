@@ -62,11 +62,17 @@ public class StringUtil {
         return Entities.XML.unescape(string);
     }
 
+    public static void copyStringToClipboard(Context context, String string) {
+        copyStringToClipboard(context, string, 0);
+    }
+
     public static void copyStringToClipboard(Context context, String string, int toastText) {
         ClipboardManager clipboardManager = (ClipboardManager)
                 context.getSystemService(Context.CLIPBOARD_SERVICE);
         clipboardManager.setPrimaryClip(ClipData.newPlainText("", string));
-        Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+        if (toastText > 0) {
+            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static String fixCyrillicSymbols(String string) {

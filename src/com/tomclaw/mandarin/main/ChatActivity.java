@@ -768,8 +768,7 @@ public class ChatActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("", getSelectedMessages()));
+                    StringUtil.copyStringToClipboard(ChatActivity.this, getSelectedMessages());
                     break;
                 case R.id.message_share:
                     startActivity(createShareIntent());

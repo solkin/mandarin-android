@@ -22,7 +22,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
-import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
+import com.tomclaw.mandarin.im.icq.UserInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -223,29 +223,32 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     @Override
     public void onCoreServiceIntent(Intent intent) {
-        // Check for info present in this intent.
-        boolean isInfoPresent = !intent.getBooleanExtra(BuddyInfoRequest.NO_INFO_CASE, false);
-        int requestAccountDbId = intent.getIntExtra(BuddyInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
-        // Checking for avatar info received.
-        String requestAvatarHash = intent.getStringExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH);
-        // Checking for this is info we need.
-        if (requestAccountDbId == accountDbId) {
-            // Hide the progress bar.
-            hideProgressBar();
-            // Checking for avatar hash is new and cool.
-            if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
-                avatarHash = requestAvatarHash;
-                ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
-                Animation fadeIn = new AlphaAnimation(0, 1);
-                fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
-                fadeIn.setDuration(750);
-                contactBadgeUpdate.setAnimation(fadeIn);
-                BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.def_avatar_0, true);
-            }
-            if (isInfoPresent) {
-                onUserInfoReceived(intent);
-            } else {
-                onUserInfoRequestError();
+        boolean isEditInfoRequest = intent.getBooleanExtra(UserInfoRequest.EDIT_INFO_REQUEST, false);
+        if (isEditInfoRequest) {
+            // Check for info present in this intent.
+            boolean isInfoPresent = !intent.getBooleanExtra(UserInfoRequest.NO_INFO_CASE, false);
+            int requestAccountDbId = intent.getIntExtra(UserInfoRequest.ACCOUNT_DB_ID, GlobalProvider.ROW_INVALID);
+            // Checking for avatar info received.
+            String requestAvatarHash = intent.getStringExtra(UserInfoRequest.BUDDY_AVATAR_HASH);
+            // Checking for this is info we need.
+            if (requestAccountDbId == accountDbId) {
+                // Hide the progress bar.
+                hideProgressBar();
+                // Checking for avatar hash is new and cool.
+                if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
+                    avatarHash = requestAvatarHash;
+                    ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+                    Animation fadeIn = new AlphaAnimation(0, 1);
+                    fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
+                    fadeIn.setDuration(750);
+                    contactBadgeUpdate.setAnimation(fadeIn);
+                    BitmapCache.getInstance().getBitmapAsync(contactBadgeUpdate, avatarHash, R.drawable.def_avatar_0, true);
+                }
+                if (isInfoPresent) {
+                    onUserInfoReceived(intent);
+                } else {
+                    onUserInfoRequestError();
+                }
             }
         }
     }

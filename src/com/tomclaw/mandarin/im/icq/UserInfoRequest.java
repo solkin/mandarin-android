@@ -38,6 +38,7 @@ public class UserInfoRequest extends WimRequest {
     public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
 
     public static final String NO_INFO_CASE = "no_info_case";
+    public static final String EDIT_INFO_REQUEST = "edit_info_request";
 
     private String buddyId;
 
@@ -142,6 +143,7 @@ public class UserInfoRequest extends WimRequest {
         } else {
             intent.putExtra(NO_INFO_CASE, true);
         }
+        intent.putExtra(EDIT_INFO_REQUEST, true);
         // We must send intent in any case,
         // because our request is going to be deleted.
         getService().sendBroadcast(intent);

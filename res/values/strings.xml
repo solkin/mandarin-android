@@ -401,4 +401,5 @@
     <string name="buddies">Контакты</string>
     <string name="invalid_file">Извините, этот файл (текст) невозможно отправить</string>
     <string name="nfc_share">NFC</string>
+    <string name="close_without_user_info_save">Выйти без сохранения изменений?</string>
 </resources>

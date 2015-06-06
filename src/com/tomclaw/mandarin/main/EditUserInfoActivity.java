@@ -1,11 +1,13 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -86,6 +88,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(R.string.account_info);
+            bar.setHomeAsUpIndicator(R.drawable.ic_close);
         }
 
         // Buddy avatar.
@@ -120,6 +123,29 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     }
 
     @Override
+    public void onBackPressed() {
+        onActivityCloseAttempt();
+    }
+
+    private void onActivityCloseAttempt() {
+        // Check for info received and we must notify user about closing activity.
+        if (isInfoReceived) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.close_without_user_info_save)
+                    .setNegativeButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setPositiveButton(R.string.no, null)
+                    .show();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.edit_user_info_menu, menu);
         final MenuItem item = menu.findItem(R.id.edit_user_info_complete);
@@ -146,7 +172,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(RESULT_CANCELED);
-                finish();
+                onBackPressed();
                 return true;
             case R.id.edit_user_info_complete:
                 sendManualBitmap();

@@ -88,7 +88,6 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             bar.setDisplayShowTitleEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(R.string.account_info);
-            bar.setHomeAsUpIndicator(R.drawable.ic_close);
         }
 
         // Buddy avatar.
@@ -215,6 +214,10 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         if (!isInfoReceived) {
             isInfoReceived = true;
             invalidateOptionsMenu();
+            ActionBar bar = getSupportActionBar();
+            if (bar != null) {
+                bar.setHomeAsUpIndicator(R.drawable.ic_close);
+            }
         }
     }
 

@@ -42,8 +42,10 @@ public class SetStateRequest extends WimRequest {
         // Parsing response.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
+        boolean isRequestOk = false;
         // Check for server reply.
         if (statusCode == WIM_OK) {
+            isRequestOk = true;
             JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
             JSONObject myInfoObject = dataObject.getJSONObject(MY_INFO);
             String state = myInfoObject.getString(STATE);
@@ -61,7 +63,7 @@ public class SetStateRequest extends WimRequest {
         }
         intent.putExtra(SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or McDonald's.
-        return isSetStateSuccess ? REQUEST_DELETE : REQUEST_PENDING;
+        return isRequestOk ? REQUEST_DELETE : REQUEST_PENDING;
     }
 
     @Override

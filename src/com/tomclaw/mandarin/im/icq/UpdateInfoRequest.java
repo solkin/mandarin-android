@@ -54,12 +54,7 @@ public class UpdateInfoRequest extends WimRequest {
         // Parsing response.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        // Check for server reply.
-        if (statusCode == WIM_OK) {
-            return REQUEST_DELETE;
-        }
-        // Maybe incorrect aim sid or McDonald's.
-        return REQUEST_PENDING;
+        return REQUEST_DELETE;
     }
 
     @Override

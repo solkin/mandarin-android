@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -144,10 +145,13 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 String avatarHash = data.getStringExtra(EditUserInfoActivity.AVATAR_HASH);
                 // Update buddy nick.
                 updateBuddyNick(buddyNick, firstName, lastName);
-                // Update avatar.
-                setAvatarImmutable(false);
-                updateAvatar(avatarHash, false);
-                setAvatarImmutable(true);
+                // Check for avatar changed.
+                if (!TextUtils.isEmpty(avatarHash)) {
+                    // Update avatar.
+                    setAvatarImmutable(false);
+                    updateAvatar(avatarHash, false);
+                    setAvatarImmutable(true);
+                }
                 // Re-request buddy info from server.
                 refreshBuddyInfo();
             }

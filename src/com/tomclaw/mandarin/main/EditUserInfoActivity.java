@@ -28,6 +28,8 @@ import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Solkin on 24.03.2015.
  */
@@ -174,14 +176,25 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 onBackPressed();
                 return true;
             case R.id.edit_user_info_complete:
-                sendManualBitmap();
-                sendEditUserInfoRequest();
-                setResult(RESULT_OK, new Intent()
-                        .putExtra(USER_NICK, getUserNick())
-                        .putExtra(FIRST_NAME, getFirstName())
-                        .putExtra(LAST_NAME, getLastName())
-                        .putExtra(AVATAR_HASH, avatarHash));
-                finish();
+                UpdateAvatarTask.UpdateAvatarCallback callback = new UpdateAvatarTask.UpdateAvatarCallback() {
+                    @Override
+                    public void onUpdateCompleted() {
+                        onAvatarUpdateCompleted();
+                    }
+
+                    @Override
+                    public void onUpdateFailed() {
+                        onAvatarChangeError();
+                    }
+                };
+                // Check for manual avatar exists.
+                if (manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
+                    // This will cache avatar with specified hash and also for current account.
+                    TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, callback,
+                            accountDbId, manualAvatar, manualAvatarVirtualHash, avatarHash));
+                } else {
+                    onAvatarUpdateCompleted();
+                }
                 return true;
         }
         return false;
@@ -270,14 +283,6 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     @Override
     public void onCoreServiceDown() {
-    }
-
-    protected void sendManualBitmap() {
-        // Check for manual avatar exists.
-        if (manualAvatar != null && !TextUtils.isEmpty(manualAvatarVirtualHash)) {
-            // This will cache avatar with specified hash and also for current account.
-            TaskExecutor.getInstance().execute(new UpdateAvatarTask(this, accountDbId, manualAvatar, manualAvatarVirtualHash, avatarHash));
-        }
     }
 
     protected abstract void sendManualAvatarRequest(String hash);
@@ -369,6 +374,16 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         Toast.makeText(this, R.string.avatar_changing_error, Toast.LENGTH_SHORT).show();
     }
 
+    private void onAvatarUpdateCompleted() {
+        sendEditUserInfoRequest();
+        setResult(RESULT_OK, new Intent()
+                .putExtra(USER_NICK, getUserNick())
+                .putExtra(FIRST_NAME, getFirstName())
+                .putExtra(LAST_NAME, getLastName())
+                .putExtra(AVATAR_HASH, manualAvatarVirtualHash));
+        finish();
+    }
+
     public static class AvatarSamplingTask extends WeakObjectTask<EditUserInfoActivity> {
 
         private final Uri uri;
@@ -409,15 +424,20 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         }
     }
 
-    public static class UpdateAvatarTask extends WeakObjectTask<EditUserInfoActivity> {
+    public static class UpdateAvatarTask extends PleaseWaitTask {
 
+        private final WeakReference<EditUserInfoActivity> weakActivity;
         private final Bitmap avatar;
+        private final UpdateAvatarCallback callback;
         private final int accountDbId;
         private final String virtualHash;
         private final String avatarHash;
 
-        public UpdateAvatarTask(EditUserInfoActivity object, int accountDbId, Bitmap avatar, String virtualHash, String avatarHash) {
+        public UpdateAvatarTask(EditUserInfoActivity object, UpdateAvatarCallback callback,
+                                int accountDbId, Bitmap avatar, String virtualHash, String avatarHash) {
             super(object);
+            weakActivity = new WeakReference<>(object);
+            this.callback = callback;
             this.accountDbId = accountDbId;
             this.avatar = avatar;
             this.virtualHash = virtualHash;
@@ -426,7 +446,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
         @Override
         public void executeBackground() throws Throwable {
-            EditUserInfoActivity activity = getWeakObject();
+            EditUserInfoActivity activity = weakActivity.get();
             if (activity != null) {
                 BitmapCache bitmapCache = BitmapCache.getInstance();
                 // Remove all cached avatars.
@@ -436,24 +456,32 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 bitmapCache.saveBitmapSync(virtualHash, avatar);
                 bitmapCache.saveBitmapSync(avatarHash, avatar);
                 // Update profile.
-                QueryHelper.updateAccountAvatar(activity.getContentResolver(), accountDbId, avatarHash);
+                QueryHelper.updateAccountAvatar(activity.getContentResolver(), accountDbId, virtualHash);
             }
         }
 
         @Override
         public void onSuccessMain() {
-            EditUserInfoActivity activity = getWeakObject();
+            EditUserInfoActivity activity = weakActivity.get();
             if (activity != null && avatar != null) {
-                activity.sendManualAvatarRequest(virtualHash);
+                activity.sendManualAvatarRequest(avatarHash);
+                callback.onUpdateCompleted();
             }
         }
 
         @Override
         public void onFailMain() {
-            EditUserInfoActivity activity = getWeakObject();
+            EditUserInfoActivity activity = weakActivity.get();
             if (activity != null) {
                 activity.onAvatarChangeError();
+                callback.onUpdateFailed();
             }
+        }
+
+        public interface UpdateAvatarCallback {
+
+            void onUpdateCompleted();
+            void onUpdateFailed();
         }
     }
 }

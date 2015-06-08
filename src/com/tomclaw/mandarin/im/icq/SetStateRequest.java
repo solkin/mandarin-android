@@ -61,7 +61,7 @@ public class SetStateRequest extends WimRequest {
         }
         intent.putExtra(SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or McDonald's.
-        return REQUEST_DELETE;
+        return isSetStateSuccess ? REQUEST_DELETE : REQUEST_PENDING;
     }
 
     @Override

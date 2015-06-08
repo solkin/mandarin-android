@@ -256,7 +256,11 @@ public class RequestDispatcher {
             if (requests > 0) {
                 // Pending guarantee dispatching after delay.
                 log("Pending guarantee dispatching after delay");
-                backgroundQueueNotify(PENDING_REQUEST_DELAY);
+                try {
+                    Thread.sleep(PENDING_REQUEST_DELAY);
+                } catch (InterruptedException ignored) {
+                }
+                notifyQueue();
             }
         }
     }
@@ -277,25 +281,6 @@ public class RequestDispatcher {
             // All right, this is useless task.
             log("Queue notification received, but we already have notification.");
         }
-    }
-
-    public void backgroundQueueNotify() {
-        backgroundQueueNotify(0);
-    }
-
-    public void backgroundQueueNotify(final long delay) {
-        // Strange thread working model. Need to be rewritten.
-        new Thread() {
-            public void run() {
-                if(delay > 0) {
-                    try {
-                        sleep(delay);
-                    } catch (InterruptedException ignored) {
-                    }
-                }
-                notifyQueue();
-            }
-        }.start();
     }
 
     private class RequestObserver extends ContentObserver {

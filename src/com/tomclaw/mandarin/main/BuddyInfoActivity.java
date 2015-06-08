@@ -3,23 +3,19 @@ package com.tomclaw.mandarin.main;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.text.TextUtils;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
-import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,13 +30,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.buddy_info_menu, menu);
-
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, getShareString());
-        intent.setType("text/plain");
-
-        AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.buddy_info_share, intent);
+        prepareShareMenu(menu);
         return true;
     }
 
@@ -125,32 +115,6 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
     private void openDialog() {
         TaskExecutor.getInstance().execute(new OpenDialogTask(this));
-    }
-
-    private String getShareString() {
-        String shareString = "";
-        // Checking and attaching first and last name.
-        shareString = StringUtil.appendIfNotEmpty(shareString, getFirstName(), "");
-        shareString = StringUtil.appendIfNotEmpty(shareString, getLastName(), " ");
-        // Strong checking for buddy nick.
-        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId())) &&
-                !TextUtils.equals(shareString, getBuddyNick())) {
-            String buddyNick = getBuddyNick();
-            if (!TextUtils.isEmpty(shareString)) {
-                buddyNick = "(" + buddyNick + ")";
-            }
-            shareString = StringUtil.appendIfNotEmpty(shareString, buddyNick, " ");
-        }
-        // Appending user id.
-        shareString = StringUtil.appendIfNotEmpty(shareString, getBuddyId(), " - ");
-        return shareString;
-    }
-
-    private Intent createShareIntent() {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getShareString());
-        return Intent.createChooser(shareIntent, getString(R.string.share_buddy_info_via));
     }
 
     private class AddBuddyTask extends WeakObjectTask<Context> {

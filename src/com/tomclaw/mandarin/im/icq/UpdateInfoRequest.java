@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+
 /**
  * Created by Igor on 05.04.2015.
  */
@@ -48,7 +51,15 @@ public class UpdateInfoRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
-        return REQUEST_DELETE;
+        // Parsing response.
+        JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
+        int statusCode = responseObject.getInt(STATUS_CODE);
+        // Check for server reply.
+        if (statusCode == WIM_OK) {
+            return REQUEST_DELETE;
+        }
+        // Maybe incorrect aim sid or McDonald's.
+        return REQUEST_PENDING;
     }
 
     @Override

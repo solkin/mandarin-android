@@ -38,6 +38,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
             menuResource = R.menu.account_info_menu;
         }
         getMenuInflater().inflate(menuResource, menu);
+        prepareShareMenu(menu);
         return true;
     }
 
@@ -144,7 +145,9 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 // Update buddy nick.
                 updateBuddyNick(buddyNick, firstName, lastName);
                 // Update avatar.
+                setAvatarImmutable(false);
                 updateAvatar(avatarHash, false);
+                setAvatarImmutable(true);
                 // Re-request buddy info from server.
                 refreshBuddyInfo();
             }

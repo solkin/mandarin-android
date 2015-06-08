@@ -182,9 +182,9 @@ public class CoreService extends Service {
         boolean networkEvent = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_NETWORK_EVENT, false);
         boolean isConnected = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_CONNECTIVITY_STATUS, false);
         if (networkEvent && isConnected) {
-            requestDispatcher.backgroundQueueNotify();
-            downloadDispatcher.backgroundQueueNotify();
-            uploadDispatcher.backgroundQueueNotify();
+            requestDispatcher.notifyQueue();
+            downloadDispatcher.notifyQueue();
+            uploadDispatcher.notifyQueue();
         }
         // Read messages event maybe?
         boolean readMessagesEvent = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);

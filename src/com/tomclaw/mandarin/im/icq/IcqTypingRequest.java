@@ -43,10 +43,10 @@ public class IcqTypingRequest extends WimRequest {
     @Override
     protected List<Pair<String, String>> getParams() {
         List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("t", buddyId));
-        params.add(new Pair<String, String>("typingStatus", isTyping ? "typing" : "none"));
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("t", buddyId));
+        params.add(new Pair<>("typingStatus", isTyping ? "typing" : "none"));
         return params;
     }
 }

@@ -13,6 +13,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
+import android.view.Menu;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -25,6 +26,7 @@ import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -48,6 +50,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     private TextView buddyNickView;
 
     private NfcAdapter mNfcAdapter;
+
+    private boolean isAvatarImmutable = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -315,7 +319,14 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         }
     }
 
+    public void setAvatarImmutable(boolean avatarImmutable) {
+        isAvatarImmutable = avatarImmutable;
+    }
+
     protected void updateAvatar(String hash, boolean animation) {
+        if (isAvatarImmutable) {
+            return;
+        }
         avatarHash = hash;
         ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
         if (animation) {
@@ -395,6 +406,34 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    protected void prepareShareMenu(Menu menu) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, getShareString());
+        intent.setType("text/plain");
+
+        AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.buddy_info_share, intent);
+    }
+
+    protected String getShareString() {
+        String shareString = "";
+        // Checking and attaching first and last name.
+        shareString = StringUtil.appendIfNotEmpty(shareString, getFirstName(), "");
+        shareString = StringUtil.appendIfNotEmpty(shareString, getLastName(), " ");
+        // Strong checking for buddy nick.
+        if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId())) &&
+                !TextUtils.equals(shareString, getBuddyNick())) {
+            String buddyNick = getBuddyNick();
+            if (!TextUtils.isEmpty(shareString)) {
+                buddyNick = "(" + buddyNick + ")";
+            }
+            shareString = StringUtil.appendIfNotEmpty(shareString, buddyNick, " ");
+        }
+        // Appending user id.
+        shareString = StringUtil.appendIfNotEmpty(shareString, getBuddyId(), " - ");
+        return shareString;
     }
 
     public static class BuddyInfoRequestTask extends ServiceTask<AbstractInfoActivity> {

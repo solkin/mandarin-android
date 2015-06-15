@@ -188,8 +188,8 @@
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client\nI developed it due to
-        high demand and some personal interest.
-    </string>
+        high demand and some personal interest.\n
+        Design by SAMURAY</string>
     <string name="app_year">2014</string>
     <string name="disconnecting">Disconnecting…</string>
     <string name="connecting">Connecting…</string>

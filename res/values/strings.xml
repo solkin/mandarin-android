@@ -187,7 +187,8 @@
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
-        официальным клиентом ICQ, разрабатывается по многочисленным просьбам и просто из личного интереса автора.
+        официальным клиентом ICQ, разрабатывается по многочисленным просьбам и просто из личного интереса автора.\n
+        Дизайн - SAMURAY
     </string>
     <string name="app_year">2014 г.</string>
     <string name="disconnecting">Отключение…</string>

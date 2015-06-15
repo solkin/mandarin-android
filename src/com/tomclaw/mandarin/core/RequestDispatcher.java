@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
-import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
@@ -54,7 +53,7 @@ public class RequestDispatcher {
     private void initExecutor() {
         executor = new ThreadPoolExecutor(1, 1,
                 0L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(2));
+                new ArrayBlockingQueue<Runnable>(3));
     }
 
     public void startObservation() {

@@ -258,7 +258,7 @@ public class HistoryDispatcher {
                 if(onScreen > 0) {
                     Logger.log("HistoryObserver: Vibrate a little");
                     Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(100);
+                    v.vibrate(80);
                     QueryHelper.updateOnScreenMessages(contentResolver);
                 }
             } else {

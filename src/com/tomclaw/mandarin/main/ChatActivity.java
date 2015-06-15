@@ -401,6 +401,7 @@ public class ChatActivity extends ChiefActivity {
         // Menu inflating.
         getMenuInflater().inflate(R.menu.chat_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setQueryHint(menu.findItem(R.id.menu_search).getTitle());
         // Configure the search info and add any event listeners.
         SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
             @Override

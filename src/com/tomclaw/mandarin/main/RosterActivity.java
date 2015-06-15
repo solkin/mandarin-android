@@ -123,6 +123,7 @@ public class RosterActivity extends ChiefActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.roster_activity_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setQueryHint(menu.findItem(R.id.menu_search).getTitle());
         // Configure the search info and add any event listeners
         searchView.setOnQueryTextListener(onQueryTextListener);
         return true;

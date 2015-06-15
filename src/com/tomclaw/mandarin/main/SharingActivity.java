@@ -93,6 +93,7 @@ public class SharingActivity extends ChiefActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.country_code_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setQueryHint(menu.findItem(R.id.menu_search).getTitle());
         // Configure the search info and add event listener.
         searchView.setOnQueryTextListener(onQueryTextListener);
         return true;

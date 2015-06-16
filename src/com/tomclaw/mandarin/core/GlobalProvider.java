@@ -1,15 +1,15 @@
 package com.tomclaw.mandarin.core;
 
-import android.content.ContentProvider;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.UriMatcher;
+import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.QueryBuilder;
 
 import java.util.ArrayList;
 
@@ -272,11 +272,15 @@ public class GlobalProvider extends ContentProvider {
     public static String METHOD_UPDATE_UNREAD = "update_unread";
     public static String METHOD_GET_UNREAD = "get_unread";
     public static String METHOD_GET_MESSAGES_COUNT = "get_messages_count";
+    public static String METHOD_UPDATE_ROSTER = "update_roster";
 
     public static String KEY_NOTIFICATION_DATA = "key_notification_data";
     public static String KEY_UNSHOWN = "key_unshown";
     public static String KEY_JUST_SHOWN = "key_just_shown";
     public static String KEY_ON_SCREEN = "key_on_screen";
+    public static String KEY_ACCOUNT_DB_ID = "key_account_db_id";
+    public static String KEY_ACCOUNT_TYPE = "key_account_type";
+    public static String KEY_GROUP_DATAS = "key_group_datas";
 
     // URI id.
     private static final int URI_REQUEST = 1;
@@ -407,6 +411,7 @@ public class GlobalProvider extends ContentProvider {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Bundle call(String method, String arg, Bundle extras) {
         if (method.equals(METHOD_UPDATE_UNREAD)) {
             long time = System.currentTimeMillis();
@@ -431,7 +436,7 @@ public class GlobalProvider extends ContentProvider {
                 int unreadCountColumn = cursor.getColumnIndex(ROSTER_BUDDY_UNREAD_COUNT);
                 int contentTypeColumn = cursor.getColumnIndex(HISTORY_CONTENT_TYPE);
                 int previewHashColumn = cursor.getColumnIndex(HISTORY_PREVIEW_HASH);
-                ArrayList<NotificationData> data = new ArrayList<NotificationData>();
+                ArrayList<NotificationData> data = new ArrayList<>();
                 do {
                     NotificationData row = new NotificationData(
                             cursor.getString(messageTextColumn),
@@ -465,8 +470,51 @@ public class GlobalProvider extends ContentProvider {
             bundle.putInt(KEY_JUST_SHOWN, justShown);
             bundle.putInt(KEY_ON_SCREEN, onScreen);
             return bundle;
+        } else if (method.equals(METHOD_UPDATE_ROSTER)) {
+            long updateTime = System.currentTimeMillis();
+            int accountDbId = extras.getInt(KEY_ACCOUNT_DB_ID);
+            String accountType = extras.getString(KEY_ACCOUNT_TYPE);
+            ArrayList<GroupData> groupDatas = (ArrayList<GroupData>) extras.getSerializable(KEY_GROUP_DATAS);
+            int buddiesCount = 0;
+            sqLiteDatabase.beginTransaction();
+            try {
+                for (GroupData groupData : groupDatas) {
+                    QueryHelper.updateOrCreateGroup(sqLiteDatabase, accountDbId, updateTime,
+                            groupData.getGroupName(), groupData.getGroupId());
+                    for (BuddyData buddyData : groupData.getBuddyDatas()) {
+                        buddiesCount++;
+                        QueryHelper.updateOrCreateBuddy(sqLiteDatabase, accountDbId, accountType, updateTime,
+                                buddyData.getGroupId(), buddyData.getGroupName(), buddyData.getBuddyId(),
+                                buddyData.getBuddyNick(), buddyData.getStatusIndex(), buddyData.getStatusTitle(),
+                                buddyData.getStatusMessage(), buddyData.getBuddyIcon(), buddyData.getLastSeen());
+                    }
+                }
+                QueryHelper.removeOutdatedBuddies(sqLiteDatabase, accountDbId, updateTime);
+                sqLiteDatabase.setTransactionSuccessful();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
+            long updateDelay = System.currentTimeMillis() - updateTime;
+            // Show some tasty info :)
+            Logger.log("roster processing " + buddiesCount + " buddies/" + updateDelay + " msec " +
+                    "(speed: " + (buddiesCount * 1000 / updateDelay) + " buddies/sec)");
+            // Notify interested observers.
+            getContext().getContentResolver().notifyChange(Settings.GROUP_RESOLVER_URI, null);
+            getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;
+    }
+
+    private BuddyCursor getBuddyCursor(QueryBuilder queryBuilder)
+            throws BuddyNotFoundException {
+        Cursor cursor = sqLiteDatabase.query(ROSTER_BUDDY_TABLE, null, queryBuilder.getSelect(), null, null, null, queryBuilder.getSort());
+        BuddyCursor buddyCursor = new BuddyCursor(cursor);
+        if (buddyCursor.moveToFirst()) {
+            return buddyCursor;
+        } else {
+            buddyCursor.close();
+        }
+        throw new BuddyNotFoundException();
     }
 
     private static String getTableName(Uri uri) {

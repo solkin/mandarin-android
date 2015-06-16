@@ -1,13 +1,11 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.ContentResolver;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -355,7 +353,7 @@ public class IcqSession {
         switch (eventType) {
             case BUDDYLIST:
                 try {
-                    long updateTime = System.currentTimeMillis();
+                    ArrayList<GroupData> groupDatas = new ArrayList<>();
                     int accountDbId = icqAccountRoot.getAccountDbId();
                     String accountType = icqAccountRoot.getAccountType();
                     ContentResolver contentResolver = icqAccountRoot.getContentResolver();
@@ -368,8 +366,9 @@ public class IcqSession {
                         int groupId = groupObject.getInt(ID_FIELD);
                         JSONArray buddiesArray = groupObject.getJSONArray(BUDDIES_ARRAY);
 
-                        QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
+//                        QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
 
+                        ArrayList<BuddyData> buddyDatas = new ArrayList<>();
                         for (int i = 0; i < buddiesArray.length(); i++) {
                             JSONObject buddyObject = buddiesArray.getJSONObject(i);
                             String buddyId = buddyObject.getString(AIM_ID);
@@ -395,12 +394,23 @@ public class IcqSession {
 
                             long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
 
-                            QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-                                    groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
-                                    buddyIcon, lastSeen);
+                            buddyDatas.add(new BuddyData(groupId, groupName, buddyId, buddyNick, statusIndex,
+                                    statusTitle, statusMessage, buddyIcon, lastSeen));
+
+//                            QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
+//                                    groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
+//                                    buddyIcon, lastSeen);
                         }
+
+                        groupDatas.add(new GroupData(groupName, groupId, buddyDatas));
                     }
-                    QueryHelper.removeOutdatedBuddies(contentResolver, accountDbId, updateTime);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(GlobalProvider.KEY_ACCOUNT_DB_ID, accountDbId);
+                    bundle.putString(GlobalProvider.KEY_ACCOUNT_TYPE, accountType);
+                    bundle.putSerializable(GlobalProvider.KEY_GROUP_DATAS, groupDatas);
+                    contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_ROSTER, null, bundle);
+//                    QueryHelper.removeOutdatedBuddies(contentResolver, accountDbId, updateTime);
                 } catch (JSONException ex) {
                     Logger.log("exception while parsing buddy list", ex);
                 }

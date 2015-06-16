@@ -134,4 +134,12 @@ public class QueryBuilder {
         sort = new StringBuilder();
         return this;
     }
+
+    public String getSelect() {
+        return select.toString();
+    }
+
+    public String getSort() {
+        return sort.toString();
+    }
 }

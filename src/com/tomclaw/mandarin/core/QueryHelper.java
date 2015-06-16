@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
@@ -951,6 +952,24 @@ public class QueryHelper {
                                            long updateTime, int groupId, String groupName, String buddyId,
                                            String buddyNick, int statusIndex, String statusTitle,
                                            String statusMessage, String buddyIcon, long lastSeen) {
+        updateOrCreateBuddy(new ContentResolverLayer(contentResolver), accountDbId,
+                accountType, updateTime, groupId, groupName, buddyId, buddyNick,
+                statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+    }
+
+    public static void updateOrCreateBuddy(SQLiteDatabase sqLiteDatabase, int accountDbId, String accountType,
+                                           long updateTime, int groupId, String groupName, String buddyId,
+                                           String buddyNick, int statusIndex, String statusTitle,
+                                           String statusMessage, String buddyIcon, long lastSeen) {
+        updateOrCreateBuddy(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId,
+                accountType, updateTime, groupId, groupName, buddyId, buddyNick,
+                statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+    }
+
+    public static void updateOrCreateBuddy(DatabaseLayer databaseLayer, int accountDbId, String accountType,
+                                           long updateTime, int groupId, String groupName, String buddyId,
+                                           String buddyNick, int statusIndex, String statusTitle,
+                                           String statusMessage, String buddyIcon, long lastSeen) {
         ContentValues buddyValues = new ContentValues();
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountType);
@@ -977,7 +996,7 @@ public class QueryHelper {
 
         BuddyCursor buddyCursor = null;
         try {
-            buddyCursor = getBuddyCursor(contentResolver, queryBuilder);
+            buddyCursor = getBuddyCursor(databaseLayer, queryBuilder);
             long buddyDbId = buddyCursor.getBuddyDbId();
             boolean buddyDialogFlag = buddyCursor.getBuddyDialog();
             avatarHash = buddyCursor.getBuddyAvatarHash();
@@ -1011,10 +1030,10 @@ public class QueryHelper {
             // Update this row.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-            queryBuilder.update(contentResolver, buddyValues, Settings.BUDDY_RESOLVER_URI);
+            databaseLayer.update(Settings.BUDDY_RESOLVER_URI, buddyValues, queryBuilder);
         } catch (BuddyNotFoundException ignored) {
             avatarHash = null;
-            contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+            databaseLayer.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
         } finally {
             if (buddyCursor != null) {
                 buddyCursor.close();
@@ -1023,11 +1042,21 @@ public class QueryHelper {
 
         if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
             // Avatar is ready.
-            RequestHelper.requestBuddyAvatar(contentResolver, accountDbId, buddyId, buddyIcon);
+            RequestHelper.requestBuddyAvatar(databaseLayer, accountDbId, buddyId, buddyIcon);
         }
     }
 
     public static void updateOrCreateGroup(ContentResolver contentResolver, int accountDbId, long updateTime,
+                                           String groupName, int groupId) {
+        updateOrCreateGroup(new ContentResolverLayer(contentResolver), accountDbId, updateTime, groupName, groupId);
+    }
+
+    public static void updateOrCreateGroup(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime,
+                                           String groupName, int groupId) {
+        updateOrCreateGroup(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, updateTime, groupName, groupId);
+    }
+
+    public static void updateOrCreateGroup(DatabaseLayer databaseLayer, int accountDbId, long updateTime,
                                            String groupName, int groupId) {
         ContentValues groupValues = new ContentValues();
         groupValues.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
@@ -1039,10 +1068,10 @@ public class QueryHelper {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_NAME, groupName).and()
                 .columnEquals(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
-        int groupsModified = queryBuilder.update(contentResolver, groupValues, Settings.GROUP_RESOLVER_URI);
+        int groupsModified = databaseLayer.update(Settings.GROUP_RESOLVER_URI, groupValues, queryBuilder);
         // Checking for there is no such group.
         if (groupsModified == 0) {
-            contentResolver.insert(Settings.GROUP_RESOLVER_URI, groupValues);
+            databaseLayer.insert(Settings.GROUP_RESOLVER_URI, groupValues);
         }
     }
 
@@ -1085,13 +1114,21 @@ public class QueryHelper {
     }
 
     public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
+        removeOutdatedBuddies(new ContentResolverLayer(contentResolver), accountDbId, updateTime);
+    }
+
+    public static void removeOutdatedBuddies(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime) {
+        removeOutdatedBuddies(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, updateTime);
+    }
+
+    public static void removeOutdatedBuddies(DatabaseLayer databaseLayer, int accountDbId, long updateTime) {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Remove all deleted buddies.
         queryBuilder.columnNotEquals(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_ADD)
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
-        int removedBuddies = queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        int removedBuddies = databaseLayer.delete(Settings.BUDDY_RESOLVER_URI, queryBuilder);
         Logger.log("outdated removed: " + removedBuddies);
     }
 
@@ -1170,7 +1207,12 @@ public class QueryHelper {
 
     private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, QueryBuilder queryBuilder)
             throws BuddyNotFoundException {
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        return getBuddyCursor(new ContentResolverLayer(contentResolver), queryBuilder);
+    }
+
+    private static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, QueryBuilder queryBuilder)
+            throws BuddyNotFoundException {
+        Cursor cursor = databaseLayer.query(Settings.BUDDY_RESOLVER_URI, queryBuilder);
         BuddyCursor buddyCursor = new BuddyCursor(cursor);
         if (buddyCursor.moveToFirst()) {
             return buddyCursor;

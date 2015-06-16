@@ -3,10 +3,12 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.*;
 import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.QueryBuilder;
 
 import java.util.List;
 
@@ -49,8 +51,18 @@ public class RequestHelper {
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
                                           String buddyId, String url) {
+        requestBuddyAvatar(new ContentResolverLayer(contentResolver), accountDbId, buddyId, url);
+    }
+
+    public static void requestBuddyAvatar(SQLiteDatabase sqLiteDatabase, int accountDbId,
+                                          String buddyId, String url) {
+        requestBuddyAvatar(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, buddyId, url);
+    }
+
+    public static void requestBuddyAvatar(DatabaseLayer databaseLayer, int accountDbId,
+                                          String buddyId, String url) {
         BuddyAvatarRequest buddyAvatarRequest = new BuddyAvatarRequest(buddyId, url);
-        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId,
+        insertRequest(databaseLayer, Request.REQUEST_TYPE_DOWNLOAD, accountDbId,
                 url, buddyAvatarRequest);
     }
 
@@ -225,7 +237,24 @@ public class RequestHelper {
         insertRequest(contentResolver, type, true, accountDbId, tag, null, request);
     }
 
+    private static void insertRequest(DatabaseLayer databaseLayer, int type, int accountDbId,
+                                      String tag, Request request) {
+        insertRequest(databaseLayer, type, true, accountDbId, tag, null, request);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
+                                      int accountDbId, String tag, String appSession, Request request) {
+        insertRequest(new ContentResolverLayer(contentResolver), type,
+                isPersistent, accountDbId, tag, appSession, request);
+    }
+
+    private static void insertRequest(SQLiteDatabase sqLiteDatabase, int type, boolean isPersistent,
+                                      int accountDbId, String tag, String appSession, Request request) {
+        insertRequest(new SQLiteDatabaseLayer(sqLiteDatabase), type,
+                isPersistent, accountDbId, tag, appSession, request);
+    }
+
+    private static void insertRequest(DatabaseLayer databaseLayer, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
         // Writing to requests database.
         ContentValues contentValues = new ContentValues();
@@ -241,8 +270,9 @@ public class RequestHelper {
             Cursor cursor = null;
             try {
                 // Obtain existing request.
-                cursor = contentResolver.query(Settings.REQUEST_RESOLVER_URI, null,
-                        GlobalProvider.REQUEST_TAG + "='" + tag + "'", null, null);
+                QueryBuilder queryBuilder = new QueryBuilder()
+                        .columnEquals(GlobalProvider.REQUEST_TAG, tag);
+                cursor = databaseLayer.query(Settings.REQUEST_RESOLVER_URI, queryBuilder);
                 // Checking for at least one such download request exist.
                 if (cursor == null || cursor.moveToFirst()) {
                     return;
@@ -255,7 +285,7 @@ public class RequestHelper {
             contentValues.put(GlobalProvider.REQUEST_TAG, tag);
         }
         contentValues.put(GlobalProvider.REQUEST_BUNDLE, GsonSingleton.getInstance().toJson(request));
-        contentResolver.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
+        databaseLayer.insert(Settings.REQUEST_RESOLVER_URI, contentValues);
     }
 
     public static void startDelayedRequest(ContentResolver contentResolver, String tag) {

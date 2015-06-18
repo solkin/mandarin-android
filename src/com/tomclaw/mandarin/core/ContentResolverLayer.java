@@ -13,8 +13,17 @@ public class ContentResolverLayer implements DatabaseLayer {
 
     private ContentResolver contentResolver;
 
-    public ContentResolverLayer(ContentResolver contentResolver) {
-        this.contentResolver = contentResolver;
+    private static class Holder {
+
+        static ContentResolverLayer instance = new ContentResolverLayer();
+    }
+
+    public static ContentResolverLayer getInstance(ContentResolver contentResolver) {
+        Holder.instance.contentResolver = contentResolver;
+        return Holder.instance;
+    }
+
+    private ContentResolverLayer() {
     }
 
     @Override

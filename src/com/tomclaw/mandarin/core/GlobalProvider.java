@@ -505,18 +505,6 @@ public class GlobalProvider extends ContentProvider {
         return null;
     }
 
-    private BuddyCursor getBuddyCursor(QueryBuilder queryBuilder)
-            throws BuddyNotFoundException {
-        Cursor cursor = sqLiteDatabase.query(ROSTER_BUDDY_TABLE, null, queryBuilder.getSelect(), null, null, null, queryBuilder.getSort());
-        BuddyCursor buddyCursor = new BuddyCursor(cursor);
-        if (buddyCursor.moveToFirst()) {
-            return buddyCursor;
-        } else {
-            buddyCursor.close();
-        }
-        throw new BuddyNotFoundException();
-    }
-
     private static String getTableName(Uri uri) {
         String table;
         switch (uriMatcher.match(uri)) {

@@ -51,12 +51,12 @@ public class RequestHelper {
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(new ContentResolverLayer(contentResolver), accountDbId, buddyId, url);
+        requestBuddyAvatar(ContentResolverLayer.getInstance(contentResolver), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(SQLiteDatabase sqLiteDatabase, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, buddyId, url);
+        requestBuddyAvatar(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(DatabaseLayer databaseLayer, int accountDbId,
@@ -237,21 +237,21 @@ public class RequestHelper {
         insertRequest(contentResolver, type, true, accountDbId, tag, null, request);
     }
 
-    private static void insertRequest(DatabaseLayer databaseLayer, int type, int accountDbId,
-                                      String tag, Request request) {
-        insertRequest(databaseLayer, type, true, accountDbId, tag, null, request);
-    }
-
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(new ContentResolverLayer(contentResolver), type,
+        insertRequest(ContentResolverLayer.getInstance(contentResolver), type,
                 isPersistent, accountDbId, tag, appSession, request);
     }
 
     private static void insertRequest(SQLiteDatabase sqLiteDatabase, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(new SQLiteDatabaseLayer(sqLiteDatabase), type,
+        insertRequest(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), type,
                 isPersistent, accountDbId, tag, appSession, request);
+    }
+
+    private static void insertRequest(DatabaseLayer databaseLayer, int type, int accountDbId,
+                                      String tag, Request request) {
+        insertRequest(databaseLayer, type, true, accountDbId, tag, null, request);
     }
 
     private static void insertRequest(DatabaseLayer databaseLayer, int type, boolean isPersistent,

@@ -952,7 +952,7 @@ public class QueryHelper {
                                            long updateTime, int groupId, String groupName, String buddyId,
                                            String buddyNick, int statusIndex, String statusTitle,
                                            String statusMessage, String buddyIcon, long lastSeen) {
-        updateOrCreateBuddy(new ContentResolverLayer(contentResolver), accountDbId,
+        updateOrCreateBuddy(ContentResolverLayer.getInstance(contentResolver), accountDbId,
                 accountType, updateTime, groupId, groupName, buddyId, buddyNick,
                 statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
     }
@@ -961,7 +961,7 @@ public class QueryHelper {
                                            long updateTime, int groupId, String groupName, String buddyId,
                                            String buddyNick, int statusIndex, String statusTitle,
                                            String statusMessage, String buddyIcon, long lastSeen) {
-        updateOrCreateBuddy(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId,
+        updateOrCreateBuddy(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId,
                 accountType, updateTime, groupId, groupName, buddyId, buddyNick,
                 statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
     }
@@ -1048,12 +1048,12 @@ public class QueryHelper {
 
     public static void updateOrCreateGroup(ContentResolver contentResolver, int accountDbId, long updateTime,
                                            String groupName, int groupId) {
-        updateOrCreateGroup(new ContentResolverLayer(contentResolver), accountDbId, updateTime, groupName, groupId);
+        updateOrCreateGroup(ContentResolverLayer.getInstance(contentResolver), accountDbId, updateTime, groupName, groupId);
     }
 
     public static void updateOrCreateGroup(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime,
                                            String groupName, int groupId) {
-        updateOrCreateGroup(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, updateTime, groupName, groupId);
+        updateOrCreateGroup(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, updateTime, groupName, groupId);
     }
 
     public static void updateOrCreateGroup(DatabaseLayer databaseLayer, int accountDbId, long updateTime,
@@ -1114,11 +1114,11 @@ public class QueryHelper {
     }
 
     public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
-        removeOutdatedBuddies(new ContentResolverLayer(contentResolver), accountDbId, updateTime);
+        removeOutdatedBuddies(ContentResolverLayer.getInstance(contentResolver), accountDbId, updateTime);
     }
 
     public static void removeOutdatedBuddies(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime) {
-        removeOutdatedBuddies(new SQLiteDatabaseLayer(sqLiteDatabase), accountDbId, updateTime);
+        removeOutdatedBuddies(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, updateTime);
     }
 
     public static void removeOutdatedBuddies(DatabaseLayer databaseLayer, int accountDbId, long updateTime) {
@@ -1207,7 +1207,7 @@ public class QueryHelper {
 
     private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, QueryBuilder queryBuilder)
             throws BuddyNotFoundException {
-        return getBuddyCursor(new ContentResolverLayer(contentResolver), queryBuilder);
+        return getBuddyCursor(ContentResolverLayer.getInstance(contentResolver), queryBuilder);
     }
 
     private static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, QueryBuilder queryBuilder)

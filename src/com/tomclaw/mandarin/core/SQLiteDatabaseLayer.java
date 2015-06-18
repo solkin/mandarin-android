@@ -13,8 +13,17 @@ public class SQLiteDatabaseLayer implements DatabaseLayer {
 
     private SQLiteDatabase sqLiteDatabase;
 
-    public SQLiteDatabaseLayer(SQLiteDatabase sqLiteDatabase) {
-        this.sqLiteDatabase = sqLiteDatabase;
+    private static class Holder {
+
+        static SQLiteDatabaseLayer instance = new SQLiteDatabaseLayer();
+    }
+
+    public static SQLiteDatabaseLayer getInstance(SQLiteDatabase sqLiteDatabase) {
+        Holder.instance.sqLiteDatabase = sqLiteDatabase;
+        return Holder.instance;
+    }
+
+    private SQLiteDatabaseLayer() {
     }
 
     @Override

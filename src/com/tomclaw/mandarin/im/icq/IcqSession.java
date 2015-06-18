@@ -357,60 +357,44 @@ public class IcqSession {
                     int accountDbId = icqAccountRoot.getAccountDbId();
                     String accountType = icqAccountRoot.getAccountType();
                     ContentResolver contentResolver = icqAccountRoot.getContentResolver();
-
                     JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
-
                     for (int c = 0; c < groupsArray.length(); c++) {
                         JSONObject groupObject = groupsArray.getJSONObject(c);
                         String groupName = groupObject.getString(NAME);
                         int groupId = groupObject.getInt(ID_FIELD);
                         JSONArray buddiesArray = groupObject.getJSONArray(BUDDIES_ARRAY);
-
-//                        QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
-
                         ArrayList<BuddyData> buddyDatas = new ArrayList<>();
                         for (int i = 0; i < buddiesArray.length(); i++) {
                             JSONObject buddyObject = buddiesArray.getJSONObject(i);
                             String buddyId = buddyObject.getString(AIM_ID);
                             String buddyNick = buddyObject.optString(FRIENDLY);
                             if (TextUtils.isEmpty(buddyNick)) {
-                                buddyNick = buddyObject.getString(DISPLAY_ID);
+                                buddyNick = buddyObject.optString(DISPLAY_ID, buddyId);
                             }
-
                             String buddyStatus = buddyObject.getString(STATE);
                             String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
-
                             int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                             String statusTitle = getStatusTitle(moodTitle, statusIndex);
-
                             String buddyType = buddyObject.getString(USER_TYPE);
                             String buddyIcon = buddyObject.optString(BUDDY_ICON);
                             String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
                             if (!TextUtils.isEmpty(bigBuddyIcon)) {
                                 buddyIcon = bigBuddyIcon;
                             }
-
                             long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
-
                             buddyDatas.add(new BuddyData(groupId, groupName, buddyId, buddyNick, statusIndex,
                                     statusTitle, statusMessage, buddyIcon, lastSeen));
-
-//                            QueryHelper.updateOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
-//                                    groupId, groupName, buddyId, buddyNick, statusIndex, statusTitle, statusMessage,
-//                                    buddyIcon, lastSeen);
                         }
-
                         groupDatas.add(new GroupData(groupName, groupId, buddyDatas));
                     }
-
+                    // Prepare parameters to call update roster method.
                     Bundle bundle = new Bundle();
                     bundle.putInt(GlobalProvider.KEY_ACCOUNT_DB_ID, accountDbId);
                     bundle.putString(GlobalProvider.KEY_ACCOUNT_TYPE, accountType);
                     bundle.putSerializable(GlobalProvider.KEY_GROUP_DATAS, groupDatas);
                     contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_ROSTER, null, bundle);
-//                    QueryHelper.removeOutdatedBuddies(contentResolver, accountDbId, updateTime);
                 } catch (JSONException ex) {
                     Logger.log("exception while parsing buddy list", ex);
                 }

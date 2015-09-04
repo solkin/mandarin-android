@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.TaskExecutor;
@@ -102,12 +104,20 @@ public class AccountInfoActivity extends AbstractInfoActivity {
             bar.setTitle(R.string.account_info);
         }
 
-        findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener() {
+        View editButton = findViewById(R.id.edit_button);
+        editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editUserInfo();
             }
         });
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FrameLayout.LayoutParams p;
+            p = (FrameLayout.LayoutParams) editButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            editButton.setLayoutParams(p);
+        }
     }
 
     private void editUserInfo() {

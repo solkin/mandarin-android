@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
@@ -51,17 +52,26 @@
                                     android:id="@+id/buddy_image_manual"
                                     android:scaleType="centerCrop"/>
                         </FrameLayout>
-                        <ImageView
+                        <FrameLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="-36dp"
-                                android:paddingLeft="0dp"
-                                android:paddingRight="12dp"
+                                android:layout_marginTop="-42dp"
+                                android:paddingRight="8dp"
                                 android:layout_below="@+id/buddy_image_container"
                                 android:layout_alignParentRight="true"
-                                android:layout_alignParentEnd="true"
-                                android:id="@+id/change_avatar_button"
-                                android:src="@drawable/fab_photo_selector"/>
+                                android:layout_alignParentEnd="true">
+                            <android.support.design.widget.FloatingActionButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/change_avatar_button"
+                                    android:src="@drawable/ic_photo"
+                                    android:layout_marginLeft="18dp"
+                                    android:layout_marginRight="18dp"
+                                    android:layout_marginTop="12dp"
+                                    android:layout_marginBottom="12dp"
+                                    app:elevation="4dp"
+                                    app:pressedTranslationZ="4dp"/>
+                        </FrameLayout>
                         <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

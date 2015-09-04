@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/libs/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/libs/appcompat/appcompat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/design/design.iml" filepath="$PROJECT_DIR$/libs/design/design.iml" />
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" filepath="$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" filepath="$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" />

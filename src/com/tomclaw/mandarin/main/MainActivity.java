@@ -6,15 +6,14 @@ import android.content.res.Configuration;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.view.ActionMode;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;
 import com.tomclaw.mandarin.im.BuddyCursor;
@@ -38,6 +37,7 @@ public class MainActivity extends ChiefActivity {
     private RosterDialogsAdapter dialogsAdapter;
     private ListView dialogsList;
     private Toolbar toolbar;
+    private FloatingActionButton actionButton;
 
     private AccountsDrawerLayout drawerLayout;
     private MultiChoiceModeListener multiChoiceModeListener;
@@ -67,6 +67,21 @@ public class MainActivity extends ChiefActivity {
         drawerLayout.init(this, toolbar);
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
+
+        actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RosterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) actionButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0); // get rid of margins since shadow area is now the margin
+            actionButton.setLayoutParams(p);
+        }
 
         // Dialogs list.
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
@@ -175,11 +190,6 @@ public class MainActivity extends ChiefActivity {
         switch (item.getItemId()) {
             case R.id.accounts: {
                 drawerLayout.openDrawer(Gravity.START);
-                return true;
-            }
-            case R.id.create_dialog: {
-                Intent intent = new Intent(this, RosterActivity.class);
-                startActivity(intent);
                 return true;
             }
             case R.id.settings: {

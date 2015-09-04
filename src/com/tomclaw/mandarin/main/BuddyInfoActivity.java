@@ -3,11 +3,13 @@ package com.tomclaw.mandarin.main;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import com.tomclaw.mandarin.R;
@@ -65,6 +67,16 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
         buttonSwitcher = (ViewSwitcher) findViewById(R.id.button_switcher);
         View addBuddyButton = findViewById(R.id.add_buddy_button);
         View openDialogButton = findViewById(R.id.open_dialog_button);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FrameLayout.LayoutParams p;
+            p = (FrameLayout.LayoutParams) addBuddyButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            addBuddyButton.setLayoutParams(p);
+            p = (FrameLayout.LayoutParams) openDialogButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            openDialogButton.setLayoutParams(p);
+        }
 
         addBuddyButton.setOnClickListener(new View.OnClickListener() {
             @Override

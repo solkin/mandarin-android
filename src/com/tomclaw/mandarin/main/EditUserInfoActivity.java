@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -119,6 +121,13 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 pickAvatar();
             }
         });
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FrameLayout.LayoutParams p;
+            p = (FrameLayout.LayoutParams) changeAvatarButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            changeAvatarButton.setLayoutParams(p);
+        }
 
         afterCreate();
     }

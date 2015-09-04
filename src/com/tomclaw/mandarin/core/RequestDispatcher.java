@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  */
 public class RequestDispatcher {
 
-    private static final long PENDING_REQUEST_DELAY = 3000;
+    private static final long PENDING_REQUEST_DELAY = 4000;
     /**
      * Variables
      */

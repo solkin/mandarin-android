@@ -40,7 +40,7 @@ public class CoreService extends Service {
     public static final String EXTRA_ON_CONNECTED_EVENT = "on_connected";
 
     public static final int RESTART_TIMEOUT = 5000;
-    public static final int MAINTENANCE_TIMEOUT = 30000;
+    public static final int MAINTENANCE_TIMEOUT = 60000;
 
     private int serviceState;
     private long serviceCreateTime;

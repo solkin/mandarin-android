@@ -913,8 +913,8 @@ public class ChatActivity extends ChiefActivity {
                                 long firstMessageDbId, long lastMessageDbId) {
             super(context);
             this.buddyDbId = buddyDbId;
-            this.firstMessageDbId = firstMessageDbId;
-            this.lastMessageDbId = lastMessageDbId;
+            this.firstMessageDbId = Math.min(firstMessageDbId, lastMessageDbId);
+            this.lastMessageDbId = Math.max(firstMessageDbId, lastMessageDbId);
         }
 
         @Override

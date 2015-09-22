@@ -86,6 +86,9 @@ public class ChatActivity extends ChiefActivity {
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
 
+        // Open chat as faster as we can - without animation.
+        getWindow().setWindowAnimations(0);
+
         setContentView(R.layout.chat_activity);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

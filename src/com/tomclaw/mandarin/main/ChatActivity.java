@@ -12,6 +12,8 @@ import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -50,7 +52,8 @@ public class ChatActivity extends ChiefActivity {
     private static final int PICK_GALLERY_RESULT_CODE = 2;
 
     private LinearLayout chatRoot;
-    private ChatListView chatList;
+    private RecyclerView chatList;
+    private ChatLayoutManager chatLayoutManager;
     private ChatHistoryAdapter chatHistoryAdapter;
     private EditText messageText;
     private TextView buddyNick;
@@ -110,16 +113,18 @@ public class ChatActivity extends ChiefActivity {
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
 
-        chatList = (ChatListView) findViewById(R.id.chat_list);
-        chatList.setAdapter(chatHistoryAdapter);
-        chatList.setMultiChoiceModeListener(new MultiChoiceModeListener());
-        chatList.setOnScrollListener(new ChatScrollListener());
-        chatList.setOnDataChangedListener(new ChatListView.DataChangedListener() {
+        chatList = (RecyclerView) findViewById(R.id.chat_list);
+        chatLayoutManager = new ChatLayoutManager(this);
+        chatLayoutManager.setDataChangedListener(new ChatLayoutManager.DataChangedListener() {
             @Override
             public void onDataChanged() {
                 readVisibleMessages();
             }
         });
+        chatList.addOnScrollListener(new ChatScrollListener(chatLayoutManager));
+        chatList.setLayoutManager(chatLayoutManager);
+        chatList.setHasFixedSize(false);
+        chatList.setAdapter(chatHistoryAdapter);
 
         int chatBackground = PreferenceHelper.getChatBackground(this);
         chatList.setBackgroundResource(chatBackground);
@@ -497,7 +502,6 @@ public class ChatActivity extends ChiefActivity {
 
         if (chatHistoryAdapter != null) {
             chatHistoryAdapter.close();
-            chatHistoryAdapter.notifyDataSetInvalidated();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
@@ -654,8 +658,8 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void readVisibleMessages() {
-        final int firstVisiblePosition = chatList.getFirstVisiblePosition();
-        final int lastVisiblePosition = chatList.getLastVisiblePosition();
+        final int firstVisiblePosition = chatLayoutManager.findFirstVisibleItemPosition();
+        final int lastVisiblePosition = chatLayoutManager.findLastVisibleItemPosition();
         Logger.log("Reading visible messages ["
                 + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
         // Checking for the list view is ready.
@@ -673,14 +677,8 @@ public class ChatActivity extends ChiefActivity {
     }
 
     public void scrollBottom() {
-        chatList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        chatList.scrollToPosition(0);
         chatList.requestLayout();
-        chatList.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                chatList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-            }
-        }, 300);
     }
 
     private void applySharingData(SharingData sharingData) {
@@ -851,22 +849,32 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ChatScrollListener implements AbsListView.OnScrollListener {
+    private class ChatScrollListener extends RecyclerView.OnScrollListener {
 
+        private LinearLayoutManager layoutManager;
         private int startFirstVisiblePosition, startLastVisiblePosition;
 
+        private ChatScrollListener(LinearLayoutManager layoutManager) {
+            this.layoutManager = layoutManager;
+            startFirstVisiblePosition = -1;
+            startLastVisiblePosition = -1;
+        }
+
         @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-            int firstVisiblePosition = view.getFirstVisiblePosition();
-            int lastVisiblePosition = view.getLastVisiblePosition();
+        public void onScrollStateChanged(RecyclerView view, int scrollState) {
+            int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+            int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
             switch (scrollState) {
-                case SCROLL_STATE_TOUCH_SCROLL: {
+                case RecyclerView.SCROLL_STATE_DRAGGING: {
                     // Scroll stared.
-                    startFirstVisiblePosition = firstVisiblePosition;
-                    startLastVisiblePosition = lastVisiblePosition;
+                    if (startFirstVisiblePosition == -1 && startLastVisiblePosition == -1) {
+                        startFirstVisiblePosition = firstVisiblePosition;
+                        startLastVisiblePosition = lastVisiblePosition;
+                    }
                     break;
                 }
-                case SCROLL_STATE_IDLE: {
+                case RecyclerView.SCROLL_STATE_IDLE: {
+                    // Scroll ended.
                     // Scroll ended.
                     int firstPosition;
                     int lastPosition;
@@ -879,6 +887,8 @@ public class ChatActivity extends ChiefActivity {
                         firstPosition = firstVisiblePosition;
                         lastPosition = startLastVisiblePosition;
                     }
+                    startFirstVisiblePosition = -1;
+                    startLastVisiblePosition = -1;
                     Logger.log("Scroll: " + firstPosition + " -> " + lastPosition);
                     final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
                     try {
@@ -890,10 +900,6 @@ public class ChatActivity extends ChiefActivity {
                     break;
                 }
             }
-        }
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         }
     }
 

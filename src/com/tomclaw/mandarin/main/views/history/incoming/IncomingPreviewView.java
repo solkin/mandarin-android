@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history.incoming;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryPreviewView;
 
@@ -10,8 +11,8 @@ import com.tomclaw.mandarin.main.views.history.BaseHistoryPreviewView;
  */
 public abstract class IncomingPreviewView extends BaseHistoryPreviewView {
 
-    public IncomingPreviewView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public IncomingPreviewView(View itemView) {
+        super(itemView);
     }
 
     @Override

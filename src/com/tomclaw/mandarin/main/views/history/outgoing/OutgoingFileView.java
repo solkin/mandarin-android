@@ -13,13 +13,8 @@ public class OutgoingFileView extends BaseHistoryFileView {
 
     private View errorView;
 
-    public OutgoingFileView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public OutgoingFileView(View itemView) {
+        super(itemView);
         errorView = findViewById(R.id.out_error);
     }
 

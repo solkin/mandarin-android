@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 
@@ -12,13 +13,8 @@ public abstract class BaseHistoryTextView extends BaseHistoryView {
 
     private TextView textView;
 
-    public BaseHistoryTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public BaseHistoryTextView(View itemView) {
+        super(itemView);
         textView = (TextView) findViewById(getTextViewId());
     }
 

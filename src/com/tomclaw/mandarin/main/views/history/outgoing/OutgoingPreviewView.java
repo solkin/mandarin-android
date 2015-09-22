@@ -13,13 +13,8 @@ public abstract class OutgoingPreviewView extends BaseHistoryPreviewView {
 
     private View errorView;
 
-    public OutgoingPreviewView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public OutgoingPreviewView(View itemView) {
+        super(itemView);
         errorView = findViewById(R.id.out_error);
     }
 

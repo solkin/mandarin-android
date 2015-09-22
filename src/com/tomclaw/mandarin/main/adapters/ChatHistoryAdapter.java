@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,21 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
+import com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView;
+import com.tomclaw.mandarin.main.views.history.incoming.IncomingImageView;
+import com.tomclaw.mandarin.main.views.history.incoming.IncomingTextView;
+import com.tomclaw.mandarin.main.views.history.incoming.IncomingVideoView;
+import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView;
+import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView;
+import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingTextView;
+import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingVideoView;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.TimeHelper;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +42,7 @@ import com.tomclaw.mandarin.util.TimeHelper;
  * Date: 5/7/13
  * Time: 11:43 PM
  */
-public class ChatHistoryAdapter extends CursorAdapter implements
+public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int[] ITEM_LAYOUTS = new int[]{
@@ -43,6 +55,18 @@ public class ChatHistoryAdapter extends CursorAdapter implements
             R.layout.chat_item_out_image,
             R.layout.chat_item_out_video,
             R.layout.chat_item_out_file
+    };
+
+    private static final Class[] ITEM_HOLDERS = new Class[]{
+            null,
+            IncomingTextView.class,
+            IncomingImageView.class,
+            IncomingVideoView.class,
+            IncomingFileView.class,
+            OutgoingTextView.class,
+            OutgoingImageView.class,
+            OutgoingVideoView.class,
+            OutgoingFileView.class
     };
 
     private TimeHelper timeHelper;
@@ -76,7 +100,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private ContentMessageClickListener contentMessageClickListener;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
-        super(context, null, 0x00);
+        super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.loaderManager = loaderManager;
@@ -85,6 +109,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         setFilterQueryProvider(new ChatFilterQueryProvider());
         // Initialize smileys.
         SmileyParser.init(context);
+        setHasStableIds(true);
     }
 
     private void setBuddyDbId(int buddyDbId) {
@@ -135,42 +160,19 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         close();
     }
 
-    /**
-     * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
-     */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
-        View view;
+    @SuppressWarnings("unchecked")
+    public BaseHistoryView onCreateViewHolder(ViewGroup viewGroup, int messageType) {
         try {
-            if (cursor == null || !cursor.moveToPosition(position)) {
-                throw new IllegalStateException("couldn't move cursor to position " + position);
-            }
-            if (convertView == null) {
-                view = newView(context, cursor, parent);
-            } else {
-                view = convertView;
-            }
-            bindView(view, context, cursor);
-        } catch (Throwable ex) {
-            Logger.log("exception in getView: " + ex.getMessage());
-            view = inflater.inflate(R.layout.chat_item_error, parent, false);
-            ex.printStackTrace();
+            // Inflate view by type.
+            View view = inflater.inflate(ITEM_LAYOUTS[messageType], viewGroup, false);
+            Class clazz = ITEM_HOLDERS[messageType];
+            // Instantiate holder for this view.
+            Constructor<BaseHistoryView> constructor = clazz.getConstructor(View.class);
+            return constructor.newInstance(view);
+        } catch (Throwable ignored) {
         }
-        return view;
-    }
-
-    /**
-     * Inflates view(s) from the specified XML file.
-     *
-     * @see android.widget.CursorAdapter#newView(android.content.Context,
-     * android.database.Cursor, ViewGroup)
-     */
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
-        return inflater.inflate(ITEM_LAYOUTS[getItemType(messageType, contentType)], parent, false);
+        return null;
     }
 
     @Override
@@ -238,44 +240,6 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         return type;
     }
 
-    @Override
-    public int getViewTypeCount() {
-        return 9;
-    }
-
-    @Override
-    public void bindView(View view, final Context context, Cursor cursor) {
-        // Message data.
-        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
-                cursor.getString(COLUMN_MESSAGE_TEXT));
-        long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-        int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
-        final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
-        // Content message data
-        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
-        long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
-        final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
-        int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
-        final String contentName = cursor.getString(COLUMN_CONTENT_NAME);
-        final String contentUri = cursor.getString(COLUMN_CONTENT_URI);
-        String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
-        final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
-        String messageTimeText = timeHelper.getFormattedTime(messageTime);
-        String messageDateText = timeHelper.getFormattedDate(messageTime);
-        // Showing or hiding date.
-        // Go to previous message and comparing dates.
-        boolean dateVisible = !(cursor.moveToPrevious() && messageDateText
-                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
-        // Creating chat history item to bind the view.
-        ChatHistoryItem historyItem = new ChatHistoryItem(messageType, messageText, messageTime, messageState,
-                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
-                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
-        BaseHistoryView historyView = (BaseHistoryView) view;
-        historyView.bind(historyItem);
-        historyView.setContentClickListener(contentMessageClickListener);
-    }
-
     public long getMessageDbId(int position) throws MessageNotFoundException {
         Cursor cursor = getCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
@@ -324,7 +288,7 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     private QueryBuilder getDefaultQueryBuilder() {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID);
+        queryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
         return queryBuilder;
     }
 
@@ -345,6 +309,38 @@ public class ChatHistoryAdapter extends CursorAdapter implements
         }
     }
 
+    @Override
+    public void onBindViewHolderCursor(BaseHistoryView holder, Cursor cursor) {
+        // Message data.
+        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
+        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
+                cursor.getString(COLUMN_MESSAGE_TEXT));
+        long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
+        int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
+        final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
+        // Content message data
+        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+        long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
+        final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
+        int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
+        final String contentName = cursor.getString(COLUMN_CONTENT_NAME);
+        final String contentUri = cursor.getString(COLUMN_CONTENT_URI);
+        String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
+        final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
+        String messageTimeText = timeHelper.getFormattedTime(messageTime);
+        String messageDateText = timeHelper.getFormattedDate(messageTime);
+        // Showing or hiding date.
+        // Go to previous message and comparing dates.
+        boolean dateVisible = !(cursor.moveToNext() && messageDateText
+                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
+        // Creating chat history item to bind the view.
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageType, messageText, messageTime, messageState,
+                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
+                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        holder.bind(historyItem);
+        holder.setContentClickListener(contentMessageClickListener);
+    }
+
     private class ChatFilterQueryProvider implements FilterQueryProvider {
 
         @Override
@@ -359,5 +355,9 @@ public class ChatHistoryAdapter extends CursorAdapter implements
     public interface ContentMessageClickListener {
 
         public void onClicked(ChatHistoryItem historyItem);
+    }
+
+    public interface AdapterListener {
+        void onPreviewClicked(String filePath, String previewHash);
     }
 }

@@ -1,12 +1,11 @@
 package com.tomclaw.mandarin.main.views.history;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -16,7 +15,9 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 /**
  * Created by Solkin on 30.11.2014.
  */
-public abstract class BaseHistoryView extends LinearLayout {
+public abstract class BaseHistoryView extends RecyclerView.ViewHolder {
+
+    private View itemView;
 
     private View dateLayout;
     private TextView messageDate;
@@ -25,19 +26,15 @@ public abstract class BaseHistoryView extends LinearLayout {
 
     private ChatHistoryItem historyItem;
 
-    public BaseHistoryView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        dateLayout = findViewById(getDateLayoutViewId());
-        messageDate = (TextView) findViewById(getDateTextViewId());
+    public BaseHistoryView(View itemView) {
+        super(itemView);
+        this.itemView = itemView;
+        dateLayout = itemView.findViewById(getDateLayoutViewId());
+        messageDate = (TextView) itemView.findViewById(getDateTextViewId());
         if (hasDeliveryState()) {
-            deliveryState = (ImageView) findViewById(R.id.message_delivery);
+            deliveryState = (ImageView) itemView.findViewById(R.id.message_delivery);
         }
-        timeView = (TextView) findViewById(getTimeViewId());
+        timeView = (TextView) itemView.findViewById(getTimeViewId());
     }
 
     protected int getDateLayoutViewId() {
@@ -61,7 +58,7 @@ public abstract class BaseHistoryView extends LinearLayout {
             messageDate.setText(historyItem.getMessageDateText());
         } else {
             // Update visibility.
-            dateLayout.setVisibility(GONE);
+            dateLayout.setVisibility(View.GONE);
         }
         if (hasDeliveryState()) {
             Drawable drawable;
@@ -85,9 +82,9 @@ public abstract class BaseHistoryView extends LinearLayout {
                     drawable = null;
             }
             if (drawable == null) {
-                deliveryState.setVisibility(INVISIBLE);
+                deliveryState.setVisibility(View.INVISIBLE);
             } else {
-                deliveryState.setVisibility(VISIBLE);
+                deliveryState.setVisibility(View.VISIBLE);
                 deliveryState.setImageDrawable(drawable);
                 if(animated) {
                     AnimationDrawable animatedState = ((AnimationDrawable) drawable);
@@ -97,6 +94,14 @@ public abstract class BaseHistoryView extends LinearLayout {
             }
         }
         timeView.setText(historyItem.getMessageTimeText());
+    }
+
+    protected Resources getResources() {
+        return itemView.getResources();
+    }
+
+    protected View findViewById(int id) {
+        return itemView.findViewById(id);
     }
 
     public ChatHistoryItem getHistoryItem() {

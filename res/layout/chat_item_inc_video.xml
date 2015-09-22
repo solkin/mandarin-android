@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.tomclaw.mandarin.main.views.history.incoming.IncomingVideoView
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:mandarin="http://schemas.android.com/apk/res/com.tomclaw.mandarin"
         android:orientation="vertical"
@@ -90,4 +90,4 @@
         </LinearLayout>
         <include layout="@layout/time_inc_block"/>
     </LinearLayout>
-</com.tomclaw.mandarin.main.views.history.incoming.IncomingVideoView>
+</LinearLayout>

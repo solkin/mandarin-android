@@ -22,13 +22,8 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
     private View bubbleBack;
     private ImageView overlay;
 
-    public BaseHistoryPreviewView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public BaseHistoryPreviewView(View itemView) {
+        super(itemView);
         previewImage = (PreviewImageView) findViewById(getPreviewImageViewId());
         progressContainer = findViewById(getProgressContainerViewId());
         progress = (ProgressBar) findViewById(getProgressViewId());
@@ -55,6 +50,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
                 historyItem.getPreviewHash(), getThumbnailPlaceholder(), true);
         progress.setProgress(historyItem.getContentProgress());
         percent.setText(historyItem.getContentProgress() + "%");
+        // TODO: check, why find view is here?
         bubbleBack = findViewById(getBubbleBackViewId());
     }
 

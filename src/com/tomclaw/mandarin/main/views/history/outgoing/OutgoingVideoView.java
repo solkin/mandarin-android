@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history.outgoing;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import com.tomclaw.mandarin.R;
 
 /**
@@ -9,8 +10,8 @@ import com.tomclaw.mandarin.R;
  */
 public class OutgoingVideoView extends OutgoingPreviewView {
 
-    public OutgoingVideoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public OutgoingVideoView(View itemView) {
+        super(itemView);
     }
 
     @Override

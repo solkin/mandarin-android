@@ -23,13 +23,8 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
     private ImageView fileType;
     private View bubbleBack;
 
-    public BaseHistoryFileView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public BaseHistoryFileView(View itemView) {
+        super(itemView);
         name = (TextView) findViewById(getNameViewId());
         size = (TextView) findViewById(getSizeViewId());
         percent = (TextView) findViewById(getPercentViewId());

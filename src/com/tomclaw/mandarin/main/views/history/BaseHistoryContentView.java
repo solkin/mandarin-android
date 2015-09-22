@@ -14,8 +14,8 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
 
     private ChatHistoryAdapter.ContentMessageClickListener contentClickListener;
 
-    public BaseHistoryContentView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public BaseHistoryContentView(View itemView) {
+        super(itemView);
     }
 
     @Override

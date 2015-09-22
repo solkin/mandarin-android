@@ -39,13 +39,16 @@
                         android:id="@+id/out_image_overlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/out_preview_image"
-                        android:layout_alignStart="@+id/out_preview_image"
-                        android:layout_alignRight="@+id/out_preview_image"
-                        android:layout_alignEnd="@+id/out_preview_image"
-                        android:layout_alignTop="@+id/out_preview_image"
-                        android:layout_alignBottom="@+id/out_preview_image"
-                        android:scaleType="center"/>
+                        android:scaleType="center"
+                        android:layout_centerInParent="true"/>
+                <com.tomclaw.mandarin.main.views.CircleProgressBar
+                        android:id="@+id/out_progress"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_centerInParent="true"
+                        mandarin:progress="0"
+                        mandarin:progressBarThickness="2dp"
+                        mandarin:progressbarColor="@android:color/white" />
                 <LinearLayout
                         android:id="@+id/out_error"
                         android:layout_width="wrap_content"
@@ -72,44 +75,6 @@
                             android:textSize="14sp"
                             android:gravity="center"/>
                 </LinearLayout>
-                <RelativeLayout
-                        android:id="@+id/out_progress_container"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/preview_progress_background"
-                        android:layout_alignBottom="@id/out_preview_image"
-                        android:layout_alignLeft="@id/out_preview_image"
-                        android:layout_alignStart="@id/out_preview_image"
-                        android:layout_alignRight="@id/out_preview_image"
-                        android:layout_alignEnd="@id/out_preview_image">
-                    <TextView
-                            android:id="@+id/out_percent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/file_size_text_color"
-                            android:textSize="16sp"
-                            android:fontFamily="sans-serif-light"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_centerVertical="true"
-                            android:paddingTop="6dp"
-                            android:paddingBottom="6dp"
-                            android:paddingLeft="6dp"
-                            android:paddingRight="0dp"/>
-                    <ProgressBar
-                            android:id="@+id/out_progress"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="24dp"
-                            android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/out_percent"
-                            android:layout_toEndOf="@id/out_percent"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:padding="8dp"
-                            android:max="100"
-                            android:progressDrawable="@drawable/file_progress"/>
-                </RelativeLayout>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

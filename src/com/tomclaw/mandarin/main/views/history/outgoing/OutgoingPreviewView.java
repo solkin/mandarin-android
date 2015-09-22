@@ -1,7 +1,5 @@
 package com.tomclaw.mandarin.main.views.history.outgoing;
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryPreviewView;
@@ -24,18 +22,8 @@ public abstract class OutgoingPreviewView extends BaseHistoryPreviewView {
     }
 
     @Override
-    protected int getProgressContainerViewId() {
-        return R.id.out_progress_container;
-    }
-
-    @Override
     protected int getProgressViewId() {
         return R.id.out_progress;
-    }
-
-    @Override
-    protected int getPercentViewId() {
-        return R.id.out_percent;
     }
 
     @Override

@@ -1,15 +1,11 @@
 package com.tomclaw.mandarin.main.views.history;
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.BubbleImageView;
-import com.tomclaw.mandarin.main.views.PreviewImageView;
+import com.tomclaw.mandarin.main.views.CircleProgressBar;
 
 /**
  * Created by Solkin on 30.11.2014.
@@ -17,28 +13,20 @@ import com.tomclaw.mandarin.main.views.PreviewImageView;
 public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
 
     private BubbleImageView previewImage;
-    private View progressContainer;
-    private ProgressBar progress;
-    private TextView percent;
+    private CircleProgressBar progress;
     private View bubbleBack;
     private ImageView overlay;
 
     public BaseHistoryPreviewView(View itemView) {
         super(itemView);
         previewImage = (BubbleImageView) findViewById(getPreviewImageViewId());
-        progressContainer = findViewById(getProgressContainerViewId());
-        progress = (ProgressBar) findViewById(getProgressViewId());
-        percent = (TextView) findViewById(getPercentViewId());
+        progress = (CircleProgressBar) findViewById(getProgressViewId());
         overlay = (ImageView) findViewById(getOverlayViewId());
     }
 
     protected abstract int getPreviewImageViewId();
 
-    protected abstract int getProgressContainerViewId();
-
     protected abstract int getProgressViewId();
-
-    protected abstract int getPercentViewId();
 
     protected abstract int getBubbleBackViewId();
 
@@ -49,8 +37,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
         super.afterStates(historyItem);
         BitmapCache.getInstance().getBitmapAsync(previewImage,
                 historyItem.getPreviewHash(), getThumbnailPlaceholder(), true);
-        progress.setProgress(historyItem.getContentProgress());
-        percent.setText(historyItem.getContentProgress() + "%");
+        progress.setProgressWithAnimation(historyItem.getContentProgress());
         // TODO: check, why find view is here?
         bubbleBack = findViewById(getBubbleBackViewId());
     }
@@ -65,37 +52,37 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
 
     @Override
     protected void waiting() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         overlay.setImageResource(getOverlayRunning());
     }
 
     @Override
     protected void interrupt() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         overlay.setImageResource(getOverlayPaused());
     }
 
     @Override
     protected void stopped() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         overlay.setImageResource(getOverlayPaused());
     }
 
     @Override
     protected void running() {
-        progressContainer.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.VISIBLE);
         overlay.setImageResource(getOverlayRunning());
     }
 
     @Override
     protected void failed() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         overlay.setImageResource(getOverlayStable());
     }
 
     @Override
     protected void stable() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         overlay.setImageResource(getOverlayStable());
     }
 

@@ -71,12 +71,16 @@
             android:layout_height="match_parent" android:gravity="center" android:visibility="gone"
             android:id="@+id/counter_layout">
         <TextView
+                android:id="@+id/counter_text"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/counter_text" android:padding="4dp"
-                android:layout_margin="6dp" android:background="@drawable/orange_indicator"
-                android:textColor="#ffffff" android:textStyle="bold"
-                android:gravity="center" android:visibility="visible" android:minWidth="25dp"/>
+                android:layout_height="26dp"
+                android:minWidth="26dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:background="@drawable/orange_indicator"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:gravity="center"/>
     </LinearLayout>
     <ImageView
             android:layout_width="wrap_content"

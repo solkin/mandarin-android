@@ -1,11 +1,10 @@
 package com.tomclaw.mandarin.main.views.history;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -17,9 +16,7 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
 
     private TextView name;
     private TextView size;
-    private TextView percent;
-    private ProgressBar progress;
-    private View progressContainer;
+    private RoundCornerProgressBar progress;
     private ImageView fileType;
     private View bubbleBack;
 
@@ -27,9 +24,7 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
         super(itemView);
         name = (TextView) findViewById(getNameViewId());
         size = (TextView) findViewById(getSizeViewId());
-        percent = (TextView) findViewById(getPercentViewId());
-        progress = (ProgressBar) findViewById(getProgressViewId());
-        progressContainer = findViewById(getProgressContainerViewId());
+        progress = (RoundCornerProgressBar) findViewById(getProgressViewId());
         fileType = (ImageView) findViewById(getFileTypeViewId());
         bubbleBack = findViewById(getBubbleBackViewId());
     }
@@ -38,23 +33,21 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
 
     protected abstract int getSizeViewId();
 
-    protected abstract int getPercentViewId();
-
     protected abstract int getProgressViewId();
-
-    protected abstract int getProgressContainerViewId();
 
     protected abstract int getFileTypeViewId();
 
     protected abstract int getBubbleBackViewId();
+
+    protected abstract Drawable getBubbleBackground();
 
     @Override
     protected void afterStates(ChatHistoryItem historyItem) {
         super.afterStates(historyItem);
         name.setText(historyItem.getContentName());
         size.setText(StringUtil.formatBytes(getResources(), historyItem.getContentSize()));
-        progress.setProgress(historyItem.getContentProgress());
-        percent.setText(historyItem.getContentProgress() + "%");
+        progress.setProgress(Math.max(historyItem.getContentProgress(), 5));
+        bubbleBack.setBackgroundDrawable(getBubbleBackground());
     }
 
     protected abstract int getIconPaused();
@@ -68,42 +61,42 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
 
     @Override
     protected void waiting() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
         fileType.setImageResource(getIconRunning());
     }
 
     @Override
     protected void interrupt() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
         fileType.setImageResource(getIconPaused());
     }
 
     @Override
     protected void stopped() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
         fileType.setImageResource(getIconPaused());
     }
 
     @Override
     protected void running() {
-        progressContainer.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.VISIBLE);
         size.setVisibility(View.GONE);
         fileType.setImageResource(getIconRunning());
     }
 
     @Override
     protected void failed() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
         fileType.setImageResource(getIconStable());
     }
 
     @Override
     protected void stable() {
-        progressContainer.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
         size.setVisibility(View.VISIBLE);
         fileType.setImageResource(getIconStable());
     }

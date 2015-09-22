@@ -1,9 +1,10 @@
 package com.tomclaw.mandarin.main.views.history.incoming;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.main.BubbleColorDrawable;
+import com.tomclaw.mandarin.main.Corner;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryFileView;
 
 /**
@@ -11,8 +12,11 @@ import com.tomclaw.mandarin.main.views.history.BaseHistoryFileView;
  */
 public class IncomingFileView extends BaseHistoryFileView {
 
+    private final Drawable background;
+
     public IncomingFileView(View itemView) {
         super(itemView);
+        background = new BubbleColorDrawable(itemView.getContext(), 0xffbbe061, Corner.LEFT);
     }
 
     @Override
@@ -26,18 +30,8 @@ public class IncomingFileView extends BaseHistoryFileView {
     }
 
     @Override
-    protected int getPercentViewId() {
-        return R.id.inc_percent;
-    }
-
-    @Override
     protected int getProgressViewId() {
         return R.id.inc_progress;
-    }
-
-    @Override
-    protected int getProgressContainerViewId() {
-        return R.id.inc_progress_container;
     }
 
     @Override
@@ -48,6 +42,11 @@ public class IncomingFileView extends BaseHistoryFileView {
     @Override
     protected int getBubbleBackViewId() {
         return R.id.inc_bubble_back;
+    }
+
+    @Override
+    protected Drawable getBubbleBackground() {
+        return background;
     }
 
     @Override

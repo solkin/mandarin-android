@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.main.views.history.outgoing;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
 import android.view.View;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.BubbleColorDrawable;
@@ -14,12 +12,10 @@ import com.tomclaw.mandarin.main.views.history.BaseHistoryTextView;
  */
 public class OutgoingTextView extends BaseHistoryTextView {
 
-    private View bubbleBack;
-    private BubbleColorDrawable background;
+    private Drawable background;
 
     public OutgoingTextView(View itemView) {
         super(itemView);
-        bubbleBack = findViewById(R.id.out_bubble_back);
         background = new BubbleColorDrawable(itemView.getContext(), 0xffffffff, Corner.RIGHT);
     }
 
@@ -39,8 +35,8 @@ public class OutgoingTextView extends BaseHistoryTextView {
     }
 
     @Override
-    protected View getBubbleBack() {
-        return bubbleBack;
+    protected int getBubbleBackViewId() {
+        return R.id.out_bubble_back;
     }
 
     @Override

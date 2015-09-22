@@ -53,6 +53,16 @@
         <attr name="preview_placeholder_tint" format="color|reference"/>
     </declare-styleable>
 
+    <declare-styleable name="BubbleImageView">
+        <attr name="bubble_color" format="color|reference"/>
+        <attr name="placeholder_tint" format="color|reference"/>
+        <attr name="bubble_corner" format="enum">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+            <enum name="none" value="2"/>
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="AgePickerView">
         <attr name="ageMin" format="integer"/>
         <attr name="ageMax" format="integer"/>

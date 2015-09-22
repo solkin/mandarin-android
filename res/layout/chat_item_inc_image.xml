@@ -25,17 +25,17 @@
             <RelativeLayout android:orientation="vertical"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?attr/chat_inc_bubble"
                             android:id="@+id/inc_bubble_back"
                             android:layout_gravity="start">
-                <com.tomclaw.mandarin.main.views.PreviewImageView
+                <com.tomclaw.mandarin.main.views.BubbleImageView
                         android:id="@+id/inc_preview_image"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/preview_height"
                         android:padding="0dp"
                         android:scaleType="centerCrop"
                         android:adjustViewBounds="true"
-                        mandarin:preview_placeholder_tint="?attr/chat_placeholder_tint_inc"/>
+                        mandarin:bubble_corner="left"
+                        mandarin:bubble_color="?attr/chat_placeholder_tint_inc"/>
                 <ImageView
                         android:id="@+id/inc_image_overlay"
                         android:layout_width="wrap_content"

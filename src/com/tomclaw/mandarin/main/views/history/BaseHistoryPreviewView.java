@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
+import com.tomclaw.mandarin.main.views.BubbleImageView;
 import com.tomclaw.mandarin.main.views.PreviewImageView;
 
 /**
@@ -15,7 +16,7 @@ import com.tomclaw.mandarin.main.views.PreviewImageView;
  */
 public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
 
-    private PreviewImageView previewImage;
+    private BubbleImageView previewImage;
     private View progressContainer;
     private ProgressBar progress;
     private TextView percent;
@@ -24,7 +25,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
 
     public BaseHistoryPreviewView(View itemView) {
         super(itemView);
-        previewImage = (PreviewImageView) findViewById(getPreviewImageViewId());
+        previewImage = (BubbleImageView) findViewById(getPreviewImageViewId());
         progressContainer = findViewById(getProgressContainerViewId());
         progress = (ProgressBar) findViewById(getProgressViewId());
         percent = (TextView) findViewById(getPercentViewId());

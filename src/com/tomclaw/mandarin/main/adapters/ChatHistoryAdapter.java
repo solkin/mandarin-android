@@ -46,7 +46,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int[] ITEM_LAYOUTS = new int[]{
-            R.layout.chat_item_error,
+            0,
             R.layout.chat_item_inc_text,
             R.layout.chat_item_inc_image,
             R.layout.chat_item_inc_video,

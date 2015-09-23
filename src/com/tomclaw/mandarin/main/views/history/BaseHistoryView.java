@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -109,5 +110,12 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder {
     }
 
     public void setContentClickListener(ChatHistoryAdapter.ContentMessageClickListener contentClickListener) {
+    }
+
+    protected int getStyledColor(int attrId) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = itemView.getContext().getTheme();
+        theme.resolveAttribute(attrId, typedValue, true);
+        return typedValue.data;
     }
 }

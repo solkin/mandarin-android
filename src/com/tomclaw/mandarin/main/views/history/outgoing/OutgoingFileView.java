@@ -18,7 +18,7 @@ public class OutgoingFileView extends BaseHistoryFileView {
     public OutgoingFileView(View itemView) {
         super(itemView);
         errorView = findViewById(R.id.out_error);
-        background = new BubbleColorDrawable(itemView.getContext(), 0xffffffff, Corner.RIGHT);
+        background = new BubbleColorDrawable(itemView.getContext(), getStyledColor(R.attr.chat_out_bubble_color), Corner.RIGHT);
     }
 
     @Override

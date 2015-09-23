@@ -95,10 +95,9 @@
         <item name="chat_text_color">#FF111111</item>
         <item name="chat_delivery_alpha">1</item>
 
-        <item name="chat_date_back">@drawable/ic_date_back_light</item>
-        <item name="chat_inc_bubble">@drawable/ic_inc_bubble_light</item>
-        <item name="chat_out_bubble">@drawable/ic_out_bubble_light</item>
-        <item name="chat_error_bubble">@drawable/ic_error_bubble_light</item>
+        <item name="chat_date_back">@drawable/date_back_light</item>
+        <item name="chat_inc_bubble_color">#E2FAFAFA</item>
+        <item name="chat_out_bubble_color">#C2BAE061</item>
 
         <item name="chat_buttons_tint">#666666</item>
         <item name="chat_icons_tint">#FF151515</item>
@@ -164,10 +163,9 @@
         <item name="chat_text_color">#FFDADADA</item>
         <item name="chat_delivery_alpha">0.7</item>
 
-        <item name="chat_date_back">@drawable/ic_date_back_dark</item>
-        <item name="chat_inc_bubble">@drawable/ic_inc_bubble_dark</item>
-        <item name="chat_out_bubble">@drawable/ic_out_bubble_dark</item>
-        <item name="chat_error_bubble">@drawable/ic_error_bubble_dark</item>
+        <item name="chat_date_back">@drawable/date_back_dark</item>
+        <item name="chat_inc_bubble_color">#96969696</item>
+        <item name="chat_out_bubble_color">#32738B32</item>
 
         <item name="chat_buttons_tint">#FFD6D6D6</item>
         <item name="chat_icons_tint">#FFDADADA</item>

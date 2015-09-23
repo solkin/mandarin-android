@@ -15,9 +15,8 @@
     <attr name="chat_background_gradient" format="reference"/>
 
     <attr name="chat_date_back" format="reference"/>
-    <attr name="chat_inc_bubble" format="reference"/>
-    <attr name="chat_out_bubble" format="reference"/>
-    <attr name="chat_error_bubble" format="reference"/>
+    <attr name="chat_inc_bubble_color" format="color|reference"/>
+    <attr name="chat_out_bubble_color" format="color|reference"/>
 
     <attr name="chat_buttons_tint" format="color|reference"/>
     <attr name="chat_icons_tint" format="color|reference"/>

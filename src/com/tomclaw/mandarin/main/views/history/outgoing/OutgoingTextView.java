@@ -16,7 +16,7 @@ public class OutgoingTextView extends BaseHistoryTextView {
 
     public OutgoingTextView(View itemView) {
         super(itemView);
-        background = new BubbleColorDrawable(itemView.getContext(), 0xffffffff, Corner.RIGHT);
+        background = new BubbleColorDrawable(itemView.getContext(), getStyledColor(R.attr.chat_out_bubble_color), Corner.RIGHT);
     }
 
     @Override

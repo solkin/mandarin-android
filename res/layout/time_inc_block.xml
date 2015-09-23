@@ -12,5 +12,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/inc_time"
             android:layout_gravity="end"
+            android:textSize="12sp"
             android:textColor="?chat_time_color"/>
 </LinearLayout>

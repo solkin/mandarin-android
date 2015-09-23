@@ -37,6 +37,9 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
         super.afterStates(historyItem);
         BitmapCache.getInstance().getBitmapAsync(previewImage,
                 historyItem.getPreviewHash(), getThumbnailPlaceholder(), true);
+        if (historyItem.getContentProgress() == 0) {
+            progress.setProgress(historyItem.getContentProgress());
+        }
         progress.setProgressWithAnimation(historyItem.getContentProgress());
         // TODO: check, why find view is here?
         bubbleBack = findViewById(getBubbleBackViewId());

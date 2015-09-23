@@ -13,6 +13,7 @@
               android:layout_height="wrap_content"
               android:id="@+id/out_time"
               android:layout_gravity="end"
+              android:textSize="12sp"
               android:textColor="?chat_time_color"/>
     <ImageView
             android:layout_width="wrap_content"
@@ -21,6 +22,6 @@
             android:src="@drawable/ic_delivered"
             android:layout_gravity="start"
             android:layout_marginLeft="2dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="0dp"
             android:alpha="?chat_delivery_alpha"/>
 </LinearLayout>

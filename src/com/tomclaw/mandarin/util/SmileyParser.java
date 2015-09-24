@@ -103,7 +103,6 @@ public class SmileyParser {
         return Pattern.compile(patternString.toString());
     }
 
-
     /**
      * Adds ImageSpans to a CharSequence that replace textual emoticons such
      * as :-) with a graphical version.
@@ -113,17 +112,30 @@ public class SmileyParser {
      * recognized emoticons.
      */
     public CharSequence addSmileySpans(CharSequence text) {
-        SpannableStringBuilder builder = new SpannableStringBuilder(text);
+        return addSmileySpans(new SpannableStringBuilder(text));
+    }
 
+    /**
+     * Adds ImageSpans to a Spannable that replace textual emoticons such
+     * as :-) with a graphical version.
+     *
+     * @param text A Spannable possibly containing emoticons
+     * @return A Spannable annotated with ImageSpans covering any
+     * recognized emoticons.
+     */
+    public Spannable addSmileySpans(Spannable text) {
+        ImageSpan[] spans = text.getSpans(0, text.length(), ImageSpan.class);
+        for (ImageSpan span : spans) {
+            text.removeSpan(span);
+        }
         Matcher matcher = mPattern.matcher(text);
         while (matcher.find()) {
             int resId = mSmileyToRes.get(matcher.group());
-            builder.setSpan(new ImageSpan(mContext, resId),
+            text.setSpan(new ImageSpan(mContext, resId),
                     matcher.start(), matcher.end(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-
-        return builder;
+        return text;
     }
 
     public int getSmileysCount() {

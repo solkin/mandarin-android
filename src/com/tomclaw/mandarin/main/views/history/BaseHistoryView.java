@@ -12,11 +12,12 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
+import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
  * Created by Solkin on 30.11.2014.
  */
-public abstract class BaseHistoryView extends RecyclerView.ViewHolder {
+public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements Unobfuscatable {
 
     private View itemView;
 

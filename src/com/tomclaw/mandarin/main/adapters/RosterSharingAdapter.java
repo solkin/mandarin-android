@@ -56,8 +56,8 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_DIALOG + " > 0 THEN " +
-                GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " ELSE -1 END)").andOrder()
+        queryBuilder.sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_DIALOG + " > 0 THEN " +
+                GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME + " ELSE -1 END)", "DESC").andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }

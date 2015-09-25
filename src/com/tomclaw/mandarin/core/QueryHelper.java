@@ -5,7 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQuery;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
@@ -990,10 +992,9 @@ public class QueryHelper {
         // Get buddy priority - from current group, then from non-recycle, then from recycle.
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-                .descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP + "='" + groupName + "' THEN 2 ELSE 0 END)").andOrder()
-                .descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP_ID + "!=" + GlobalProvider.GROUP_ID_RECYCLE + " THEN 1 ELSE 0 END" + ")")
+                .sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP + "=" + StringUtil.escapeSqlWithQuotes(groupName) + " THEN 2 ELSE 0 END)", "DESC").andOrder()
+                .sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP_ID + "!=" + GlobalProvider.GROUP_ID_RECYCLE + " THEN 1 ELSE 0 END" + ")", "DESC")
                 .limit(1);
-
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(databaseLayer, queryBuilder);

@@ -24,7 +24,7 @@ public class QueryBuilder {
     }
 
     private QueryBuilder expression(String column, String action, Object object) {
-        select.append(column).append(action).append("'").append(object).append("'");
+        select.append(StringUtil.escapeSql(column)).append(action).append(StringUtil.escapeSqlWithQuotes(object.toString()));
         return this;
     }
 
@@ -53,12 +53,14 @@ public class QueryBuilder {
     }
 
     public QueryBuilder like(String column, Object object) {
-        select.append(column).append(" LIKE ").append("'%").append(object).append("%'");
+        select.append(StringUtil.escapeSql(column)).append(" LIKE ")
+                .append("'%").append(StringUtil.escapeSql(object.toString())).append("%'");
         return this;
     }
 
     public QueryBuilder likeIgnoreCase(String column, Object object) {
-        select.append("UPPER(").append(column).append(")").append(" LIKE ").append("'%").append(object).append("%'");
+        select.append("UPPER(").append(StringUtil.escapeSql(column)).append(")").append(" LIKE ").append("'%")
+                .append(StringUtil.escapeSql(object.toString())).append("%'");
         return this;
     }
 
@@ -77,7 +79,12 @@ public class QueryBuilder {
     }
 
     private QueryBuilder sortOrder(String column, String order) {
-        sort.append(column).append(order);
+        sortOrderRaw(StringUtil.escapeSql(column), order);
+        return this;
+    }
+
+    public QueryBuilder sortOrderRaw(String column, String order) {
+        sort.append(column).append(' ').append(order);
         return this;
     }
 
@@ -87,11 +94,11 @@ public class QueryBuilder {
     }
 
     public QueryBuilder ascending(String column) {
-        return sortOrder(column, " ASC");
+        return sortOrder(column, "ASC");
     }
 
     public QueryBuilder descending(String column) {
-        return sortOrder(column, " DESC");
+        return sortOrder(column, "DESC");
     }
 
     public QueryBuilder limit(int limit) {

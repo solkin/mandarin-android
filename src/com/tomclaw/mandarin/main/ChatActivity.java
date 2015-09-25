@@ -1167,6 +1167,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+            SmileyParser.getInstance().addSmileySpans(s);
             if (isSendByEnter && s.length() > 0 && s.charAt(s.length() - 1) == '\n') {
                 sendMessage();
             }

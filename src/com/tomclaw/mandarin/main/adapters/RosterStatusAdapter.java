@@ -50,8 +50,8 @@ public class RosterStatusAdapter extends RosterStickyAdapter {
 
     @Override
     protected void postQueryBuilder(QueryBuilder queryBuilder) {
-        queryBuilder.descending("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + " != " +
-                StatusUtil.STATUS_OFFLINE + " THEN 1 ELSE 0 END)").andOrder()
+        queryBuilder.sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_STATUS + " != " +
+                StatusUtil.STATUS_OFFLINE + " THEN 1 ELSE 0 END)", "DESC").andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX).andOrder()
                 .ascending(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD);
     }

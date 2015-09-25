@@ -4,6 +4,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.DatabaseUtils;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
@@ -136,5 +138,15 @@ public class StringUtil {
         int exp = (int) (Math.log(bitsPerSecond) / Math.log(unit));
         String pre = String.valueOf("kmgtpe".charAt(exp - 1));
         return String.format("%.1f %sB/sec", bitsPerSecond / Math.pow(unit, exp), pre);
+    }
+
+    public static String escapeSqlWithQuotes(String value) {
+        return DatabaseUtils.sqlEscapeString(value);
+    }
+
+    public static String escapeSql(String value) {
+        String escaped = escapeSqlWithQuotes(value);
+        escaped = escaped.substring(1, escaped.length() - 1);
+        return escaped;
     }
 }

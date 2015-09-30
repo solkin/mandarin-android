@@ -89,4 +89,9 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
             }
         });
     }
+
+    @Override
+    protected View getLongClickableView() {
+        return getClickableView();
+    }
 }

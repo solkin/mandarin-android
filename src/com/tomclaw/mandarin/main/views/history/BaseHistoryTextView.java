@@ -31,4 +31,9 @@ public abstract class BaseHistoryTextView extends BaseHistoryView {
         textView.setText(historyItem.getMessageText());
         bubbleBack.setBackgroundDrawable(getBubbleBackground());
     }
+
+    @Override
+    protected View getLongClickableView() {
+        return textView;
+    }
 }

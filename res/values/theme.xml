@@ -282,6 +282,7 @@
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
         <item name="android:textSize">17sp</item>
         <item name="android:autoLink">all</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:layout_gravity">left|center_vertical</item>
         <item name="android:singleLine">false</item>
         <item name="android:textColor">?chat_text_color</item>

@@ -22,6 +22,7 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
         previewImage = (BubbleImageView) findViewById(getPreviewImageViewId());
         progress = (CircleProgressBar) findViewById(getProgressViewId());
         overlay = (ImageView) findViewById(getOverlayViewId());
+        bubbleBack = findViewById(getBubbleBackViewId());
     }
 
     protected abstract int getPreviewImageViewId();
@@ -41,8 +42,6 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
             progress.setProgress(historyItem.getContentProgress());
         }
         progress.setProgressWithAnimation(historyItem.getContentProgress());
-        // TODO: check, why find view is here?
-        bubbleBack = findViewById(getBubbleBackViewId());
     }
 
     protected abstract int getThumbnailPlaceholder();

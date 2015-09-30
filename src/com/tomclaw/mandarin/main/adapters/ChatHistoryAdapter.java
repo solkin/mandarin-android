@@ -98,6 +98,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
     private ContentMessageClickListener contentMessageClickListener;
+    private MessageLongClickListener longClickListener;
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(null);
@@ -301,6 +302,14 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         this.contentMessageClickListener = contentMessageClickListener;
     }
 
+    public MessageLongClickListener getLongClickListener() {
+        return longClickListener;
+    }
+
+    public void setLongClickListener(MessageLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
     public void close() {
         Cursor cursor = swapCursor(null);
         // Maybe, previous non-closed cursor present?
@@ -339,6 +348,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
                 contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
         holder.bind(historyItem);
         holder.setContentClickListener(contentMessageClickListener);
+        holder.setLongClickListener(longClickListener);
     }
 
     private class ChatFilterQueryProvider implements FilterQueryProvider {
@@ -355,6 +365,10 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     public interface ContentMessageClickListener {
 
         public void onClicked(ChatHistoryItem historyItem);
+    }
+
+    public interface MessageLongClickListener {
+        void onLongCLicked(ChatHistoryItem historyItem);
     }
 
     public interface AdapterListener {

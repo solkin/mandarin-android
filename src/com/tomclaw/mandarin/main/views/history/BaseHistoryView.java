@@ -27,6 +27,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
     private TextView timeView;
 
     private ChatHistoryItem historyItem;
+    private ChatHistoryAdapter.MessageLongClickListener longClickListener;
 
     public BaseHistoryView(View itemView) {
         super(itemView);
@@ -96,6 +97,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             }
         }
         timeView.setText(historyItem.getMessageTimeText());
+        bindLockClickListener();
     }
 
     protected Resources getResources() {
@@ -118,5 +120,21 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         Resources.Theme theme = itemView.getContext().getTheme();
         theme.resolveAttribute(attrId, typedValue, true);
         return typedValue.data;
+    }
+
+    public void setLongClickListener(ChatHistoryAdapter.MessageLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
+    protected abstract View getLongClickableView();
+
+    private void bindLockClickListener() {
+        getLongClickableView().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                longClickListener.onLongCLicked(historyItem);
+                return true;
+            }
+        });
     }
 }

@@ -91,7 +91,7 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         buddyNick = (TextView) toolbar.findViewById(R.id.buddy_nick);
@@ -115,6 +115,12 @@ public class ChatActivity extends ChiefActivity {
 
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
+        chatHistoryAdapter.setLongClickListener(new ChatHistoryAdapter.MessageLongClickListener() {
+            @Override
+            public void onLongCLicked(ChatHistoryItem historyItem) {
+                toolbar.startActionMode(new MultiChoiceModeListener());
+            }
+        });
 
         chatList = (RecyclerView) findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
@@ -742,11 +748,10 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+    private class MultiChoiceModeListener implements ActionMode.Callback {
 
         private SelectionHelper<Integer, Long> selectionHelper;
 
-        @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             selectionHelper.onStateChanged(position, id, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));

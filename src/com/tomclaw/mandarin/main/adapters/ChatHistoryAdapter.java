@@ -368,7 +368,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     }
 
     public interface MessageLongClickListener {
-        void onLongCLicked(ChatHistoryItem historyItem);
+        void onLongClicked(ChatHistoryItem historyItem);
     }
 
     public interface AdapterListener {

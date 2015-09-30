@@ -117,7 +117,7 @@ public class ChatActivity extends ChiefActivity {
         chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
         chatHistoryAdapter.setLongClickListener(new ChatHistoryAdapter.MessageLongClickListener() {
             @Override
-            public void onLongCLicked(ChatHistoryItem historyItem) {
+            public void onLongClicked(ChatHistoryItem historyItem) {
                 toolbar.startActionMode(new MultiChoiceModeListener());
             }
         });

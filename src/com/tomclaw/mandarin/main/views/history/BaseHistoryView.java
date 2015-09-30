@@ -97,7 +97,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             }
         }
         timeView.setText(historyItem.getMessageTimeText());
-        bindLockClickListener();
+        bindLongClickListener();
     }
 
     protected Resources getResources() {
@@ -128,11 +128,11 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
 
     protected abstract View getLongClickableView();
 
-    private void bindLockClickListener() {
+    private void bindLongClickListener() {
         getLongClickableView().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                longClickListener.onLongCLicked(historyItem);
+                longClickListener.onLongClicked(historyItem);
                 return true;
             }
         });

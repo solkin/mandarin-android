@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
+import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
@@ -27,7 +28,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
     private TextView timeView;
 
     private ChatHistoryItem historyItem;
-    private ChatHistoryAdapter.MessageLongClickListener longClickListener;
+    private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
+
+    private SelectionHelper<Long> selectionHelper;
 
     public BaseHistoryView(View itemView) {
         super(itemView);
@@ -52,7 +55,20 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
 
     protected abstract boolean hasDeliveryState();
 
+    public SelectionHelper<Long> getSelectionHelper() {
+        return selectionHelper;
+    }
+
+    public void setSelectionHelper(SelectionHelper<Long> selectionHelper) {
+        this.selectionHelper = selectionHelper;
+    }
+
     public void bind(ChatHistoryItem historyItem) {
+        if (selectionHelper.isChecked(historyItem.getMessageDbId())) {
+            itemView.setBackgroundColor(getResources().getColor(R.color.orange_normal));
+        } else {
+            itemView.setBackgroundColor(0x00000000);
+        }
         this.historyItem = historyItem;
         if (historyItem.isDateVisible()) {
             // Update visibility.
@@ -89,7 +105,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             } else {
                 deliveryState.setVisibility(View.VISIBLE);
                 deliveryState.setImageDrawable(drawable);
-                if(animated) {
+                if (animated) {
                     AnimationDrawable animatedState = ((AnimationDrawable) drawable);
                     animatedState.stop();
                     animatedState.start();
@@ -97,7 +113,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             }
         }
         timeView.setText(historyItem.getMessageTimeText());
-        bindLongClickListener();
+        bindClickListeners();
     }
 
     protected Resources getResources() {
@@ -122,17 +138,27 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         return typedValue.data;
     }
 
-    public void setLongClickListener(ChatHistoryAdapter.MessageLongClickListener longClickListener) {
-        this.longClickListener = longClickListener;
+    public void setSelectionModeListener(ChatHistoryAdapter.SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
     }
 
-    protected abstract View getLongClickableView();
+    protected abstract View getClickableView();
 
-    private void bindLongClickListener() {
-        getLongClickableView().setOnLongClickListener(new View.OnLongClickListener() {
+    private void bindClickListeners() {
+        View view = getClickableView();
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectionHelper.isSelectionMode()) {
+                    selectionHelper.toggleChecked(historyItem.getMessageDbId());
+                    selectionModeListener.onItemStateChanged(historyItem);
+                }
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                longClickListener.onLongClicked(historyItem);
+                selectionModeListener.onLongClicked(historyItem, selectionHelper);
                 return true;
             }
         });

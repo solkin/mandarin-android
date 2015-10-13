@@ -5,6 +5,7 @@ package com.tomclaw.mandarin.main;
  */
 public class ChatHistoryItem {
 
+    private long messageDbId;
     private int messageType;
     private CharSequence messageText;
     private long messageTime;
@@ -22,12 +23,13 @@ public class ChatHistoryItem {
     private String messageDateText;
     private boolean dateVisible;
 
-    public ChatHistoryItem(int messageType, CharSequence messageText, long messageTime,
+    public ChatHistoryItem(long messageDbId, int messageType, CharSequence messageText, long messageTime,
                            int messageState, String messageCookie, int contentType,
                            long contentSize, int contentState, int contentProgress,
                            String contentName, String contentUri, String previewHash,
                            String contentTag, String messageTimeText, String messageDateText,
                            boolean dateVisible) {
+        this.messageDbId = messageDbId;
         this.messageType = messageType;
         this.messageText = messageText;
         this.messageTime = messageTime;
@@ -44,6 +46,10 @@ public class ChatHistoryItem {
         this.messageTimeText = messageTimeText;
         this.messageDateText = messageDateText;
         this.dateVisible = dateVisible;
+    }
+
+    public long getMessageDbId() {
+        return messageDbId;
     }
 
     public int getMessageType() {

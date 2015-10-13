@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.FilterQueryProvider;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -28,13 +26,9 @@ import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingTextView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingVideoView;
-import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.SmileyParser;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.mandarin.util.*;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -98,7 +92,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
     private ContentMessageClickListener contentMessageClickListener;
-    private MessageLongClickListener longClickListener;
+    private SelectionModeListener selectionModeListener;
+
+    private SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(null);
@@ -302,12 +298,12 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         this.contentMessageClickListener = contentMessageClickListener;
     }
 
-    public MessageLongClickListener getLongClickListener() {
-        return longClickListener;
+    public SelectionModeListener getSelectionModeListener() {
+        return selectionModeListener;
     }
 
-    public void setLongClickListener(MessageLongClickListener longClickListener) {
-        this.longClickListener = longClickListener;
+    public void setSelectionModeListener(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
     }
 
     public void close() {
@@ -321,6 +317,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     @Override
     public void onBindViewHolderCursor(BaseHistoryView holder, Cursor cursor) {
         // Message data.
+        long messageDbId = cursor.getLong(COLUMN_ROW_AUTO_ID);
         int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
         CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
                 cursor.getString(COLUMN_MESSAGE_TEXT));
@@ -343,12 +340,13 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         boolean dateVisible = !(cursor.moveToNext() && messageDateText
                 .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
         // Creating chat history item to bind the view.
-        ChatHistoryItem historyItem = new ChatHistoryItem(messageType, messageText, messageTime, messageState,
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime, messageState,
                 messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
                 contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        holder.setSelectionHelper(selectionHelper);
         holder.bind(historyItem);
         holder.setContentClickListener(contentMessageClickListener);
-        holder.setLongClickListener(longClickListener);
+        holder.setSelectionModeListener(selectionModeListener);
     }
 
     private class ChatFilterQueryProvider implements FilterQueryProvider {
@@ -367,8 +365,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         public void onClicked(ChatHistoryItem historyItem);
     }
 
-    public interface MessageLongClickListener {
-        void onLongClicked(ChatHistoryItem historyItem);
+    public interface SelectionModeListener {
+        void onItemStateChanged(ChatHistoryItem historyItem);
+        void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 
     public interface AdapterListener {

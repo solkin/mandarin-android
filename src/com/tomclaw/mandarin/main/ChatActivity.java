@@ -19,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
@@ -59,6 +58,8 @@ public class ChatActivity extends ChiefActivity {
     private TextView buddyNick;
     private ScrollingTextView buddyStatusMessage;
     private ImageView buddyStatusIcon;
+    private ActionMode actionMode;
+    private MultiChoiceActionCallback actionCallback;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -115,10 +116,24 @@ public class ChatActivity extends ChiefActivity {
 
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
-        chatHistoryAdapter.setLongClickListener(new ChatHistoryAdapter.MessageLongClickListener() {
+        chatHistoryAdapter.setSelectionModeListener(new ChatHistoryAdapter.SelectionModeListener() {
             @Override
-            public void onLongClicked(ChatHistoryItem historyItem) {
-                toolbar.startActionMode(new MultiChoiceModeListener());
+            public void onItemStateChanged(ChatHistoryItem historyItem) {
+                // Strange case, but let's check it to be sure.
+                if (actionCallback != null && actionMode != null) {
+                    actionCallback.onItemCheckedStateChanged(actionMode, historyItem.getMessageDbId());
+                    chatHistoryAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onLongClicked(ChatHistoryItem historyItem, final SelectionHelper<Long> selectionHelper) {
+                if (selectionHelper.setSelectionMode(true)) {
+                    actionCallback = new MultiChoiceActionCallback(selectionHelper);
+                    actionMode = toolbar.startActionMode(actionCallback);
+                    selectionHelper.setChecked(historyItem.getMessageDbId());
+                    onItemStateChanged(historyItem);
+                }
             }
         });
 
@@ -748,19 +763,20 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class MultiChoiceModeListener implements ActionMode.Callback {
+    private class MultiChoiceActionCallback implements ActionMode.Callback {
 
-        private SelectionHelper<Integer, Long> selectionHelper;
+        private SelectionHelper<Long> selectionHelper;
 
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged(position, id, checked);
+        public MultiChoiceActionCallback(SelectionHelper<Long> selectionHelper) {
+            this.selectionHelper = selectionHelper;
+        }
+
+        public void onItemCheckedStateChanged(ActionMode mode, long id) {
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<>();
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.chat_history_edit_menu, menu);
             return true;
@@ -768,7 +784,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;  // Return false because nothing is done.
+            return false;
         }
 
         @Override
@@ -795,21 +811,23 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.clearSelection();
+            selectionHelper.setSelectionMode(false);
+            chatHistoryAdapter.notifyDataSetChanged();
         }
 
         private String getSelectedMessages() {
             StringBuilder selectionBuilder = new StringBuilder();
             // Obtain selected positions.
-            Collection<Integer> selectedPositions = selectionHelper.getSelectedPositions();
+            Collection<Long> selectedIds = selectionHelper.getSelectedIds();
             // Iterating for all selected positions.
-            for (int position : selectedPositions) {
+            // TODO: make it work.
+            /*for (int position : selectedPositions) {
                 try {
                     selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
                 } catch (MessageNotFoundException ignored) {
                     Logger.log("Error while copying message on position " + position);
                 }
-            }
+            }*/
             return selectionBuilder.toString().trim();
         }
 

@@ -76,8 +76,6 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
         return contentClickListener;
     }
 
-    protected abstract View getClickableView();
-
     protected void bindContentClickListener() {
         getClickableView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,10 +86,5 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
                 }
             }
         });
-    }
-
-    @Override
-    protected View getLongClickableView() {
-        return getClickableView();
     }
 }

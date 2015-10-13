@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.util;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,40 +8,46 @@ import java.util.TreeMap;
  * Date: 04.09.13
  * Time: 0:47
  */
-public class SelectionHelper<K, V> {
+public class SelectionHelper<K> {
 
-    private Map<K, V> selection;
+    private Set<K> selection;
+    private boolean isSelectionMode;
 
     public SelectionHelper() {
-        selection = new TreeMap<K, V>();
+        selection = new HashSet<>();
+        isSelectionMode = false;
     }
 
-    public void onStateChanged(K position, V id, boolean checked) {
+    public void onStateChanged(K id, boolean checked) {
         if (checked) {
-            setChecked(position, id);
+            setChecked(id);
         } else {
-            setUnchecked(position);
+            setUnchecked(id);
         }
     }
 
-    public void setChecked(K position, V id) {
-        selection.put(position, id);
+    public void toggleChecked(K id) {
+        if (isChecked(id)) {
+            setUnchecked(id);
+        } else {
+            setChecked(id);
+        }
     }
 
-    public boolean isChecked(K position) {
-        return selection.containsKey(position);
+    public void setChecked(K id) {
+        selection.add(id);
     }
 
-    public void setUnchecked(K position) {
-        selection.remove(position);
+    public boolean isChecked(K id) {
+        return selection.contains(id);
     }
 
-    public Collection<V> getSelectedIds() {
-        return selection.values();
+    public void setUnchecked(K id) {
+        selection.remove(id);
     }
 
-    public Collection<K> getSelectedPositions() {
-        return selection.keySet();
+    public Collection<K> getSelectedIds() {
+        return Collections.unmodifiableSet(selection);
     }
 
     public int getSelectedCount() {
@@ -52,5 +56,18 @@ public class SelectionHelper<K, V> {
 
     public void clearSelection() {
         selection.clear();
+    }
+
+    public boolean isSelectionMode() {
+        return isSelectionMode;
+    }
+
+    public boolean setSelectionMode(boolean isSelectionMode) {
+        if (this.isSelectionMode != isSelectionMode) {
+            this.isSelectionMode = isSelectionMode;
+            clearSelection();
+            return true;
+        }
+        return false;
     }
 }

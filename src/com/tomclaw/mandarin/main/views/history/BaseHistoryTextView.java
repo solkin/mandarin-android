@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
+import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by Solkin on 30.11.2014.
@@ -27,13 +28,14 @@ public abstract class BaseHistoryTextView extends BaseHistoryView {
 
     @Override
     public void bind(ChatHistoryItem historyItem) {
+        textView.setTextIsSelectable(!getSelectionHelper().isSelectionMode());
         super.bind(historyItem);
         textView.setText(historyItem.getMessageText());
         bubbleBack.setBackgroundDrawable(getBubbleBackground());
     }
 
     @Override
-    protected View getLongClickableView() {
+    protected View getClickableView() {
         return textView;
     }
 }

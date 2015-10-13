@@ -170,11 +170,11 @@ public class RosterActivity extends ChiefActivity {
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper<Integer, Integer> selectionHelper;
+        private SelectionHelper<Integer> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged(position, (int) id, checked);
+            selectionHelper.onStateChanged((int) id, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
             updateMenu(mode, mode.getMenu());
         }

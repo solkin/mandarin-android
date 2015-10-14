@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -81,6 +82,7 @@ public class ChatActivity extends ChiefActivity {
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
     private boolean isSendByEnter;
+    private SoftKeyboard softKeyboard;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -190,6 +192,26 @@ public class ChatActivity extends ChiefActivity {
         initKeyboardHeight = (int) getResources().getDimension(R.dimen.init_keyboard_height);
         minKeyboardHeight = (int) getResources().getDimension(R.dimen.min_keyboard_height);
         diffKeyboardHeight = (int) getResources().getDimension(R.dimen.diff_keyboard_height);
+
+        InputMethodManager im = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
+        softKeyboard = new SoftKeyboard(chatRoot, im);
+        softKeyboard.setSoftKeyboardCallback(new SoftKeyboard.SoftKeyboardChanged() {
+
+            @Override
+            public void onSoftKeyboardHide() {
+            }
+
+            @Override
+            public void onSoftKeyboardShow() {
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        hidePopup();
+                    }
+                });
+            }
+        });
+
         updateKeyboardHeight(initKeyboardHeight);
 
         callback = new OnSmileyClickCallback() {
@@ -431,6 +453,7 @@ public class ChatActivity extends ChiefActivity {
         }
         buddyObserver.stop();
         super.onDestroy();
+        softKeyboard.unRegisterSoftKeyboardCallback();
     }
 
     @Override

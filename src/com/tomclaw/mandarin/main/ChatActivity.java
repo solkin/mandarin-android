@@ -127,6 +127,14 @@ public class ChatActivity extends ChiefActivity {
             }
 
             @Override
+            public void onNothingSelected() {
+                // Strange case, but let's check it to be sure.
+                if (actionMode != null) {
+                    actionMode.finish();
+                }
+            }
+
+            @Override
             public void onLongClicked(ChatHistoryItem historyItem, final SelectionHelper<Long> selectionHelper) {
                 if (selectionHelper.setSelectionMode(true)) {
                     actionCallback = new MultiChoiceActionCallback(selectionHelper);

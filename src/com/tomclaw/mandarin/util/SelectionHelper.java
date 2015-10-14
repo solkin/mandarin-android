@@ -53,6 +53,10 @@ public class SelectionHelper<K> {
         return Collections.unmodifiableSet(selection);
     }
 
+    public boolean isEmptySelection() {
+        return selection.isEmpty();
+    }
+
     public int getSelectedCount() {
         return selection.size();
     }

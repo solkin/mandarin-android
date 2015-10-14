@@ -371,6 +371,8 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     public interface SelectionModeListener {
         void onItemStateChanged(ChatHistoryItem historyItem);
 
+        void onNothingSelected();
+
         void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 

@@ -150,6 +150,10 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
                 if (selectionHelper.isSelectionMode()) {
                     selectionHelper.toggleChecked(historyItem.getMessageDbId());
                     selectionModeListener.onItemStateChanged(historyItem);
+                    // Check for this was last selected item.
+                    if (selectionHelper.isEmptySelection()) {
+                        selectionModeListener.onNothingSelected();
+                    }
                 }
             }
         });

@@ -49,9 +49,9 @@ public class BubbleImageView extends ImageView implements LazyImageView {
     @Override
     public void setPlaceholder(int resource) {
         setScaleType(ScaleType.CENTER);
-        int previewHeight = getResources().getDimensionPixelSize(R.dimen.thumbnail_height);
-        getLayoutParams().width = previewHeight * 4 / 3;
-        getLayoutParams().height = previewHeight;
+        int previewSize = getResources().getDimensionPixelSize(R.dimen.preview_size);
+        getLayoutParams().width = previewSize;
+        getLayoutParams().height = previewSize * 9 / 16;
         setBackgroundDrawable(new BubbleColorDrawable(getContext(), bubbleColor, corner));
         setColorFilter(placeholderTintColor);
         setImageResource(resource);

@@ -8,7 +8,6 @@
     <dimen name="chat_date_size">16sp</dimen>
     <dimen name="progress_radius">4sp</dimen>
     <dimen name="file_min_width">172dp</dimen>
-    <dimen name="thumbnail_height">200dp</dimen>
     <dimen name="preview_size">200dp</dimen>
     <dimen name="preview_bitmap">256px</dimen>
     <dimen name="buddy_info_avatar_height">216dp</dimen>

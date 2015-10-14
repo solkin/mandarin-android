@@ -46,7 +46,11 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
             }
         }
         afterStates(historyItem);
-        bindContentClickListener();
+        // Check for selection mode right now and we shouldn't
+        // override click listener for content.
+        if (!getSelectionHelper().isSelectionMode()) {
+            bindContentClickListener();
+        }
     }
 
     protected void afterStates(ChatHistoryItem historyItem) {
@@ -67,7 +71,6 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
     @Override
     public void setContentClickListener(ChatHistoryAdapter.ContentMessageClickListener contentClickListener) {
         this.contentClickListener = contentClickListener;
-        bindContentClickListener();
     }
 
     protected ChatHistoryAdapter.ContentMessageClickListener getContentClickListener() {

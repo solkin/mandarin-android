@@ -347,9 +347,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
                 messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
                 contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
         holder.setSelectionHelper(selectionHelper);
-        holder.bind(historyItem);
         holder.setContentClickListener(contentMessageClickListener);
         holder.setSelectionModeListener(selectionModeListener);
+        holder.bind(historyItem);
     }
 
     private class ChatFilterQueryProvider implements FilterQueryProvider {

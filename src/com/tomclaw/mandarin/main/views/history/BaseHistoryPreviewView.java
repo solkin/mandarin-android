@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history;
 
 import android.view.View;
 import android.widget.ImageView;
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.BubbleImageView;
@@ -36,8 +37,9 @@ public abstract class BaseHistoryPreviewView extends BaseHistoryContentView {
     @Override
     protected void afterStates(ChatHistoryItem historyItem) {
         super.afterStates(historyItem);
+        int previewSize = getResources().getDimensionPixelSize(R.dimen.preview_size);
         BitmapCache.getInstance().getBitmapAsync(previewImage,
-                historyItem.getPreviewHash(), getThumbnailPlaceholder(), true);
+                historyItem.getPreviewHash(), getThumbnailPlaceholder(), previewSize, previewSize);
         if (historyItem.getContentProgress() == 0) {
             progress.setProgress(historyItem.getContentProgress());
         }

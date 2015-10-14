@@ -32,6 +32,7 @@ public class BitmapCache {
     }
 
     private static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
+    public static final int BITMAP_SIZE_UNKNOWN = -1;
     public static final int BITMAP_SIZE_ORIGINAL = 0;
     private static final String BITMAP_CACHE_FOLDER = "bitmaps";
     private File path;
@@ -77,6 +78,23 @@ public class BitmapCache {
         if (original) {
             width = height = BITMAP_SIZE_ORIGINAL;
         } else {
+            width = height = BITMAP_SIZE_UNKNOWN;
+        }
+        getBitmapAsync(imageView, hash, defaultResource, width, height);
+    }
+
+    /**
+     * Setup required image by hash on specified image view in background thread.
+     * While image loading from disk cache and scaling, on image view will be placed default resource.
+     *
+     * @param imageView       - image view to show image
+     * @param hash            - required image hash
+     * @param defaultResource - default resource to show while original image being loaded and scaled
+     * @param width           - desired image width
+     * @param height          - desired image height
+     */
+    public void getBitmapAsync(LazyImageView imageView, final String hash, int defaultResource, int width, int height) {
+        if (width == BITMAP_SIZE_UNKNOWN && height == BITMAP_SIZE_UNKNOWN){
             width = imageView.getWidth();
             height = imageView.getHeight();
         }

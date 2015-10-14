@@ -767,6 +767,61 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
+    /**
+     * This method helps to get formatted messages from history by ids.
+     * But this method is really, really strange!
+     * Should be rewritten. Sometime.
+     * @param contentResolver - plain content resolver.
+     * @param timeHelper - time helper to format messages time
+     * @param messageIds - messages to be queried.
+     * @return formatted messages.
+     */
+    public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {
+        StringBuilder messageBuilder = new StringBuilder();
+        QueryBuilder queryBuilder = messagesByIds(messageIds);
+        // Get specified messages.
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int messageType = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE));
+                    String messageText = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
+                    long messageTime = cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME));
+                    String messageTimeText = timeHelper.getFormattedTime(messageTime);
+                    String messageDateText = timeHelper.getFormattedDate(messageTime);
+                    int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID));
+                    int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID));
+                    String buddyNick = "Unknown";
+                    try {
+                        // Select message type.
+                        switch (messageType) {
+                            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
+                                buddyNick = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
+                                break;
+                            }
+                            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
+                                buddyNick = QueryHelper.getAccountName(contentResolver, accountDbId);
+                                break;
+                            }
+                        }
+                    } catch (BuddyNotFoundException ignored) {
+                    } catch (AccountNotFoundException ignored) {
+                    }
+                    // Building message copy.
+                    messageBuilder.append('[').append(buddyNick).append(']').append('\n');
+                    messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
+                    messageBuilder.append(messageText);
+                    messageBuilder.append('\n').append('\n');
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return messageBuilder.toString();
+    }
+
     private static QueryBuilder messagesByIds(Collection<Long> messageIds) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isMultiple = false;

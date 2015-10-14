@@ -248,43 +248,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return cursor.getLong(COLUMN_ROW_AUTO_ID);
     }
 
-    public String getMessageText(int position) throws MessageNotFoundException {
-        Cursor cursor = getCursor();
-        if (cursor != null && cursor.moveToPosition(position)) {
-            // Message data.
-            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-            String messageText = cursor.getString(COLUMN_MESSAGE_TEXT);
-            long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-            String messageTimeText = timeHelper.getFormattedTime(messageTime);
-            String messageDateText = timeHelper.getFormattedDate(messageTime);
-            int accountDbId = cursor.getInt(COLUMN_MESSAGE_ACCOUNT_DB_ID);
-            int buddyDbId = cursor.getInt(COLUMN_MESSAGE_BUDDY_DB_ID);
-            String buddyNick = "unknown";
-            try {
-                // Select message type.
-                switch (messageType) {
-                    case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                        buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
-                        break;
-                    }
-                    case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
-                        buddyNick = QueryHelper.getAccountName(context.getContentResolver(), accountDbId);
-                        break;
-                    }
-                }
-            } catch (BuddyNotFoundException ignored) {
-            } catch (AccountNotFoundException ignored) {
-            }
-            // Building message copy.
-            StringBuilder messageBuilder = new StringBuilder();
-            messageBuilder.append('[').append(buddyNick).append(']').append('\n');
-            messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
-            messageBuilder.append(messageText);
-            return messageBuilder.toString();
-        }
-        throw new MessageNotFoundException();
-    }
-
     private QueryBuilder getDefaultQueryBuilder() {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
@@ -350,6 +313,10 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         holder.setContentClickListener(contentMessageClickListener);
         holder.setSelectionModeListener(selectionModeListener);
         holder.bind(historyItem);
+    }
+
+    public TimeHelper getTimeHelper() {
+        return timeHelper;
     }
 
     private class ChatFilterQueryProvider implements FilterQueryProvider {

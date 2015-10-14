@@ -847,19 +847,10 @@ public class ChatActivity extends ChiefActivity {
         }
 
         private String getSelectedMessages() {
-            StringBuilder selectionBuilder = new StringBuilder();
             // Obtain selected positions.
             Collection<Long> selectedIds = selectionHelper.getSelectedIds();
-            // Iterating for all selected positions.
-            // TODO: make it work.
-            /*for (int position : selectedPositions) {
-                try {
-                    selectionBuilder.append(chatHistoryAdapter.getMessageText(position)).append('\n').append('\n');
-                } catch (MessageNotFoundException ignored) {
-                    Logger.log("Error while copying message on position " + position);
-                }
-            }*/
-            return selectionBuilder.toString().trim();
+            return QueryHelper.getMessagesTexts(getContentResolver(),
+                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
         }
 
         private Intent createShareIntent() {

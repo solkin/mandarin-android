@@ -58,7 +58,7 @@ public class RosterActivity extends ChiefActivity {
         String rosterMode = PreferenceHelper.getRosterMode(this);
         if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
             generalAdapter = new RosterGroupAdapter(this, getLoaderManager(), getFilterValue());
-        } else if(TextUtils.equals(rosterMode, getString(R.string.roster_mode_status))) {
+        } else if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_status))) {
             generalAdapter = new RosterStatusAdapter(this, getLoaderManager(), getFilterValue());
         } else {
             generalAdapter = new RosterAlphabetAdapter(this, getLoaderManager(), getFilterValue());

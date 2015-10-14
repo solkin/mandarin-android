@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
-import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by Solkin on 30.11.2014.

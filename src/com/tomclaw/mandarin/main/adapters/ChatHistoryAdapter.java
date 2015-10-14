@@ -26,7 +26,10 @@ import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingTextView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingVideoView;
-import com.tomclaw.mandarin.util.*;
+import com.tomclaw.mandarin.util.QueryBuilder;
+import com.tomclaw.mandarin.util.SelectionHelper;
+import com.tomclaw.mandarin.util.SmileyParser;
+import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.lang.reflect.Constructor;
 
@@ -367,6 +370,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
 
     public interface SelectionModeListener {
         void onItemStateChanged(ChatHistoryItem historyItem);
+
         void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 

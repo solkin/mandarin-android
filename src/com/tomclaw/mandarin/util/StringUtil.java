@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.DatabaseUtils;
-import android.support.v4.database.DatabaseUtilsCompat;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;

@@ -490,6 +490,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         public interface UpdateAvatarCallback {
 
             void onUpdateCompleted();
+
             void onUpdateFailed();
         }
     }

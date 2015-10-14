@@ -12,7 +12,6 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
-import android.view.ActionMode;
 import android.widget.*;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.*;

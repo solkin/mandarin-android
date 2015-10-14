@@ -64,11 +64,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
     }
 
     public void bind(ChatHistoryItem historyItem) {
-        if (selectionHelper.isChecked(historyItem.getMessageDbId())) {
-            itemView.setBackgroundColor(getResources().getColor(R.color.orange_normal));
-        } else {
-            itemView.setBackgroundColor(0x00000000);
-        }
+        int backColor = selectionHelper.isChecked(historyItem.getMessageDbId()) ?
+                R.color.orange_normal : android.R.color.transparent;
+        itemView.setBackgroundColor(getResources().getColor(backColor));
         this.historyItem = historyItem;
         if (historyItem.isDateVisible()) {
             // Update visibility.

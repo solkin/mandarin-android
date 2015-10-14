@@ -2,12 +2,8 @@ package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.RangePickerDialog;
 

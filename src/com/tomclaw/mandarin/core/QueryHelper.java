@@ -5,9 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQuery;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
@@ -204,7 +202,7 @@ public class QueryHelper {
             cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
             return cursor.getCount();
         } finally {
-            if(cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }
@@ -673,7 +671,7 @@ public class QueryHelper {
 
     public static void readAllMessages(ContentResolver contentResolver, Collection<Integer> buddyDbIds) {
         // Check for no buddies.
-        if(buddyDbIds.isEmpty()) {
+        if (buddyDbIds.isEmpty()) {
             return;
         }
         // Plain messages modify by type, read and shown state.
@@ -720,7 +718,7 @@ public class QueryHelper {
     }
 
     public static void fastReadMessages(ContentResolver contentResolver, int buddyDbId,
-                                    long messageDbIdFirst, long messageDbIdLast) {
+                                        long messageDbIdFirst, long messageDbIdLast) {
 
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)

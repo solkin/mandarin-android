@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.main.icq;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -100,7 +99,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         if (requestCode == RESULT_LOGIN_COMPLETED) {
             if (resultCode == RESULT_OK) {
                 Intent intent = getRelayIntent();
-                if(intent == null) {
+                if (intent == null) {
                     intent = new Intent(this, MainActivity.class);
                 }
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

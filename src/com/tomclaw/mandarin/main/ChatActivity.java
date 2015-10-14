@@ -285,7 +285,7 @@ public class ChatActivity extends ChiefActivity {
         }
         // If cursor is inside text and char right of it not whitespace or this is end of the text,
         // then add whitespace.
-        if((selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') ||
+        if ((selectionEnd < messageText.length() - 1 && message.charAt(selectionEnd) != ' ') ||
                 selectionEnd == messageText.length()) {
             smileyText += " ";
         }
@@ -948,7 +948,7 @@ public class ChatActivity extends ChiefActivity {
             Context context = getWeakObject();
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
-                if(PreferenceHelper.isQuiteChat(context)) {
+                if (PreferenceHelper.isQuiteChat(context)) {
                     QueryHelper.fastReadMessages(contentResolver,
                             buddyDbId, firstMessageDbId, lastMessageDbId);
                 }

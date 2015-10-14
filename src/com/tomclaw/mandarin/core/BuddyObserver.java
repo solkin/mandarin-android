@@ -43,7 +43,7 @@ public abstract class BuddyObserver extends ContentObserver {
                     // Sadly.
                     Logger.log("Unable to get buddy cursor in buddy observer", ignored);
                 } finally {
-                    if(buddyCursor != null) {
+                    if (buddyCursor != null) {
                         buddyCursor.close();
                     }
                 }

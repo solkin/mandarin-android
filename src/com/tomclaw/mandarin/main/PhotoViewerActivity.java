@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.animation.*;
 import android.widget.Button;
@@ -26,8 +23,6 @@ import com.tomclaw.mandarin.main.views.TouchImageView;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
-
-import java.util.List;
 
 /**
  * Created by Solkin on 05.12.2014.

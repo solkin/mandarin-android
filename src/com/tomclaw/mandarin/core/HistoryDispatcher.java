@@ -255,7 +255,7 @@ public class HistoryDispatcher {
                     onNotificationCancel();
                     notificationManager.cancel(NOTIFICATION_ID);
                 }
-                if(onScreen > 0) {
+                if (onScreen > 0) {
                     Logger.log("HistoryObserver: Vibrate a little");
                     Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(80);

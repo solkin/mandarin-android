@@ -207,9 +207,9 @@ public class CoreService extends Service {
         }
         // Check for service restarted automatically while there is no connected accounts.
         boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);
-        if(restartEvent) {
+        if (restartEvent) {
             Logger.logWithPrefix("W", "Service was restarted automatically.");
-            if(!sessionHolder.hasActiveAccounts()) {
+            if (!sessionHolder.hasActiveAccounts()) {
                 Logger.logWithPrefix("W", "No active accounts. Stopping self.");
                 stopSelf();
                 System.exit(0);

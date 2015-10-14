@@ -1,7 +1,5 @@
 package com.tomclaw.mandarin.main.views.history.incoming;
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import com.tomclaw.mandarin.R;
 

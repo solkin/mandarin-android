@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
-import android.os.Handler;
 import com.tomclaw.mandarin.util.Logger;
 
 /**

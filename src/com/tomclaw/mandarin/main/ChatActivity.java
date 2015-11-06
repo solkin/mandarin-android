@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.annotation.SuppressLint;
-import android.app.Service;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -67,7 +66,6 @@ public class ChatActivity extends ChiefActivity {
     private PopupWindow popupWindow;
     private int initKeyboardHeight;
     private int minKeyboardHeight;
-    private int diffKeyboardHeight;
     private int previousHeightDifference;
     private int keyboardWidth;
     private int keyboardHeight;
@@ -82,7 +80,6 @@ public class ChatActivity extends ChiefActivity {
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
     private boolean isSendByEnter;
-    private SoftKeyboard softKeyboard;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -191,26 +188,6 @@ public class ChatActivity extends ChiefActivity {
         // Defining default height of keyboard.
         initKeyboardHeight = (int) getResources().getDimension(R.dimen.init_keyboard_height);
         minKeyboardHeight = (int) getResources().getDimension(R.dimen.min_keyboard_height);
-        diffKeyboardHeight = (int) getResources().getDimension(R.dimen.diff_keyboard_height);
-
-        InputMethodManager im = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
-        softKeyboard = new SoftKeyboard(chatRoot, im);
-        softKeyboard.setSoftKeyboardCallback(new SoftKeyboard.SoftKeyboardChanged() {
-
-            @Override
-            public void onSoftKeyboardHide() {
-            }
-
-            @Override
-            public void onSoftKeyboardShow() {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        hidePopup();
-                    }
-                });
-            }
-        });
 
         updateKeyboardHeight(initKeyboardHeight);
 
@@ -370,11 +347,11 @@ public class ChatActivity extends ChiefActivity {
         if (chatRoot.getRootView() != null) {
             keyboardWidth = chatRoot.getRootView().getWidth();
             int screenHeight = chatRoot.getRootView().getHeight();
-            int heightDifference = screenHeight - (rect.bottom);
-            if (previousHeightDifference - heightDifference > diffKeyboardHeight) {
+            int heightDifference = screenHeight - rect.bottom;
+            if (Math.abs(previousHeightDifference - heightDifference) > minKeyboardHeight) {
                 popupWindow.dismiss();
+                previousHeightDifference = heightDifference;
             }
-            previousHeightDifference = heightDifference;
             if (heightDifference > minKeyboardHeight) {
                 isKeyboardVisible = true;
                 updateKeyboardHeight(heightDifference - getSoftButtonsBarHeight());
@@ -453,7 +430,6 @@ public class ChatActivity extends ChiefActivity {
         }
         buddyObserver.stop();
         super.onDestroy();
-        softKeyboard.unRegisterSoftKeyboardCallback();
     }
 
     @Override

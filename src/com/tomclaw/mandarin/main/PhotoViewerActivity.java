@@ -45,6 +45,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     public static final int ANIMATION_DURATION = 250;
 
+    private View progressView;
+
     private TouchImageView imageView;
 
     private View pickerButtons;
@@ -127,6 +129,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
             // ... update picker buttons.
             updateSelectedCount();
         }
+
+        progressView = findViewById(R.id.progress_view);
 
         imageView = (TouchImageView) findViewById(R.id.touch_image_view);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -268,12 +272,14 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     public class PhotoSamplingTask extends WeakObjectTask<PhotoViewerActivity> {
 
+        private boolean isGif;
         private Drawable drawable;
         private boolean hasPreview;
 
         public PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
             super(object);
             this.hasPreview = hasPreview;
+            this.isGif = TextUtils.equals(FileHelper.getFileExtensionFromPath(name).toLowerCase(), "gif");
         }
 
         @Override
@@ -281,7 +287,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
             PhotoViewerActivity activity = getWeakObject();
             if (activity != null) {
                 boolean decoded = false;
-                if (TextUtils.equals(FileHelper.getFileExtensionFromPath(name).toLowerCase(), "gif")) {
+                if (isGif) {
                     InputStream inputStream = activity.getContentResolver().openInputStream(uri);
                     GifAnimationDrawable gifDrawable = new GifAnimationDrawable(activity.getResources(), inputStream, true);
                     if (gifDrawable.isDecoded()) {
@@ -302,7 +308,20 @@ public class PhotoViewerActivity extends AppCompatActivity {
         }
 
         @Override
+        public boolean isPreExecuteRequired() {
+            return true;
+        }
+
+        @Override
+        public void onPreExecuteMain() {
+            if (isGif) {
+                progressView.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
         public void onSuccessMain() {
+            progressView.setVisibility(View.GONE);
             PhotoViewerActivity activity = getWeakObject();
             if (activity != null && drawable != null) {
                 activity.setDrawable(drawable);
@@ -311,6 +330,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         @Override
         public void onFailMain() {
+            progressView.setVisibility(View.GONE);
             photoViewFailedView.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.GONE);
         }

@@ -164,7 +164,7 @@
         <item name="chat_delivery_alpha">0.7</item>
 
         <item name="chat_date_back">@drawable/date_back_dark</item>
-        <item name="chat_inc_bubble_color">#96969696</item>
+        <item name="chat_inc_bubble_color">#69696969</item>
         <item name="chat_out_bubble_color">#32738B32</item>
 
         <item name="chat_buttons_tint">#FFD6D6D6</item>

@@ -119,24 +119,17 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
                     File photoFile = new File(photoEntity.path);
                     Uri uri = Uri.fromFile(photoFile);
-                    if (TextUtils.equals(FileHelper.getFileExtensionFromPath(photoEntity.path), "gif")) {
-                        Intent intent = new Intent();
-                        intent.setAction(android.content.Intent.ACTION_VIEW);
-                        intent.setDataAndType(uri, FileHelper.getMimeType(photoEntity.path));
-                        startActivity(intent);
-                    } else {
-                        int selectedCount = selectedPhotos.size();
-                        if (!selectedPhotos.containsKey(photoEntity.imageId)) {
-                            selectedCount++;
-                        }
-                        Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
-                        intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
-                        intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
-                        intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, photoEntity.hash);
-                        intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
-                        intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
-                        startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
+                    int selectedCount = selectedPhotos.size();
+                    if (!selectedPhotos.containsKey(photoEntity.imageId)) {
+                        selectedCount++;
                     }
+                    Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
+                    intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
+                    intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
+                    intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, photoEntity.hash);
+                    intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
+                    intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
+                    startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
                 }
             }
         });

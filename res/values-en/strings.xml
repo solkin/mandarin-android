@@ -372,7 +372,7 @@
     <string name="receive_mobile_and_wi_fi">Always</string>
     <string name="receive_mobile_less_size">Up to 1 MB always</string>
     <string name="receive_wi_fi_only">Only on Wi-Fi</string>
-    <string name="receive_manual_only">Newer</string>
+    <string name="receive_manual_only">Never</string>
     <string name="pref_title_image_compression">Image compression</string>
     <string name="pref_summary_image_compression">Outgoing images compression quality</string>
     <string name="image_compression_original">Original</string>
@@ -389,7 +389,6 @@
     <string name="user_info_edit">Edit info</string>
     <string name="edit_user_info_save">Save</string>
     <string name="date_not_set">Not set</string>
-    <string name="date_format">%1$d.%2$d.%3$d</string>
     <string name="avatar_changing_error">An error occurred during the installation of the avatar. Please try another
         image.
     </string>

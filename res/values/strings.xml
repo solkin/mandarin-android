@@ -182,7 +182,7 @@
     <string name="status_icq_in_love">Влюблён</string>
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
-    <string name="no_dialogs_opened">Нажмите на кнопку создания диалога сверху, чтобы начать общаться!</string>
+    <string name="no_dialogs_opened">Нажмите на кнопку создания диалога внизу, чтобы начать общаться!</string>
     <string name="pref_title_chat_background">Фоновая заставка</string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
@@ -394,7 +394,6 @@
     <string name="user_info_edit">Редактировать</string>
     <string name="edit_user_info_save">Сохранить</string>
     <string name="date_not_set">Не установлено</string>
-    <string name="date_format">%1$d.%2$d.%3$d</string>
     <string name="avatar_changing_error">Произошла ошибка при установке аватара. Пожалуйста, попробуйте другое
         изображение.
     </string>

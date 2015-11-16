@@ -19,6 +19,7 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
     @Override
     public final void bind(ChatHistoryItem historyItem) {
         super.bind(historyItem);
+        beforeStates(historyItem);
         switch (historyItem.getContentState()) {
             case GlobalProvider.HISTORY_CONTENT_STATE_WAITING: {
                 waiting();
@@ -51,6 +52,9 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
         if (!getSelectionHelper().isSelectionMode()) {
             bindContentClickListener();
         }
+    }
+
+    protected void beforeStates(ChatHistoryItem historyItem) {
     }
 
     protected void afterStates(ChatHistoryItem historyItem) {

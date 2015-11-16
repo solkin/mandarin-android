@@ -154,7 +154,7 @@ public class ChatActivity extends ChiefActivity {
         });
         chatList.addOnScrollListener(new ChatScrollListener(chatLayoutManager));
         chatList.setLayoutManager(chatLayoutManager);
-        chatList.setHasFixedSize(false);
+        chatList.setHasFixedSize(true);
         chatList.setAdapter(chatHistoryAdapter);
 
         int chatBackground = PreferenceHelper.getChatBackground(this);
@@ -1299,8 +1299,7 @@ public class ChatActivity extends ChiefActivity {
         }
 
         private void viewContent(String contentName, String contentUri, String previewHash) {
-            if (FileHelper.getMimeType(contentName).startsWith("image") &&
-                    !TextUtils.equals(FileHelper.getFileExtensionFromPath(contentName), "gif")) {
+            if (FileHelper.getMimeType(contentName).startsWith("image")) {
                 Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);

@@ -2,6 +2,9 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -23,6 +26,9 @@ import com.tomclaw.mandarin.main.views.TouchImageView;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.gif.GifAnimationDrawable;
+
+import java.io.InputStream;
 
 /**
  * Created by Solkin on 05.12.2014.
@@ -218,15 +224,51 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     protected void setBitmap(Bitmap bitmap) {
-        if (bitmap != null) {
+        setDrawable(new BitmapDrawable(getResources(), bitmap));
+    }
+
+    protected void setDrawable(Drawable drawable) {
+        // Set up specified drawable.
+        if (drawable != null) {
             hasPreview = true;
         }
-        imageView.setImageBitmap(bitmap);
+        imageView.setImageDrawable(drawable);
+        startAnimation();
+    }
+
+    private AnimationDrawable optAnimationDrawable() {
+        Drawable drawable = imageView.getDrawable();
+        // Check for this is animated drawable.
+        if (drawable != null && drawable instanceof AnimationDrawable) {
+            return ((AnimationDrawable) drawable);
+        }
+        return null;
+    }
+
+    private void startAnimation() {
+        AnimationDrawable animationDrawable = optAnimationDrawable();
+        if (animationDrawable != null && !animationDrawable.isRunning()) {
+            animationDrawable.setOneShot(false);
+            animationDrawable.start();
+        }
+    }
+
+    private void stopAnimation() {
+        AnimationDrawable animationDrawable = optAnimationDrawable();
+        if (animationDrawable != null && animationDrawable.isRunning()) {
+            animationDrawable.stop();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopAnimation();
     }
 
     public class PhotoSamplingTask extends WeakObjectTask<PhotoViewerActivity> {
 
-        private Bitmap bitmap;
+        private Drawable drawable;
         private boolean hasPreview;
 
         public PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
@@ -238,8 +280,22 @@ public class PhotoViewerActivity extends AppCompatActivity {
         public void executeBackground() throws Throwable {
             PhotoViewerActivity activity = getWeakObject();
             if (activity != null) {
-                bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
-                if (bitmap == null && !hasPreview) {
+                boolean decoded = false;
+                if (TextUtils.equals(FileHelper.getFileExtensionFromPath(name).toLowerCase(), "gif")) {
+                    InputStream inputStream = activity.getContentResolver().openInputStream(uri);
+                    GifAnimationDrawable gifDrawable = new GifAnimationDrawable(activity.getResources(), inputStream, true);
+                    if (gifDrawable.isDecoded()) {
+                        drawable = gifDrawable;
+                        decoded = true;
+                    }
+                }
+                if (!decoded) {
+                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
+                    if (bitmap != null) {
+                        drawable = new BitmapDrawable(activity.getResources(), bitmap);
+                    }
+                }
+                if (drawable == null && !hasPreview) {
                     throw new NullPointerException();
                 }
             }
@@ -248,8 +304,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
         @Override
         public void onSuccessMain() {
             PhotoViewerActivity activity = getWeakObject();
-            if (activity != null && bitmap != null) {
-                activity.setBitmap(bitmap);
+            if (activity != null && drawable != null) {
+                activity.setDrawable(drawable);
             }
         }
 

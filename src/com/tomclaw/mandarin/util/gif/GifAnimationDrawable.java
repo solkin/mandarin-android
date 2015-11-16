@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2013 Orthogonal Labs, Inc. All rights reserved.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,12 @@
  */
 package com.tomclaw.mandarin.util.gif;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
+
+import java.io.*;
 
 /**
  * Creates an AnimationDrawable from a GIF image.
@@ -32,7 +28,6 @@ import android.graphics.drawable.BitmapDrawable;
  * @author Femi Omojola <femi@hipmob.com>
  */
 public class GifAnimationDrawable extends AnimationDrawable {
-    private static final String TAG = GifAnimationDrawable.class.getName();
 
     private boolean mDecoded;
     private GifDecoder mGifDecoder;

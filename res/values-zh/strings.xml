@@ -359,7 +359,6 @@
     <string name="user_info_edit">修改信息</string>
     <string name="edit_user_info_save">保存</string>
     <string name="date_not_set">未设定</string>
-    <string name="date_format">%1$d.%2$d.%3$d</string>
     <string name="avatar_changing_error">设置头像失败。请尝试用另一张图片。</string>
     <string name="reset">重置</string>
     <string name="buddies">伙伴</string>

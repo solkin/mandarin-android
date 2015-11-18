@@ -2,7 +2,6 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -23,10 +22,7 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.main.views.TouchImageView;
-import com.tomclaw.mandarin.util.AppsMenuHelper;
-import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.FileHelper;
-import com.tomclaw.mandarin.util.gif.GifAnimationDrawable;
+import com.tomclaw.mandarin.util.*;
 
 import java.io.InputStream;
 
@@ -240,27 +236,28 @@ public class PhotoViewerActivity extends AppCompatActivity {
         startAnimation();
     }
 
-    private AnimationDrawable optAnimationDrawable() {
+    private GifDrawable optAnimationDrawable() {
         Drawable drawable = imageView.getDrawable();
         // Check for this is animated drawable.
-        if (drawable != null && drawable instanceof AnimationDrawable) {
-            return ((AnimationDrawable) drawable);
+        if (drawable != null && drawable instanceof GifDrawable) {
+            return ((GifDrawable) drawable);
         }
         return null;
     }
 
     private void startAnimation() {
-        AnimationDrawable animationDrawable = optAnimationDrawable();
+        GifDrawable animationDrawable = optAnimationDrawable();
         if (animationDrawable != null && !animationDrawable.isRunning()) {
-            animationDrawable.setOneShot(false);
             animationDrawable.start();
         }
     }
 
     private void stopAnimation() {
-        AnimationDrawable animationDrawable = optAnimationDrawable();
-        if (animationDrawable != null && animationDrawable.isRunning()) {
-            animationDrawable.stop();
+        GifDrawable animationDrawable = optAnimationDrawable();
+        if (animationDrawable != null) {
+            if (animationDrawable.isRunning()) {
+                animationDrawable.stop();
+            }
         }
     }
 
@@ -288,12 +285,10 @@ public class PhotoViewerActivity extends AppCompatActivity {
             if (activity != null) {
                 boolean decoded = false;
                 if (isGif) {
-                    InputStream inputStream = activity.getContentResolver().openInputStream(uri);
-                    GifAnimationDrawable gifDrawable = new GifAnimationDrawable(activity.getResources(), inputStream, true);
-                    if (gifDrawable.isDecoded()) {
-                        drawable = gifDrawable;
-                        decoded = true;
-                    }
+                    GifFileDecoder decoder = new GifFileDecoder(uri, activity.getContentResolver());
+                    decoder.start();
+                    drawable = new GifDrawable(decoder);
+                    decoded = true;
                 }
                 if (!decoded) {
                     Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);

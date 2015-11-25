@@ -352,14 +352,15 @@ public class ChatActivity extends ChiefActivity {
         if (chatRoot.getRootView() != null) {
             keyboardWidth = chatRoot.getRootView().getWidth();
             int screenHeight = chatRoot.getRootView().getHeight();
-            int heightDifference = screenHeight - rect.bottom;
-            if (Math.abs(previousHeightDifference - heightDifference) > minKeyboardHeight) {
+            int heightDifference = screenHeight - rect.bottom - getSoftButtonsBarHeight();
+            int supposedKeyboardHeight = previousHeightDifference - heightDifference;
+            if (Math.abs(supposedKeyboardHeight) > minKeyboardHeight) {
                 popupWindow.dismiss();
                 previousHeightDifference = heightDifference;
             }
             if (heightDifference > minKeyboardHeight) {
                 isKeyboardVisible = true;
-                updateKeyboardHeight(heightDifference - getSoftButtonsBarHeight());
+                updateKeyboardHeight(heightDifference);
             } else {
                 isKeyboardVisible = false;
             }

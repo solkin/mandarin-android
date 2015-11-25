@@ -60,6 +60,8 @@ public class ChatActivity extends ChiefActivity {
     private ImageView buddyStatusIcon;
     private ActionMode actionMode;
     private MultiChoiceActionCallback actionCallback;
+    private ContentClickListener contentClickListener;
+    private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -113,9 +115,8 @@ public class ChatActivity extends ChiefActivity {
         startTitleObservation(buddyDbId);
         buddyObserver.touch();
 
-        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
-        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
-        chatHistoryAdapter.setSelectionModeListener(new ChatHistoryAdapter.SelectionModeListener() {
+        contentClickListener = new ContentClickListener();
+        selectionModeListener = new ChatHistoryAdapter.SelectionModeListener() {
             @Override
             public void onItemStateChanged(ChatHistoryItem historyItem) {
                 // Strange case, but let's check it to be sure.
@@ -142,7 +143,11 @@ public class ChatActivity extends ChiefActivity {
                     onItemStateChanged(historyItem);
                 }
             }
-        });
+        };
+
+        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
+        chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
 
         chatList = (RecyclerView) findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
@@ -535,7 +540,8 @@ public class ChatActivity extends ChiefActivity {
             chatHistoryAdapter.close();
         }
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
-        chatHistoryAdapter.setContentMessageClickListener(new ContentClickListener());
+        chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
+        chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
         chatList.setAdapter(chatHistoryAdapter);
 
         setMessageTextFromDraft(buddyDbId);

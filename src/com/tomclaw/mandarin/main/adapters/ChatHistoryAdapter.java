@@ -97,7 +97,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private ContentMessageClickListener contentMessageClickListener;
     private SelectionModeListener selectionModeListener;
 
-    private SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
+    private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
         super(null);
@@ -255,17 +255,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return queryBuilder;
     }
 
-    public ContentMessageClickListener getContentMessageClickListener() {
-        return contentMessageClickListener;
-    }
-
     public void setContentMessageClickListener(
             ContentMessageClickListener contentMessageClickListener) {
         this.contentMessageClickListener = contentMessageClickListener;
-    }
-
-    public SelectionModeListener getSelectionModeListener() {
-        return selectionModeListener;
     }
 
     public void setSelectionModeListener(SelectionModeListener selectionModeListener) {

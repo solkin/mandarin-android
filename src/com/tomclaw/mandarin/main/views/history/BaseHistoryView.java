@@ -98,7 +98,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
                 default:
                     drawable = null;
             }
-            if (drawable == null) {
+            if (drawable == null || historyItem.getContentState() != GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
                 deliveryState.setVisibility(View.INVISIBLE);
             } else {
                 deliveryState.setVisibility(View.VISIBLE);

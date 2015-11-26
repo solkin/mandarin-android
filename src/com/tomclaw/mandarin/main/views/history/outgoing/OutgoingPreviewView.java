@@ -1,7 +1,10 @@
 package com.tomclaw.mandarin.main.views.history.outgoing;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.main.BubbleColorDrawable;
+import com.tomclaw.mandarin.main.Corner;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryPreviewView;
 
 /**
@@ -13,7 +16,10 @@ public abstract class OutgoingPreviewView extends BaseHistoryPreviewView {
 
     public OutgoingPreviewView(View itemView) {
         super(itemView);
+        Drawable failedBackground = new BubbleColorDrawable(itemView.getContext(),
+                getResources().getColor(R.color.failed_preview_tint), Corner.RIGHT);
         errorView = findViewById(R.id.out_error);
+        errorView.setBackgroundDrawable(failedBackground);
     }
 
     @Override

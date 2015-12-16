@@ -185,18 +185,20 @@ public class AccountsAdapter extends CursorAdapter implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        // Detecting columns.
-        COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-        COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
-        COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
-        COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
-        COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
-        COLUMN_USER_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_TITLE);
-        COLUMN_USER_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE);
-        COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
-        COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
-        swapCursor(cursor);
-        checkAccountsState();
+        if (cursor != null && !cursor.isClosed()) {
+            // Detecting columns.
+            COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+            COLUMN_ACCOUNT_TYPE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE);
+            COLUMN_USER_ID = cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID);
+            COLUMN_USER_NICK = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
+            COLUMN_USER_STATUS = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS);
+            COLUMN_USER_STATUS_TITLE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_TITLE);
+            COLUMN_USER_STATUS_MESSAGE = cursor.getColumnIndex(GlobalProvider.ACCOUNT_STATUS_MESSAGE);
+            COLUMN_ACCOUNT_CONNECTING = cursor.getColumnIndex(GlobalProvider.ACCOUNT_CONNECTING);
+            COLUMN_ACCOUNT_AVATAR_HASH = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
+            swapCursor(cursor);
+            checkAccountsState();
+        }
     }
 
     @Override

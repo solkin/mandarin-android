@@ -78,13 +78,15 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        swapCursor(cursor);
-        // Notifying listener.
-        if (adapterCallback != null) {
-            if (cursor.getCount() == 0) {
-                adapterCallback.onRosterEmpty();
-            } else {
-                adapterCallback.onRosterUpdate();
+        if (cursor != null && !cursor.isClosed()) {
+            swapCursor(cursor);
+            // Notifying listener.
+            if (adapterCallback != null) {
+                if (cursor.getCount() == 0) {
+                    adapterCallback.onRosterEmpty();
+                } else {
+                    adapterCallback.onRosterUpdate();
+                }
             }
         }
     }

@@ -161,7 +161,9 @@ public abstract class RosterStickyAdapter extends CursorAdapter
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        swapCursor(cursor);
+        if (cursor != null && !cursor.isClosed()) {
+            swapCursor(cursor);
+        }
     }
 
     @Override

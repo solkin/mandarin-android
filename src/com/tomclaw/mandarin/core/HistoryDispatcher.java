@@ -6,17 +6,20 @@ import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+import com.tomclaw.mandarin.main.SettingsActivity;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 
@@ -47,6 +50,9 @@ public class HistoryDispatcher {
     private final int largeIconSize;
     private final int previewSize;
 
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+    private boolean privateNotifications, settingsChanged;
+
     public HistoryDispatcher(Context context) {
         // Variables.
         this.context = context;
@@ -64,6 +70,28 @@ public class HistoryDispatcher {
                 Settings.HISTORY_RESOLVER_URI, true, historyObserver);
 
         historyObserver.onChange(true);
+
+        observePreferences();
+    }
+
+    private void observePreferences() {
+        // Observing notification preferences to immediately update current notification.
+        privateNotifications = PreferenceHelper.isPrivateNotifications(context);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (TextUtils.equals(key, context.getString(R.string.pref_private_notifications))) {
+                    boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
+                    if (HistoryDispatcher.this.privateNotifications != privateNotifications) {
+                        HistoryDispatcher.this.privateNotifications = privateNotifications;
+                        settingsChanged = true;
+                        historyObserver.onChange(true);
+                    }
+                }
+            }
+        };
+        preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
     private class HistoryObserver extends ContentObserver {
@@ -111,7 +139,7 @@ public class HistoryDispatcher {
             int onScreen = bundle.getInt(GlobalProvider.KEY_ON_SCREEN);
             // Checking for non-shown messages exist.
             // If yes - we must update notification with all unread messages. If no - nothing to do now.
-            if (unshown > 0 || justShown > 0 || onScreen > 0) {
+            if (unshown > 0 || justShown > 0 || onScreen > 0 || settingsChanged) {
                 bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_UNREAD, null, null);
                 ArrayList<NotificationData> unreadList =
                         (ArrayList<NotificationData>) bundle.getSerializable(GlobalProvider.KEY_NOTIFICATION_DATA);
@@ -191,16 +219,16 @@ public class HistoryDispatcher {
                     PendingIntent actionIntent;
                     String readButton;
                     NotificationCompat.Style style;
-                    boolean privateNotification = PreferenceHelper.isPrivateNotifications(context);
+                    boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
                     // Checking for required style.
-                    if (multipleSenders || privateNotification) {
+                    if (multipleSenders || privateNotifications) {
                         title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
                         content = nickNamesBuilder.toString();
                         actionIcon = R.drawable.ic_reply;
                         actionButton = context.getString(R.string.reply_now);
                         actionIntent = replyNowIntent;
                         readButton = context.getString(R.string.mark_as_read_all);
-                        if (privateNotification) {
+                        if (privateNotifications) {
                             style = null;
                         } else {
                             inboxStyle.setBigContentTitle(title);
@@ -272,6 +300,7 @@ public class HistoryDispatcher {
             Logger.log("History dispatching time: " + (System.currentTimeMillis() - time));
             // Call to update unread count.
             contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_UNREAD, null, null);
+            settingsChanged = false;
         }
 
         private void onNotificationShown() {

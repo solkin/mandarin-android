@@ -27,19 +27,19 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/HockeySDK-3.0.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="smileys-mandarin" />
     <orderEntry type="module" module-name="sticky-list-headers" />
     <orderEntry type="module" module-name="design" />
     <orderEntry type="module" module-name="recyclerview" />
     <orderEntry type="module" module-name="round-progress" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/HockeySDK-3.5.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

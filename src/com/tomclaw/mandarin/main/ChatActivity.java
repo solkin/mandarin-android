@@ -255,7 +255,8 @@ public class ChatActivity extends ChiefActivity {
 
         // Checking for we must show keyboard automatically.
         if (PreferenceHelper.isShowKeyboard(this)) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             messageText.requestFocus();
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);

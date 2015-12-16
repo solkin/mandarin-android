@@ -774,6 +774,9 @@ public class ChatActivity extends ChiefActivity {
              * but better than crashing the whole application.
              */
             super.startActivity(Intent.createChooser(intent, null));
+        } catch (Throwable ignored) {
+            // This is totally unknown error and we only can show the corresponding toast.
+            Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -53,18 +53,18 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
 
     @Override
     public void onPostExecuteMain() {
-        Activity context = getWeakObject();
-        if (context != null) {
+        Activity activity = getWeakObject();
+        if (activity != null) {
             if (isShowDialog) {
-                View view = LayoutInflater.from(context).inflate(R.layout.account_selector_dialog, null);
+                View view = LayoutInflater.from(activity).inflate(R.layout.account_selector_dialog, null);
 
-                final AlertDialog dialog = new AlertDialog.Builder(context)
+                final AlertDialog dialog = new AlertDialog.Builder(activity)
                         .setTitle(R.string.select_account_title)
                         .setView(view)
                         .create();
 
                 ListView listView = (ListView) view.findViewById(R.id.accounts_list_view);
-                final AccountsSelectorAdapter adapter = new AccountsSelectorAdapter(context, context.getLoaderManager());
+                final AccountsSelectorAdapter adapter = new AccountsSelectorAdapter(activity, activity.getLoaderManager());
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -79,7 +79,9 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
                         dialog.dismiss();
                     }
                 });
-                dialog.show();
+                if (!activity.isFinishing()) {
+                    dialog.show();
+                }
             } else if (selectedAccountDbId != -1) {
                 callback.onAccountSelected(selectedAccountDbId);
             } else {

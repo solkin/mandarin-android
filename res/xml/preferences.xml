@@ -112,5 +112,10 @@
                 android:summary="@string/pref_summary_quite_chat"
                 android:title="@string/pref_title_quite_chat"
                 android:defaultValue="@bool/pref_quite_chat_default"/>
+        <CheckBoxPreference
+                android:key="@string/pref_private_notifications"
+                android:summary="@string/pref_summary_private_notifications"
+                android:title="@string/pref_title_private_notifications"
+                android:defaultValue="@bool/pref_private_notifications_default"/>
     </PreferenceCategory>
 </PreferenceScreen>

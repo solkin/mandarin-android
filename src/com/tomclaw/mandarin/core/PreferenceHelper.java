@@ -45,6 +45,10 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_quite_chat, R.bool.pref_quite_chat_default);
     }
 
+    public static boolean isPrivateNotifications(Context context) {
+        return getBooleanPreference(context, R.string.pref_private_notifications, R.bool.pref_private_notifications_default);
+    }
+
     public static boolean isAutorun(Context context) {
         return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
     }

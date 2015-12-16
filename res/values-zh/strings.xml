@@ -365,4 +365,7 @@
     <string name="invalid_file">抱歉，此文件（文本）不能分享</string>
     <string name="nfc_share">NFC</string>
     <string name="close_without_user_info_save">不保存修改就退出？</string>
+
+    <string name="pref_summary_private_notifications">不顯示在通知中收到的郵件內容</string>
+    <string name="pref_title_private_notifications">個人通知</string>
 </resources>

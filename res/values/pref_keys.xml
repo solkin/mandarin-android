@@ -10,6 +10,7 @@
     <string name="pref_vibrate">pref_vibrate</string>
     <string name="pref_lights">pref_lights</string>
     <string name="pref_quite_chat">pref_quite_chat</string>
+    <string name="pref_private_notifications">pref_private_notifications</string>
     <string name="pref_base_settings">pref_base_settings</string>
     <string name="pref_autorun">pref_autorun</string>
     <string name="pref_chat_background">pref_chat_background</string>

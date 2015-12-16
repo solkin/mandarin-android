@@ -397,4 +397,7 @@
     <string name="invalid_file">Sorry, this file (text) cannot be shared</string>
     <string name="nfc_share">NFC</string>
     <string name="close_without_user_info_save">Quit without saving changes?</string>
+
+    <string name="pref_summary_private_notifications">Do not show contents of incoming messages in notifications</string>
+    <string name="pref_title_private_notifications">Private notifications</string>
 </resources>

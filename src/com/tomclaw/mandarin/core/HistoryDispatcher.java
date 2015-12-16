@@ -191,16 +191,21 @@ public class HistoryDispatcher {
                     PendingIntent actionIntent;
                     String readButton;
                     NotificationCompat.Style style;
+                    boolean privateNotification = PreferenceHelper.isPrivateNotifications(context);
                     // Checking for required style.
-                    if (multipleSenders) {
+                    if (multipleSenders || privateNotification) {
                         title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
                         content = nickNamesBuilder.toString();
                         actionIcon = R.drawable.ic_reply;
                         actionButton = context.getString(R.string.reply_now);
                         actionIntent = replyNowIntent;
-                        inboxStyle.setBigContentTitle(title);
                         readButton = context.getString(R.string.mark_as_read_all);
-                        style = inboxStyle;
+                        if (privateNotification) {
+                            style = null;
+                        } else {
+                            inboxStyle.setBigContentTitle(title);
+                            style = inboxStyle;
+                        }
                     } else {
                         title = nickNamesBuilder.toString();
                         content = message;

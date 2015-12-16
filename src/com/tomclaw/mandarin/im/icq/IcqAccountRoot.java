@@ -250,6 +250,7 @@ public class IcqAccountRoot extends AccountRoot {
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
                                      long expiresIn, long hostTime) {
         // Setup local variables.
+        this.userId = login;
         this.tokenA = tokenA;
         this.sessionKey = sessionKey;
         this.timeDelta = hostTime - System.currentTimeMillis() / 1000;

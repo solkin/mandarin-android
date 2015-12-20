@@ -37,7 +37,7 @@ public class BuddyRenameRequest extends WimRequest {
         // Searching for local buddy db id with rename operation label.
         Collection<Integer> buddyDbIds;
         try {
-            Map<String, Object> criteria = new HashMap<String, Object>();
+            Map<String, Object> criteria = new HashMap<>();
             criteria.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME);
             buddyDbIds = QueryHelper.getBuddyDbIds(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId, criteria);
@@ -56,9 +56,15 @@ public class BuddyRenameRequest extends WimRequest {
             QueryHelper.modifyBuddyNick(getAccountRoot().getContentResolver(),
                     buddyDbIds, buddyPreviousNick, false);
             return REQUEST_DELETE;
+        } else if (statusCode == 601) {
+            // Buddy not found in roster.
+            // Set satisfied nick, remove operation flag and it will be done for now.
+            QueryHelper.modifyBuddyNick(getAccountRoot().getContentResolver(),
+                    buddyDbIds, buddySatisfiedNick, false);
+            return REQUEST_DELETE;
         }
-        // Maybe incorrect aim sid or McDonald's.
-        return REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override
@@ -69,12 +75,12 @@ public class BuddyRenameRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("autoResponse", "false"));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("buddy", buddyId));
-        params.add(new Pair<String, String>("friendly", buddySatisfiedNick));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("autoResponse", "false"));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("buddy", buddyId));
+        params.add(new Pair<>("friendly", buddySatisfiedNick));
         return params;
     }
 }

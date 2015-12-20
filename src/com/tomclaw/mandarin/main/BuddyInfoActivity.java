@@ -47,6 +47,9 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             case R.id.buddy_info_copy:
                 StringUtil.copyStringToClipboard(this, getShareString(), R.string.buddy_info_copied);
                 return true;
+            case R.id.buddy_ignore:
+                RequestHelper.ignoreBuddy(getContentResolver(), getAccountDbId(), getBuddyId());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

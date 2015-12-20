@@ -51,8 +51,8 @@ public class SetMoodRequest extends WimRequest {
             isSetStateSuccess = true;
         }
         intent.putExtra(SetStateRequest.SET_STATE_SUCCESS, isSetStateSuccess);
-        // Maybe incorrect aim sid or McDonald's.
-        return isSetStateSuccess ? REQUEST_DELETE : REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return isSetStateSuccess ? REQUEST_DELETE : REQUEST_SKIP;
     }
 
     @Override

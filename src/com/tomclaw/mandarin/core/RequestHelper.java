@@ -222,6 +222,12 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, updateInfoRequest);
     }
 
+    public static void ignoreBuddy(ContentResolver contentResolver, int accountDbId, String buddyId) {
+        SetPermitDenyRequest setPermitDenyRequest = new SetPermitDenyRequest();
+        setPermitDenyRequest.setPdIgnore(buddyId);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setPermitDenyRequest);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String appSession, Request request) {
         insertRequest(contentResolver, type, isPersistent, accountDbId, null, appSession, request);

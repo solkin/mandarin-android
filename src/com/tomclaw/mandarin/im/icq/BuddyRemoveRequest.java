@@ -57,8 +57,8 @@ public class BuddyRemoveRequest extends WimRequest {
                     buddyDbId, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
             return REQUEST_DELETE;
         }
-        // Maybe incorrect aim sid or McDonald's.
-        return REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override

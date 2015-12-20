@@ -270,7 +270,7 @@ public class HistoryDispatcher {
                             notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
                         }
                         if (PreferenceHelper.isVibrate(context)) {
-                            notificationBuilder.setVibrate(new long[]{0, 500});
+                            notificationBuilder.setVibrate(new long[]{0, 750});
                         }
                         if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(Settings.LED_COLOR_RGB,

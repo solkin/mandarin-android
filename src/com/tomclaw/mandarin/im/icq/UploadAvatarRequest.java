@@ -46,7 +46,12 @@ public class UploadAvatarRequest extends WimRequest {
         // Parsing response.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        return REQUEST_DELETE;
+        // Check for server reply.
+        if (statusCode == WIM_OK) {
+            return REQUEST_DELETE;
+        }
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override

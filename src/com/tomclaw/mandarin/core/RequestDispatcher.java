@@ -242,6 +242,9 @@ public class RequestDispatcher {
                         // Request wasn't completed. We'll retry request a little bit later.
                         log("Request wasn't completed. We'll retry request a little bit later.");
                         break;
+                    } else if (requestResult == Request.REQUEST_SKIP) {
+                        // Request wasn't completed. We'll retry request after queue is released.
+                        log("Request wasn't completed. We'll retry request after queue is released.");
                     } else {
                         // Updating this request.
                         log("Updating this request");

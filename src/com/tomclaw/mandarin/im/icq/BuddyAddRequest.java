@@ -55,8 +55,8 @@ public class BuddyAddRequest extends WimRequest {
                     buddyDbId);
             return REQUEST_DELETE;
         }
-        // Maybe incorrect aim sid or McDonald's.
-        return REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override
@@ -67,14 +67,14 @@ public class BuddyAddRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("buddy", buddyId));
-        params.add(new Pair<String, String>("group", groupName));
-        params.add(new Pair<String, String>("preAuthorized", "1"));
-        params.add(new Pair<String, String>("authorizationMsg", authorizationMsg));
-        params.add(new Pair<String, String>("locationGroup", "0"));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("buddy", buddyId));
+        params.add(new Pair<>("group", groupName));
+        params.add(new Pair<>("preAuthorized", "1"));
+        params.add(new Pair<>("authorizationMsg", authorizationMsg));
+        params.add(new Pair<>("locationGroup", "0"));
         return params;
     }
 }

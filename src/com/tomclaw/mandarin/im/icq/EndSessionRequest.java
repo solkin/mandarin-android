@@ -33,8 +33,8 @@ public class EndSessionRequest extends WimRequest {
             accountRoot.carriedOff();
             return REQUEST_DELETE;
         }
-        // Maybe server is busy or McDonald's.
-        return REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class BuddySearchRequest extends WimRequest {
             int total = results.getInt("nTotal");
             int skipped = results.getInt("nSkipped");
             int profiles = results.getInt("nProfiles");
-            List<String> userIds = new ArrayList<String>();
+            List<String> userIds = new ArrayList<>();
             if (profiles > 0) {
                 JSONArray infoArray = results.getJSONArray("infoArray");
                 for (int i = 0; i < infoArray.length(); i++) {
@@ -95,14 +95,14 @@ public class BuddySearchRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", "json"));
-        params.add(new Pair<String, String>("infoLevel", "min"));
-        params.add(new Pair<String, String>("nToSkip", String.valueOf(nToSkip)));
-        params.add(new Pair<String, String>("nToGet", String.valueOf(nToGet)));
-        params.add(new Pair<String, String>("locale", locale));
-        params.add(new Pair<String, String>("match", searchOptions.toString()));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("f", "json"));
+        params.add(new Pair<>("infoLevel", "min"));
+        params.add(new Pair<>("nToSkip", String.valueOf(nToSkip)));
+        params.add(new Pair<>("nToGet", String.valueOf(nToGet)));
+        params.add(new Pair<>("locale", locale));
+        params.add(new Pair<>("match", searchOptions.toString()));
         return params;
     }
 

@@ -31,7 +31,8 @@ public class IcqTypingRequest extends WimRequest {
         if (statusCode == WIM_OK) {
             return REQUEST_DELETE;
         }
-        return REQUEST_PENDING;
+        // Maybe incorrect aim sid or other strange error we've not recognized.
+        return REQUEST_SKIP;
     }
 
     @Override

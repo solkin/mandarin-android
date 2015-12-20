@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tomclaw.mandarin"
-          android:versionCode="65"
+          android:versionCode="67"
           android:versionName="1.9"
           android:installLocation="auto">
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21"/>

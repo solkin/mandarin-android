@@ -24,9 +24,9 @@ public abstract class GetPermitDenyRequest extends WimRequest {
         if (statusCode == WIM_OK) {
             JSONObject data = responseObject.getJSONObject("data");
             String pdMode = data.getString("pdMode");
-            List<String> allows = jsonArrayToStringList(data.getJSONArray("allows"));
-            List<String> blocks = jsonArrayToStringList(data.getJSONArray("blocks"));
-            List<String> ignores = jsonArrayToStringList(data.getJSONArray("ignores"));
+            List<String> allows = jsonArrayToStringList(data.optJSONArray("allows"));
+            List<String> blocks = jsonArrayToStringList(data.optJSONArray("blocks"));
+            List<String> ignores = jsonArrayToStringList(data.optJSONArray("ignores"));
             onPermitDenyInfoReceived(pdMode, allows, blocks, ignores);
             return REQUEST_DELETE;
         }

@@ -47,6 +47,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     private String lastName;
     private String aboutMe;
 
+    private boolean ignored;
+
     private TextView buddyNickView;
 
     private NfcAdapter mNfcAdapter;
@@ -256,6 +258,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         String requestBuddyId = intent.getStringExtra(BuddyInfoRequest.BUDDY_ID);
         // Checking for avatar info received.
         String requestAvatarHash = intent.getStringExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH);
+        // Checking for ignore info received.
+        int requestIgnoreState = intent.getIntExtra(BuddyInfoRequest.BUDDY_IGNORED, -1);
         Logger.log("buddy id: " + requestBuddyId);
         // Checking for this is info we need.
         if (requestAccountDbId == accountDbId && TextUtils.equals(requestBuddyId, buddyId)) {
@@ -264,6 +268,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             // Checking for avatar hash is new and cool.
             if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
                 updateAvatar(requestAvatarHash, true);
+            }
+            // Checking for buddy is ignored or not.
+            if (requestIgnoreState != -1) {
+                setIgnored(requestIgnoreState == 1);
             }
             // Check for this is info response (not info edit)...
             if (isInfoResponse) {
@@ -396,6 +404,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         return aboutMe;
     }
 
+    public boolean isIgnored() {
+        return ignored;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -406,6 +418,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
     }
 
     protected void prepareShareMenu(Menu menu) {
@@ -460,6 +476,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 if (accountActive) {
                     // Sending protocol buddy info request.
                     RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);
+                    RequestHelper.requestBuddyIgnoreState(contentResolver, appSession, accountDbId, buddyId);
                 } else {
                     // Account is not active, so we cannot load more info.
                     activity.hideProgressBar();

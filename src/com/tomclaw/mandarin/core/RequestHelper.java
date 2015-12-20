@@ -222,10 +222,22 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, updateInfoRequest);
     }
 
-    public static void ignoreBuddy(ContentResolver contentResolver, int accountDbId, String buddyId) {
+    public static void updateIgnoreBuddyState(ContentResolver contentResolver, int accountDbId,
+                                              String buddyId, boolean ignore) {
         SetPermitDenyRequest setPermitDenyRequest = new SetPermitDenyRequest();
-        setPermitDenyRequest.setPdIgnore(buddyId);
+        if (ignore) {
+            setPermitDenyRequest.setPdIgnore(buddyId);
+        } else {
+            setPermitDenyRequest.setPdIgnoreRemove(buddyId);
+        }
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setPermitDenyRequest);
+    }
+
+    public static void requestBuddyIgnoreState(ContentResolver contentResolver, String appSession,
+                                               int accountDbId, String buddyId) {
+        BuddyIgnoreStateRequest buddyIgnoreStateRequest = new BuddyIgnoreStateRequest(buddyId);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false,
+                accountDbId, appSession, buddyIgnoreStateRequest);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,

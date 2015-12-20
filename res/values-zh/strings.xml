@@ -368,5 +368,6 @@
 
     <string name="pref_summary_private_notifications">不顯示在通知中收到的郵件內容</string>
     <string name="pref_title_private_notifications">個人通知</string>
-    <string name="buddy_ignore">忽略</string>
+    <string name="buddy_ignore">忽略消息</string>
+    <string name="buddy_unignore">允許短信</string>
 </resources>

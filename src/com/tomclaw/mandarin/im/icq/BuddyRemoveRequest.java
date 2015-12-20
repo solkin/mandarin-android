@@ -69,12 +69,12 @@ public class BuddyRemoveRequest extends WimRequest {
 
     @Override
     protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("autoResponse", "false"));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("buddy", buddyId));
-        params.add(new Pair<String, String>("group", groupName));
+        List<Pair<String, String>> params = new ArrayList<>();
+        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
+        params.add(new Pair<>("autoResponse", "false"));
+        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        params.add(new Pair<>("buddy", buddyId));
+        params.add(new Pair<>("group", groupName));
         return params;
     }
 }

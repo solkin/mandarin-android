@@ -40,6 +40,7 @@ public class BuddyInfoRequest extends WimRequest {
     public static final String BUDDY_NICK = "buddy_nick";
     public static final String BUDDY_AVATAR_HASH = "buddy_avatar_hash";
     public static final String BUDDY_STATUS = "buddy_status";
+    public static final String BUDDY_IGNORED = "buddy_ignored";
 
     public static final String NO_INFO_CASE = "no_info_case";
     public static final String INFO_RESPONSE = "info_response";

@@ -32,6 +32,8 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.buddy_info_menu, menu);
+        menu.findItem(R.id.buddy_ignore).setTitle(isIgnored() ?
+                R.string.buddy_unignore : R.string.buddy_ignore);
         prepareShareMenu(menu);
         return true;
     }
@@ -48,7 +50,12 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 StringUtil.copyStringToClipboard(this, getShareString(), R.string.buddy_info_copied);
                 return true;
             case R.id.buddy_ignore:
-                RequestHelper.ignoreBuddy(getContentResolver(), getAccountDbId(), getBuddyId());
+                boolean updatedIgnored = !isIgnored();
+                RequestHelper.updateIgnoreBuddyState(getContentResolver(),
+                        getAccountDbId(), getBuddyId(), updatedIgnored);
+                setIgnored(updatedIgnored);
+                invalidateOptionsMenu();
+                refreshBuddyInfo();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -116,6 +123,12 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
     @Override
     protected int getDefaultAvatar() {
         return R.drawable.def_avatar;
+    }
+
+    @Override
+    public void setIgnored(boolean ignored) {
+        super.setIgnored(ignored);
+        invalidateOptionsMenu();
     }
 
     public void onBuddyInfoRequestError() {

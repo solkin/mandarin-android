@@ -1,14 +1,24 @@
 package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 import android.widget.QuickContactBadge;
+import com.tomclaw.mandarin.util.BitmapHelper;
 
 /**
  * Created by Solkin on 10.11.2014.
  */
-public class ContactBadge extends QuickContactBadge implements LazyImageView {
+public class ContactBadge extends ImageView implements LazyImageView {
+
+    private int cachedPlaceholderRes;
+    private Bitmap cachedPlaceholder;
 
     public ContactBadge(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -16,12 +26,16 @@ public class ContactBadge extends QuickContactBadge implements LazyImageView {
 
     @Override
     public void setPlaceholder(int resource) {
-        setImageResource(resource);
+        if (cachedPlaceholderRes != resource) {
+            cachedPlaceholderRes = resource;
+            cachedPlaceholder = BitmapFactory.decodeResource(getResources(), cachedPlaceholderRes);
+        }
+        setImageDrawable(getRoundedDrawable(cachedPlaceholder));
     }
 
     @Override
     public void setBitmap(Bitmap bitmap) {
-        setImageBitmap(bitmap);
+        setImageDrawable(getRoundedDrawable(bitmap));
     }
 
     @Override
@@ -32,5 +46,11 @@ public class ContactBadge extends QuickContactBadge implements LazyImageView {
     @Override
     public void setHash(String hash) {
         setTag(hash);
+    }
+
+    private Drawable getRoundedDrawable(Bitmap bitmap) {
+        RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+        drawable.setCornerRadius(bitmap.getWidth() / 10);
+        return drawable;
     }
 }

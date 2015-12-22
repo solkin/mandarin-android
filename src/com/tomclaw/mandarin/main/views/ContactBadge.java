@@ -1,16 +1,13 @@
 package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
-import android.graphics.*;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import android.widget.QuickContactBadge;
-import com.tomclaw.mandarin.util.BitmapHelper;
 
 /**
  * Created by Solkin on 10.11.2014.

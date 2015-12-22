@@ -19,7 +19,6 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-import com.tomclaw.mandarin.main.SettingsActivity;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 

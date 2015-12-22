@@ -94,7 +94,7 @@ public class BitmapCache {
      * @param height          - desired image height
      */
     public void getBitmapAsync(LazyImageView imageView, final String hash, int defaultResource, int width, int height) {
-        if (width == BITMAP_SIZE_UNKNOWN && height == BITMAP_SIZE_UNKNOWN){
+        if (width == BITMAP_SIZE_UNKNOWN && height == BITMAP_SIZE_UNKNOWN) {
             width = imageView.getWidth();
             height = imageView.getHeight();
         }

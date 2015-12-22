@@ -24,8 +24,6 @@ import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.main.views.TouchImageView;
 import com.tomclaw.mandarin.util.*;
 
-import java.io.InputStream;
-
 /**
  * Created by Solkin on 05.12.2014.
  */

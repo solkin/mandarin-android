@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_launcher"/>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:gravity="center_horizontal"
+                android:textSize="16sp"
+                android:text="Do you love Mandarin?"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:id="@+id/grade_attempt"
+                    style="@style/Button.Orange"
+                    android:text="Yes"/>
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:id="@+id/claim_attempt"
+                    style="@style/Button.White"
+                    android:text="No"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    </LinearLayout>
+</ViewFlipper>

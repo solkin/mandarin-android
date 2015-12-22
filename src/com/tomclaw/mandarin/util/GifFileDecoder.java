@@ -15,7 +15,9 @@ package com.tomclaw.mandarin.util;
 import android.content.ContentResolver;
 import android.net.Uri;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 public class GifFileDecoder {

@@ -771,9 +771,10 @@ public class QueryHelper {
      * This method helps to get formatted messages from history by ids.
      * But this method is really, really strange!
      * Should be rewritten. Sometime.
+     *
      * @param contentResolver - plain content resolver.
-     * @param timeHelper - time helper to format messages time
-     * @param messageIds - messages to be queried.
+     * @param timeHelper      - time helper to format messages time
+     * @param messageIds      - messages to be queried.
      * @return formatted messages.
      */
     public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {

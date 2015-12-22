@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.*;
 import android.widget.*;
@@ -23,7 +22,6 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.main.views.ThumbnailView;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
-import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.io.File;

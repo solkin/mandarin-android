@@ -4,38 +4,84 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_launcher"/>
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:gravity="center_horizontal"
-                android:textSize="16sp"
-                android:text="Do you love Mandarin?"/>
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:padding="3dp">
         <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:orientation="horizontal">
+            <com.tomclaw.mandarin.main.views.ContactBadge
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:id="@+id/grade_attempt_badge"
+                    android:layout_gravity="center_horizontal|top"/>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="0dp">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical"
+                        android:singleLine="true"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:textColor="?attr/buddy_primary_color"
+                        android:text="Orange Fox"/>
+                <com.tomclaw.mandarin.main.views.ScrollingTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/buddy_status_message"
+                        android:layout_gravity="left|center_vertical"
+                        android:textSize="15sp"
+                        android:textColor="?attr/buddy_secondary_color"
+                        android:ellipsize="marquee"
+                        android:fadingEdge="horizontal"
+                        android:fontFamily="sans-serif-light"
+                        android:text="Вам нравится Mandarin?"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:id="@+id/draft_indicator">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:layout_margin="6dp" android:background="@drawable/draft_indicator"
+                    android:textColor="#ffffff" android:textStyle="italic"
+                    android:gravity="center" android:visibility="visible" android:minWidth="25dp"
+                    android:text="@string/draft_indicator_text"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
             <Button
-                    android:layout_width="match_parent"
+                    android:layout_width="52dp"
                     android:layout_height="36dp"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:id="@+id/grade_attempt"
                     style="@style/Button.Orange"
-                    android:text="Yes"/>
+                    android:text="@string/yes"/>
             <Button
-                    android:layout_width="match_parent"
+                    android:layout_width="52dp"
                     android:layout_height="36dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
@@ -43,8 +89,20 @@
                     android:layout_weight="1"
                     android:id="@+id/claim_attempt"
                     style="@style/Button.White"
-                    android:text="No"/>
+                    android:text="@string/no"/>
         </LinearLayout>
+        <!--ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/buddy_status"
+                android:src="@drawable/ic_close"
+                android:tint="@color/orange_normal"
+                android:layout_gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="false"
+                android:paddingLeft="6dp"
+                android:paddingRight="8dp"
+                android:contentDescription="@string/buddy_status"/-->
     </LinearLayout>
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
 

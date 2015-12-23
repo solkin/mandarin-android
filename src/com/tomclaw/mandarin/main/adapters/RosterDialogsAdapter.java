@@ -29,6 +29,8 @@ import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.util.Random;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -51,6 +53,8 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     private RosterAdapterCallback adapterCallback;
 
     private BuddyCursor buddyCursor;
+
+    private int gradePosition = -1;
 
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(context, null, 0x00);
@@ -82,9 +86,13 @@ public class RosterDialogsAdapter extends CursorAdapter implements
             swapCursor(cursor);
             // Notifying listener.
             if (adapterCallback != null) {
+                int count = cursor.getCount();
                 if (cursor.getCount() == 0) {
                     adapterCallback.onRosterEmpty();
                 } else {
+                    if (gradePosition < 0 || gradePosition > count) {
+                        gradePosition = new Random(System.currentTimeMillis()).nextInt(cursor.getCount() - 1);
+                    }
                     adapterCallback.onRosterUpdate();
                 }
             }
@@ -117,21 +125,76 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     public View getView(final int position, View convertView, ViewGroup parent) {
         Cursor cursor = getCursor();
         View view;
-        try {
-            if (cursor == null || !cursor.moveToPosition(position)) {
-                throw new IllegalStateException("couldn't move cursor to position " + position);
-            }
+        if (position == gradePosition) {
             if (convertView == null) {
-                view = newView(context, cursor, parent);
+                view = inflater.inflate(R.layout.grade_layout, parent, false);
             } else {
                 view = convertView;
             }
-            bindView(view, context, cursor);
-        } catch (Throwable ex) {
-            view = inflater.inflate(R.layout.buddy_item, parent, false);
-            Logger.log("exception in getView: " + ex.getMessage());
+            bindGradeView(view);
+        } else {
+            try {
+                int realPosition = getRealPosition(position);
+                if (cursor == null || !cursor.moveToPosition(realPosition)) {
+                    throw new IllegalStateException("couldn't move cursor to position " + realPosition);
+                }
+                if (convertView == null) {
+                    view = newView(context, cursor, parent);
+                } else {
+                    view = convertView;
+                }
+                bindView(view, context, cursor);
+            } catch (Throwable ex) {
+                view = inflater.inflate(R.layout.buddy_item, parent, false);
+                Logger.log("exception in getView: " + ex.getMessage());
+            }
         }
         return view;
+    }
+
+    private boolean isShowGrade() {
+        return gradePosition >= 0;
+    }
+
+    private int getRealPosition(int position) {
+        if (isShowGrade()) {
+            if (position >= gradePosition) {
+                position--;
+            }
+        }
+        return position;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == gradePosition ? 1 : 0;
+    }
+
+    @Override
+    public int getCount() {
+        int count = super.getCount();
+        if (isShowGrade()) {
+            count += 1;
+        }
+        return count;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return super.getItem(getRealPosition(position));
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (position == gradePosition) {
+            return -1;
+        }
+        return super.getItemId(getRealPosition(position));
     }
 
     @Override
@@ -194,10 +257,16 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         });
     }
 
+    private void bindGradeView(View view) {
+        ContactBadge gradeAttemptBadge = (ContactBadge) view.findViewById(R.id.grade_attempt_badge);
+        gradeAttemptBadge.setPlaceholder(R.drawable.fox_avatar);
+    }
+
     public int getBuddyDbId(int position) {
+        int realPosition = getRealPosition(position);
         BuddyCursor cursor = getBuddyCursor();
-        if (cursor == null || !cursor.moveToPosition(position)) {
-            throw new IllegalStateException("couldn't move cursor to position " + position);
+        if (cursor == null || !cursor.moveToPosition(realPosition)) {
+            throw new IllegalStateException("couldn't move cursor to position " + realPosition);
         }
         return cursor.getBuddyDbId();
     }

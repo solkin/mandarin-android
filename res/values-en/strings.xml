@@ -402,4 +402,9 @@
     <string name="pref_title_private_notifications">Private notifications</string>
     <string name="buddy_ignore">Ignore messages</string>
     <string name="buddy_unignore">Allow messaging</string>
+    <string name="no_thanks">No, thanks</string>
+    <string name="yes_good">Of course</string>
+    <string name="do_you_love_mandarin">Do you love Mandarin?</string>
+    <string name="grade_us">Rate us, please!</string>
+    <string name="tell_us_whats_wrong">Tell us what\'s wrong?</string>
 </resources>

@@ -407,4 +407,9 @@
     <string name="pref_title_private_notifications">Приватные уведомления</string>
     <string name="buddy_ignore">Игнорировать</string>
     <string name="buddy_unignore">Не игнорировать</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="yes_good">Да, хорошо</string>
+    <string name="do_you_love_mandarin">Вам нравится Мандарин?</string>
+    <string name="grade_us">Тогда поставьте нам оценку!</string>
+    <string name="tell_us_whats_wrong">Расскажите, что не так?</string>
 </resources>

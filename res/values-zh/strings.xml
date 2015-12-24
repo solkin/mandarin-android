@@ -370,4 +370,9 @@
     <string name="pref_title_private_notifications">個人通知</string>
     <string name="buddy_ignore">忽略消息</string>
     <string name="buddy_unignore">允許短信</string>
+    <string name="no_thanks">不，謝謝</string>
+    <string name="yes_good">是的，當然</string>
+    <string name="do_you_love_mandarin">你喜歡普通話嗎？</string>
+    <string name="grade_us">請評價我們，請！</string>
+    <string name="tell_us_whats_wrong">告訴我們有關的問題？</string>
 </resources>

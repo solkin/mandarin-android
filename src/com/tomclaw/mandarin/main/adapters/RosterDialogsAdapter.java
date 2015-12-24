@@ -15,9 +15,11 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.*;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -258,8 +260,61 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     private void bindGradeView(View view) {
-        ContactBadge gradeAttemptBadge = (ContactBadge) view.findViewById(R.id.grade_attempt_badge);
-        gradeAttemptBadge.setPlaceholder(R.drawable.fox_avatar);
+        final ViewFlipper viewFlipper = (ViewFlipper) view;
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new DecelerateInterpolator());
+        fadeIn.setStartOffset(300);
+        fadeIn.setDuration(400);
+
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(400);
+
+        viewFlipper.setInAnimation(fadeIn);
+        viewFlipper.setOutAnimation(fadeOut);
+
+        // Attempt frame.
+        view.findViewById(R.id.claim_attempt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewFlipper.setDisplayedChild(2);
+            }
+        });
+        view.findViewById(R.id.grade_attempt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewFlipper.setDisplayedChild(1);
+            }
+        });
+
+        // Positive frame.
+        view.findViewById(R.id.no_grade).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gradePosition = -1;
+                notifyDataSetChanged();
+            }
+        });
+        view.findViewById(R.id.yes_grade).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
+        // Negative frame.
+        view.findViewById(R.id.no_claim).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gradePosition = -1;
+                notifyDataSetChanged();
+            }
+        });
+        view.findViewById(R.id.yes_email).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
     }
 
     public int getBuddyDbId(int position) {

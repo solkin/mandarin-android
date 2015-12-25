@@ -204,12 +204,7 @@ public class RequestHelper {
 
     public static void requestUploadAvatar(ContentResolver contentResolver, int accountDbId, String hash) {
         // Yes, this is upload operation, but is very tiny upload and be better in short queue.
-        UploadAvatarRequest uploadAvatarRequest;
-        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_NORMAL_AVATAR, hash);
-        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, uploadAvatarRequest);
-        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_BIG_AVATAR, hash);
-        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, uploadAvatarRequest);
-        uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_LARGE_AVATAR, hash);
+        UploadAvatarRequest uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_LARGE_AVATAR, hash);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, uploadAvatarRequest);
     }
 

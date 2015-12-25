@@ -47,7 +47,10 @@ public class UploadAvatarRequest extends WimRequest {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
-        if (statusCode == WIM_OK) {
+        if (statusCode == WIM_OK ||
+                statusCode == 460 ||
+                statusCode == 462 ||
+                statusCode == 600) {
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.
@@ -63,19 +66,19 @@ public class UploadAvatarRequest extends WimRequest {
             case TYPE_BIG_AVATAR: {
                 size = SIZE_BIG;
                 format = Bitmap.CompressFormat.JPEG;
-                quality = 90;
+                quality = 80;
                 break;
             }
             case TYPE_LARGE_AVATAR: {
                 size = SIZE_LARGE;
                 format = Bitmap.CompressFormat.JPEG;
-                quality = 80;
+                quality = 70;
                 break;
             }
             default: {
                 size = SIZE_NORMAL;
                 format = Bitmap.CompressFormat.JPEG;
-                quality = 95;
+                quality = 90;
                 break;
             }
         }

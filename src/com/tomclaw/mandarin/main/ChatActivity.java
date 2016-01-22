@@ -650,10 +650,14 @@ public class ChatActivity extends ChiefActivity {
     private SharingData getIntentSharingData(Intent intent) {
         Bundle bundle = intent.getExtras();
         SharingData sharingData = null;
-        // Checking for bundle condition.
-        if (bundle != null) {
-            // Setup sharing data object.
-            sharingData = (SharingData) bundle.getSerializable(SharingActivity.EXTRA_SHARING_DATA);
+        int flags = intent.getFlags();
+        // Checking for this recent apps double intent.
+        if ((flags & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
+            // Checking for bundle condition.
+            if (bundle != null) {
+                // Setup sharing data object.
+                sharingData = (SharingData) bundle.getSerializable(SharingActivity.EXTRA_SHARING_DATA);
+            }
         }
         return sharingData;
     }

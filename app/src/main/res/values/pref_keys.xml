@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_chat_settings" translatable="false">pref_chat_settings</string>
+    <string name="pref_buddy_list_settings" translatable="false">pref_buddy_list_settings</string>
+    <string name="pref_show_temp" translatable="false">pref_show_temp</string>
+    <string name="pref_collapse_messages" translatable="false">pref_collapse_messages</string>
+    <string name="pref_notification_settings" translatable="false">pref_notification_settings</string>
+    <string name="pref_notification_sound" translatable="false">pref_notification_sound</string>
+    <string name="pref_sound" translatable="false">pref_sound</string>
+    <string name="pref_vibrate" translatable="false">pref_vibrate</string>
+    <string name="pref_lights" translatable="false">pref_lights</string>
+    <string name="pref_quite_chat" translatable="false">pref_quite_chat</string>
+    <string name="pref_private_notifications" translatable="false">pref_private_notifications</string>
+    <string name="pref_base_settings" translatable="false">pref_base_settings</string>
+    <string name="pref_autorun" translatable="false">pref_autorun</string>
+    <string name="pref_chat_background" translatable="false">pref_chat_background</string>
+    <string name="pref_chat_show_keyboard" translatable="false">pref_chat_show_keyboard</string>
+    <string name="pref_send_by_enter" translatable="false">pref_send_by_enter</string>
+    <string name="pref_music_auto_status" translatable="false">pref_music_auto_status</string>
+    <string name="pref_dark_theme" translatable="false">pref_dark_theme</string>
+    <string name="pref_ignore_unknown" translatable="false">pref_ignore_unknown</string>
+    <string name="pref_roster_mode" translatable="false">pref_roster_mode</string>
+    <string name="pref_file_settings" translatable="false">pref_file_settings</string>
+    <string name="pref_files_auto_receive" translatable="false">pref_file_settings</string>
+    <string name="pref_image_compression" translatable="false">pref_image_compression</string>
+
+    <string name="pref_show_start_helper" translatable="false">pref_show_start_helper</string>
+</resources>

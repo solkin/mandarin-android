@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="roster_filter_strings">
+        <item>@string/filter_show_all_buddies</item>
+        <item>@string/filter_show_online_only</item>
+    </string-array>
+
+    <string-array name="gender_search_spinner_strings">
+        <item>@string/gender_female</item>
+        <item>@string/gender_male</item>
+        <item>@string/gender_any</item>
+    </string-array>
+
+    <string-array name="gender_edit_spinner_strings">
+        <item>@string/gender_not_selected</item>
+        <item>@string/gender_male</item>
+        <item>@string/gender_female</item>
+    </string-array>
+
+    <string-array name="children_spinner_strings" translatable="false">
+        <item>@string/no</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="smoking_spinner_strings">
+        <item>@string/no</item>
+        <item>@string/yes</item>
+    </string-array>
+
+    <string-array name="pref_roster_mode_strings">
+        <item>@string/group_by_alphabet</item>
+        <item>@string/group_by_groups</item>
+        <item>@string/group_by_status</item>
+    </string-array>
+
+    <string-array name="pref_roster_mode_values">
+        <item>@string/roster_mode_alphabet</item>
+        <item>@string/roster_mode_groups</item>
+        <item>@string/roster_mode_status</item>
+    </string-array>
+
+    <string-array name="pref_files_auto_receive_strings">
+        <item>@string/receive_mobile_and_wi_fi</item>
+        <item>@string/receive_mobile_less_size</item>
+        <item>@string/receive_wi_fi_only</item>
+        <item>@string/receive_manual_only</item>
+    </string-array>
+
+    <string-array name="pref_files_auto_receive_values">
+        <item>@string/auto_receive_mobile_and_wi_fi</item>
+        <item>@string/auto_receive_mobile_less_size</item>
+        <item>@string/auto_receive_wi_fi_only</item>
+        <item>@string/auto_receive_manual_only</item>
+    </string-array>
+
+    <string-array name="pref_image_compression_strings">
+        <item>@string/image_compression_original</item>
+        <item>@string/image_compression_medium</item>
+        <item>@string/image_compression_low_quality</item>
+    </string-array>
+
+    <string-array name="pref_image_compression_values">
+        <item>@string/compression_original</item>
+        <item>@string/compression_medium</item>
+        <item>@string/compression_low_quality</item>
+    </string-array>
+
+    <string name="roster_mode_alphabet" translatable="false">alphabet</string>
+    <string name="roster_mode_groups" translatable="false">groups</string>
+    <string name="roster_mode_status" translatable="false">status</string>
+
+    <string name="auto_receive_mobile_and_wi_fi" translatable="false">mobile_and_wi_fi</string>
+    <string name="auto_receive_mobile_less_size" translatable="false">mobile_less_size</string>
+    <string name="auto_receive_wi_fi_only" translatable="false">wi_fi_only</string>
+    <string name="auto_receive_manual_only" translatable="false">manual_only</string>
+
+    <string name="compression_original" translatable="false">original</string>
+    <string name="compression_medium" translatable="false">medium</string>
+    <string name="compression_low_quality" translatable="false">low_quality</string>
+</resources>

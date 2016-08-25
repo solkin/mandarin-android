@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mandarin</string>
+    <string name="core_service">Mandarin Core Service</string>
+    <string name="menu_search">Поиск</string>
+    <string name="account">Профиль</string>
+    <string name="accounts">Профили</string>
+    <string name="add_account">Добавить профиль</string>
+    <string name="edit_account">Редактировать</string>
+    <string name="remove_account">Удалить</string>
+    <string name="account_add_fail">Извините, не удалось добавить профиль.</string>
+    <string name="account_already_exists">Добавляемый профиль уже существует!</string>
+    <string name="add_buddy">Добавить в список контактов</string>
+    <string name="create_dialog">Создать диалог</string>
+    <string name="settings">Настройки</string>
+    <string name="info">Информация</string>
+    <string name="rate_application">Оценить приложение</string>
+    <string name="all_projects">Все проекты</string>
+    <string name="dialogs">Диалоги</string>
+    <string name="close_chat">Закрыть диалог</string>
+    <string name="close_chat_short">Закрыть</string>
+    <string name="buddy_info">Анкета</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="enter_your_message">Ваше сообщение</string>
+    <string name="error_bubble">Не удалось загрузить сообщение. Переустановите программу и эта ошибка исчезнет
+        навсегда.
+    </string>
+    <string name="select_buddy">Выберите контакт</string>
+
+    <string name="status_offline">Не в сети</string>
+    <string name="status_mobile">Мобильный</string>
+    <string name="status_online">В сети</string>
+    <string name="status_invisible">Невидимый</string>
+    <string name="status_chat">Рад пообщаться</string>
+    <string name="status_away">Отошёл</string>
+    <string name="status_dnd">Не беспокоить</string>
+    <string name="status_na">Недоступен</string>
+    <string name="status_busy">Занят</string>
+
+    <string name="error_remove_account">Извините, произошла ошибка при удалении профиля</string>
+    <string name="recycle">Корзина</string>
+    <string name="message_copy">Копировать</string>
+    <string name="message_remove">Удалить</string>
+    <string name="message_unread">Не прочитано</string>
+    <string name="message_share">Поделиться</string>
+
+    <string name="clear_history_title">Очистить историю?</string>
+    <string name="clear_history_text">Сейчас будет очищена вся переписка с этим контактом. Продолжить?</string>
+    <string name="yes_clear">Да</string>
+    <string name="do_not_clear">Отмена</string>
+
+    <string name="selected_items">%d выбрано</string>
+    <string name="yes_remove">Удалить</string>
+    <string name="remove_accounts_title">Удалить профили?</string>
+    <string name="remove_accounts_text">Сейчас будут удалены выбранные профили и сохранённая переписка. Это действие
+        нельзя отменить. Продолжить?
+    </string>
+    <string name="remove_account_title">Удалить профиль?</string>
+    <string name="remove_account_text">Сейчас будет удалён открытый профиль и сохранённая переписка. Это действие нельзя
+        отменить. Продолжить?
+    </string>
+    <string name="do_not_remove">Нет</string>
+    <string name="please_wait">Пожалуйста, подождите…</string>
+    <string name="error_clearing_history">Извините, произошла ошибка в процессе очистки истории.</string>
+    <string name="error_sending_message">Не удалось отправить сообщение!</string>
+    <string name="filter_show_all_buddies">Все контакты</string>
+    <string name="filter_show_online_only">Только в сети</string>
+    <string name="account_connecting">Пожалуйста, подождите немного. Идёт подключение.</string>
+    <string name="account_shutdowning">Пожалуйста, подождите немного. Идёт отключение.</string>
+
+    <plurals name="count_new_messages">
+        <item quantity="one">%d новое сообщение</item>
+        <item quantity="few">%d новых сообщения</item>
+        <item quantity="other">%d новых сообщений</item>
+    </plurals>
+    <string name="reply_now">Ответить</string>
+    <string name="open_chats">Диалоги</string>
+    <string name="share_messages_via">Поделиться сообщением через</string>
+    <string name="connect_account_message">Этот профиль ещё не подключен. Подключить сейчас?</string>
+    <string name="connect_account_title">Подключить профиль</string>
+    <string name="connect_yes">Подключить</string>
+    <string name="connect_no">Не сейчас</string>
+    <string name="pref_buddy_list_title">Список контактов</string>
+    <string name="pref_summary_show_temp">Показывать временных в списке контактов</string>
+    <string name="pref_title_show_temp">Временные контакты</string>
+    <string name="pref_notifications_title">Уведомления</string>
+    <string name="pref_title_notification_sound">Сигнал уведомления</string>
+    <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
+    <string name="pref_title_sound">Звук</string>
+    <string name="pref_title_vibrate">Вибрация</string>
+    <string name="buddy_status">Статус</string>
+    <string name="pref_chat_title">Переписка</string>
+    <string name="pref_title_collapse_messages">Объединение сообщений</string>
+    <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
+        течение двух минут
+    </string>
+    <string name="pref_base_title">Основное</string>
+    <string name="pref_title_autorun">Фоновый автозапуск</string>
+    <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
+
+    <string name="error_show_buddy_info">Ошибка при попытке открыть информацию о контакте</string>
+    <string name="info_status">Статус</string>
+    <string name="info_base">Основное</string>
+    <string name="info_extended">Дополнительно</string>
+    <string name="buddy_info_share">Поделиться</string>
+    <string name="buddy_info_copy">Копировать</string>
+    <string name="share_buddy_info_via">Поделиться контактом через</string>
+    <string name="buddy_info_copied">Информация скопирована в буфер обмена</string>
+    <string name="status_copied">Текст статуса скопирован в буфер обмена</string>
+
+    <string name="error_show_account_info">Ошибка при попытке открыть информацию о профиле</string>
+    <string name="account_info">Профиль</string>
+
+    <string name="account_connect">Подключить</string>
+    <string name="account_shutdown">Отключить</string>
+    <string name="account_remove">Удалить</string>
+    <string name="unable_to_connect_account">Не удалось подключиться к сети. Попробуйте перезайти в приложение.</string>
+    <string name="unable_to_shutdown_account">Не удалось отключить профиль от сети. Попробуйте перезайти в приложение.
+    </string>
+    <string name="unable_to_setup_status">Не удалось поменять статус профиля. Попробуйте перезайти в приложение.
+    </string>
+    <string name="status_message_hint">Изменить подпись статуса…</string>
+    <string name="status_message_change_hint">Подпись статуса…</string>
+    <string name="click_to_connect_hint">Нажмите здесь для подключения</string>
+    <string name="apply">Применить</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="clear">Очистить</string>
+
+    <string name="friendly_name">Ник</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="gender">Пол</string>
+    <string name="birth_date">День рождения</string>
+    <string name="city">Город</string>
+    <string name="children">Дети</string>
+    <string name="smoking">Курение</string>
+    <string name="website">Сайт</string>
+    <string name="about_me">О себе</string>
+    <string name="info_yes">да</string>
+    <string name="info_no">нет</string>
+    <string name="male">муж.</string>
+    <string name="female">жен.</string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="smiley_item">Смайлик</string>
+
+    <string name="status_icq_shop">Магазины</string>
+    <string name="status_icq_duck">В ванной</string>
+    <string name="status_icq_tired">Устал</string>
+    <string name="status_icq_party">Вечеринка</string>
+    <string name="status_icq_beer">Пиво</string>
+    <string name="status_icq_think">Думаю</string>
+    <string name="status_icq_eating">Кушаю</string>
+    <string name="status_icq_tv">Телевизор</string>
+    <string name="status_icq_friends">Друзья</string>
+    <string name="status_icq_coffee">Кофе</string>
+    <string name="status_icq_music">Музыка</string>
+    <string name="status_icq_business">Дела</string>
+    <string name="status_icq_cinema">Кино</string>
+    <string name="status_icq_fun">Развлекаюсь</string>
+    <string name="status_icq_phone">На телефоне</string>
+    <string name="status_icq_game">Играю</string>
+    <string name="status_icq_study">Учусь</string>
+    <string name="status_icq_sick">Болею</string>
+    <string name="status_icq_sleeping">Сплю</string>
+    <string name="status_icq_surfing">Отрываюсь</string>
+    <string name="status_icq_internet">В интернете</string>
+    <string name="status_icq_working">Работаю</string>
+    <string name="status_icq_typing">Пишу</string>
+    <string name="status_icq_angry">Злой</string>
+    <string name="status_icq_weekend">Отдыхаю</string>
+    <string name="status_icq_psp">Приставка</string>
+    <string name="status_icq_on_mobile">На мобильном</string>
+    <string name="status_icq_asleep">Засыпаю</string>
+    <string name="status_icq_wc">В туалете</string>
+    <string name="status_icq_question">Вопрос</string>
+    <string name="status_icq_way">В пути</string>
+    <string name="status_icq_love">Любовь</string>
+    <string name="status_icq_in_love">Влюблён</string>
+    <string name="status_icq_search">Ищу</string>
+    <string name="status_icq_diary">Дневник</string>
+    <string name="no_dialogs_opened">Нажмите на кнопку создания диалога внизу, чтобы начать общаться!</string>
+    <string name="pref_title_chat_background">Фоновая заставка</string>
+    <string name="app_title">Mandarin IM</string>
+    <string name="tomclaw_software">TomClaw Software</string>
+    <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
+        официальным клиентом ICQ, разрабатывается по многочисленным просьбам и просто из личного интереса автора.\n
+        <b>Дизайн - SAMURAY</b>
+    </string>
+    <string name="app_year">2014 г.</string>
+    <string name="disconnecting">Отключение…</string>
+    <string name="connecting">Подключение…</string>
+    <string name="invalid_credentials">Извините, Вы ввели неверный логин или пароль. Попробуйте ещё разок.</string>
+    <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
+    <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
+    <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
+    <string name="pref_title_send_by_enter">Отправка по Enter</string>
+    <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
+    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
+    <string name="pref_title_music_auto_status">Музыкальный статус</string>
+    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
+        при включении музыки в системном плеере
+    </string>
+    <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
+    <string name="pref_title_lights">Светодиод</string>
+    <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
+    <string name="pref_title_quite_chat">Бесшумный чат</string>
+    <string name="pref_summary_quite_chat">Если сообщение пришло в открытый диалог, оповещать только короткой вибрацией</string>
+    <string name="draft_indicator_text">Черновик</string>
+
+    <string name="accounts_connect">Подключиться</string>
+    <string name="accounts_shutdown">Отключиться</string>
+
+    <string name="select_status_title">Выберите статус</string>
+    <string name="select_status_description">Чтобы поделиться с друзьями Вашим настроением, укажите подходящий статус
+    </string>
+    <string name="unread_messages">Пометить непрочитанным</string>
+    <string name="mark_messages_unread">Пометить выделенные входящие сообщения непрочитанными и закрыть окно
+        переписки?
+    </string>
+    <string name="yes_mark">Да, пожалуй</string>
+    <string name="no_need">Отменить</string>
+    <string name="remove_messages">Удалить сообщения</string>
+    <string name="remove_selected_messages">Выделенные сообщения будут безвозвратно удалены из истории переписки.
+        Продолжить?
+    </string>
+    <string name="no_incoming_selected">Не выделено ни одного входящего сообщения</string>
+    <string name="yesterday">вчера</string>
+    <string name="last_seen_date" formatted="false">Был(а) %1$s в %2$s</string>
+    <string name="last_seen_time" formatted="false">Был(а) в %s</string>
+    <string name="typing">набирает сообщение…</string>
+    <string name="unknown_buddy">Без имени</string>
+    <string name="pref_title_dark_theme">Тёмная тема оформления</string>
+    <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать
+        сообщения от неизвестных людей.
+    </string>
+    <string name="pref_title_ignore_unknown">Игнорировать неизвестных</string>
+
+    <string name="remove_buddy_short">Удалить</string>
+    <string name="rename_buddy_short">Переименовать</string>
+    <string name="edit_buddy_name_title">Переименовать контакт</string>
+    <string name="rename_buddy_description">Введите желаемое имя для выбранного контакта:</string>
+    <string name="buddy_name_hint">Имя контакта…</string>
+    <string name="no_buddy_in_roster">Контакт отсутствует в списке контактов</string>
+    <string name="remove_buddy_title">Удалить контакт?</string>
+    <string name="remove_buddies_title">Удалить контакты?</string>
+    <string name="remove_buddies_message">Вы выбрали для удаления %d контакта(ов). Удаление контактов также стирает
+        историю
+        переписки с ними. Продолжить?
+    </string>
+    <string name="remove_buddy_message">Вы действительно хотите удалить выбранный контакт и историю переписки с ним?
+    </string>
+    <string name="menu_add_buddy">Добавить контакт</string>
+    <string name="select_account_title">Выберите профиль</string>
+    <string name="select_account_description">Пожалуйста, выберите профиль, в который хотите добавить контакт:</string>
+    <string name="search_buddy">Поиск контактов</string>
+    <string name="no_active_accounts">Чтобы добавлять новые контакты, подключите хотя бы один профиль</string>
+    <string name="search_buddy_error">Не удалось найти контакты по запросу. Попробуйте позднее.</string>
+    <string name="buddy_search_progress">Поиск контактов…</string>
+    <string name="buddy_search_no_result">Нет контактов по Вашему запросу.</string>
+    <string name="select_age">Выберите возраст</string>
+    <string name="range_from">от</string>
+    <string name="range_to">до</string>
+    <string name="age_format">%1$d - %2$s</string>
+    <plurals name="buddy_years">
+        <item quantity="zero">%d лет</item>
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="many">%d лет</item>
+        <item quantity="other">%d года</item>
+    </plurals>
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="gender_any">Любой</string>
+    <string name="gender_not_selected">Не выбран</string>
+    <string name="buddy_info_search">Анкетные данные</string>
+    <string name="keyword_search">ID, имя или фамилия</string>
+    <string name="age_and_gender_search">Возраст и пол</string>
+    <string name="buddy_online_search">Сейчас онлайн</string>
+    <string name="search_button">Поиск</string>
+    <string name="search_result">Результат поиска</string>
+    <string name="open_dialog">Открыть диалог</string>
+    <string name="defaultGroupName">Главная</string>
+    <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
+    <string name="age_any">Любой</string>
+
+    <string name="group_by_alphabet">По алфавиту</string>
+    <string name="group_by_groups">По группам</string>
+    <string name="group_by_status">По статусу</string>
+    <string name="pref_title_roster_mode">Отображение контактов</string>
+    <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
+    <string name="app_version">Версия %1$s (%2$s)</string>
+    <string name="city_search">Город</string>
+    <string name="mark_as_read">Прочитано</string>
+    <string name="mark_as_read_all">Прочитано всё</string>
+    <string name="next">Далее</string>
+    <string name="complete">Готово</string>
+    <string name="send_file">Отправить файл</string>
+    <string name="out_file_error">Ошибка передачи файла</string>
+
+    <string name="fill_the_fields_below">Заполните поля ниже</string>
+    <string name="email_or_uin_empty">Пожалуйста, введите Ваши e-mail или UIN и пароль</string>
+    <string name="password_empty">Пожалуйста, введите пароль</string>
+    <string name="email_or_uin_hint">E-mail или UIN</string>
+    <string name="password_hint">Пароль</string>
+    <string name="tiny_icq_client">Лёгкий ICQ клиент</string>
+    <string name="plain_login">Логин и пароль</string>
+    <string name="login_account">Войти</string>
+    <string name="enter_phone_number">Введите номер Вашего телефона</string>
+    <string name="file_upload_title">Отправка файла</string>
+    <string name="upload_failed">Отправка файла не удалась</string>
+    <string name="file_for">для %s</string>
+    <string name="default_locale">RU</string>
+    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику
+        Конфиденциальности</a>.
+    </string>
+    <string name="select_country">Выберите страну</string>
+    <string name="phone_number_faq">
+        <u>Для чего Мандарину мой номер телефона?</u>
+    </string>
+    <string name="phone_number_faq_message">Мандарин использует номер телефона для Вашей идентификации. Введя номер
+        телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ
+        для доступа к Вашей новой или существующей учётной записи.
+    </string>
+    <string name="got_it">Понятно</string>
+    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код
+        ниже.
+    </string>
+    <string name="resend_code_time">Переотправить код (%s)</string>
+    <string name="resend_code">Переотправить код</string>
+    <string name="checking_phone_number">Проверка введённого номера…</string>
+    <string name="phone_auth_error">Ошибка</string>
+    <string name="checking_phone_protocol_error">Введён неверный номер телефона. Пожалуйста, проверьте код страны,
+        введённый номер и
+        повторите попытку.
+    </string>
+    <string name="phone_auth_network_error">Ошибка сети. Проверьте интернет-соединение и повторите попытку.</string>
+    <string name="checking_sms_code">Проверка введённого кода подтверждения…</string>
+    <string name="checking_sms_error">Не удалось проверить номер телефона. Проверьте правильность введённого кода
+        подтверждения, интернет-соединение и повторите попытку.
+    </string>
+    <string name="requesting_sms_code">Запрос кода подтверждения…</string>
+    <string name="file_download_title">Получение файла</string>
+    <string name="download_failed">Получение файла не удалось</string>
+    <string name="file_from">от %s</string>
+    <string name="send_picture">Изображение</string>
+    <string name="send_video">Видео</string>
+    <string name="send_document">Документ</string>
+    <string name="gallery">Галерея</string>
+    <string name="all_pictures">Все изображения</string>
+    <string name="cancel">Отмена</string>
+    <string name="send">Отправить</string>
+
+    <string name="select_file">Выберите файл</string>
+    <string name="free_of_total">Свободно %1$s из %2$s</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="access_error">Ошибка доступа</string>
+    <string name="no_files">Здесь пока нет файлов…</string>
+    <string name="file_upload_limit">Размер файла должен быть не более %1$s</string>
+    <string name="not_mounted">Накопитель не подключен</string>
+    <string name="usb_active">USB передача данных активна</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
+    <string name="external_storage">Внешнее хранилище</string>
+    <string name="system_root">Системный корень</string>
+    <string name="sd_card">SD карта</string>
+    <string name="bytes">%d B</string>
+    <string name="kibibytes">%.1f КБ</string>
+    <string name="mibibytes">%.1f МБ</string>
+    <string name="gigibytes">%.1f ГБ</string>
+    <string name="system_picker">Выбрать в другом приложении</string>
+    <string name="pref_files_title">Обмен файлами</string>
+    <string name="pref_title_files_auto_receive">Автополучение файлов</string>
+    <string name="pref_summary_files_auto_receive">Настройка автоматического получения файлов</string>
+    <string name="receive_mobile_and_wi_fi">Всегда</string>
+    <string name="receive_mobile_less_size">До 1 МБ всегда</string>
+    <string name="receive_wi_fi_only">Только на Wi-Fi</string>
+    <string name="receive_manual_only">Никогда</string>
+    <string name="pref_title_image_compression">Сжатие изображений</string>
+    <string name="pref_summary_image_compression">Настройка качества сжатия исходящих изображений</string>
+    <string name="image_compression_original">Без сжатия</string>
+    <string name="image_compression_medium">Среднее качество</string>
+    <string name="image_compression_low_quality">Низкое качество</string>
+    <string name="view_in_external_app">Открыть в другом приложении</string>
+    <string name="failed_to_load_photo">Не удалось загрузить изображение</string>
+    <string name="no_video_picker">Отсутствует специальное приложение для выбора видео</string>
+    <string name="use_phone_number">Войти по номеру телефона</string>
+    <string name="use_login_and_password">У меня есть логин и пароль</string>
+    <string name="register_using_phone">Ещё нет учётной записи?\n
+        <u>Зарегистрируйтесь, используя Ваш номер телефона!</u>
+    </string>
+    <string name="user_info_edit">Редактировать</string>
+    <string name="edit_user_info_save">Сохранить</string>
+    <string name="date_not_set">Не установлено</string>
+    <string name="avatar_changing_error">Произошла ошибка при установке аватара. Пожалуйста, попробуйте другое
+        изображение.
+    </string>
+    <string name="reset">Сбросить</string>
+    <string name="buddies">Контакты</string>
+    <string name="invalid_file">Извините, этот файл (текст) невозможно отправить</string>
+    <string name="nfc_share">NFC</string>
+    <string name="close_without_user_info_save">Выйти без сохранения изменений?</string>
+
+    <string name="pref_summary_private_notifications">Не показывать содержимое входящих сообщений в уведомлениях</string>
+    <string name="pref_title_private_notifications">Приватные уведомления</string>
+    <string name="buddy_ignore">Игнорировать</string>
+    <string name="buddy_unignore">Не игнорировать</string>
+</resources>

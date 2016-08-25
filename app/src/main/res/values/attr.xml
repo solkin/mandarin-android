@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="header_head_color" format="color|reference"/>
+    <attr name="header_back_color" format="color|reference"/>
+    <attr name="header_font_color" format="color|reference"/>
+    <attr name="header_line_color" format="color|reference"/>
+
+    <attr name="chat_date_color" format="color|reference"/>
+    <attr name="chat_time_color" format="color|reference"/>
+    <attr name="chat_text_color" format="color|reference"/>
+    <attr name="chat_delivery_alpha" format="float|reference"/>
+
+    <attr name="chat_background_doodle" format="reference"/>
+
+    <attr name="chat_background_gradient" format="reference"/>
+
+    <attr name="chat_date_back" format="reference"/>
+    <attr name="chat_inc_bubble_color" format="color|reference"/>
+    <attr name="chat_out_bubble_color" format="color|reference"/>
+
+    <attr name="chat_buttons_tint" format="color|reference"/>
+    <attr name="chat_icons_tint" format="color|reference"/>
+    <attr name="chat_input_background" format="color|reference"/>
+    <attr name="chat_separator" format="color|reference"/>
+    <attr name="chat_placeholder_tint_inc" format="color|reference"/>
+    <attr name="chat_placeholder_tint_out" format="color|reference"/>
+
+    <attr name="profile_panel_background" format="color|reference"/>
+    <attr name="separator_navbar" format="color|reference"/>
+    <attr name="button_navbar_text" format="reference"/>
+    <attr name="button_navbar_background" format="color|reference"/>
+
+    <attr name="info_block_background" format="color|reference"/>
+    <attr name="info_block_text" format="color|reference"/>
+    <attr name="info_block_divider" format="color|reference"/>
+    <attr name="info_block_header_text_color" format="color|reference"/>
+    <attr name="info_block_background_color" format="color|reference"/>
+    <attr name="block_info_divider_background" format="color|reference"/>
+    <attr name="info_item_title_text_color" format="color|reference"/>
+    <attr name="info_item_value_text_color" format="color|reference"/>
+
+    <attr name="spinner_triangle_color" format="color|reference"/>
+
+    <attr name="positive_dialog_button_color" format="color|reference"/>
+    <attr name="negative_dialog_button_color" format="color|reference"/>
+    <attr name="neutral_dialog_button_color" format="color|reference"/>
+
+    <attr name="buddy_primary_color" format="color|reference"/>
+    <attr name="buddy_secondary_color" format="color|reference"/>
+
+    <declare-styleable name="PreviewImageView">
+        <attr name="preview_placeholder_tint" format="color|reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="BubbleImageView">
+        <attr name="bubble_color" format="color|reference"/>
+        <attr name="placeholder_tint" format="color|reference"/>
+        <attr name="bubble_corner" format="enum">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+            <enum name="none" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="AgePickerView">
+        <attr name="ageMin" format="integer"/>
+        <attr name="ageMax" format="integer"/>
+        <attr name="valueMin" format="integer"/>
+        <attr name="valueMax" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="CircleProgressBar">
+        <attr name="min" format="integer" />
+        <attr name="max" format="integer" />
+        <attr name="progress" format="integer" />
+        <attr name="progressbarColor" format="color" />
+        <attr name="progressBarThickness" format="dimension" />
+    </declare-styleable>
+</resources>

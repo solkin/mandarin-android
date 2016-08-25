@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="init_keyboard_height">250dp</dimen>
+    <dimen name="min_keyboard_height">10dp</dimen>
+    <dimen name="indicator_height">20dp</dimen>
+    <dimen name="smiley_size">50dp</dimen>
+    <dimen name="chat_date_size">16sp</dimen>
+    <dimen name="progress_radius">4sp</dimen>
+    <dimen name="file_min_width">172dp</dimen>
+    <dimen name="preview_size">200dp</dimen>
+    <dimen name="preview_bitmap">256px</dimen>
+    <dimen name="buddy_info_avatar_height">216dp</dimen>
+    <dimen name="toolbar_shadow_size">3dp</dimen>
+    <dimen name="dialog_padding">24dp</dimen>
+</resources>

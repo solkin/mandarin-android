@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        applicationId "com.tomclaw.mandarin"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 68
+        versionName "1.9"
+        resConfigs "ru", "en", "zh"
+    }
+    buildTypes {
+        debug {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile project(':smileys')
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:recyclerview-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+    compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+    compile 'com.github.machinarius:preferencefragment:0.1.1'
+    compile 'net.hockeyapp.android:HockeySDK:4.0.2'
+    compile 'com.google.code.gson:gson:2.7'
+}

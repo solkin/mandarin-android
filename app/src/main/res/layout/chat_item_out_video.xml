@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:mandarin="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:gravity="center_vertical"
+        android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dp"
+        android:paddingTop="5dp" android:paddingRight="5dp"
+        android:descendantFocusability="blocksDescendants">
+    <include layout="@layout/chat_item_date"/>
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:baselineAligned="false">
+        <include layout="@layout/time_delivery_out_block"/>
+        <LinearLayout android:orientation="vertical"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"
+                      android:paddingLeft="5dp"
+                      android:paddingRight="0dp">
+            <RelativeLayout android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/out_bubble_back"
+                            android:layout_gravity="right">
+                <com.tomclaw.mandarin.main.views.BubbleImageView
+                        android:id="@+id/out_preview_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        mandarin:bubble_corner="right"
+                        mandarin:bubble_color="?attr/chat_placeholder_tint_out"/>
+                <ImageView
+                        android:id="@+id/out_video_overlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="center"
+                        android:src="@drawable/video_play"
+                        android:layout_centerInParent="true"/>
+                <com.tomclaw.mandarin.main.views.CircleProgressBar
+                        android:id="@+id/out_progress"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_centerInParent="true"
+                        mandarin:progress="0"
+                        mandarin:progressBarThickness="2dp"
+                        mandarin:progressbarColor="@android:color/white" />
+                <LinearLayout
+                        android:id="@+id/out_error"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/out_preview_image"
+                        android:layout_alignBottom="@id/out_preview_image"
+                        android:layout_alignLeft="@id/out_preview_image"
+                        android:layout_alignStart="@id/out_preview_image"
+                        android:layout_alignRight="@id/out_preview_image"
+                        android:layout_alignEnd="@id/out_preview_image"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="6dp">
+                    <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/chat_error"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/out_file_error"
+                            android:textColor="@color/out_error_text_color"
+                            android:textSize="14sp"
+                            android:gravity="center"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

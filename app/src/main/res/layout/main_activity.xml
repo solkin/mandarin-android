@@ -62,7 +62,8 @@
                         android:layout_marginRight="18dp"
                         android:layout_marginBottom="22dp"
                         app:elevation="4dp"
-                        app:pressedTranslationZ="12dp"/>
+                        app:pressedTranslationZ="12dp"
+                        app:fabSize="normal"/>
             </FrameLayout>
             <LinearLayout android:layout_width="300dp"
                           android:layout_height="match_parent"

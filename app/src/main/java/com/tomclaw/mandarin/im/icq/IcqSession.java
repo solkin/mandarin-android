@@ -38,6 +38,7 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_ID;
@@ -150,9 +151,9 @@ public class IcqSession {
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
-    private static final int timeoutSocket = 70 * 1000;
-    private static final int timeoutConnection = 60 * 1000;
-    private static final int timeoutSession = 15 * 60 * 1000;
+    private static final int timeoutSocket = (int) TimeUnit.SECONDS.toMillis(70);
+    private static final int timeoutConnection = (int) TimeUnit.SECONDS.toMillis(60);
+    private static final int timeoutSession = (int) TimeUnit.DAYS.toMillis(1);
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -167,6 +168,10 @@ public class IcqSession {
             HttpURLConnection loginConnection = (HttpURLConnection) url.openConnection();
             loginConnection.setConnectTimeout(timeoutConnection);
             loginConnection.setReadTimeout(timeoutSocket);
+
+            Logger.log("timeout socket: " + timeoutSocket);
+            Logger.log("timeout connection: " + timeoutConnection);
+            Logger.log("timeout session: " + timeoutSession);
 
             // Specifying login data.
             HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()

@@ -36,14 +36,16 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="18dp"
                                 android:layout_marginBottom="22dp"
-                                android:src="@drawable/ic_add_contact"/>
+                                android:src="@drawable/ic_add_contact"
+                                app:fabSize="normal"/>
                         <android.support.design.widget.FloatingActionButton
                                 android:id="@+id/open_dialog_button"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="18dp"
                                 android:layout_marginBottom="22dp"
-                                android:src="@drawable/ic_chat"/>
+                                android:src="@drawable/ic_chat"
+                                app:fabSize="normal"/>
                     </ViewSwitcher>
                 </RelativeLayout>
                 <include layout="@layout/info_status"/>

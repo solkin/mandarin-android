@@ -37,7 +37,8 @@
                                 android:layout_marginRight="18dp"
                                 android:layout_marginBottom="12dp"
                                 app:elevation="4dp"
-                                app:pressedTranslationZ="4dp"/>
+                                app:pressedTranslationZ="4dp"
+                                app:fabSize="normal"/>
                     </FrameLayout>
                 </RelativeLayout>
                 <include layout="@layout/info_status"/>

@@ -1,11 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -44,10 +42,9 @@ public class EndSessionRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", WimConstants.FORMAT_JSON);
     }
 }

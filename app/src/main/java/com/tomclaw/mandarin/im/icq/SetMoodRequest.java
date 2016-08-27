@@ -2,14 +2,13 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -62,7 +61,7 @@ public class SetMoodRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
+    protected HttpParamsBuilder getParams() {
         String statusValue;
         // Checking for this is mood reset.
         if (statusIndex == STATUS_MOOD_RESET) {
@@ -74,13 +73,12 @@ public class SetMoodRequest extends WimRequest {
         statusTitle = validateString(statusTitle);
         statusMessage = validateString(statusMessage);
 
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<String, String>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<String, String>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<String, String>("mood", statusValue));
-        params.add(new Pair<String, String>("title", statusTitle));
-        params.add(new Pair<String, String>("statusMsg", statusMessage));
-        return params;
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("mood", statusValue)
+                .appendParam("title", statusTitle)
+                .appendParam("statusMsg", statusMessage);
     }
 
     private String validateString(String string) {

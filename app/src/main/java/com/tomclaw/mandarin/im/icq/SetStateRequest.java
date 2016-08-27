@@ -1,17 +1,20 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,9 +24,9 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.*;
  */
 public class SetStateRequest extends WimRequest {
 
-    public static final String STATE_REQUESTED = "state_requested";
-    public static final String STATE_APPLIED = "state_applied";
-    public static final String SET_STATE_SUCCESS = "set_state_success";
+    static final String STATE_REQUESTED = "state_requested";
+    private static final String STATE_APPLIED = "state_applied";
+    static final String SET_STATE_SUCCESS = "set_state_success";
 
     private int statusIndex;
 
@@ -73,14 +76,13 @@ public class SetStateRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
+    protected HttpParamsBuilder getParams() {
         String statusValue = StatusUtil.getStatusValue(getAccountRoot().getAccountType(), statusIndex);
 
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<>("view", statusValue));
-        params.add(new Pair<>("away", ""));
-        return params;
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("view", statusValue)
+                .appendParam("away", "");
     }
 }

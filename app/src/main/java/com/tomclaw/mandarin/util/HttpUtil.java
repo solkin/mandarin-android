@@ -1,16 +1,14 @@
 package com.tomclaw.mandarin.util;
 
-import android.util.Pair;
-import com.tomclaw.mandarin.im.icq.WimConstants;
-import org.apache.http.HttpStatus;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,28 +28,6 @@ public class HttpUtil {
 
     private static final String HASH_ALGORITHM = "MD5";
     private static final int RADIX = 10 + 26; // 10 digits + 26 letters
-
-    /**
-     * Builds Url request string from specified parameters.
-     *
-     * @param pairs
-     * @return String - Url request parameters.
-     * @throws java.io.UnsupportedEncodingException
-     */
-    public static String prepareParameters(List<Pair<String, String>> pairs)
-            throws UnsupportedEncodingException {
-        StringBuilder builder = new StringBuilder();
-        // Perform pair concatenation.
-        for (Pair<String, String> pair : pairs) {
-            if (builder.length() > 0) {
-                builder.append(WimConstants.AMP);
-            }
-            builder.append(pair.first)
-                    .append(WimConstants.EQUAL)
-                    .append(StringUtil.urlEncode(pair.second));
-        }
-        return builder.toString();
-    }
 
     public static String getUrlHash(String url) {
         byte[] md5 = getMD5(url.getBytes());

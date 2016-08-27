@@ -2,20 +2,21 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,24 +139,24 @@ public class BuddyPresenceRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<>("mdir", "1"));
+    protected HttpParamsBuilder getParams() {
+        HttpParamsBuilder params = new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("mdir", "1");
         // Checking for keyword is user id and this is first result page.
         if (StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
                 !buddyIds.contains(searchOptions.getKeyword())) {
-            params.add(createBuddyPair(searchOptions.getKeyword()));
+            appendBuddyPair(params, searchOptions.getKeyword());
             isKeywordNumeric = true;
         }
         for (String buddyId : buddyIds) {
-            params.add(createBuddyPair(buddyId));
+            appendBuddyPair(params, buddyId);
         }
         return params;
     }
 
-    private static Pair<String, String> createBuddyPair(String buddyId) {
-        return new Pair<>("t", buddyId);
+    private static void appendBuddyPair(HttpParamsBuilder builder, String buddyId) {
+        builder.appendParam("t", buddyId);
     }
 }

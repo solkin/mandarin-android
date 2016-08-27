@@ -1,15 +1,14 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -69,7 +68,7 @@ public class UpdateInfoRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
+    protected HttpParamsBuilder getParams() {
         String genderString;
         if (gender == 1) {
             genderString = "male";
@@ -79,22 +78,22 @@ public class UpdateInfoRequest extends WimRequest {
             genderString = "unknown";
         }
 
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
+        HttpParamsBuilder params = new HttpParamsBuilder();
+        params.appendParam("aimsid", getAccountRoot().getAimSid());
+        params.appendParam("f", WimConstants.FORMAT_JSON);
         try {
-            params.add(new Pair<>("set", getFieldValue("friendlyName", friendlyName)));
-            params.add(new Pair<>("set", getFieldValue("firstName", firstName)));
-            params.add(new Pair<>("set", getFieldValue("lastName", lastName)));
-            params.add(new Pair<>("set", getFieldValue("gender", genderString)));
-            params.add(new Pair<>("set", getPairValue("homeAddress", "city", city)));
-            params.add(new Pair<>("set", getFieldValue("children", childrenCount)));
-            params.add(new Pair<>("set", getFieldValue("smoking", smoking)));
-            params.add(new Pair<>("set", getFieldValue("website1", webSite)));
+            params.appendParam("set", getFieldValue("friendlyName", friendlyName));
+            params.appendParam("set", getFieldValue("firstName", firstName));
+            params.appendParam("set", getFieldValue("lastName", lastName));
+            params.appendParam("set", getFieldValue("gender", genderString));
+            params.appendParam("set", getPairValue("homeAddress", "city", city));
+            params.appendParam("set", getFieldValue("children", childrenCount));
+            params.appendParam("set", getFieldValue("smoking", smoking));
+            params.appendParam("set", getFieldValue("website1", webSite));
             if (birthDate > new GregorianCalendar(0, 0, 0).getTimeInMillis()) {
-                params.add(new Pair<>("set", getFieldValue("birthDate", birthDate / 1000)));
+                params.appendParam("set", getFieldValue("birthDate", birthDate / 1000));
             }
-            params.add(new Pair<>("set", getFieldValue("aboutMe", aboutMe)));
+            params.appendParam("set", getFieldValue("aboutMe", aboutMe));
         } catch (UnsupportedEncodingException ignored) {
             // Never come here.
         }

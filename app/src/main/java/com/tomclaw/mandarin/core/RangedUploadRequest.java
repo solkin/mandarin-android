@@ -1,31 +1,37 @@
 package com.tomclaw.mandarin.core;
 
+import android.os.Build;
 import android.text.TextUtils;
+
+import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.AlterableBody;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.VariableBuffer;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+
+import static com.tomclaw.mandarin.util.HttpStatus.SC_OK;
+import static com.tomclaw.mandarin.util.HttpStatus.SC_PARTIAL_CONTENT;
+
 /**
  * Created by Solkin on 14.10.2014.
  */
 public abstract class RangedUploadRequest<A extends AccountRoot> extends Request<A> {
 
-    private final transient HttpClient httpClient = new DefaultHttpClient();
+    private final transient OkHttpClient httpClient = new OkHttpClient.Builder().build();
+
+    private static final String CONTENT_RANGE = "Content-Range";
 
     public RangedUploadRequest() {
     }
@@ -45,10 +51,17 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             // Obtain uploading Url.
             String url = getUrl(virtualFile.getName(), virtualFile.getSize());
             // Starting upload.
-            HttpPost post = new HttpPost(url);
-            post.setHeader("Connection", "Keep-Alive");
-            post.setHeader("Content-Type", contentType);
-            post.setHeader("Accept-Ranges", "bytes");
+
+            MediaType type = MediaType.parse("application/octet-stream");
+            AlterableBody body = new AlterableBody(type);
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(url)
+                    .addHeader("Connection", "Keep-Alive")
+                    .addHeader("User-Agent", getUserAgent())
+                    .addHeader("Accept-Ranges", "bytes")
+                    .post(body)
+                    .build();
+
             do {
                 InputStream input = null;
                 try {
@@ -61,39 +74,43 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                             // ... and stop at the specified size.
                             cache = (int) (size - sent);
                         }
-                        byte[] entityData = new byte[cache];
-                        System.arraycopy(buffer.getBuffer(), 0, entityData, 0, cache);
-                        ByteArrayEntity arrayEntity = new ByteArrayEntity(entityData);
 
                         // Setup content range.
                         String range = "bytes " + sent + "-" + (sent + cache - 1) + "/" + size;
-                        // Update headers.
-                        post.setHeader("Content-Range", range);
-                        post.setEntity(arrayEntity);
+                        Logger.log("upload range: " + range);
+
+                        body.setContent(buffer.getBuffer());
+                        body.setOffset(0);
+                        body.setByteCount(cache);
+
+                        request = request.newBuilder()
+                                .header(CONTENT_RANGE, range)
+                                .build();
+
+                        checkInterrupted();
 
                         buffer.onExecuteStart();
-                        HttpResponse httpResponse = httpClient.execute(post);
-                        HttpEntity entity = httpResponse.getEntity();
+                        Response response = httpClient.newCall(request).execute();
                         buffer.onExecuteCompleted(cache);
-                        if (entity == null) {
-                            throw new IOException();
-                        }
+
                         try {
-                            int responseCode = httpResponse.getStatusLine().getStatusCode();
-                            if (responseCode == 200) {
-                                // Uploading completed successfully.
-                                successReply = EntityUtils.toString(entity);
-                                completed = true;
-                            } else if (responseCode == 206) {
-                                // Server is still hungry. Next chunk, please...
-                            } else {
-                                // Seems to be error code. Sadly.
-                                identifyErrorResponse(responseCode);
+                            int responseCode = response.code();
+                            switch (responseCode) {
+                                case SC_OK:
+                                    // Uploading completed successfully.
+                                    successReply = response.body().string();
+                                    completed = true;
+                                    break;
+                                case SC_PARTIAL_CONTENT:
+                                    // Server is still hungry. Next chunk, please...
+                                    break;
+                                default:
+                                    // Seems to be error code. Sadly.
+                                    identifyErrorResponse(responseCode);
+                                    break;
                             }
                         } finally {
-                            if (entity != null) {
-                                entity.consumeContent();
-                            }
+                            response.close();
                         }
                         sent += cache;
                         onBufferReleased(sent, size);
@@ -106,17 +123,16 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     // Thread interrupted exception.
                     Logger.log("Interruption while uploading", ex);
                     throw ex;
-                } catch (InterruptedException ex) {
-                    // Thread Io interrupted exception.
-                    Logger.log("Interruption while uploading", ex);
-                    throw ex;
                 } catch (IOException ex) {
                     // Pretty network exception.
                     Logger.log("Io exception while uploading", ex);
                     Thread.sleep(3000);
                 } finally {
                     if (input != null) {
-                        input.close();
+                        try {
+                            input.close();
+                        } catch (IOException ignored) {
+                        }
                     }
                 }
             } while (!completed);
@@ -159,8 +175,13 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
         }
     }
 
+    private String getUserAgent() {
+        return "Mandarin/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + ")";
+    }
+
     private void checkInterrupted() throws InterruptedException {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
+            Logger.log("Upload interrupted by thread iterruption");
             throw new InterruptedException();
         }
     }

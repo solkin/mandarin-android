@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,11 +52,10 @@ public abstract class GetPermitDenyRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", "json"));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", "json");
     }
 
     protected abstract void onPermitDenyInfoReceived(String pdMode, List<String> allows, List<String> blocks,

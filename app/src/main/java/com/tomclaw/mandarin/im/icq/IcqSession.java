@@ -3,15 +3,26 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.ContentResolver;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BuddyData;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.GroupData;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.*;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.NameValuePair;
+import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.mandarin.util.UrlParser;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,10 +38,92 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_SID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.AMP;
+import static com.tomclaw.mandarin.im.icq.WimConstants.ASSERT_CAPS;
+import static com.tomclaw.mandarin.im.icq.WimConstants.AUTORESPONSE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDIES_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDYLIST;
+import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDY_ICON;
+import static com.tomclaw.mandarin.im.icq.WimConstants.BUILD_NUMBER;
+import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_LOGIN_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_NAME;
+import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_VERSION;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DEVICE_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DEV_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DEV_ID_K;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DISPLAY_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EQUAL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EVENT_DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EXPIRES_IN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.FETCH_BASE_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.GROUPS_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
+import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
+import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IMF;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.INCLUDE_PRESENCE_FIELDS;
+import static com.tomclaw.mandarin.im.icq.WimConstants.INVISIBLE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LANGUAGE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LAST_SEEN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MESSAGE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MINIMIZE_RESPONSE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MOBILE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_ICON;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_TITLE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
+import static com.tomclaw.mandarin.im.icq.WimConstants.NAME;
+import static com.tomclaw.mandarin.im.icq.WimConstants.OFFLINE_IM;
+import static com.tomclaw.mandarin.im.icq.WimConstants.PASSWORD;
+import static com.tomclaw.mandarin.im.icq.WimConstants.PEEK;
+import static com.tomclaw.mandarin.im.icq.WimConstants.POLL_TIMEOUT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.POST_PREFIX;
+import static com.tomclaw.mandarin.im.icq.WimConstants.PRESENCE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RAW_MSG;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.R_PARAM;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SEND_REQ_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_ENDED;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_SECRET;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_TIMEOUT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SIG_SHA256;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SOURCE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.START_SESSION_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_MSG;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TIMEOUT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TIMESTAMP;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_A;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TS;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TYPE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS_TYPE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.URL_REGEX;
+import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
 
 /**
  * Created with IntelliJ IDEA.
@@ -76,18 +169,18 @@ public class IcqSession {
             loginConnection.setReadTimeout(timeoutSocket);
 
             // Specifying login data.
-            List<Pair<String, String>> nameValuePairs = new ArrayList<>();
-            nameValuePairs.add(new Pair<>(CLIENT_NAME, CLIENT_NAME_VALUE));
-            nameValuePairs.add(new Pair<>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
-            nameValuePairs.add(new Pair<>(DEV_ID, DEV_ID_VALUE));
-            nameValuePairs.add(new Pair<>(FORMAT, WimConstants.FORMAT_JSON));
-            nameValuePairs.add(new Pair<>(ID_TYPE, "ICQ"));
-            nameValuePairs.add(new Pair<>(PASSWORD, icqAccountRoot.getUserPassword()));
-            nameValuePairs.add(new Pair<>(LOGIN, icqAccountRoot.getUserId()));
+            HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()
+                    .appendParam(CLIENT_NAME, CLIENT_NAME_VALUE)
+                    .appendParam(CLIENT_VERSION, CLIENT_VERSION_VALUE)
+                    .appendParam(DEV_ID, DEV_ID_VALUE)
+                    .appendParam(FORMAT, WimConstants.FORMAT_JSON)
+                    .appendParam(ID_TYPE, "ICQ")
+                    .appendParam(PASSWORD, icqAccountRoot.getUserPassword())
+                    .appendParam(LOGIN, icqAccountRoot.getUserId());
 
             try {
                 // Execute request.
-                InputStream responseStream = HttpUtil.executePost(loginConnection, HttpUtil.prepareParameters(nameValuePairs));
+                InputStream responseStream = HttpUtil.executePost(loginConnection, nameValuePairs.build());
                 String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
                 Logger.log("client login = " + responseString);
@@ -134,39 +227,41 @@ public class IcqSession {
             HttpURLConnection startSessionConnection = (HttpURLConnection) url.openConnection();
             startSessionConnection.setConnectTimeout(timeoutConnection);
             startSessionConnection.setReadTimeout(timeoutSocket);
+
+            String statusValue = StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
+                    icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()));
             // Add your data
-            List<Pair<String, String>> nameValuePairs = new ArrayList<>();
-            nameValuePairs.add(new Pair<>(WimConstants.TOKEN_A, icqAccountRoot.getTokenA()));
-            nameValuePairs.add(new Pair<>(ASSERT_CAPS, ASSERT_CAPS_VALUE));
-            nameValuePairs.add(new Pair<>(BUILD_NUMBER, BUILD_NUMBER_VALUE));
-            nameValuePairs.add(new Pair<>(CLIENT_NAME, CLIENT_NAME_VALUE));
-            nameValuePairs.add(new Pair<>(CLIENT_VERSION, CLIENT_VERSION_VALUE));
-            nameValuePairs.add(new Pair<>(DEVICE_ID, DEVICE_ID_VALUE));
-            nameValuePairs.add(new Pair<>(EVENTS, EVENTS_VALUE));
-            nameValuePairs.add(new Pair<>(FORMAT, WimConstants.FORMAT_JSON));
-            nameValuePairs.add(new Pair<>(IMF, "plain"));
-            nameValuePairs.add(new Pair<>(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE));
-            nameValuePairs.add(new Pair<>(INVISIBLE, "false"));
-            nameValuePairs.add(new Pair<>(DEV_ID_K, DEV_ID_VALUE));
-            nameValuePairs.add(new Pair<>(LANGUAGE, "ru-ru"));
-            nameValuePairs.add(new Pair<>(MINIMIZE_RESPONSE, "0"));
-            nameValuePairs.add(new Pair<>(MOBILE, "0"));
-            nameValuePairs.add(new Pair<>(POLL_TIMEOUT, String.valueOf(timeoutConnection)));
-            nameValuePairs.add(new Pair<>(RAW_MSG, "0"));
-            nameValuePairs.add(new Pair<>(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000)));
-            nameValuePairs.add(new Pair<>(TS, String.valueOf(icqAccountRoot.getHostTime())));
-            nameValuePairs.add(new Pair<>(VIEW,
-                    StatusUtil.getStatusValue(icqAccountRoot.getAccountType(), icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()))));
+            HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()
+                    .appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA())
+                    .appendParam(ASSERT_CAPS, ASSERT_CAPS_VALUE)
+                    .appendParam(BUILD_NUMBER, BUILD_NUMBER_VALUE)
+                    .appendParam(CLIENT_NAME, CLIENT_NAME_VALUE)
+                    .appendParam(CLIENT_VERSION, CLIENT_VERSION_VALUE)
+                    .appendParam(DEVICE_ID, DEVICE_ID_VALUE)
+                    .appendParam(EVENTS, EVENTS_VALUE)
+                    .appendParam(FORMAT, WimConstants.FORMAT_JSON)
+                    .appendParam(IMF, "plain")
+                    .appendParam(INCLUDE_PRESENCE_FIELDS, PRESENCE_FIELDS_VALUE)
+                    .appendParam(INVISIBLE, "false")
+                    .appendParam(DEV_ID_K, DEV_ID_VALUE)
+                    .appendParam(LANGUAGE, "ru-ru")
+                    .appendParam(MINIMIZE_RESPONSE, "0")
+                    .appendParam(MOBILE, "0")
+                    .appendParam(POLL_TIMEOUT, String.valueOf(timeoutConnection))
+                    .appendParam(RAW_MSG, "0")
+                    .appendParam(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000))
+                    .appendParam(TS, String.valueOf(icqAccountRoot.getHostTime()))
+                    .appendParam(VIEW, statusValue);
 
             String hash = POST_PREFIX.concat(URLEncoder.encode(START_SESSION_URL, HttpUtil.UTF8_ENCODING))
-                    .concat(AMP).concat(URLEncoder.encode(HttpUtil.prepareParameters(nameValuePairs), HttpUtil.UTF8_ENCODING));
+                    .concat(AMP).concat(URLEncoder.encode(nameValuePairs.build(), HttpUtil.UTF8_ENCODING));
 
-            nameValuePairs.add(new Pair<>(SIG_SHA256,
-                    StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
-            Logger.log(HttpUtil.prepareParameters(nameValuePairs));
+            nameValuePairs.appendParam(SIG_SHA256,
+                    StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey()));
+            Logger.log(nameValuePairs.build());
             try {
                 // Execute HTTP Post Request
-                InputStream responseStream = HttpUtil.executePost(startSessionConnection, HttpUtil.prepareParameters(nameValuePairs));
+                InputStream responseStream = HttpUtil.executePost(startSessionConnection, nameValuePairs.build());
                 String responseString = HttpUtil.streamToString(responseStream);
                 responseStream.close();
                 Logger.log("start session = " + responseString);
@@ -591,7 +686,7 @@ public class IcqSession {
      */
     private static String getIdParam(String url) {
         URI uri = URI.create(url);
-        for (NameValuePair param : URLEncodedUtils.parse(uri, "UTF-8")) {
+        for (NameValuePair param : UrlParser.parse(uri, "UTF-8")) {
             if (param.getName().equals("id")) {
                 return param.getValue();
             }

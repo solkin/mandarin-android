@@ -1,16 +1,16 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.graphics.Bitmap;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -102,7 +102,7 @@ public class UploadAvatarRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
+    protected HttpParamsBuilder getParams() {
         String typeString;
         switch (type) {
             case TYPE_BIG_AVATAR: {
@@ -118,10 +118,9 @@ public class UploadAvatarRequest extends WimRequest {
                 break;
             }
         }
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>(WimConstants.AIM_SID, getAccountRoot().getAimSid()));
-        params.add(new Pair<>(WimConstants.FORMAT, WimConstants.FORMAT_JSON));
-        params.add(new Pair<>(WimConstants.TYPE, typeString));
-        return params;
+        return new HttpParamsBuilder()
+                .appendParam(WimConstants.AIM_SID, getAccountRoot().getAimSid())
+                .appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
+                .appendParam(WimConstants.TYPE, typeString);
     }
 }

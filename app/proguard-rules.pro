@@ -47,16 +47,6 @@
 -keep interface android.support.design.** { *; }
 -keep public class android.support.design.R$* { *; }
 
--keep public class javax.net.ssl.**
--keepclassmembers public class javax.net.ssl.** {
-  *;
-}
-
--keep public class org.apache.http.**
--keepclassmembers public class org.apache.http.** {
-  *;
-}
-
 -keep class com.akexorcist.roundcornerprogressbar.** { *; }
 -dontwarn com.akexorcist.roundcornerprogressbar.**
 

@@ -1,14 +1,12 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -68,13 +66,12 @@ public class BuddyRemoveRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("autoResponse", "false"));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<>("buddy", buddyId));
-        params.add(new Pair<>("group", groupName));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("autoResponse", "false")
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("buddy", buddyId)
+                .appendParam("group", groupName);
     }
 }

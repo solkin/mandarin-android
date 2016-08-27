@@ -1,12 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.text.TextUtils;
-import android.util.Pair;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -74,23 +71,17 @@ public class SetPermitDenyRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", "json"));
-        appendNonEmptyPair(params, "pdAllow", pdAllow);
-        appendNonEmptyPair(params, "pdIgnore", pdIgnore);
-        appendNonEmptyPair(params, "pdBlock", pdBlock);
-        appendNonEmptyPair(params, "pdAllowRemove", pdAllowRemove);
-        appendNonEmptyPair(params, "pdIgnoreRemove", pdIgnoreRemove);
-        appendNonEmptyPair(params, "pdBlockRemove", pdBlockRemove);
-        appendNonEmptyPair(params, "pdMode", pdMode);
-        return params;
-    }
-
-    private void appendNonEmptyPair(List<Pair<String, String>> params, String title, String value) {
-        if (!TextUtils.isEmpty(value)) {
-            params.add(new Pair<>(title, value));
-        }
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", "json")
+                .appendParamNonEmpty("pdAllow", pdAllow)
+                .appendParamNonEmpty("pdAllow", pdAllow)
+                .appendParamNonEmpty("pdIgnore", pdIgnore)
+                .appendParamNonEmpty("pdBlock", pdBlock)
+                .appendParamNonEmpty("pdAllowRemove", pdAllowRemove)
+                .appendParamNonEmpty("pdIgnoreRemove", pdIgnoreRemove)
+                .appendParamNonEmpty("pdBlockRemove", pdBlockRemove)
+                .appendParamNonEmpty("pdMode", pdMode);
     }
 }

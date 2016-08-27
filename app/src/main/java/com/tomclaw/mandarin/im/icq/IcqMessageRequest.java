@@ -1,16 +1,20 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.REQUEST_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -83,16 +87,15 @@ public class IcqMessageRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("autoResponse", "false"));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<>("message", message));
-        params.add(new Pair<>("notifyDelivery", "true"));
-        params.add(new Pair<>("offlineIM", "true"));
-        params.add(new Pair<>("r", cookie));
-        params.add(new Pair<>("t", to));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("autoResponse", "false")
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("message", message)
+                .appendParam("notifyDelivery", "true")
+                .appendParam("offlineIM", "true")
+                .appendParam("r", cookie)
+                .appendParam("t", to);
     }
 }

@@ -2,14 +2,13 @@ package com.tomclaw.mandarin.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,8 +35,8 @@ public abstract class BitmapRequest<A extends AccountRoot> extends HttpRequest<A
     }
 
     @Override
-    protected final List<Pair<String, String>> getParams() {
-        return Collections.emptyList();
+    protected final HttpParamsBuilder getParams() {
+        return HttpParamsBuilder.emptyParams();
     }
 
     @Override

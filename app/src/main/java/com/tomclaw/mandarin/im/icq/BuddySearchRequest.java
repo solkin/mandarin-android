@@ -2,11 +2,13 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,16 +96,15 @@ public class BuddySearchRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", "json"));
-        params.add(new Pair<>("infoLevel", "min"));
-        params.add(new Pair<>("nToSkip", String.valueOf(nToSkip)));
-        params.add(new Pair<>("nToGet", String.valueOf(nToGet)));
-        params.add(new Pair<>("locale", locale));
-        params.add(new Pair<>("match", searchOptions.toString()));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", "json")
+                .appendParam("infoLevel", "min")
+                .appendParam("nToSkip", String.valueOf(nToSkip))
+                .appendParam("nToGet", String.valueOf(nToGet))
+                .appendParam("locale", locale)
+                .appendParam("match", searchOptions.toString());
     }
 
     private static Intent getBaseIntent(int accountDbId, IcqSearchOptionsBuilder searchOptions) {
@@ -114,14 +115,14 @@ public class BuddySearchRequest extends WimRequest {
         return intent;
     }
 
-    public static Intent getNoResultIntent(int accountDbId, IcqSearchOptionsBuilder searchOptions) {
+    static Intent getNoResultIntent(int accountDbId, IcqSearchOptionsBuilder searchOptions) {
         Intent intent = getBaseIntent(accountDbId, searchOptions);
         intent.putExtra(NO_SEARCH_RESULT_CASE, true);
         return intent;
     }
 
-    public static Intent getSearchResultIntent(int accountDbId, IcqSearchOptionsBuilder searchOptions,
-                                               int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap) {
+    static Intent getSearchResultIntent(int accountDbId, IcqSearchOptionsBuilder searchOptions,
+                                        int total, int skipped, Map<String, ShortBuddyInfo> shortInfoMap) {
         Intent intent = getBaseIntent(accountDbId, searchOptions);
         intent.putExtra(SEARCH_RESULT_TOTAL, total);
         intent.putExtra(SEARCH_RESULT_OFFSET, skipped);

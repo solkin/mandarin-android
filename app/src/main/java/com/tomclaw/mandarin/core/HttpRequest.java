@@ -1,9 +1,10 @@
 package com.tomclaw.mandarin.core;
 
 import android.text.TextUtils;
-import android.util.Pair;
+
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.WimConstants;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,7 +66,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
     protected abstract int parseResponse(InputStream httpResponseStream) throws Throwable;
 
     protected byte[] getBody() throws IOException {
-        return HttpUtil.stringToArray(HttpUtil.prepareParameters(getParams()));
+        return HttpUtil.stringToArray(getParams().build());
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
      *
      * @return List of Get parameters.
      */
-    protected abstract List<Pair<String, String>> getParams();
+    protected abstract HttpParamsBuilder getParams();
 
     /**
      * Returns url with prepared parameters to perform Get request.
@@ -96,7 +96,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
     private String getUrlWithParameters() throws UnsupportedEncodingException {
         // Obtain request-specific url.
         String url = getUrl();
-        String parameters = HttpUtil.prepareParameters(getParams());
+        String parameters = getParams().build();
         Logger.log("try to send request to ".concat(url).concat(" with parameters: ")
                 .concat(WimConstants.QUE).concat(parameters));
         if (!TextUtils.isEmpty(parameters)) {

@@ -1,13 +1,11 @@
 package com.tomclaw.mandarin.im.icq;
 
-import android.util.Pair;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.util.HttpParamsBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
@@ -66,15 +64,14 @@ public class BuddyAddRequest extends WimRequest {
     }
 
     @Override
-    protected List<Pair<String, String>> getParams() {
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("aimsid", getAccountRoot().getAimSid()));
-        params.add(new Pair<>("f", WimConstants.FORMAT_JSON));
-        params.add(new Pair<>("buddy", buddyId));
-        params.add(new Pair<>("group", groupName));
-        params.add(new Pair<>("preAuthorized", "1"));
-        params.add(new Pair<>("authorizationMsg", authorizationMsg));
-        params.add(new Pair<>("locationGroup", "0"));
-        return params;
+    protected HttpParamsBuilder getParams() {
+        return new HttpParamsBuilder()
+                .appendParam("aimsid", getAccountRoot().getAimSid())
+                .appendParam("f", WimConstants.FORMAT_JSON)
+                .appendParam("buddy", buddyId)
+                .appendParam("group", groupName)
+                .appendParam("preAuthorized", "1")
+                .appendParam("authorizationMsg", authorizationMsg)
+                .appendParam("locationGroup", "0");
     }
 }

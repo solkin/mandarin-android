@@ -3,8 +3,10 @@ package com.tomclaw.mandarin.main;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -41,6 +43,7 @@ public class RosterActivity extends ChiefActivity {
 
     private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
     private SearchView.OnQueryTextListener onQueryTextListener;
+    private FloatingActionButton actionButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,22 @@ public class RosterActivity extends ChiefActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchAccountCallback callback = new SearchAccountCallback(RosterActivity.this);
+                AccountProviderTask task = new AccountProviderTask(RosterActivity.this, callback);
+                TaskExecutor.getInstance().execute(task);
+            }
+        });
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) actionButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0); // get rid of margins since shadow area is now the margin
+            actionButton.setLayoutParams(p);
+        }
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
@@ -132,16 +151,9 @@ public class RosterActivity extends ChiefActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
+            case android.R.id.home:
                 onBackPressed();
                 return true;
-            }
-            case R.id.menu_add_buddy: {
-                SearchAccountCallback callback = new SearchAccountCallback(this);
-                AccountProviderTask task = new AccountProviderTask(this, callback);
-                TaskExecutor.getInstance().execute(task);
-                return true;
-            }
             default:
                 return super.onOptionsItemSelected(item);
         }

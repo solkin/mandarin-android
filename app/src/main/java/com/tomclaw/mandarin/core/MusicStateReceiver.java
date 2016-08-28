@@ -70,33 +70,38 @@ public class MusicStateReceiver extends BroadcastReceiver {
             MainExecutor.executeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Context context = contextWeakReference.get();
-                    if (context != null) {
-                        boolean isMusicActive = isMusicActive(context);
-                        String action = intent.getAction();
-                        String cmd = intent.getStringExtra("command");
-                        String artist = intent.getStringExtra("artist");
-                        String album = intent.getStringExtra("album");
-                        String track = intent.getStringExtra("track");
-                        Logger.log(action + " / " + cmd);
-                        Logger.log(artist + ":" + album + ":" + track);
-                        Logger.log("music active: " + isMusicActive);
-                        String statusMessage = null;
-                        if (!TextUtils.isEmpty(track) && isMusicActive) {
-                            if (TextUtils.isEmpty(artist)) {
-                                statusMessage = "";
-                            } else {
-                                statusMessage = artist;
-                            }
-                            if (!TextUtils.isEmpty(track)) {
-                                if (!TextUtils.isEmpty(statusMessage)) {
-                                    statusMessage = context.getString(R.string.music_status_pattern, artist, track);
+                    try {
+                        Context context = contextWeakReference.get();
+                        if (context != null) {
+                            boolean isMusicActive = isMusicActive(context);
+                            String action = intent.getAction();
+                            String cmd = intent.getStringExtra("command");
+                            String artist = intent.getStringExtra("artist");
+                            String album = intent.getStringExtra("album");
+                            String track = intent.getStringExtra("track");
+                            Logger.log(action + " / " + cmd);
+                            Logger.log(artist + ":" + album + ":" + track);
+                            Logger.log("music active: " + isMusicActive);
+                            String statusMessage = null;
+                            if (!TextUtils.isEmpty(track) && isMusicActive) {
+                                if (TextUtils.isEmpty(artist)) {
+                                    statusMessage = "";
                                 } else {
-                                    statusMessage = track;
+                                    statusMessage = artist;
+                                }
+                                if (!TextUtils.isEmpty(track)) {
+                                    if (!TextUtils.isEmpty(statusMessage)) {
+                                        statusMessage = context.getString(R.string.music_status_pattern, artist, track);
+                                    } else {
+                                        statusMessage = track;
+                                    }
                                 }
                             }
+                            sendEventToService(context, statusMessage);
                         }
-                        sendEventToService(context, statusMessage);
+                    } catch (Throwable ex) {
+                        // Music event with incorrect format will be ignored.
+                        Logger.log("Error while trying process music state intent", ex);
                     }
                 }
             }, PROCESS_EVENT_DELAY);

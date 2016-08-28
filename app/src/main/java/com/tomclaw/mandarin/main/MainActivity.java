@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
@@ -172,7 +173,7 @@ public class MainActivity extends ChiefActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuResource;
         // Checking for drawer is initialized, opened and show such menu.
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             menuResource = R.menu.accounts_list_menu;
         } else {
             menuResource = R.menu.main_activity_menu;
@@ -188,7 +189,7 @@ public class MainActivity extends ChiefActivity {
         }
         switch (item.getItemId()) {
             case R.id.accounts: {
-                drawerLayout.openDrawer(Gravity.START);
+                drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             }
             case R.id.settings: {
@@ -208,7 +209,7 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             // Close drawer if opened.
             drawerLayout.closeDrawers();
         } else {

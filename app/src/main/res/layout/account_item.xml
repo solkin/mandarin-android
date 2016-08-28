@@ -24,14 +24,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="center_vertical">
-            <TextView
+            <com.tomclaw.mandarin.main.views.TightTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/user_nick"
                     android:fontFamily="sans-serif"
                     android:textSize="16sp"
                     android:textColor="@color/user_item_nick_color"/>
-            <TextView
+            <com.tomclaw.mandarin.main.views.TightTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"

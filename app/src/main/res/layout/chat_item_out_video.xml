@@ -67,7 +67,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/chat_error"/>
-                    <TextView
+                    <com.tomclaw.mandarin.main.views.TightTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/out_file_error"

@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginLeft="10dp">
-        <TextView
+        <com.tomclaw.mandarin.main.views.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/user_nick"
@@ -25,7 +25,7 @@
                 android:textSize="17sp"
                 android:fontFamily="sans-serif"
                 android:gravity="center_vertical"/>
-        <TextView
+        <com.tomclaw.mandarin.main.views.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/user_id"

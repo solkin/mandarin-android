@@ -23,7 +23,7 @@
             style="@style/ToolbarTheme"
             android:background="@color/photo_view_action_bar_color"/>
 
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:id="@+id/photo_view_failed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

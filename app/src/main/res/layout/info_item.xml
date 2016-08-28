@@ -6,11 +6,11 @@
               android:layout_height="wrap_content"
               android:minHeight="32dp"
               android:gravity="center_horizontal">
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:id="@+id/info_title"
             android:minWidth="142dp"
             style="@style/BuddyInfoItemTitle"/>
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:id="@+id/info_value"
             style="@style/BuddyInfoItemValue"/>
 </LinearLayout>

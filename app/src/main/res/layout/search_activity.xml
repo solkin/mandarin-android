@@ -17,7 +17,7 @@
                       android:layout_height="match_parent"
                       android:padding="12dp">
 
-            <TextView
+            <com.tomclaw.mandarin.main.views.TightTextView
                     android:text="@string/buddy_info_search"
                     style="@style/FormHeader"/>
             <EditText
@@ -40,7 +40,7 @@
                     android:lines="1"
                     android:maxLines="1"
                     android:scrollHorizontally="true"/>
-            <TextView
+            <com.tomclaw.mandarin.main.views.TightTextView
                     android:text="@string/age_and_gender_search"
                     android:layout_marginTop="10dp"
                     style="@style/FormHeader"/>

@@ -4,7 +4,7 @@
               android:layout_width="wrap_content"
               android:layout_height="match_parent"
               android:gravity="center_vertical">
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:id="@+id/buddy_nick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

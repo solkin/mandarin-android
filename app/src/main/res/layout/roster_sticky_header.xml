@@ -10,7 +10,7 @@
             android:layout_height="1dp"
             android:background="?header_head_color"/>
 
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:id="@+id/header_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

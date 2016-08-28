@@ -27,7 +27,7 @@
                 <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-                <TextView
+                <com.tomclaw.mandarin.main.views.TightTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/buddy_search_progress"
@@ -40,7 +40,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
-                <TextView android:layout_width="wrap_content"
+                <com.tomclaw.mandarin.main.views.TightTextView android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:text="@string/buddy_search_no_result"
                           android:textSize="18sp"

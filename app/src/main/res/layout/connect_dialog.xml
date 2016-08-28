@@ -7,7 +7,7 @@
               android:paddingTop="16dp"
               android:paddingLeft="@dimen/dialog_padding"
               android:paddingRight="@dimen/dialog_padding">
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/connect_account_message"

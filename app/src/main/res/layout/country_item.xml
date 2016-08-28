@@ -8,7 +8,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
 
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:textSize="18sp"
             android:id="@+id/settings_row_text"
             android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
             android:gravity="center_vertical"
             android:layout_gravity="top"/>
 
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:textSize="18sp"
             android:fontFamily="sans-serif-light"
             android:id="@+id/settings_row_text_detail"

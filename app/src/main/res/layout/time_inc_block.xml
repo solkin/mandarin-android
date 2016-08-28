@@ -7,7 +7,7 @@
               android:paddingEnd="5dp"
               android:paddingLeft="0dp"
               android:paddingStart="0dp">
-    <TextView
+    <com.tomclaw.mandarin.main.views.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/inc_time"

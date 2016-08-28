@@ -33,7 +33,7 @@
                 android:layout_gravity="top"
                 android:scrollbars="none"/>
 
-        <TextView
+        <com.tomclaw.mandarin.main.views.TightTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textColor="#808080"

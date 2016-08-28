@@ -374,20 +374,14 @@ public class IcqSession {
      */
     public boolean startEventsFetching() {
         Logger.log("start events fetching");
-        int emptyFetchCount = 0;
-        int timeoutConnection;
-        timeoutConnection = TIMEOUT_CONNECTION;
         do {
             try {
-                String fetchUrl = getFetchUrl().replace(
-                        "&timeout=" + TIMEOUT_CONNECTION,
-                        "&timeout=" + timeoutConnection);
+                String fetchUrl = getFetchUrl();
                 URL url = new URL(fetchUrl);
                 Logger.log("fetch url = " + fetchUrl);
-                Logger.log("fetch timeout = " + timeoutConnection);
                 HttpURLConnection fetchEventConnection = (HttpURLConnection) url.openConnection();
-                fetchEventConnection.setConnectTimeout(timeoutConnection);
-                fetchEventConnection.setReadTimeout(timeoutConnection + TIMEOUT_SOCKET_ADDITION);
+                fetchEventConnection.setConnectTimeout(TIMEOUT_CONNECTION);
+                fetchEventConnection.setReadTimeout(TIMEOUT_CONNECTION + TIMEOUT_SOCKET_ADDITION);
                 try {
                     InputStream responseStream = HttpUtil.executeGet(fetchEventConnection);
                     String responseString = HttpUtil.streamToString(responseStream);
@@ -422,13 +416,6 @@ public class IcqSession {
                                 // Process event.
                                 processEvent(eventType, eventData);
                             }
-                            if (eventsArray.length() == 0) {
-                                emptyFetchCount++;
-                                timeoutConnection = SHORT_TIMEOUT_CONNECTION;
-                            } else {
-                                emptyFetchCount = 0;
-                                timeoutConnection = TIMEOUT_CONNECTION;
-                            }
                             break;
                         }
                         default: {
@@ -442,20 +429,6 @@ public class IcqSession {
                     }
                 } finally {
                     fetchEventConnection.disconnect();
-                }
-
-                if (emptyFetchCount > 0) {
-                    try {
-                        // There is no events. Let's sleep some time to save battery.
-                        long batterySaveTime = TimeUnit.SECONDS.toMillis(emptyFetchCount * 5);
-                        batterySaveTime = Math.min(batterySaveTime, MAX_BATTERY_SAVE_DELAY);
-                        if (batterySaveTime > 0) {
-                            Logger.log("fetch sleep while no events: " + batterySaveTime);
-                            Thread.sleep(batterySaveTime);
-                        }
-                    } catch (InterruptedException ignored) {
-                        Thread.interrupted();
-                    }
                 }
             } catch (Throwable ex) {
                 Logger.log("fetch events exception: " + ex.getMessage());

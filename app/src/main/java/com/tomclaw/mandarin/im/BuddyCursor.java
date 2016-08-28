@@ -54,7 +54,7 @@ public class BuddyCursor implements Closeable {
     }
 
     private void readColumns() {
-        if (!isColumnsRead) {
+        if (!isColumnsRead && cursor != null) {
             COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID);
             COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
@@ -175,7 +175,9 @@ public class BuddyCursor implements Closeable {
 
     @Override
     public void close() {
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
     public boolean isClosed() {

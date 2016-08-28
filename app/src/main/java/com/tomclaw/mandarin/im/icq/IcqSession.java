@@ -153,10 +153,8 @@ public class IcqSession {
     private static final int EXTERNAL_FETCH_OK = 200;
 
     private static final int TIMEOUT_SOCKET_ADDITION = (int) TimeUnit.SECONDS.toMillis(10);
-    private static final int TIMEOUT_CONNECTION = (int) TimeUnit.SECONDS.toMillis(30);
-    private static final int SHORT_TIMEOUT_CONNECTION = (int) TimeUnit.SECONDS.toMillis(1);
+    private static final int TIMEOUT_CONNECTION = (int) TimeUnit.MINUTES.toMillis(2);
     private static final int TIMEOUT_SESSION = (int) TimeUnit.DAYS.toMillis(1);
-    private static final long MAX_BATTERY_SAVE_DELAY = TimeUnit.SECONDS.toMillis(30);
 
     private IcqAccountRoot icqAccountRoot;
 

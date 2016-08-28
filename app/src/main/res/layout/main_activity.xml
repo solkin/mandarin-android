@@ -29,6 +29,7 @@
                             android:layout_height="match_parent"
                             android:paddingBottom="86dp"
                             android:clipToPadding="false"
+                            android:scrollbars="vertical"
                             android:scrollbarStyle="outsideOverlay"/>
                     <LinearLayout
                             android:id="@+id/empty_view"

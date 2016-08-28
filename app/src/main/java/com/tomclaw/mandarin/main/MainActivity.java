@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
@@ -35,12 +38,12 @@ import java.util.Collection;
 public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
-    private ListView dialogsList;
     private Toolbar toolbar;
-    private FloatingActionButton actionButton;
+    private ViewFlipper viewFlipper;
 
     private AccountsDrawerLayout drawerLayout;
-    private MultiChoiceModeListener multiChoiceModeListener;
+    private MultiChoiceActionCallback actionCallback;
+    private ActionMode actionMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +71,7 @@ public class MainActivity extends ChiefActivity {
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
-        actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton actionButton = (FloatingActionButton) findViewById(R.id.fab);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,35 +86,80 @@ public class MainActivity extends ChiefActivity {
             actionButton.setLayoutParams(p);
         }
 
+        viewFlipper = (ViewFlipper) findViewById(R.id.roster_view_flipper);
+
         // Dialogs list.
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
         dialogsAdapter.setAdapterCallback(new RosterDialogsAdapter.RosterAdapterCallback() {
             @Override
             public void onRosterLoadingStarted() {
                 // Disable placeholder when loading started.
-                dialogsList.setEmptyView(null);
+                showRoster();
             }
 
             @Override
             public void onRosterEmpty() {
                 // Show empty view only for really empty list.
-                dialogsList.setEmptyView(findViewById(android.R.id.empty));
+                showEmpty();
             }
 
             @Override
             public void onRosterUpdate() {
-                if (multiChoiceModeListener != null) {
-                    multiChoiceModeListener.updateMenu();
+                showRoster();
+                if (actionCallback != null) {
+                    actionCallback.updateMenu(actionMode, actionMode.getMenu());
+                }
+            }
+
+            private void showRoster() {
+                if (viewFlipper.getDisplayedChild() != 0) {
+                    viewFlipper.setDisplayedChild(0);
+                }
+            }
+
+            private void showEmpty() {
+                if (viewFlipper.getDisplayedChild() != 1) {
+                    viewFlipper.setDisplayedChild(1);
                 }
             }
         });
-        dialogsList = (ListView) findViewById(R.id.chats_list_view);
+        RecyclerView dialogsList = (RecyclerView) findViewById(R.id.chats_list_view);
+        dialogsList.setHasFixedSize(true);
+        dialogsList.setLayoutManager(new LinearLayoutManager(this));
+        dialogsList.setItemAnimator(new DefaultItemAnimator());
         dialogsList.setAdapter(dialogsAdapter);
-        dialogsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        dialogsAdapter.setSelectionModeListener(new RosterDialogsAdapter.SelectionModeListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = dialogsAdapter.getBuddyDbId(position);
+            public void onItemStateChanged(int buddyDbId) {
+                // Strange case, but let's check it to be sure.
+                if (actionCallback != null && actionMode != null) {
+                    actionCallback.onItemCheckedStateChanged(actionMode);
+                    dialogsAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                // Strange case, but let's check it to be sure.
+                if (actionMode != null) {
+                    actionMode.finish();
+                }
+            }
+
+            @Override
+            public void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper) {
+                if (selectionHelper.setSelectionMode(true)) {
+                    actionCallback = new MultiChoiceActionCallback(selectionHelper);
+                    actionMode = toolbar.startActionMode(actionCallback);
+                    selectionHelper.setChecked(buddyDbId);
+                    onItemStateChanged(buddyDbId);
+                }
+            }
+        });
+        dialogsAdapter.setClickListener(new RosterDialogsAdapter.ClickListener() {
+            @Override
+            public void onItemClicked(int buddyDbId) {
                 Logger.log("Check out dialog with buddy (db id): " + buddyDbId);
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -119,7 +167,6 @@ public class MainActivity extends ChiefActivity {
                 startActivity(intent);
             }
         });
-        dialogsList.setMultiChoiceModeListener(new MultiChoiceModeListener());
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
 
         checkNfcIntent();
@@ -241,34 +288,27 @@ public class MainActivity extends ChiefActivity {
         Logger.log("onCoreServiceIntent");
     }
 
-    public void openSettings() {
+    private void openSettings() {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+    private class MultiChoiceActionCallback implements ActionMode.Callback {
 
         private SelectionHelper<Integer> selectionHelper;
-        private ActionMode actionMode;
 
-        @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged((int) id, checked);
+        MultiChoiceActionCallback(SelectionHelper<Integer> selectionHelper) {
+            this.selectionHelper = selectionHelper;
+        }
+
+        void onItemCheckedStateChanged(ActionMode mode) {
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
             updateMenu(mode, mode.getMenu());
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Create selection helper to store selected messages.
-            selectionHelper = new SelectionHelper<>();
-            multiChoiceModeListener = this;
-            actionMode = mode;
             updateMenu(mode, menu);
             return true;
-        }
-
-        public void updateMenu() {
-            updateMenu(actionMode, actionMode.getMenu());
         }
 
         private void updateMenu(ActionMode mode, Menu menu) {
@@ -302,9 +342,12 @@ public class MainActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.select_all_chats_menu: {
-                    for (int c = 0; c < dialogsAdapter.getCount(); c++) {
-                        dialogsList.setItemChecked(c, true);
+                    for (int c = 0; c < dialogsAdapter.getItemCount(); c++) {
+                        int buddyDbId = dialogsAdapter.getBuddyDbId(c);
+                        selectionHelper.setChecked(buddyDbId);
                     }
+                    onItemCheckedStateChanged(mode);
+                    dialogsAdapter.notifyDataSetChanged();
                     return false;
                 }
                 case R.id.mark_as_read_chat_menu: {
@@ -333,8 +376,8 @@ public class MainActivity extends ChiefActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.clearSelection();
-            multiChoiceModeListener = null;
+            selectionHelper.setSelectionMode(false);
+            dialogsAdapter.notifyDataSetChanged();
         }
     }
 

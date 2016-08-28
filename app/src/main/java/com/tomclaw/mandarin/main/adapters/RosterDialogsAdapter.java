@@ -5,9 +5,12 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -15,9 +18,9 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -27,7 +30,7 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
-import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.SelectionHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +38,7 @@ import com.tomclaw.mandarin.util.Logger;
  * Date: 4/28/13
  * Time: 9:54 PM
  */
-public class RosterDialogsAdapter extends CursorAdapter implements
+public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAdapter.DialogViewHolder> implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -52,8 +55,13 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     private BuddyCursor buddyCursor;
 
+    private final SelectionHelper<Integer> selectionHelper = new SelectionHelper<>();
+
+    private SelectionModeListener selectionModeListener;
+    private ClickListener clickListener;
+
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
-        super(context, null, 0x00);
+        super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.buddyCursor = new BuddyCursor();
@@ -101,6 +109,19 @@ public class RosterDialogsAdapter extends CursorAdapter implements
     }
 
     @Override
+    public DialogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.buddy_item, parent, false);
+        return new DialogViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolderCursor(DialogViewHolder holder, Cursor cursor) {
+        holder.bind(selectionHelper, buddyCursor);
+        holder.bindClickListeners(clickListener, selectionModeListener, selectionHelper,
+                buddyCursor.getBuddyDbId());
+    }
+
+    @Override
     public Cursor swapCursor(Cursor newCursor) {
         buddyCursor.switchCursor(newCursor);
         return super.swapCursor(newCursor);
@@ -108,90 +129,6 @@ public class RosterDialogsAdapter extends CursorAdapter implements
 
     public BuddyCursor getBuddyCursor() {
         return buddyCursor;
-    }
-
-    /**
-     * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
-     */
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getCursor();
-        View view;
-        try {
-            if (cursor == null || !cursor.moveToPosition(position)) {
-                throw new IllegalStateException("couldn't move cursor to position " + position);
-            }
-            if (convertView == null) {
-                view = newView(context, cursor, parent);
-            } else {
-                view = convertView;
-            }
-            bindView(view, context, cursor);
-        } catch (Throwable ex) {
-            view = inflater.inflate(R.layout.buddy_item, parent, false);
-            Logger.log("exception in getView: " + ex.getMessage());
-        }
-        return view;
-    }
-
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        return inflater.inflate(R.layout.buddy_item, viewGroup, false);
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        // Status image.
-        String accountType = buddyCursor.getBuddyAccountType();
-        int statusIndex = buddyCursor.getBuddyStatus();
-        int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
-        // Status text.
-        String statusTitle = buddyCursor.getBuddyStatusTitle();
-        String statusMessage = buddyCursor.getBuddyStatusMessage();
-        if (statusIndex == StatusUtil.STATUS_OFFLINE
-                || TextUtils.equals(statusTitle, statusMessage)) {
-            // Buddy status is offline now or status message is only status title.
-            // No status message could be displayed.
-            statusMessage = "";
-        }
-        SpannableString statusString;
-        long lastTyping = buddyCursor.getBuddyLastTyping();
-        // Checking for typing no more than 5 minutes.
-        if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
-            statusString = new SpannableString(context.getString(R.string.typing));
-        } else {
-            statusString = new SpannableString(statusTitle + " " + statusMessage);
-            statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        // Unread count.
-        int unreadCount = buddyCursor.getBuddyUnreadCount();
-        // Applying values.
-        ((TextView) view.findViewById(R.id.buddy_nick)).setText(buddyCursor.getBuddyNick());
-        ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
-        ((TextView) view.findViewById(R.id.buddy_status_message)).setText(statusString);
-        if (unreadCount > 0) {
-            view.findViewById(R.id.counter_layout).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.counter_text)).setText(String.valueOf(unreadCount));
-        } else {
-            view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
-        }
-        // Draft message.
-        String buddyDraft = buddyCursor.getBuddyDraft();
-        view.findViewById(R.id.draft_indicator).setVisibility(
-                TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
-        // Avatar.
-        final String avatarHash = buddyCursor.getBuddyAvatarHash();
-        ContactBadge contactBadge = ((ContactBadge) view.findViewById(R.id.buddy_badge));
-        BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
-        // On-avatar click listener.
-        final int buddyDbId = buddyCursor.getBuddyDbId();
-        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);
-        contactBadge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(buddyInfoTask);
-            }
-        });
     }
 
     public int getBuddyDbId(int position) {
@@ -202,20 +139,150 @@ public class RosterDialogsAdapter extends CursorAdapter implements
         return cursor.getBuddyDbId();
     }
 
-    public RosterAdapterCallback getAdapterCallback() {
-        return adapterCallback;
-    }
-
     public void setAdapterCallback(RosterAdapterCallback adapterCallback) {
         this.adapterCallback = adapterCallback;
     }
 
+    public void setSelectionModeListener(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
     public interface RosterAdapterCallback {
 
-        public void onRosterLoadingStarted();
+        void onRosterLoadingStarted();
 
-        public void onRosterEmpty();
+        void onRosterEmpty();
 
-        public void onRosterUpdate();
+        void onRosterUpdate();
+    }
+
+    public interface SelectionModeListener {
+        void onItemStateChanged(int buddyDbId);
+
+        void onNothingSelected();
+
+        void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper);
+    }
+
+    public interface ClickListener {
+        void onItemClicked(int buddyDbId);
+    }
+
+    static class DialogViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView buddyNick;
+        private ImageView buddyStatus;
+        private TextView buddyStatusMessage;
+        private TextView counterText;
+        private View counterLayout;
+        private View draftIndicator;
+        private ContactBadge contactBadge;
+
+        DialogViewHolder(View itemView) {
+            super(itemView);
+
+            buddyNick = ((TextView) itemView.findViewById(R.id.buddy_nick));
+            buddyStatus = ((ImageView) itemView.findViewById(R.id.buddy_status));
+            buddyStatusMessage = ((TextView) itemView.findViewById(R.id.buddy_status_message));
+            counterText = ((TextView) itemView.findViewById(R.id.counter_text));
+            counterLayout = itemView.findViewById(R.id.counter_layout);
+            draftIndicator = itemView.findViewById(R.id.draft_indicator);
+            contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
+        }
+
+        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor) {
+            // Selection indicator.
+            int[] attrs = new int[] {R.attr.selectableItemBackground};
+            TypedArray ta = itemView.getContext().obtainStyledAttributes(attrs);
+            Drawable drawableFromTheme = ta.getDrawable(0);
+            if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {
+                int backColor = R.color.orange_normal;
+                itemView.setBackgroundColor(itemView.getResources().getColor(backColor));
+            } else {
+                itemView.setBackgroundDrawable(drawableFromTheme);
+            }
+            ta.recycle();
+            // Status image.
+            String accountType = buddyCursor.getBuddyAccountType();
+            int statusIndex = buddyCursor.getBuddyStatus();
+            int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
+            // Status text.
+            String statusTitle = buddyCursor.getBuddyStatusTitle();
+            String statusMessage = buddyCursor.getBuddyStatusMessage();
+            if (statusIndex == StatusUtil.STATUS_OFFLINE
+                    || TextUtils.equals(statusTitle, statusMessage)) {
+                // Buddy status is offline now or status message is only status title.
+                // No status message could be displayed.
+                statusMessage = "";
+            }
+            SpannableString statusString;
+            long lastTyping = buddyCursor.getBuddyLastTyping();
+            // Checking for typing no more than 5 minutes.
+            if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
+                statusString = new SpannableString(itemView.getContext().getString(R.string.typing));
+            } else {
+                statusString = new SpannableString(statusTitle + " " + statusMessage);
+                statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            // Unread count.
+            int unreadCount = buddyCursor.getBuddyUnreadCount();
+            // Applying values.
+            buddyNick.setText(buddyCursor.getBuddyNick());
+            buddyStatus.setImageResource(statusImageResource);
+            buddyStatusMessage.setText(statusString);
+            if (unreadCount > 0) {
+                counterLayout.setVisibility(View.VISIBLE);
+                counterText.setText(String.valueOf(unreadCount));
+            } else {
+                counterLayout.setVisibility(View.GONE);
+            }
+            // Draft message.
+            String buddyDraft = buddyCursor.getBuddyDraft();
+            draftIndicator.setVisibility(TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
+            // Avatar.
+            final String avatarHash = buddyCursor.getBuddyAvatarHash();
+            BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
+            // On-avatar click listener.
+            final int buddyDbId = buddyCursor.getBuddyDbId();
+            final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddyDbId);
+            contactBadge.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TaskExecutor.getInstance().execute(buddyInfoTask);
+                }
+            });
+        }
+
+        void bindClickListeners(final ClickListener clickListener,
+                                final SelectionModeListener selectionModeListener,
+                                final SelectionHelper<Integer> selectionHelper,
+                                final int buddyDbId) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (selectionHelper.isSelectionMode()) {
+                        selectionHelper.toggleChecked(buddyDbId);
+                        selectionModeListener.onItemStateChanged(buddyDbId);
+                        // Check for this was last selected item.
+                        if (selectionHelper.isEmptySelection()) {
+                            selectionModeListener.onNothingSelected();
+                        }
+                    } else {
+                        clickListener.onItemClicked(buddyDbId);
+                    }
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    selectionModeListener.onLongClicked(buddyDbId, selectionHelper);
+                    return true;
+                }
+            });
+        }
     }
 }

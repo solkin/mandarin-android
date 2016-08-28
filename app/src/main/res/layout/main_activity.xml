@@ -17,27 +17,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
-                <LinearLayout
-                        android:orientation="vertical"
+                <ViewFlipper
+                    android:id="@+id/roster_view_flipper"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                    <ListView
+                        android:layout_height="match_parent"
+                        android:inAnimation="@android:anim/fade_in"
+                        android:outAnimation="@android:anim/fade_out">
+                    <android.support.v7.widget.RecyclerView
+                            android:id="@+id/chats_list_view"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/chats_list_view"
-                            android:choiceMode="multipleChoiceModal"
                             android:paddingBottom="86dp"
                             android:clipToPadding="false"
                             android:scrollbarStyle="outsideOverlay"/>
                     <LinearLayout
-                            android:id="@android:id/empty"
+                            android:id="@+id/empty_view"
                             android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical|center_horizontal"
                             android:paddingLeft="32dp"
                             android:paddingRight="32dp">
-
                         <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                                 android:gravity="center"
                                 android:paddingTop="12dp"/>
                     </LinearLayout>
-                </LinearLayout>
+                </ViewFlipper>
                 <android.support.design.widget.FloatingActionButton
                         android:id="@+id/fab"
                         android:layout_width="wrap_content"

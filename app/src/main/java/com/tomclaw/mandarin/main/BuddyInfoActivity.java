@@ -12,8 +12,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;

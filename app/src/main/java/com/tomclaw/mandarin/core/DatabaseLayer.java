@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**

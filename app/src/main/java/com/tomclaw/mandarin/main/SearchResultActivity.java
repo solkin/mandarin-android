@@ -11,8 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.ServiceInteraction;
+import com.tomclaw.mandarin.core.ServiceTask;
+import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
@@ -176,10 +181,10 @@ public class SearchResultActivity extends ChiefActivity {
 
     private void showBuddyInfo(ShortBuddyInfo info) {
         startActivity(new Intent(this, BuddyInfoActivity.class)
-                        .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
-                        .putExtra(BuddyInfoRequest.BUDDY_ID, info.getBuddyId())
-                        .putExtra(BuddyInfoRequest.BUDDY_NICK, info.getBuddyNick())
-                        .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, info.getAvatarHash())
+                .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
+                .putExtra(BuddyInfoRequest.BUDDY_ID, info.getBuddyId())
+                .putExtra(BuddyInfoRequest.BUDDY_NICK, info.getBuddyNick())
+                .putExtra(BuddyInfoRequest.BUDDY_AVATAR_HASH, info.getAvatarHash())
         );
     }
 }

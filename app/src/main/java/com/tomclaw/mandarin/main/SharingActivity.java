@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -17,6 +18,7 @@ import com.tomclaw.mandarin.main.adapters.RosterSharingAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.util.Logger;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**

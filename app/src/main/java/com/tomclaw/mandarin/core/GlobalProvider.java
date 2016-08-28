@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;

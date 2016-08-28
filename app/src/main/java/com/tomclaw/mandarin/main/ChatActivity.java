@@ -1,7 +1,11 @@
 package com.tomclaw.mandarin.main;
 
 import android.annotation.SuppressLint;
-import android.content.*;
+import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -20,11 +24,38 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.BuddyObserver;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.MainExecutor;
+import com.tomclaw.mandarin.core.PleaseWaitTask;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.ServiceInteraction;
+import com.tomclaw.mandarin.core.ServiceTask;
+import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.core.UriFile;
+import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
@@ -34,10 +65,21 @@ import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
 import com.tomclaw.mandarin.main.views.ScrollingTextView;
-import com.tomclaw.mandarin.util.*;
+import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.SelectionHelper;
+import com.tomclaw.mandarin.util.SmileyParser;
+import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.

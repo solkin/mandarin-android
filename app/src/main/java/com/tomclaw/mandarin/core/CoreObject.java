@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.tomclaw.mandarin.util.Logger;
 
 /**

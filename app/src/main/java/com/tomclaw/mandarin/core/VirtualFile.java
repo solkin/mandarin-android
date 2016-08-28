@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
 import java.io.FileNotFoundException;

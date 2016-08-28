@@ -13,18 +13,26 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.*;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.main.views.TouchImageView;
-import com.tomclaw.mandarin.util.*;
-
-import java.io.InputStream;
+import com.tomclaw.mandarin.util.AppsMenuHelper;
+import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.GifDrawable;
+import com.tomclaw.mandarin.util.GifFileDecoder;
 
 /**
  * Created by Solkin on 05.12.2014.

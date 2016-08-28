@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
@@ -16,9 +17,18 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.*;
+import com.tomclaw.mandarin.util.GsonSingleton;
+import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.QueryBuilder;
+import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.mandarin.util.TimeHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -771,9 +781,10 @@ public class QueryHelper {
      * This method helps to get formatted messages from history by ids.
      * But this method is really, really strange!
      * Should be rewritten. Sometime.
+     *
      * @param contentResolver - plain content resolver.
-     * @param timeHelper - time helper to format messages time
-     * @param messageIds - messages to be queried.
+     * @param timeHelper      - time helper to format messages time
+     * @param messageIds      - messages to be queried.
      * @return formatted messages.
      */
     public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {

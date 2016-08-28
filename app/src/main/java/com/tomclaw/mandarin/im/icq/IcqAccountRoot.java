@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.AccountRoot;

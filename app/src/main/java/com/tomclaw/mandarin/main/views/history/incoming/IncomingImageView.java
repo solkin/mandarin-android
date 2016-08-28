@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history.incoming;
 
 import android.text.TextUtils;
 import android.view.View;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.util.FileHelper;

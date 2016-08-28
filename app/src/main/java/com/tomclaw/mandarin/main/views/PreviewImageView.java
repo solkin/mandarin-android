@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
 import com.tomclaw.mandarin.R;
 
 /**

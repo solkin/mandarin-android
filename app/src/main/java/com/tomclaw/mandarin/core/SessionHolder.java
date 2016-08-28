@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.content.Context;
+
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.StatusNotFoundException;

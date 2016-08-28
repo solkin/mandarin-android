@@ -11,7 +11,7 @@ public class NameValuePair implements Serializable {
     private String value = null;
 
     public NameValuePair() {
-        this (null, null);
+        this(null, null);
     }
 
     public NameValuePair(String name, String value) {

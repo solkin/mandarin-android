@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.BuddyCursor;

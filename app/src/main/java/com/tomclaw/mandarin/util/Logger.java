@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.util;
 
 import android.util.Log;
+
 import com.tomclaw.mandarin.core.Settings;
 
 /**

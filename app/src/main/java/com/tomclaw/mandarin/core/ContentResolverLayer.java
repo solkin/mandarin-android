@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+
 import com.tomclaw.mandarin.util.QueryBuilder;
 
 /**

@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im;
 
 import android.database.Cursor;
+
 import com.tomclaw.mandarin.core.GlobalProvider;
 
 import java.io.Closeable;

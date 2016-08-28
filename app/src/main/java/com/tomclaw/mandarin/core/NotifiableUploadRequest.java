@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 

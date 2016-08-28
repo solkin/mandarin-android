@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.content.Intent;
+
 import com.tomclaw.mandarin.core.BitmapRequest;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.util.Logger;

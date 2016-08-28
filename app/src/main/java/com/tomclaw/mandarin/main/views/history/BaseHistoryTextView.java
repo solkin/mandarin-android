@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.views.history;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 
 /**

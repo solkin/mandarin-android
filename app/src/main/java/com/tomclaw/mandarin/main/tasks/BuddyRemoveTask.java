@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.tasks;
 
 import android.content.ContentResolver;
 import android.content.Context;
+
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.QueryHelper;

@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.Service;
+
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 

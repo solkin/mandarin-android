@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history;
 
 import android.view.View;
 import android.widget.ImageView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;

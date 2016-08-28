@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main;
 
 import android.app.Application;
+
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;

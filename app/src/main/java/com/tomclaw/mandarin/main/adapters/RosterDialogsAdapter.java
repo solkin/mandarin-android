@@ -196,7 +196,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
         void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor) {
             // Selection indicator.
-            int[] attrs = new int[] {R.attr.selectableItemBackground};
+            int[] attrs = new int[]{R.attr.selectableItemBackground};
             TypedArray ta = itemView.getContext().obtainStyledAttributes(attrs);
             Drawable drawableFromTheme = ta.getDrawable(0);
             if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {

@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;

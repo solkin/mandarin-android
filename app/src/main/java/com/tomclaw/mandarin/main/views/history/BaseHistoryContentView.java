@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.views.history;
 
 import android.view.View;
+
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;

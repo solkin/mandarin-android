@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 

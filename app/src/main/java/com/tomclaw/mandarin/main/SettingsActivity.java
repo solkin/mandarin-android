@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.mandarin.core.MusicStateReceiver;

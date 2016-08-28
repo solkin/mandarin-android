@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.R;
 
 /**

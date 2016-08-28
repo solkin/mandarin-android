@@ -17,8 +17,8 @@ public class UrlParser {
     private static final String NAME_VALUE_SEPARATOR = "=";
     private static final String DEFAULT_CONTENT_CHARSET = "ISO-8859-1";
 
-    public static List<NameValuePair> parse (final URI uri, final String encoding) {
-        List <NameValuePair> result = Collections.emptyList();
+    public static List<NameValuePair> parse(final URI uri, final String encoding) {
+        List<NameValuePair> result = Collections.emptyList();
         final String query = uri.getRawQuery();
         if (query != null && query.length() > 0) {
             result = new ArrayList<>();
@@ -27,8 +27,8 @@ public class UrlParser {
         return result;
     }
 
-    private static void parse (
-            final List <NameValuePair> parameters,
+    private static void parse(
+            final List<NameValuePair> parameters,
             final Scanner scanner,
             final String encoding) {
         scanner.useDelimiter(PARAMETER_SEPARATOR);
@@ -45,7 +45,7 @@ public class UrlParser {
         }
     }
 
-    private static String decode (final String content, final String encoding) {
+    private static String decode(final String content, final String encoding) {
         try {
             return URLDecoder.decode(content,
                     encoding != null ? encoding : DEFAULT_CONTENT_CHARSET);

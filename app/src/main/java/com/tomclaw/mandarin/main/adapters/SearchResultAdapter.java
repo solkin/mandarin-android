@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.adapters;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.OnSmileyClickCallback;
 import com.tomclaw.mandarin.util.SmileyParser;

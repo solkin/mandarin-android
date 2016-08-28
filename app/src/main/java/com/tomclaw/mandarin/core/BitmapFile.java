@@ -3,12 +3,18 @@ package com.tomclaw.mandarin.core;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by Solkin on 03.11.2014.

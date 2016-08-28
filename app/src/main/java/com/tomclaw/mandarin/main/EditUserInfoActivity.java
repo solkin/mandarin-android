@@ -22,8 +22,15 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.*;
+import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.PleaseWaitTask;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.RequestHelper;
+import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.icq.UserInfoRequest;
 import com.tomclaw.mandarin.main.views.ContactImage;
 import com.tomclaw.mandarin.util.BitmapHelper;

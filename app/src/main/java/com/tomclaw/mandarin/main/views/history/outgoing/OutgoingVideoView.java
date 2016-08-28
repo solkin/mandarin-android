@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.views.history.outgoing;
 
 import android.view.View;
+
 import com.tomclaw.mandarin.R;
 
 /**

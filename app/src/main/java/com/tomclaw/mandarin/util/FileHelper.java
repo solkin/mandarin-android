@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.util;
 
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
+
 import com.tomclaw.mandarin.R;
 
 /**

@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.core;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
+
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
 

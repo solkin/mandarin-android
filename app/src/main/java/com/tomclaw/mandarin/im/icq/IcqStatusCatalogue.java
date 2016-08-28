@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.Status;
 import com.tomclaw.mandarin.im.StatusCatalogue;

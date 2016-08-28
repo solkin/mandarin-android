@@ -8,15 +8,17 @@ import android.database.DatabaseUtils;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.widget.Toast;
+
 import com.tomclaw.mandarin.R;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created with IntelliJ IDEA.

@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
+
 import com.tomclaw.mandarin.R;
 
 /**

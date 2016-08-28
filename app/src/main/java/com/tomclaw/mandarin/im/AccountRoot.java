@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
+
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 

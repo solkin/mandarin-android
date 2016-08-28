@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.views.history.incoming;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.BubbleColorDrawable;
 import com.tomclaw.mandarin.main.Corner;

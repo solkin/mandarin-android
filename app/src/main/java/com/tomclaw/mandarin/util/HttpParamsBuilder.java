@@ -70,6 +70,6 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
     }
 
     public static HttpParamsBuilder emptyParams() {
-        return new HttpParamsBuilder(Collections.<Pair<String,String>>emptyList());
+        return new HttpParamsBuilder(Collections.<Pair<String, String>>emptyList());
     }
 }

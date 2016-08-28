@@ -4,11 +4,36 @@ import com.tomclaw.mandarin.core.Task;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+
 import org.json.JSONObject;
 
 import java.util.Locale;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.*;
+import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.COUNTRY_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.CREATE_ACCOUNT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.DEV_ID_K;
+import static com.tomclaw.mandarin.im.icq.WimConstants.EXPIRES_IN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HUMAN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.ICQ;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LOCALE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_PHONE_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.MSISDN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.NORMALIZE_PHONE_URL;
+import static com.tomclaw.mandarin.im.icq.WimConstants.PHONE_NUMBER;
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.R_PARAM;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SMS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SMS_FORMAT_TYPE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_A;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.TRANS_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.VALIDATE_PHONE_URL;
 
 /**
  * Created by Solkin on 28.09.2014.

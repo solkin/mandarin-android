@@ -170,9 +170,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             // Instantiate holder for this view.
             Constructor<BaseHistoryView> constructor = clazz.getConstructor(View.class);
             return constructor.newInstance(view);
-        } catch (Throwable ignored) {
+        } catch (Throwable ex) {
+            throw new IllegalStateException(ex);
         }
-        return null;
     }
 
     @Override

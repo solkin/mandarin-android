@@ -229,7 +229,9 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             long lastTyping = buddyCursor.getBuddyLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
-                statusString = new SpannableString(itemView.getContext().getString(R.string.typing));
+                String typingText = itemView.getContext().getString(R.string.typing);
+                statusString = new SpannableString(typingText);
+                statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, typingText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
                 long lastSeen = buddyCursor.getBuddyLastSeen();
                 if (lastSeen > 0) {
@@ -253,6 +255,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                     }
 
                     statusString = new SpannableString(lastSeenText);
+                    statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 } else {
                     statusString = new SpannableString(statusTitle + " " + statusMessage);
                     statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

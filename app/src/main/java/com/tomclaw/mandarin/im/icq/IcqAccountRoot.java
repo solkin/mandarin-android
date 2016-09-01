@@ -22,6 +22,7 @@ public class IcqAccountRoot extends AccountRoot {
     private transient IcqSession icqSession;
     // Client login variables.
     private String tokenA;
+    private String tokenCabbage;
     private String sessionKey;
     private long tokenExpirationDate;
     private long timeDelta;
@@ -364,6 +365,10 @@ public class IcqAccountRoot extends AccountRoot {
 
     public String getSessionKey() {
         return sessionKey;
+    }
+
+    public String getTokenCabbage() {
+        return tokenCabbage;
     }
 
     public String getAimSid() {

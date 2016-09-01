@@ -31,6 +31,9 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.SelectionHelper;
+import com.tomclaw.mandarin.util.TimeHelper;
+
+import java.util.Calendar;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,6 +55,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     private Context context;
     private LayoutInflater inflater;
     private RosterAdapterCallback adapterCallback;
+    private TimeHelper timeHelper;
 
     private BuddyCursor buddyCursor;
 
@@ -65,6 +69,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.buddyCursor = new BuddyCursor();
+        this.timeHelper = new TimeHelper(context);
         // Initialize loader for dialogs Id.
         loaderManager.initLoader(ADAPTER_DIALOGS_ID, null, this);
     }
@@ -116,7 +121,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     @Override
     public void onBindViewHolderCursor(DialogViewHolder holder, Cursor cursor) {
-        holder.bind(selectionHelper, buddyCursor);
+        holder.bind(selectionHelper, buddyCursor, timeHelper);
         holder.bindClickListeners(clickListener, selectionModeListener, selectionHelper,
                 buddyCursor.getBuddyDbId());
     }
@@ -194,10 +199,11 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
         }
 
-        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor) {
+        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
+            Context context = itemView.getContext();
             // Selection indicator.
             int[] attrs = new int[]{R.attr.selectableItemBackground};
-            TypedArray ta = itemView.getContext().obtainStyledAttributes(attrs);
+            TypedArray ta = context.obtainStyledAttributes(attrs);
             Drawable drawableFromTheme = ta.getDrawable(0);
             if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {
                 int backColor = R.color.orange_normal;
@@ -223,10 +229,37 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             long lastTyping = buddyCursor.getBuddyLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
-                statusString = new SpannableString(itemView.getContext().getString(R.string.typing));
+                String typingText = itemView.getContext().getString(R.string.typing);
+                statusString = new SpannableString(typingText);
+                statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, typingText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                statusString = new SpannableString(statusTitle + " " + statusMessage);
-                statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                long lastSeen = buddyCursor.getBuddyLastSeen();
+                if (lastSeen > 0) {
+                    String lastSeenText;
+                    String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
+                    String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
+
+                    Calendar today = Calendar.getInstance();
+                    today = TimeHelper.clearTimes(today);
+
+                    Calendar yesterday = Calendar.getInstance();
+                    yesterday.add(Calendar.DAY_OF_YEAR, -1);
+                    yesterday = TimeHelper.clearTimes(yesterday);
+
+                    if (lastSeen * 1000 > today.getTimeInMillis()) {
+                        lastSeenText = context.getString(R.string.last_seen_time, lastSeenTime);
+                    } else if (lastSeen * 1000 > yesterday.getTimeInMillis()) {
+                        lastSeenText = context.getString(R.string.last_seen_date, context.getString(R.string.yesterday), lastSeenTime);
+                    } else {
+                        lastSeenText = context.getString(R.string.last_seen_date, lastSeenDate, lastSeenTime);
+                    }
+
+                    statusString = new SpannableString(lastSeenText);
+                    statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } else {
+                    statusString = new SpannableString(statusTitle + " " + statusMessage);
+                    statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
             // Unread count.
             int unreadCount = buddyCursor.getBuddyUnreadCount();

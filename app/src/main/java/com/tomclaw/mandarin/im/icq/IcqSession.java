@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BuddyData;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -138,8 +139,8 @@ public class IcqSession {
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,bigBuddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
-    private static final String CLIENT_VERSION_VALUE = "1.0";
-    private static final String BUILD_NUMBER_VALUE = "12";
+    private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
+    private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";
     private static final String DEVICE_ID_VALUE = "mandarin_device_id";
 
@@ -151,9 +152,9 @@ public class IcqSession {
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
     private static final int EXTERNAL_FETCH_OK = 200;
 
-    private static final int timeoutSocket = (int) TimeUnit.SECONDS.toMillis(70);
-    private static final int timeoutConnection = (int) TimeUnit.SECONDS.toMillis(60);
-    private static final int timeoutSession = (int) TimeUnit.DAYS.toMillis(1);
+    private static final int TIMEOUT_SOCKET_ADDITION = (int) TimeUnit.SECONDS.toMillis(10);
+    private static final int TIMEOUT_CONNECTION = (int) TimeUnit.MINUTES.toMillis(2);
+    private static final int TIMEOUT_SESSION = (int) TimeUnit.DAYS.toMillis(1);
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -166,12 +167,11 @@ public class IcqSession {
             // Create and config connection
             URL url = new URL(CLIENT_LOGIN_URL);
             HttpURLConnection loginConnection = (HttpURLConnection) url.openConnection();
-            loginConnection.setConnectTimeout(timeoutConnection);
-            loginConnection.setReadTimeout(timeoutSocket);
+            loginConnection.setConnectTimeout(TIMEOUT_CONNECTION);
+            loginConnection.setReadTimeout(TIMEOUT_CONNECTION + TIMEOUT_SOCKET_ADDITION);
 
-            Logger.log("timeout socket: " + timeoutSocket);
-            Logger.log("timeout connection: " + timeoutConnection);
-            Logger.log("timeout session: " + timeoutSession);
+            Logger.log("timeout connection: " + TIMEOUT_CONNECTION);
+            Logger.log("timeout session: " + TIMEOUT_SESSION);
 
             // Specifying login data.
             HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()
@@ -230,8 +230,8 @@ public class IcqSession {
         try {
             URL url = new URL(START_SESSION_URL);
             HttpURLConnection startSessionConnection = (HttpURLConnection) url.openConnection();
-            startSessionConnection.setConnectTimeout(timeoutConnection);
-            startSessionConnection.setReadTimeout(timeoutSocket);
+            startSessionConnection.setConnectTimeout(TIMEOUT_CONNECTION);
+            startSessionConnection.setReadTimeout(TIMEOUT_CONNECTION + TIMEOUT_SOCKET_ADDITION);
 
             String statusValue = StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
                     icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex()));
@@ -252,9 +252,9 @@ public class IcqSession {
                     .appendParam(LANGUAGE, "ru-ru")
                     .appendParam(MINIMIZE_RESPONSE, "0")
                     .appendParam(MOBILE, "0")
-                    .appendParam(POLL_TIMEOUT, String.valueOf(timeoutConnection))
+                    .appendParam(POLL_TIMEOUT, String.valueOf(TIMEOUT_CONNECTION))
                     .appendParam(RAW_MSG, "0")
-                    .appendParam(SESSION_TIMEOUT, String.valueOf(timeoutSession / 1000))
+                    .appendParam(SESSION_TIMEOUT, String.valueOf(TIMEOUT_SESSION / 1000))
                     .appendParam(TS, String.valueOf(icqAccountRoot.getHostTime()))
                     .appendParam(VIEW, statusValue);
 
@@ -374,10 +374,12 @@ public class IcqSession {
         Logger.log("start events fetching");
         do {
             try {
-                URL url = new URL(getFetchUrl());
+                String fetchUrl = getFetchUrl();
+                URL url = new URL(fetchUrl);
+                Logger.log("fetch url = " + fetchUrl);
                 HttpURLConnection fetchEventConnection = (HttpURLConnection) url.openConnection();
-                fetchEventConnection.setConnectTimeout(timeoutConnection);
-                fetchEventConnection.setReadTimeout(timeoutSocket);
+                fetchEventConnection.setConnectTimeout(TIMEOUT_CONNECTION);
+                fetchEventConnection.setReadTimeout(TIMEOUT_CONNECTION + TIMEOUT_SOCKET_ADDITION);
                 try {
                     InputStream responseStream = HttpUtil.executeGet(fetchEventConnection);
                     String responseString = HttpUtil.streamToString(responseStream);
@@ -429,7 +431,7 @@ public class IcqSession {
             } catch (Throwable ex) {
                 Logger.log("fetch events exception: " + ex.getMessage());
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(5));
                 } catch (InterruptedException ignored) {
                     // We'll sleep while there is no network connection.
                 }
@@ -442,7 +444,7 @@ public class IcqSession {
         return new StringBuilder()
                 .append(icqAccountRoot.getFetchBaseUrl())
                 .append(AMP).append(FORMAT).append(EQUAL).append(WimConstants.FORMAT_JSON)
-                .append(AMP).append(TIMEOUT).append(EQUAL).append(timeoutConnection)
+                .append(AMP).append(TIMEOUT).append(EQUAL).append(TIMEOUT_CONNECTION)
                 .append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis())
                 .append(AMP).append(PEEK).append(EQUAL).append(0).toString();
     }
@@ -742,7 +744,7 @@ public class IcqSession {
         }
         builder.appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
                 .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
-                .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
+                .appendParam(WimConstants.TS, String.valueOf(icqAccountRoot.getHostTime()));
         builder.sortParams();
         String params = builder.build();
         String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))

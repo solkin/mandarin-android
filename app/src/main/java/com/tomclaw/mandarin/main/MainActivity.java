@@ -42,6 +42,7 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
+import net.hockeyapp.android.utils.Util;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -211,7 +212,8 @@ public class MainActivity extends ChiefActivity {
     }
 
     private void checkForCrashes() {
-        CrashManager.register(this, "16283e6bea480850d8f4c1b41d7a74be", new CrashManagerListener() {
+        String appIdentifier = Util.getAppIdentifier(this);
+        CrashManager.register(this, appIdentifier, new CrashManagerListener() {
             public boolean shouldAutoUploadCrashes() {
                 return true;
             }

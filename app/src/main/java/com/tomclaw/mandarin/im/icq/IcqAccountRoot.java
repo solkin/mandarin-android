@@ -255,7 +255,7 @@ public class IcqAccountRoot extends AccountRoot {
         this.tokenA = tokenA;
         this.sessionKey = sessionKey;
         this.timeDelta = hostTime - System.currentTimeMillis() / 1000;
-        this.tokenExpirationDate = expiresIn + System.currentTimeMillis() / 1000;
+        this.tokenExpirationDate = expiresIn + hostTime;
         // Save account data in database.
         updateAccount();
     }
@@ -269,7 +269,7 @@ public class IcqAccountRoot extends AccountRoot {
     public void setRenewTokenResult(String login, String tokenA, long expiresIn) {
         // Setup local variables.
         this.tokenA = tokenA;
-        this.tokenExpirationDate = expiresIn + System.currentTimeMillis() / 1000;
+        this.tokenExpirationDate = expiresIn + getHostTime();
         // Save account data in database.
         updateAccount();
     }
@@ -317,7 +317,7 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public boolean checkLoginExpired() {
-        return System.currentTimeMillis() / 1000 > tokenExpirationDate;
+        return getHostTime() > tokenExpirationDate;
     }
 
     public boolean checkLoginExist() {
@@ -355,7 +355,12 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public void setHostTime(long hostTime) {
-        this.timeDelta = hostTime - System.currentTimeMillis() / 1000;
+        long actualTimeDelta = hostTime - System.currentTimeMillis() / 1000;
+        if (Math.abs(actualTimeDelta - timeDelta) > 5) {
+            Logger.log("Time delta updated from " + timeDelta + " to " + actualTimeDelta);
+            this.timeDelta = actualTimeDelta;
+            updateAccount();
+        }
     }
 
     public String getTokenA() {

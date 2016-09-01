@@ -744,7 +744,7 @@ public class IcqSession {
         }
         builder.appendParam(WimConstants.FORMAT, WimConstants.FORMAT_JSON)
                 .appendParam(WimConstants.DEV_ID_K, DEV_ID_VALUE)
-                .appendParam(WimConstants.TS, String.valueOf(System.currentTimeMillis() / 1000));
+                .appendParam(WimConstants.TS, String.valueOf(icqAccountRoot.getHostTime()));
         builder.sortParams();
         String params = builder.build();
         String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))

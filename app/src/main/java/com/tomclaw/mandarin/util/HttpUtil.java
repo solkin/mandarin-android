@@ -1,5 +1,9 @@
 package com.tomclaw.mandarin.util;
 
+import android.os.Build;
+
+import com.tomclaw.mandarin.BuildConfig;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -133,5 +137,9 @@ public class HttpUtil {
 
     public static byte[] stringToArray(String string) throws IOException {
         return string.getBytes(HttpUtil.UTF8_ENCODING);
+    }
+
+    public static String getUserAgent() {
+        return "Mandarin/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + ")";
     }
 }

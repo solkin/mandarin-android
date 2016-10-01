@@ -1,25 +1,17 @@
 package com.tomclaw.mandarin.im.icq;
 
-import com.tomclaw.mandarin.im.UrlEncodedBody;
-import com.tomclaw.mandarin.util.HttpParamsBuilder;
-import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.BuildConfig;
+import com.tomclaw.mandarin.core.Request;
+import com.tomclaw.mandarin.util.HttpUtil;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ivsolkin on 01.09.16.
  */
 public class CabbageSession {
 
+    private static final long CABBAGE_TIMEOUT = TimeUnit.SECONDS.toMillis(3);
     private IcqAccountRoot accountRoot;
 
     public CabbageSession(IcqAccountRoot accountRoot) {
@@ -27,40 +19,40 @@ public class CabbageSession {
     }
 
     public void obtainToken() {
-        String url = "https://rapi.icq.net/genToken";
-        String token = accountRoot.getTokenA();
-        long time = System.currentTimeMillis() / 1000;
-        HttpParamsBuilder paramsBuilder = new HttpParamsBuilder();
-        try {
-            String signed = accountRoot.getSession().signRequest("POST", url, false, paramsBuilder);
-            Logger.log("signed: " + signed);
-            final String query = new URL(signed).getQuery();
-            OkHttpClient client = new OkHttpClient.Builder().build();
-            Logger.log("body: " + query);
-            RequestBody body = new UrlEncodedBody(query);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .method("POST", body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            Logger.log("response: " + response.body().string());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void refreshToken() {
+        CabbageTokenRequest request = new CabbageTokenRequest();
+        invokeCabbageRequest(request);
     }
 
     public void obtainClient() {
+        String authToken = accountRoot.getAuthToken();
+        CabbageAddClientRequest request = new CabbageAddClientRequest(createRequestId(), authToken,
+                HttpUtil.getUserAgent(), BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
+        invokeCabbageRequest(request);
     }
 
     public void refreshClient() {
+        String authToken = accountRoot.getAuthToken();
+        long clientId = accountRoot.getClientId();
+        CabbageModClientRequest request = new CabbageModClientRequest(createRequestId(), authToken,
+                clientId, HttpUtil.getUserAgent(), BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
+        invokeCabbageRequest(request);
+    }
+
+    private void invokeCabbageRequest(Request<IcqAccountRoot> request) {
+        int result = Request.REQUEST_IDLE;
+        do {
+            if (result != Request.REQUEST_IDLE) {
+                try {
+                    Thread.sleep(CABBAGE_TIMEOUT);
+                } catch (InterruptedException ignored) {
+                    Thread.interrupted();
+                }
+            }
+            result = request.onRequest(accountRoot, null);
+        } while (result != Request.REQUEST_DELETE && result != Request.REQUEST_SKIP);
+    }
+
+    private String createRequestId() {
+        return String.valueOf(System.currentTimeMillis());
     }
 }

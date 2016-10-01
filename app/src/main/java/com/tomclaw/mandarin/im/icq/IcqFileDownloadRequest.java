@@ -148,9 +148,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             return downloadLink;
         } else {
             QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
-                    PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
-                    getAccountRoot().getAccountDbId(), buddyId, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                    GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED, cookie, time, originalMessage);
+                    getAccountRoot().getAccountDbId(), buddyId,
+                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage);
             throw new DownloadException();
         }
     }

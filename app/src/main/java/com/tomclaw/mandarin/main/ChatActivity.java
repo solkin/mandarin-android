@@ -193,13 +193,6 @@ public class ChatActivity extends ChiefActivity {
 
         chatList = (RecyclerView) findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
-        chatLayoutManager.setDataChangedListener(new ChatLayoutManager.DataChangedListener() {
-            @Override
-            public void onDataChanged() {
-                readVisibleMessages();
-            }
-        });
-        chatList.addOnScrollListener(new ChatScrollListener(chatLayoutManager));
         chatList.setLayoutManager(chatLayoutManager);
         chatList.setHasFixedSize(true);
         chatList.setAdapter(chatHistoryAdapter);
@@ -670,7 +663,6 @@ public class ChatActivity extends ChiefActivity {
     protected void onResume() {
         super.onResume();
         isPaused = false;
-        readVisibleMessages();
     }
 
     @Override
@@ -728,37 +720,6 @@ public class ChatActivity extends ChiefActivity {
 
     private void saveMessageTextAsDraft() {
         QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
-    }
-
-    private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
-        // This can be executed while activity became invisible to user,
-        // so we must check it here. After activity restored, messages will be read automatically.
-        // Also, activity might be gone to destroy in a moments.
-        if (!isPaused && !isGoToDestroy) {
-            // Ultra high-demand thread required.
-            // But this thread way must be rewritten.
-            new Thread(new ReadMessagesTask(this, buddyDbId,
-                    firstMessageDbId, lastMessageDbId)).start();
-        }
-    }
-
-    private void readVisibleMessages() {
-        final int firstVisiblePosition = chatLayoutManager.findFirstVisibleItemPosition();
-        final int lastVisiblePosition = chatLayoutManager.findLastVisibleItemPosition();
-        Logger.log("Reading visible messages ["
-                + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-        // Checking for the list view is ready.
-        if (lastVisiblePosition >= firstVisiblePosition) {
-            final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-            try {
-                final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
-                final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
-                readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
-            } catch (MessageNotFoundException ignored) {
-                Logger.log("Error while marking messages as read positions ["
-                        + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-            }
-        }
     }
 
     public void scrollBottom() {
@@ -863,9 +824,6 @@ public class ChatActivity extends ChiefActivity {
                 case R.id.message_remove:
                     removeSelectedMessages(mode);
                     return true;
-                case R.id.message_unread:
-                    unreadSelectedMessages(mode);
-                    return true;
                 default:
                     return false;
             }
@@ -906,110 +864,6 @@ public class ChatActivity extends ChiefActivity {
                         }
                     })
                     .setNeutralButton(R.string.do_not_remove, null).show();
-        }
-
-        private void unreadSelectedMessages(final ActionMode mode) {
-            final Collection<Long> selectedIds = new ArrayList<>(selectionHelper.getSelectedIds());
-            if (!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
-                new AlertDialog.Builder(ChatActivity.this)
-                        .setTitle(R.string.unread_messages)
-                        .setMessage(R.string.mark_messages_unread)
-                        .setPositiveButton(R.string.yes_mark, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mode.finish();
-                                isGoToDestroy = true;
-                                QueryHelper.unreadMessages(getContentResolver(), selectedIds);
-                                openMainActivity();
-                            }
-                        })
-                        .setNeutralButton(R.string.no_need, null).show();
-            } else {
-                Toast.makeText(ChatActivity.this, R.string.no_incoming_selected, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private class ChatScrollListener extends RecyclerView.OnScrollListener {
-
-        private LinearLayoutManager layoutManager;
-        private int startFirstVisiblePosition, startLastVisiblePosition;
-
-        private ChatScrollListener(LinearLayoutManager layoutManager) {
-            this.layoutManager = layoutManager;
-            startFirstVisiblePosition = -1;
-            startLastVisiblePosition = -1;
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView view, int scrollState) {
-            int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-            int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-            switch (scrollState) {
-                case RecyclerView.SCROLL_STATE_DRAGGING: {
-                    // Scroll stared.
-                    if (startFirstVisiblePosition == -1 && startLastVisiblePosition == -1) {
-                        startFirstVisiblePosition = firstVisiblePosition;
-                        startLastVisiblePosition = lastVisiblePosition;
-                    }
-                    break;
-                }
-                case RecyclerView.SCROLL_STATE_IDLE: {
-                    // Scroll ended.
-                    // Scroll ended.
-                    int firstPosition;
-                    int lastPosition;
-                    if (firstVisiblePosition > startFirstVisiblePosition) {
-                        // Scroll to bottom.
-                        firstPosition = startFirstVisiblePosition;
-                        lastPosition = lastVisiblePosition;
-                    } else {
-                        // Scroll to top.
-                        firstPosition = firstVisiblePosition;
-                        lastPosition = startLastVisiblePosition;
-                    }
-                    startFirstVisiblePosition = -1;
-                    startLastVisiblePosition = -1;
-                    Logger.log("Scroll: " + firstPosition + " -> " + lastPosition);
-                    final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    try {
-                        final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
-                        final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastPosition);
-                        readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
-                    } catch (MessageNotFoundException ignored) {
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    private class ReadMessagesTask extends WeakObjectTask<Context> {
-
-        private final int buddyDbId;
-        private final long firstMessageDbId;
-        private final long lastMessageDbId;
-
-        public ReadMessagesTask(Context context, int buddyDbId,
-                                long firstMessageDbId, long lastMessageDbId) {
-            super(context);
-            this.buddyDbId = buddyDbId;
-            this.firstMessageDbId = Math.min(firstMessageDbId, lastMessageDbId);
-            this.lastMessageDbId = Math.max(firstMessageDbId, lastMessageDbId);
-        }
-
-        @Override
-        public void executeBackground() throws MessageNotFoundException {
-            Context context = getWeakObject();
-            if (context != null) {
-                ContentResolver contentResolver = context.getContentResolver();
-                if (PreferenceHelper.isQuiteChat(context)) {
-                    QueryHelper.fastReadMessages(contentResolver,
-                            buddyDbId, firstMessageDbId, lastMessageDbId);
-                }
-                QueryHelper.readMessages(contentResolver,
-                        buddyDbId, firstMessageDbId, lastMessageDbId);
-            }
         }
     }
 
@@ -1062,8 +916,7 @@ public class ChatActivity extends ChiefActivity {
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
-                boolean isCollapseMessages = PreferenceHelper.isCollapseMessages(activity);
-                QueryHelper.insertMessage(contentResolver, isCollapseMessages, buddyDbId,
+                QueryHelper.insertMessage(contentResolver, buddyDbId,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
                 // Sending protocol message request.
                 RequestHelper.requestMessage(contentResolver, buddyDbId, cookie, message);

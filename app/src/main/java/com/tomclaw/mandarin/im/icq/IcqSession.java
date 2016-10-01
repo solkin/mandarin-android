@@ -136,7 +136,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
 public class IcqSession {
 
     public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
-    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,userAddedToBuddyList,service,buddyRegistered,hist";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,bigBuddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
@@ -566,10 +566,8 @@ public class IcqSession {
                             }
                             if (!isProcessed) {
                                 QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                                        PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
                                         icqAccountRoot.getAccountDbId(), buddyId,
-                                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                        GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED, cookie,
+                                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie,
                                         messageTime * 1000, messageText);
                             }
                             isProcessed = true;
@@ -600,7 +598,7 @@ public class IcqSession {
                         String sendReqId = imState.optString(SEND_REQ_ID);
                         for (int i = 0; i < IM_STATES.length; i++) {
                             if (state.equals(IM_STATES[i])) {
-                                QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), i, sendReqId, msgId);
+                                // TODO: something to do maybe?
                                 break;
                             }
                         }

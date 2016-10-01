@@ -362,14 +362,6 @@ public class MainActivity extends ChiefActivity {
                     dialogsAdapter.notifyDataSetChanged();
                     return false;
                 }
-                case R.id.mark_as_read_chat_menu: {
-                    try {
-                        QueryHelper.readAllMessages(getContentResolver(), selectionHelper.getSelectedIds());
-                    } catch (Exception ignored) {
-                        // Nothing to do in this case.
-                    }
-                    break;
-                }
                 case R.id.close_chat_menu: {
                     try {
                         QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);

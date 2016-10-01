@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FilterQueryProvider;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -74,11 +73,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
-    private static int COLUMN_MESSAGE_STATE;
     private static int COLUMN_MESSAGE_COOKIE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
     private static int COLUMN_MESSAGE_BUDDY_DB_ID;
-    private static int COLUMN_MESSAGE_READ;
     private static int COLUMN_ROW_AUTO_ID;
     private static int COLUMN_CONTENT_TYPE;
     private static int COLUMN_CONTENT_SIZE;
@@ -104,7 +101,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         this.loaderManager = loaderManager;
         this.timeHelper = timeHelper;
         setBuddyDbId(buddyBdId);
-        setFilterQueryProvider(new ChatFilterQueryProvider());
         // Initialize smileys.
         SmileyParser.init(context);
         setHasStableIds(true);
@@ -137,11 +133,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             COLUMN_MESSAGE_TEXT = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
             COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
             COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
-            COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
             COLUMN_MESSAGE_COOKIE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE);
             COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
             COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-            COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
             COLUMN_CONTENT_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE);
             COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
             COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
@@ -280,7 +274,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
                 cursor.getString(COLUMN_MESSAGE_TEXT));
         long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-        int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
         final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
         // Content message data
         int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
@@ -298,7 +291,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         boolean dateVisible = !(cursor.moveToNext() && messageDateText
                 .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
         // Creating chat history item to bind the view.
-        ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime, messageState,
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime,
                 messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
                 contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
         holder.setSelectionHelper(selectionHelper);
@@ -311,20 +304,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return timeHelper;
     }
 
-    private class ChatFilterQueryProvider implements FilterQueryProvider {
-
-        @Override
-        public Cursor runQuery(CharSequence constraint) {
-            String searchField = constraint.toString().toUpperCase();
-            QueryBuilder queryBuilder = getDefaultQueryBuilder();
-            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
-            return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
-        }
-    }
-
     public interface ContentMessageClickListener {
 
-        public void onClicked(ChatHistoryItem historyItem);
+        void onClicked(ChatHistoryItem historyItem);
     }
 
     public interface SelectionModeListener {

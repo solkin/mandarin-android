@@ -104,14 +104,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 4);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, isRead ? 1 : 0);
-                                cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
                                 String message = generateRandomText(random);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
-                                cv3.put(GlobalProvider.HISTORY_SEARCH_FIELD, message.toUpperCase());
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }
@@ -125,8 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
                     + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
                     + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
-                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_MESSAGE_READ + "=0"
-                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
             Logger.log("query: " + query);
             db.execSQL(query);
 

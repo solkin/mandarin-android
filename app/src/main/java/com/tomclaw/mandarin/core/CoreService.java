@@ -27,7 +27,6 @@ public class CoreService extends Service {
     private RequestDispatcher requestDispatcher;
     private RequestDispatcher downloadDispatcher;
     private RequestDispatcher uploadDispatcher;
-    private HistoryDispatcher historyDispatcher;
     private AccountsDispatcher accountsDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
@@ -126,7 +125,6 @@ public class CoreService extends Service {
         requestDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_SHORT);
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         uploadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_UPLOAD);
-        historyDispatcher = new HistoryDispatcher(this);
         accountsDispatcher = new AccountsDispatcher(this, sessionHolder);
         Logger.log("CoreService serviceInit");
         // Loading all data for this application session.
@@ -134,7 +132,6 @@ public class CoreService extends Service {
         requestDispatcher.startObservation();
         downloadDispatcher.startObservation();
         uploadDispatcher.startObservation();
-        historyDispatcher.startObservation();
         accountsDispatcher.startObservation();
         // Register broadcast receivers.
         MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
@@ -186,11 +183,6 @@ public class CoreService extends Service {
             requestDispatcher.notifyQueue();
             downloadDispatcher.notifyQueue();
             uploadDispatcher.notifyQueue();
-        }
-        // Read messages event maybe?
-        boolean readMessagesEvent = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
-        if (readMessagesEvent) {
-            QueryHelper.readAllMessages(getContentResolver());
         }
         // Or maybe this is after-boot event?
         boolean bootEvent = intent.getBooleanExtra(BootCompletedReceiver.EXTRA_BOOT_EVENT, false);

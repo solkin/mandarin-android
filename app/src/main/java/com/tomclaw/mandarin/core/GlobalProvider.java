@@ -91,14 +91,11 @@ public class GlobalProvider extends ContentProvider {
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
+    public static final String HISTORY_MESSAGE_ID = "message_id";
     public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
-    public static final String HISTORY_MESSAGE_STATE = "message_state";
     public static final String HISTORY_MESSAGE_TIME = "message_time";
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
-    public static final String HISTORY_MESSAGE_READ = "message_read";
-    public static final String HISTORY_NOTICE_SHOWN = "notice_shown";
-    public static final String HISTORY_SEARCH_FIELD = "search_field";
     public static final String HISTORY_CONTENT_TYPE = "content_type";
     public static final String HISTORY_CONTENT_SIZE = "content_size";
     public static final String HISTORY_CONTENT_STATE = "content_state";
@@ -111,12 +108,6 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_MESSAGE_TYPE_ERROR = 0;
     public static final int HISTORY_MESSAGE_TYPE_INCOMING = 1;
     public static final int HISTORY_MESSAGE_TYPE_OUTGOING = 2;
-
-    public static final int HISTORY_MESSAGE_STATE_UNDETERMINED = 0;
-    public static final int HISTORY_MESSAGE_STATE_ERROR = 1;
-    public static final int HISTORY_MESSAGE_STATE_SENDING = 2;
-    public static final int HISTORY_MESSAGE_STATE_SENT = 3;
-    public static final int HISTORY_MESSAGE_STATE_DELIVERED = 4;
 
     public static final int HISTORY_CONTENT_TYPE_TEXT = 0;
     public static final int HISTORY_CONTENT_TYPE_PICTURE = 1;
@@ -168,10 +159,11 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
-            + HISTORY_MESSAGE_TYPE + " int, " + HISTORY_MESSAGE_COOKIE + " text, "
-            + HISTORY_MESSAGE_STATE + " int, " + HISTORY_MESSAGE_TIME + " int, "
-            + HISTORY_MESSAGE_READ + " int, " + HISTORY_NOTICE_SHOWN + " int, "
-            + HISTORY_MESSAGE_TEXT + " text, " + HISTORY_SEARCH_FIELD + " text, "
+            + HISTORY_MESSAGE_ID + " int, "
+            + HISTORY_MESSAGE_TYPE + " int, "
+            + HISTORY_MESSAGE_COOKIE + " text, "
+            + HISTORY_MESSAGE_TIME + " int, "
+            + HISTORY_MESSAGE_TEXT + " text, "
             + HISTORY_CONTENT_TYPE + " int default " + HISTORY_CONTENT_TYPE_TEXT + ", "
             + HISTORY_CONTENT_SIZE + " bigint default 0, "
             + HISTORY_CONTENT_STATE + " int default " + HISTORY_CONTENT_STATE_STABLE + ", "
@@ -186,82 +178,15 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT = "CREATE INDEX Idx2 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +
             GlobalProvider.HISTORY_BUDDY_DB_ID + "," +
-            GlobalProvider.HISTORY_MESSAGE_READ + "," +
             GlobalProvider.HISTORY_MESSAGE_TYPE + ");";
-
-    private static final StringBuilder ROSTER_BUDDY_UPDATE_UNREAD =
-            new StringBuilder().append("UPDATE ").append(ROSTER_BUDDY_TABLE).append(" SET ")
-                    .append(ROSTER_BUDDY_UNREAD_COUNT).append("=").append("(")
-                    .append("SELECT COUNT(*) FROM ").append(CHAT_HISTORY_TABLE)
-                    .append(" WHERE ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_READ).append("=").append("0").append(" AND ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_MESSAGE_TYPE).append("=").append("1").append(" AND ")
-                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROSTER_BUDDY_DIALOG).append("=").append("1").append(" AND ")
-                    .append(CHAT_HISTORY_TABLE).append(".").append(HISTORY_BUDDY_DB_ID)
-                    .append("=")
-                    .append(ROSTER_BUDDY_TABLE).append(".").append(ROW_AUTO_ID)
-                    .append(");");
 
     private static final String TMP_C1 = "c1";
     private static final String TMP_C2 = "c2";
     private static final String TMP_R1 = "r1";
 
-    private static final String HISTORY_GET_UNREAD_SB =
-            new StringBuilder().append("SELECT").append(' ')
-                    .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',').append(HISTORY_CONTENT_TYPE).append(',').append(HISTORY_PREVIEW_HASH).append(',')
-                    .append('(')
-                    .append("SELECT").append(' ')
-                    .append(ROSTER_BUDDY_NICK).append(' ')
-                    .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
-                    .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
-                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_NICK).append(',')
-
-                    .append('(')
-                    .append("SELECT").append(' ')
-                    .append(ROSTER_BUDDY_AVATAR_HASH).append(' ')
-                    .append("FROM").append(' ').append(ROSTER_BUDDY_TABLE).append(' ').append(TMP_R1).append(' ')
-                    .append("WHERE").append(' ').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_R1).append('.').append(ROW_AUTO_ID)
-                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_AVATAR_HASH).append(',')
-
-                    .append('(')
-                    .append("SELECT").append(' ')
-                    .append("COUNT(*)").append(' ')
-                    .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C2).append(' ')
-                    .append("WHERE").append(' ').append(TMP_C2).append('.').append(HISTORY_BUDDY_DB_ID).append('=').append(TMP_C1).append('.').append(HISTORY_BUDDY_DB_ID)
-                    .append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ').append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
-                    .append(')').append(' ').append("AS").append(' ').append(ROSTER_BUDDY_UNREAD_COUNT).append(' ')
-
-                    .append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ').append(TMP_C1).append(' ')
-                    .append("WHERE").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1).append(' ')
-                    .append("AND").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
-                    .append("GROUP BY").append(' ').append(HISTORY_BUDDY_DB_ID).append(' ')
-                    .append("ORDER BY").append(' ').append(ROW_AUTO_ID).append(' ').append("ASC").append(';')
-                    .toString();
-
     private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
     private static final String SHOWN_COUNT = "shown_count";
     private static final String ON_SCREEN_COUNT = "on_screen_count";
-
-    private static final String COUNT_QUERY = new StringBuilder()
-            .append("SELECT").append(' ')
-            .append('(')
-            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
-            .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(0).append(' ')
-            .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
-            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
-            .append(')').append(' ').append("AS").append(' ').append(UNREAD_UNSHOWN_COUNT).append(',')
-            .append('(')
-            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
-            .append("WHERE").append(' ').append(HISTORY_MESSAGE_READ).append('=').append(1).append(' ')
-            .append("AND").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(0).append(' ')
-            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
-            .append(')').append(' ').append("AS").append(' ').append(ON_SCREEN_COUNT).append(',')
-            .append('(')
-            .append("SELECT").append(' ').append("COUNT(*)").append(' ').append("FROM").append(' ').append(CHAT_HISTORY_TABLE).append(' ')
-            .append("WHERE").append(' ').append(HISTORY_NOTICE_SHOWN).append('=').append(-1).append(' ')
-            .append("AND").append(' ').append(HISTORY_MESSAGE_TYPE).append('=').append(1)
-            .append(')').append(' ').append("AS").append(' ').append(SHOWN_COUNT).append(';')
-            .toString();
 
     public static final int ROW_INVALID = -1;
 
@@ -270,9 +195,6 @@ public class GlobalProvider extends ContentProvider {
     private SQLiteDatabase sqLiteDatabase;
 
     // Methods.
-    public static String METHOD_UPDATE_UNREAD = "update_unread";
-    public static String METHOD_GET_UNREAD = "get_unread";
-    public static String METHOD_GET_MESSAGES_COUNT = "get_messages_count";
     public static String METHOD_UPDATE_ROSTER = "update_roster";
 
     public static String KEY_NOTIFICATION_DATA = "key_notification_data";
@@ -414,64 +336,7 @@ public class GlobalProvider extends ContentProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Bundle call(String method, String arg, Bundle extras) {
-        if (method.equals(METHOD_UPDATE_UNREAD)) {
-            long time = System.currentTimeMillis();
-            sqLiteDatabase.beginTransaction();
-            try {
-                sqLiteDatabase.execSQL(ROSTER_BUDDY_UPDATE_UNREAD.toString());
-                sqLiteDatabase.setTransactionSuccessful();
-            } finally {
-                sqLiteDatabase.endTransaction();
-            }
-            Logger.log("Update unread time: " + (System.currentTimeMillis() - time));
-            getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
-        } else if (method.equals(METHOD_GET_UNREAD)) {
-            long time = System.currentTimeMillis();
-            Cursor cursor = sqLiteDatabase.rawQuery(HISTORY_GET_UNREAD_SB, null);
-            Bundle bundle = new Bundle();
-            if (cursor.moveToFirst()) {
-                int messageTextColumn = cursor.getColumnIndex(HISTORY_MESSAGE_TEXT);
-                int buddyDbIdColumn = cursor.getColumnIndex(HISTORY_BUDDY_DB_ID);
-                int buddyNickColumn = cursor.getColumnIndex(ROSTER_BUDDY_NICK);
-                int buddyAvatarHashColumn = cursor.getColumnIndex(ROSTER_BUDDY_AVATAR_HASH);
-                int unreadCountColumn = cursor.getColumnIndex(ROSTER_BUDDY_UNREAD_COUNT);
-                int contentTypeColumn = cursor.getColumnIndex(HISTORY_CONTENT_TYPE);
-                int previewHashColumn = cursor.getColumnIndex(HISTORY_PREVIEW_HASH);
-                ArrayList<NotificationData> data = new ArrayList<>();
-                do {
-                    NotificationData row = new NotificationData(
-                            cursor.getString(messageTextColumn),
-                            cursor.getInt(buddyDbIdColumn),
-                            cursor.getString(buddyNickColumn),
-                            cursor.getString(buddyAvatarHashColumn),
-                            cursor.getInt(unreadCountColumn),
-                            cursor.getInt(contentTypeColumn),
-                            cursor.getString(previewHashColumn));
-                    data.add(row);
-                } while (cursor.moveToNext());
-                bundle.putSerializable(KEY_NOTIFICATION_DATA, data);
-            }
-            cursor.close();
-            Logger.log("Get unread time: " + (System.currentTimeMillis() - time));
-            return bundle;
-        } else if (method.equals(METHOD_GET_MESSAGES_COUNT)) {
-            Cursor cursor = sqLiteDatabase.rawQuery(COUNT_QUERY, null);
-            Bundle bundle = new Bundle();
-            int unshown = 0, justShown = 0, onScreen = 0;
-            if (cursor.moveToFirst()) {
-                int unreadUnshownColumn = cursor.getColumnIndex(UNREAD_UNSHOWN_COUNT);
-                int shownColumn = cursor.getColumnIndex(SHOWN_COUNT);
-                int onScreenColumn = cursor.getColumnIndex(ON_SCREEN_COUNT);
-                unshown = cursor.getInt(unreadUnshownColumn);
-                justShown = cursor.getInt(shownColumn);
-                onScreen = cursor.getInt(onScreenColumn);
-            }
-            cursor.close();
-            bundle.putInt(KEY_UNSHOWN, unshown);
-            bundle.putInt(KEY_JUST_SHOWN, justShown);
-            bundle.putInt(KEY_ON_SCREEN, onScreen);
-            return bundle;
-        } else if (method.equals(METHOD_UPDATE_ROSTER)) {
+        if (method.equals(METHOD_UPDATE_ROSTER)) {
             long updateTime = System.currentTimeMillis();
             int accountDbId = extras.getInt(KEY_ACCOUNT_DB_ID);
             String accountType = extras.getString(KEY_ACCOUNT_TYPE);

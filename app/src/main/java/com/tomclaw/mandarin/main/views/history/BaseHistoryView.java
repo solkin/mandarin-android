@@ -79,37 +79,38 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             dateLayout.setVisibility(View.GONE);
         }
         if (hasDeliveryState()) {
-            Drawable drawable;
-            boolean animated = false;
-            switch (historyItem.getMessageState()) {
-                case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
-                    drawable = getResources().getDrawable(R.drawable.ic_error);
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
-                case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
-                    drawable = getResources().getDrawable(R.drawable.sending_anim);
-                    animated = true;
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
-                    drawable = getResources().getDrawable(R.drawable.ic_sent);
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
-                    drawable = getResources().getDrawable(R.drawable.ic_delivered);
-                    break;
-                default:
-                    drawable = null;
-            }
-            if (drawable == null || historyItem.getContentState() != GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
-                deliveryState.setVisibility(View.INVISIBLE);
-            } else {
-                deliveryState.setVisibility(View.VISIBLE);
-                deliveryState.setImageDrawable(drawable);
-                if (animated) {
-                    AnimationDrawable animatedState = ((AnimationDrawable) drawable);
-                    animatedState.stop();
-                    animatedState.start();
-                }
-            }
+            // TODO: Implement delivery and read history based on message id.
+//            Drawable drawable;
+//            boolean animated = false;
+//            switch (historyItem.getMessageState()) {
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
+//                    drawable = getResources().getDrawable(R.drawable.ic_error);
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
+//                    drawable = getResources().getDrawable(R.drawable.sending_anim);
+//                    animated = true;
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
+//                    drawable = getResources().getDrawable(R.drawable.ic_sent);
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
+//                    drawable = getResources().getDrawable(R.drawable.ic_delivered);
+//                    break;
+//                default:
+//                    drawable = null;
+//            }
+//            if (drawable == null || historyItem.getContentState() != GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
+//                deliveryState.setVisibility(View.INVISIBLE);
+//            } else {
+//                deliveryState.setVisibility(View.VISIBLE);
+//                deliveryState.setImageDrawable(drawable);
+//                if (animated) {
+//                    AnimationDrawable animatedState = ((AnimationDrawable) drawable);
+//                    animatedState.stop();
+//                    animatedState.start();
+//                }
+//            }
         }
         timeView.setText(historyItem.getMessageTimeText());
         bindClickListeners();

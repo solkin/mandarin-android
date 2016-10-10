@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -118,6 +119,10 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                 } catch (FileNotFoundException ex) {
                     // Where is my file?! :'(
                     throw ex;
+                } catch (SocketTimeoutException ex) {
+                    // Pretty network exception.
+                    Logger.log("Io exception while uploading", ex);
+                    Thread.sleep(3000);
                 } catch (InterruptedIOException ex) {
                     // Thread interrupted exception.
                     Logger.log("Interruption while uploading", ex);

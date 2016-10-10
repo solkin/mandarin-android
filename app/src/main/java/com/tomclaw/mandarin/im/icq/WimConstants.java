@@ -82,6 +82,7 @@ public class WimConstants {
     public static final String BUDDY_ICON = "buddyIcon";
     public static final String BIG_BUDDY_ICON = "bigBuddyIcon";
     public static final String LAST_SEEN = "lastseen";
+    public static final String HIST_DLG_STATE = "histDlgState";
     public static final String IM = "im";
     public static final String MESSAGE = "message";
     public static final String MSG_ID = "msgId";

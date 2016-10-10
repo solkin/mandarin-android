@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BuddyData;
@@ -16,6 +17,8 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
+import com.tomclaw.mandarin.im.icq.dto.Message;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -68,6 +71,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.FETCH_BASE_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.GROUPS_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_DLG_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
@@ -507,85 +511,58 @@ public class IcqSession {
                     Logger.log("exception while parsing buddy list", ex);
                 }
                 break;
-            case IM:
-            case OFFLINE_IM:  // TODO: offlineIM is differ!
+            case HIST_DLG_STATE:
+                GsonSingleton gson = GsonSingleton.getInstance();
                 try {
-                    String messageText = eventData.getString(MESSAGE);
-                    String cookie = eventData.optString(MSG_ID);
-                    if (TextUtils.isEmpty(cookie)) {
-                        cookie = String.valueOf(System.currentTimeMillis());
-                    }
-                    long messageTime = eventData.getLong(TIMESTAMP);
-                    String imf = eventData.getString(IMF);
-                    String autoResponse = eventData.getString(AUTORESPONSE);
-                    JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
-                    String buddyId;
-                    String buddyNick;
-                    int statusIndex;
-                    String statusTitle;
-                    String statusMessage = "";
-                    String buddyIcon;
-                    long lastSeen = -1;
-                    if (sourceObject != null) {
-                        buddyId = sourceObject.getString(AIM_ID);
-                        buddyNick = sourceObject.optString(FRIENDLY);
-                        String buddyStatus = sourceObject.optString(STATE);
-                        String buddyType = sourceObject.optString(USER_TYPE);
-                        buddyIcon = sourceObject.optString(BUDDY_ICON);
-                        String bigBuddyIcon = sourceObject.optString(WimConstants.BIG_BUDDY_ICON);
-                        if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                            buddyIcon = bigBuddyIcon;
-                        }
-                        lastSeen = sourceObject.optLong(LAST_SEEN, -1);
-                        statusIndex = getStatusIndex(null, buddyStatus);
-                    } else {
-                        buddyId = eventData.getString(AIM_ID);
-                        buddyNick = eventData.optString(FRIENDLY);
-                        buddyIcon = null;
-                        statusIndex = StatusUtil.STATUS_OFFLINE;
-                    }
-                    if (TextUtils.isEmpty(buddyNick)) {
-                        buddyNick = buddyId;
-                    }
-                    statusTitle = getStatusTitle(null, statusIndex);
+                    HistDlgState histDlgState = gson.fromJson(eventData.toString(), HistDlgState.class);
 
-                    boolean isProcessed = false;
-                    do {
-                        try {
-                            Matcher matcher = URL_REGEX.matcher(messageText);
-                            while (matcher.find() && matcher.groupCount() == 1) {
-                                // TODO: also show message body.
-                                String url = matcher.group();
-                                String fileId = matcher.group(1);
-                                int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
-                                        icqAccountRoot.getAccountDbId(), buddyId);
-                                String tag = cookie + ":" + url;
-                                RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                        buddyDbId, cookie, messageTime * 1000, fileId, url, messageText, tag);
+                    for (Message message : histDlgState.getMessages()) {
+                        boolean isProcessed = false;
+                        do {
+                            try {
+                                Matcher matcher = URL_REGEX.matcher(message.getText());
+                                while (matcher.find() && matcher.groupCount() == 1) {
+                                    // TODO: also show message body.
+                                    String url = matcher.group();
+                                    String fileId = matcher.group(1);
+                                    int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
+                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn());
+                                    String tag = message.getMsgId() + ":" + url;
+                                    RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
+                                            buddyDbId, String.valueOf(message.getMsgId()), message.getTime() * 1000, fileId, url, message.getText(), tag);
+                                    isProcessed = true;
+                                }
+                                if (!isProcessed) {
+                                    int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
+                                    QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn(),
+                                            messageType, String.valueOf(message.getMsgId()),
+                                            message.getTime() * 1000, message.getText());
+                                }
                                 isProcessed = true;
+                            } catch (BuddyNotFoundException ignored) {
+                                if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                                    isProcessed = true;
+                                } else {
+                                    int statusIndex = StatusUtil.STATUS_OFFLINE;
+                                    String statusTitle = getStatusTitle(null, statusIndex);
+                                    String buddyNick = histDlgState.getPersons().get(0).getFriendly();
+                                    String statusMessage = "";
+                                    String buddyIcon = null;
+                                    long lastSeen = -1;
+
+                                    String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                                    QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                                            icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
+                                            recycleString, histDlgState.getSn(), buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
+                                }
                             }
-                            if (!isProcessed) {
-                                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                                        icqAccountRoot.getAccountDbId(), buddyId,
-                                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie,
-                                        messageTime * 1000, messageText);
-                            }
-                            isProcessed = true;
-                        } catch (BuddyNotFoundException ignored) {
-                            if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
-                                isProcessed = true;
-                            } else {
-                                String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                                QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                                        icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                        recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
-                            }
-                        }
-                        // This will try to create buddy if such is not present
-                        // in roster and then retry message insertion.
-                    } while (!isProcessed);
-                } catch (JSONException ex) {
-                    Logger.log("error while processing im - JSON exception", ex);
+                            // This will try to create buddy if such is not present
+                            // in roster and then retry message insertion.
+                        } while (!isProcessed);
+                    }
+                } catch (Throwable ex) {
+                    Logger.log("exception while parsing history dialog state", ex);
                 }
                 break;
             case IM_STATE:

@@ -1,61 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarTheme"/>
+        android:id="@+id/toolbar"
+        style="@style/ToolbarTheme" />
+
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <ScrollView android:id="@+id/content"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/info_block_background_color">
+            android:layout_height="match_parent"
+            android:background="?attr/info_block_background_color">
+
             <LinearLayout
-                    android:orientation="vertical"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                    <include layout="@layout/info_header"/>
+
+                    <include layout="@layout/info_header" />
+
                     <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="32dp"
+                        android:paddingRight="8dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true">
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/edit_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingBottom="32dp"
-                            android:paddingRight="8dp"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true">
-                        <android.support.design.widget.FloatingActionButton
-                                android:id="@+id/edit_button"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_edit"
-                                android:layout_marginLeft="18dp"
-                                android:layout_marginRight="18dp"
-                                android:layout_marginBottom="12dp"
-                                app:elevation="4dp"
-                                app:pressedTranslationZ="4dp"
-                                app:fabSize="normal"/>
+                            android:src="@drawable/ic_edit"
+                            android:layout_marginLeft="18dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginBottom="12dp"
+                            app:elevation="4dp"
+                            app:pressedTranslationZ="4dp"
+                            app:fabSize="normal" />
                     </FrameLayout>
                 </RelativeLayout>
-                <include layout="@layout/info_status"/>
-                <include layout="@layout/info_block"/>
+
+                <include layout="@layout/info_status" />
+
+                <include layout="@layout/info_block" />
+
                 <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
                     <ProgressBar
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/progress_bar"
-                            android:padding="20dp"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/progress_bar"
+                        android:padding="20dp" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-        <include layout="@layout/toolbar_shadow_view"/>
+
+        <include layout="@layout/toolbar_shadow_view" />
     </FrameLayout>
 </LinearLayout>

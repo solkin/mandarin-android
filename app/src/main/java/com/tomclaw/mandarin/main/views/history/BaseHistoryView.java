@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.main.views.history;
 
 import android.content.res.Resources;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
@@ -10,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;

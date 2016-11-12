@@ -1,56 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:mandarin="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mandarin="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <include layout="@layout/chat_item_date" />
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:gravity="center_vertical"
-        android:background="?android:attr/activatedBackgroundIndicator" android:paddingLeft="5dp"
-        android:paddingTop="5dp" android:paddingRight="5dp"
-        android:descendantFocusability="blocksDescendants">
-    <include layout="@layout/chat_item_date"/>
-    <LinearLayout android:orientation="horizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:baselineAligned="false">
-        <LinearLayout android:orientation="vertical"
-                      android:layout_width="0dp"
-                      android:layout_height="wrap_content"
-                      android:layout_weight="1"
-                      android:paddingEnd="5dp"
-                      android:paddingRight="5dp"
-                      android:paddingStart="0dp"
-                      android:paddingLeft="0dp">
-            <RelativeLayout android:orientation="vertical"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/inc_bubble_back"
-                            android:layout_gravity="start">
+        android:layout_height="wrap_content"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingEnd="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="0dp"
+            android:paddingLeft="0dp">
+
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/inc_bubble_back"
+                android:layout_gravity="start">
+
                 <com.tomclaw.mandarin.main.views.BubbleImageView
-                        android:id="@+id/inc_preview_image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="0dp"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        mandarin:bubble_corner="left"
-                        mandarin:bubble_color="?attr/chat_placeholder_tint_inc"/>
+                    android:id="@+id/inc_preview_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    mandarin:bubble_corner="left"
+                    mandarin:bubble_color="?attr/chat_placeholder_tint_inc" />
+
                 <ImageView
-                        android:id="@+id/inc_image_overlay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="center"
-                        android:layout_centerInParent="true"/>
+                    android:id="@+id/inc_image_overlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="center"
+                    android:layout_centerInParent="true" />
+
                 <com.tomclaw.mandarin.main.views.CircleProgressBar
-                        android:id="@+id/inc_progress"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_centerInParent="true"
-                        mandarin:progress="0"
-                        mandarin:progressBarThickness="2dp"
-                        mandarin:progressbarColor="@android:color/white" />
+                    android:id="@+id/inc_progress"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_centerInParent="true"
+                    mandarin:progress="0"
+                    mandarin:progressBarThickness="2dp"
+                    mandarin:progressbarColor="@android:color/white" />
             </RelativeLayout>
         </LinearLayout>
-        <include layout="@layout/time_inc_block"/>
+
+        <include layout="@layout/time_inc_block" />
     </LinearLayout>
 </LinearLayout>

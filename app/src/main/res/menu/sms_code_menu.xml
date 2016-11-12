@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/sms_code_menu"
-          android:title="@string/complete"
-          app:showAsAction="always|withText"
-          app:actionLayout="@layout/sms_code_button"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/sms_code_menu"
+        android:title="@string/complete"
+        app:showAsAction="always|withText"
+        app:actionLayout="@layout/sms_code_button" />
 </menu>

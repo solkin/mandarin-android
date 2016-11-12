@@ -42,8 +42,6 @@ import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.im.Buddy;
-import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
@@ -57,7 +55,9 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.UriFile;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;

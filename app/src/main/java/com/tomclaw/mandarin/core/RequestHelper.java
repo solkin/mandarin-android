@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.AccountAvatarRequest;
 import com.tomclaw.mandarin.im.icq.BuddyAddRequest;

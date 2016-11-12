@@ -1030,7 +1030,7 @@ public class QueryHelper {
     }
 
     public static Collection<Buddy> getBuddies(ContentResolver contentResolver, int accountDbId,
-                                                    String buddyId, Map<String, Object> criteria)
+                                               String buddyId, Map<String, Object> criteria)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain account db id.

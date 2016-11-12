@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 

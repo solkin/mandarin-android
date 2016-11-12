@@ -14,7 +14,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.NotifiableDownloadRequest;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;

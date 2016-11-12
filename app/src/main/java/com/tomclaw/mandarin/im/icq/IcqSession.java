@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -14,6 +13,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;

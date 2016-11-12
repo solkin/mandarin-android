@@ -10,7 +10,8 @@ public class StrictBuddy extends Buddy {
 
     public static final String KEY_STRUCT = "strict_buddy_struct";
 
-    @NonNull private String groupName;
+    @NonNull
+    private String groupName;
 
     public StrictBuddy(int accountDbId, @NonNull String groupName, @NonNull String buddyId) {
         super(accountDbId, buddyId);
@@ -33,7 +34,9 @@ public class StrictBuddy extends Buddy {
         dest.writeString(groupName);
     }
 
-    public @NonNull String getGroupName() {
+    public
+    @NonNull
+    String getGroupName() {
         return groupName;
     }
 

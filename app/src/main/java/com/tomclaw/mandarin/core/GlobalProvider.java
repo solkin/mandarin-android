@@ -384,7 +384,9 @@ public class GlobalProvider extends ContentProvider {
         return table;
     }
 
-    private @NonNull ContentResolver getContentResolver() {
+    private
+    @NonNull
+    ContentResolver getContentResolver() {
         Context context = getContext();
         if (context == null) {
             throw new IllegalStateException("GlobalProvider not attached to context!");

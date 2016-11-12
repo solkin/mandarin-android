@@ -12,7 +12,8 @@ public class Buddy implements Parcelable {
     public static final String KEY_STRUCT = "buddy_struct";
 
     private int accountDbId;
-    @NonNull private String buddyId;
+    @NonNull
+    private String buddyId;
 
     public Buddy(int accountDbId, @NonNull String buddyId) {
         this.accountDbId = accountDbId;
@@ -39,7 +40,9 @@ public class Buddy implements Parcelable {
         return accountDbId;
     }
 
-    public @NonNull String getBuddyId() {
+    public
+    @NonNull
+    String getBuddyId() {
         return buddyId;
     }
 

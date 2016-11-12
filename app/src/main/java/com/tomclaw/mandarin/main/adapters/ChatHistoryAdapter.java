@@ -14,7 +14,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;

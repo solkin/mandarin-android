@@ -3,12 +3,10 @@ package com.tomclaw.mandarin.im.icq;
 import com.tomclaw.mandarin.im.UrlEncodedBody;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URL;
 
 import okio.Buffer;
@@ -26,6 +24,7 @@ public class CabbageTokenRequest extends WimRequest {
     protected String getHttpRequestType() {
         return HttpUtil.POST;
     }
+
     @Override
     protected byte[] getBody() throws Throwable {
         Buffer buffer = new Buffer();

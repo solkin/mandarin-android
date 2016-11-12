@@ -1,52 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarTheme"/>
+        android:id="@+id/toolbar"
+        style="@style/ToolbarTheme" />
+
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/search_result_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <ViewSwitcher
+            android:id="@android:id/empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <ListView android:id="@+id/search_result_list"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:visibility="gone"/>
 
-        <ViewSwitcher android:id="@android:id/empty"
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent">
             <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
                 <ProgressBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <com.tomclaw.mandarin.main.views.TightTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/buddy_search_progress"
-                        android:textSize="18sp"
-                        android:fontFamily="sans-serif-light"
-                        android:paddingTop="12dp"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/buddy_search_progress"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:paddingTop="12dp" />
             </LinearLayout>
+
             <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center">
-                <com.tomclaw.mandarin.main.views.TightTextView android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:text="@string/buddy_search_no_result"
-                          android:textSize="18sp"
-                          android:fontFamily="sans-serif-light"/>
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.tomclaw.mandarin.main.views.TightTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/buddy_search_no_result"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light" />
             </LinearLayout>
         </ViewSwitcher>
-        <include layout="@layout/toolbar_shadow_view"/>
+
+        <include layout="@layout/toolbar_shadow_view" />
     </FrameLayout>
 </LinearLayout>

@@ -1,13 +1,16 @@
 package com.tomclaw.mandarin.core;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.im.BuddyData;
@@ -223,40 +226,40 @@ public class GlobalProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         String table;
         boolean isDistinct = false;
         // проверяем Uri
         switch (uriMatcher.match(uri)) {
-            case URI_REQUEST: // Default Uri
+            case URI_REQUEST:
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROW_AUTO_ID + " ASC";
                 }
                 table = REQUEST_TABLE;
                 break;
-            case URI_ACCOUNT: // Default Uri
+            case URI_ACCOUNT:
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ACCOUNT_NAME + " ASC";
                 }
                 table = ACCOUNTS_TABLE;
                 break;
-            case URI_GROUP: // Default Uri
+            case URI_GROUP:
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_GROUP_NAME + " ASC";
                 }
                 table = ROSTER_GROUP_TABLE;
                 break;
-            case URI_BUDDY: // Default Uri
+            case URI_BUDDY:
                 // Default sort if not specified
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = ROSTER_BUDDY_ID + " ASC";
                 }
                 table = ROSTER_BUDDY_TABLE;
                 break;
-            case URI_HISTORY: // Default Uri
+            case URI_HISTORY:
                 // Default sort if not specified
                 table = CHAT_HISTORY_TABLE;
                 break;
@@ -274,62 +277,59 @@ public class GlobalProvider extends ContentProvider {
         } else {
             cursor = sqLiteDatabase.query(table, projection, selection, selectionArgs, null, null, sortOrder);
         }
-        // Cursor cursor = sqLiteDatabase.query(distinct, table, projection, selection, selectionArgs, null, null, sortOrder, null);
-
-        // Cursor cursor = sqLiteDatabase.query(true, ROSTER_GROUP_TABLE, new String[]{ROSTER_GROUP_NAME}, null, null, null, null, null, null);
-        // Logger.log("Cursor items count: " + cursor.getCount());
-        // просим ContentResolver уведомлять этот курсор
-        // об изменениях данных в GROUP_RESOLVER_URI
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        cursor.setNotificationUri(getContentResolver(), uri);
         return cursor;
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         Logger.log("getType, " + uri.toString());
         return null;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         long rowId = sqLiteDatabase.insert(getTableName(uri), null, values);
         Uri resultUri = ContentUris.withAppendedId(uri, rowId);
         // Notify ContentResolver about data changes.
-        getContext().getContentResolver().notifyChange(resultUri, null);
+        getContentResolver().notifyChange(resultUri, null);
         return resultUri;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.delete(getTableName(uri), selection, selectionArgs);
         // Notify ContentResolver about data changes.
         if (rows > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContentResolver().notifyChange(uri, null);
         }
         return rows;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         int rows = sqLiteDatabase.update(getTableName(uri), values, selection, selectionArgs);
         // Notify ContentResolver about data changes.
         if (rows > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContentResolver().notifyChange(uri, null);
         }
         return rows;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Bundle call(String method, String arg, Bundle extras) {
+    public Bundle call(@NonNull String method, String arg, Bundle extras) {
         if (method.equals(METHOD_UPDATE_ROSTER)) {
             long updateTime = System.currentTimeMillis();
             int accountDbId = extras.getInt(KEY_ACCOUNT_DB_ID);
             String accountType = extras.getString(KEY_ACCOUNT_TYPE);
             ArrayList<GroupData> groupDatas = (ArrayList<GroupData>) extras.getSerializable(KEY_GROUP_DATAS);
+            if (groupDatas == null) {
+                return null;
+            }
             int buddiesCount = 0;
             sqLiteDatabase.beginTransaction();
             try {
@@ -354,8 +354,8 @@ public class GlobalProvider extends ContentProvider {
             Logger.log("roster processing " + buddiesCount + " buddies/" + updateDelay + " msec " +
                     "(speed: " + (buddiesCount * 1000 / updateDelay) + " buddies/sec)");
             // Notify interested observers.
-            getContext().getContentResolver().notifyChange(Settings.GROUP_RESOLVER_URI, null);
-            getContext().getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+            getContentResolver().notifyChange(Settings.GROUP_RESOLVER_URI, null);
+            getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;
     }
@@ -382,5 +382,13 @@ public class GlobalProvider extends ContentProvider {
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
         return table;
+    }
+
+    private @NonNull ContentResolver getContentResolver() {
+        Context context = getContext();
+        if (context == null) {
+            throw new IllegalStateException("GlobalProvider not attached to context!");
+        }
+        return context.getContentResolver();
     }
 }

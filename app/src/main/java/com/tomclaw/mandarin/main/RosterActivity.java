@@ -13,7 +13,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ActionMode;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +33,7 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStatusAdapter;
@@ -104,17 +104,15 @@ public class RosterActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Buddy buddy = generalAdapter.getBuddy(position);
-                int accountDbId = buddy.getAccountDbId();
-                String buddyId = buddy.getBuddyId();
-                Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
+                StrictBuddy buddy = generalAdapter.getBuddy(position);
+                Logger.log("Opening dialog with buddy: " + buddy.toString());
                 try {
                     // Trying to open dialog with this buddy.
                     QueryHelper.modifyDialog(getContentResolver(), buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(Buddy.KEY_BUDDY_STRUCT, buddy);
+                            .putExtra(StrictBuddy.KEY_STRUCT, buddy);
                     startActivity(intent);
                     finish();
                 } catch (Exception e) {
@@ -200,11 +198,11 @@ public class RosterActivity extends ChiefActivity {
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper<Buddy> selectionHelper;
+        private SelectionHelper<StrictBuddy> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            Buddy buddy = generalAdapter.getBuddy(position);
+            StrictBuddy buddy = generalAdapter.getBuddy(position);
             selectionHelper.onStateChanged(buddy, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
             updateMenu(mode, mode.getMenu());
@@ -306,8 +304,8 @@ public class RosterActivity extends ChiefActivity {
             }
         }
 
-        private void removeSelectedBuddies(Collection<Buddy> buddyDbIds) {
-            final Collection<Buddy> selectedBuddies = new ArrayList<>(buddyDbIds);
+        private void removeSelectedBuddies(Collection<StrictBuddy> buddyDbIds) {
+            final Collection<StrictBuddy> selectedBuddies = new ArrayList<>(buddyDbIds);
             boolean isMultiple = buddyDbIds.size() > 1;
             String message;
             if (isMultiple) {

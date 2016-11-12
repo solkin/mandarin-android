@@ -28,6 +28,7 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.Logger;
@@ -192,7 +193,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         return buddyCursor;
     }
 
-    public Buddy getBuddy(int position) {
+    public StrictBuddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);

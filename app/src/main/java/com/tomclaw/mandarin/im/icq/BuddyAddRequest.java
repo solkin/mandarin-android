@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
@@ -32,7 +33,7 @@ public class BuddyAddRequest extends WimRequest {
     protected int parseJson(JSONObject response) throws JSONException {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        Buddy buddy = new Buddy(getAccountRoot().getAccountDbId(), groupName, buddyId);
+        StrictBuddy buddy = new StrictBuddy(getAccountRoot().getAccountDbId(), groupName, buddyId);
         // Check for server reply.
         if (statusCode == WIM_OK) {
             // We'll delete rename label later, when roster

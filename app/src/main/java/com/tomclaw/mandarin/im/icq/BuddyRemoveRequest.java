@@ -4,6 +4,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
@@ -32,19 +33,19 @@ public class BuddyRemoveRequest extends WimRequest {
     protected int parseJson(JSONObject response) throws JSONException {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        Buddy buddy = new Buddy(getAccountRoot().getAccountDbId(), groupName, buddyId);
+        StrictBuddy strictBuddy = new StrictBuddy(getAccountRoot().getAccountDbId(), groupName, buddyId);
         // Check for server reply.
         if (statusCode == WIM_OK) {
             // Buddy will be removed later when it became outdated in roster.
             return REQUEST_DELETE;
         } else if (statusCode == 601) {
             // Buddy not found in roster.
-            QueryHelper.removeBuddy(getAccountRoot().getContentResolver(), buddy);
+            QueryHelper.removeBuddy(getAccountRoot().getContentResolver(), strictBuddy);
             return REQUEST_DELETE;
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Return buddy.
             QueryHelper.modifyOperation(getAccountRoot().getContentResolver(),
-                    buddy, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
+                    strictBuddy, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.

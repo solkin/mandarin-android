@@ -190,7 +190,7 @@ public class BuddyCursor implements Closeable {
                 getBuddyStatusMessage(), getBuddyAvatarHash(), getBuddyLastSeen());
     }
 
-    public Buddy toBuddy() {
-        return new Buddy(getBuddyAccountDbId(), getBuddyGroup(), getBuddyId());
+    public StrictBuddy toBuddy() {
+        return new StrictBuddy(getBuddyAccountDbId(), getBuddyGroup(), getBuddyId());
     }
 }

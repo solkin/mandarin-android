@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
@@ -679,10 +680,40 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 
+    private static void modifyStrictBuddy(ContentResolver contentResolver, StrictBuddy buddy, ContentValues contentValues) {
+        modifyStrictBuddies(contentResolver, Collections.singleton(buddy), contentValues);
+    }
+
+    private static void modifyStrictBuddies(ContentResolver contentResolver, Collection<StrictBuddy> buddies, ContentValues contentValues) {
+        QueryBuilder queryBuilder = strictBuddiesQueryBuilder(buddies);
+        queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+    }
+
     private static QueryBuilder buddiesQueryBuilder(Collection<Buddy> buddies) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isFirst = true;
         for (Buddy buddy : buddies) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                queryBuilder.or();
+            }
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
+            queryBuilder
+                    .startComplexExpression()
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                    .and()
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+                    .finishComplexExpression();
+        }
+        return queryBuilder;
+    }
+
+    private static QueryBuilder strictBuddiesQueryBuilder(Collection<StrictBuddy> buddies) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        boolean isFirst = true;
+        for (StrictBuddy buddy : buddies) {
             if (isFirst) {
                 isFirst = false;
             } else {
@@ -695,12 +726,10 @@ public class QueryHelper {
                     .startComplexExpression()
                     .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                     .and()
-                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-            if (buddy.isGroupClarified()) {
-                queryBuilder.and()
-                        .columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
-            }
-            queryBuilder.finishComplexExpression();
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+                    .and()
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName)
+                    .finishComplexExpression();
         }
         return queryBuilder;
     }
@@ -963,7 +992,7 @@ public class QueryHelper {
     }
 
     public static void moveBuddyIntoRecycle(ContentResolver contentResolver, Resources resources,
-                                            Buddy buddy) {
+                                            StrictBuddy buddy) {
         // To move buddy into recycle, we must have such recycle.
         checkOrCreateRecycleGroup(contentResolver, resources);
         // Now, we can move with pleasure.
@@ -973,7 +1002,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
-        modifyBuddy(contentResolver, buddy, contentValues);
+        modifyStrictBuddy(contentResolver, buddy, contentValues);
     }
 
     public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
@@ -995,8 +1024,8 @@ public class QueryHelper {
         Logger.log("outdated removed: " + removedBuddies);
     }
 
-    public static void removeBuddy(ContentResolver contentResolver, Buddy buddy) {
-        QueryBuilder queryBuilder = buddiesQueryBuilder(Collections.singletonList(buddy));
+    public static void removeBuddy(ContentResolver contentResolver, StrictBuddy buddy) {
+        QueryBuilder queryBuilder = strictBuddiesQueryBuilder(Collections.singletonList(buddy));
         queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
     }
 

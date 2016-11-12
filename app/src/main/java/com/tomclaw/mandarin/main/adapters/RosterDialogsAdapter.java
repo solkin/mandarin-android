@@ -26,7 +26,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
-import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -60,7 +60,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     private BuddyCursor buddyCursor;
 
-    private final SelectionHelper<Buddy> selectionHelper = new SelectionHelper<>();
+    private final SelectionHelper<StrictBuddy> selectionHelper = new SelectionHelper<>();
 
     private SelectionModeListener selectionModeListener;
     private ClickListener clickListener;
@@ -137,7 +137,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         return buddyCursor;
     }
 
-    public Buddy getBuddy(int position) {
+    public StrictBuddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
@@ -167,15 +167,15 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     }
 
     public interface SelectionModeListener {
-        void onItemStateChanged(Buddy buddy);
+        void onItemStateChanged(StrictBuddy buddy);
 
         void onNothingSelected();
 
-        void onLongClicked(Buddy buddy, SelectionHelper<Buddy> selectionHelper);
+        void onLongClicked(StrictBuddy buddy, SelectionHelper<StrictBuddy> selectionHelper);
     }
 
     public interface ClickListener {
-        void onItemClicked(Buddy buddy);
+        void onItemClicked(StrictBuddy buddy);
     }
 
     static class DialogViewHolder extends RecyclerView.ViewHolder {
@@ -200,7 +200,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
         }
 
-        void bind(SelectionHelper<Buddy> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
+        void bind(SelectionHelper<StrictBuddy> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
             Context context = itemView.getContext();
             // Selection indicator.
             int[] attrs = new int[]{R.attr.selectableItemBackground};
@@ -281,7 +281,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             final String avatarHash = buddyCursor.getBuddyAvatarHash();
             BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
             // On-avatar click listener.
-            final Buddy buddy = buddyCursor.toBuddy();
+            final StrictBuddy buddy = buddyCursor.toBuddy();
             final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddy);
             contactBadge.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -293,8 +293,8 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
         void bindClickListeners(final ClickListener clickListener,
                                 final SelectionModeListener selectionModeListener,
-                                final SelectionHelper<Buddy> selectionHelper,
-                                final Buddy buddy) {
+                                final SelectionHelper<StrictBuddy> selectionHelper,
+                                final StrictBuddy buddy) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -3,33 +3,24 @@ package com.tomclaw.mandarin.im;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 /**
  * Created by ivsolkin on 12.10.16.
  */
 public class Buddy implements Parcelable {
 
-    public static final String KEY_BUDDY_STRUCT = "buddy_struct";
+    public static final String KEY_STRUCT = "buddy_struct";
 
     private int accountDbId;
-    @Nullable private String groupName;
     @NonNull private String buddyId;
 
-    public Buddy(int accountDbId, String buddyId) {
-        this(accountDbId, null, buddyId);
-    }
-
-    public Buddy(int accountDbId, @Nullable String groupName, @NonNull String buddyId) {
+    public Buddy(int accountDbId, @NonNull String buddyId) {
         this.accountDbId = accountDbId;
-        this.groupName = groupName;
         this.buddyId = buddyId;
     }
 
     protected Buddy(Parcel in) {
         accountDbId = in.readInt();
-        groupName = in.readString();
         buddyId = in.readString();
     }
 
@@ -41,20 +32,11 @@ public class Buddy implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(accountDbId);
-        dest.writeString(groupName);
         dest.writeString(buddyId);
     }
 
     public int getAccountDbId() {
         return accountDbId;
-    }
-
-    public @Nullable String getGroupName() {
-        return groupName;
-    }
-
-    public boolean isGroupClarified() {
-        return !TextUtils.isEmpty(groupName);
     }
 
     public @NonNull String getBuddyId() {
@@ -69,8 +51,6 @@ public class Buddy implements Parcelable {
         Buddy buddy = (Buddy) o;
 
         if (accountDbId != buddy.accountDbId) return false;
-        if (groupName != null ? !groupName.equals(buddy.groupName) : buddy.groupName != null)
-            return false;
         return buddyId.equals(buddy.buddyId);
 
     }
@@ -78,7 +58,6 @@ public class Buddy implements Parcelable {
     @Override
     public int hashCode() {
         int result = accountDbId;
-        result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
         result = 31 * result + buddyId.hashCode();
         return result;
     }
@@ -87,7 +66,6 @@ public class Buddy implements Parcelable {
     public String toString() {
         return "Buddy{" +
                 "accountDbId=" + accountDbId +
-                ", groupName='" + groupName + '\'' +
                 ", buddyId='" + buddyId + '\'' +
                 '}';
     }

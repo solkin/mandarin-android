@@ -7,7 +7,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.StrictBuddy;
 
 import java.util.Collection;
 
@@ -16,9 +16,9 @@ import java.util.Collection;
  */
 public class BuddyRemoveTask extends PleaseWaitTask {
 
-    private Collection<Buddy> buddies;
+    private Collection<StrictBuddy> buddies;
 
-    public BuddyRemoveTask(Context context, Collection<Buddy> buddies) {
+    public BuddyRemoveTask(Context context, Collection<StrictBuddy> buddies) {
         super(context);
         this.buddies = buddies;
     }
@@ -28,7 +28,7 @@ public class BuddyRemoveTask extends PleaseWaitTask {
         Context context = getWeakObject();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
-            for (Buddy buddy : buddies) {
+            for (StrictBuddy buddy : buddies) {
                 // Mark as removing.
                 QueryHelper.modifyOperation(contentResolver, buddy,
                         GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);

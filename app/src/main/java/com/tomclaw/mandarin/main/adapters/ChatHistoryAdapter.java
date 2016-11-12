@@ -15,6 +15,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
 import com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView;
@@ -72,7 +73,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
      */
     private final int LOADER_ID = 10;
 
-    private Buddy buddy = null;
+    private StrictBuddy buddy = null;
 
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
@@ -99,7 +100,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
-                              Buddy buddy, TimeHelper timeHelper) {
+                              StrictBuddy buddy, TimeHelper timeHelper) {
         super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
@@ -111,7 +112,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         setHasStableIds(true);
     }
 
-    private void setBuddy(Buddy buddy) {
+    private void setBuddy(StrictBuddy buddy) {
         if (!TextUtils.isEmpty(buddy.getBuddyId())) {
             // Destroy current loader.
             loaderManager.destroyLoader(LOADER_ID);
@@ -121,7 +122,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-    public Buddy getBuddy() {
+    public StrictBuddy getBuddy() {
         return buddy;
     }
 

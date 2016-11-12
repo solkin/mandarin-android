@@ -59,6 +59,7 @@ import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -150,7 +151,7 @@ public class ChatActivity extends ChiefActivity {
         timeHelper = new TimeHelper(this);
 
         Intent intent = getIntent();
-        final Buddy buddy = getIntentBuddy(intent);
+        final StrictBuddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
         startTitleObservation(buddy);
@@ -564,7 +565,7 @@ public class ChatActivity extends ChiefActivity {
         // Save currently entered text as draft before switching.
         saveMessageTextAsDraft();
 
-        Buddy buddy = getIntentBuddy(intent);
+        StrictBuddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
         // Checking for buddy is really correct.
@@ -671,12 +672,12 @@ public class ChatActivity extends ChiefActivity {
         // TODO: must be implemented.
     }
 
-    private Buddy getIntentBuddy(Intent intent) {
+    private StrictBuddy getIntentBuddy(Intent intent) {
         Bundle bundle = intent.getExtras();
-        Buddy buddy = null;
+        StrictBuddy buddy = null;
         // Checking for bundle condition.
         if (bundle != null) {
-            buddy = bundle.getParcelable(Buddy.KEY_BUDDY_STRUCT);
+            buddy = bundle.getParcelable(StrictBuddy.KEY_STRUCT);
         }
         return buddy;
     }
@@ -875,7 +876,7 @@ public class ChatActivity extends ChiefActivity {
         public ClearHistoryTask(Context context, Buddy buddy) {
             super(context);
             // We need to clear history even if this buddy present in any groups.
-            this.buddy = new Buddy(buddy.getAccountDbId(), buddy.getBuddyId());
+            this.buddy = buddy;
         }
 
         @Override

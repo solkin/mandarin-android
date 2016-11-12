@@ -137,8 +137,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
             Uri uri = Uri.fromFile(storeFile);
-            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
+//            TODO: reimplement this.
+//            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
+//                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
             if (!isStartDownload(isFirstAttempt, fileSize)) {
                 // All other attempts will be manual.
@@ -147,9 +148,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             }
             return downloadLink;
         } else {
-            QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId,
-                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage);
+//            QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
+//                    getAccountRoot().getAccountDbId(), buddyId,
+//                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage);
             throw new DownloadException();
         }
     }
@@ -222,11 +223,11 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         // Show chat activity with concrete buddy.
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
+            int accountDbId = getAccountRoot().getAccountDbId();
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, ChatActivity.class)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ID, buddyId)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     PendingIntent.FLAG_CANCEL_CURRENT);
         } catch (Throwable ignored) {

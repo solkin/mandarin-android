@@ -6,9 +6,9 @@ import java.util.List;
 public class HistDlgState {
 
     private String sn;
-    private Boolean starting;
+    private boolean starting;
     private long lastMsgId;
-    private long unreadCnt;
+    private long unreadCnt;//+
     private Yours yours;
     private Theirs theirs;
     private List<Message> messages = Collections.emptyList();
@@ -19,7 +19,7 @@ public class HistDlgState {
         return sn;
     }
 
-    public Boolean getStarting() {
+    public boolean isStarting() {
         return starting;
     }
 

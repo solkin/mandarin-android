@@ -4,10 +4,9 @@ import android.content.ContentResolver;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BuddyData;
+import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -49,7 +48,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_SID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AMP;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ASSERT_CAPS;
-import static com.tomclaw.mandarin.im.icq.WimConstants.AUTORESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDIES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDYLIST;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDY_ICON;
@@ -75,7 +73,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_DLG_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IMF;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES;
@@ -86,7 +83,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.LANGUAGE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LAST_SEEN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_ID;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MESSAGE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MINIMIZE_RESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOBILE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_ICON;
@@ -94,7 +90,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_TITLE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
 import static com.tomclaw.mandarin.im.icq.WimConstants.NAME;
-import static com.tomclaw.mandarin.im.icq.WimConstants.OFFLINE_IM;
 import static com.tomclaw.mandarin.im.icq.WimConstants.PASSWORD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.PEEK;
 import static com.tomclaw.mandarin.im.icq.WimConstants.POLL_TIMEOUT;
@@ -111,13 +106,11 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_SECRET;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_TIMEOUT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SIG_SHA256;
-import static com.tomclaw.mandarin.im.icq.WimConstants.SOURCE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.START_SESSION_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_MSG;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TIMEOUT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.TIMESTAMP;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_A;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TS;
@@ -534,10 +527,10 @@ public class IcqSession {
                                 }
                                 if (!isProcessed) {
                                     int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-                                    QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn(),
-                                            messageType, String.valueOf(message.getMsgId()),
-                                            message.getTime() * 1000, message.getText());
+//                                    QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+//                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn(),
+//                                            messageType, String.valueOf(message.getMsgId()),
+//                                            message.getTime() * 1000, message.getText());
                                 }
                                 isProcessed = true;
                             } catch (BuddyNotFoundException ignored) {

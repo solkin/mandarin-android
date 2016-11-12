@@ -20,6 +20,7 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
@@ -193,17 +194,15 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
     private class OpenDialogTask extends WeakObjectTask<Context> {
 
-        private int buddyDbId;
-
         public OpenDialogTask(Context object) {
             super(object);
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            buddyDbId = QueryHelper.getBuddyDbId(getContentResolver(), getAccountDbId(), getBuddyId());
+            Buddy buddy = new Buddy(getAccountDbId(), getBuddyId());
             // Trying to open dialog with this buddy.
-            QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+            QueryHelper.modifyDialog(getContentResolver(), buddy, true);
         }
 
         @Override
@@ -212,7 +211,8 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             if (context != null) {
                 Intent intent = new Intent(context, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, getAccountDbId())
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_ID, getBuddyId());
                 startActivity(intent);
             }
         }

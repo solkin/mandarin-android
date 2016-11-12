@@ -16,7 +16,6 @@ import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +42,8 @@ import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.BuddyObserver;
+import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
@@ -57,7 +57,6 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.UriFile;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
@@ -151,10 +150,10 @@ public class ChatActivity extends ChiefActivity {
         timeHelper = new TimeHelper(this);
 
         Intent intent = getIntent();
-        final int buddyDbId = getIntentBuddyDbId(intent);
+        final Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
-        startTitleObservation(buddyDbId);
+        startTitleObservation(buddy);
         buddyObserver.touch();
 
         contentClickListener = new ContentClickListener();
@@ -187,7 +186,7 @@ public class ChatActivity extends ChiefActivity {
             }
         };
 
-        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
 
@@ -203,7 +202,7 @@ public class ChatActivity extends ChiefActivity {
         // Send button and message field initialization.
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        setMessageTextFromDraft(buddyDbId);
+        setMessageTextFromDraft(buddy);
         applySharingData(sharingData);
         messageText.setOnClickListener(new View.OnClickListener() {
 
@@ -351,7 +350,7 @@ public class ChatActivity extends ChiefActivity {
         final String message = getMessageText().trim();
         Logger.log("message = " + message);
         if (!TextUtils.isEmpty(message)) {
-            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            Buddy buddy = chatHistoryAdapter.getBuddy();
             messageText.setText("");
             scrollBottom();
             MessageCallback callback = new MessageCallback() {
@@ -366,19 +365,21 @@ public class ChatActivity extends ChiefActivity {
                 }
             };
             TaskExecutor.getInstance().execute(
-                    new SendMessageTask(this, buddyDbId, message, callback));
+                    new SendMessageTask(this, buddy, message, callback));
         }
     }
 
     private void setTyping(boolean isTyping) {
-        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+        Buddy buddy = chatHistoryAdapter.getBuddy();
         TaskExecutor.getInstance().execute(
-                new SendTypingTask(this, buddyDbId, isTyping));
+                new SendTypingTask(this, buddy, isTyping));
     }
 
     private void setTypingSync(boolean isTyping) {
-        RequestHelper.requestTyping(getContentResolver(),
-                chatHistoryAdapter.getBuddyDbId(), isTyping);
+        Buddy buddy = chatHistoryAdapter.getBuddy();
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+        RequestHelper.requestTyping(getContentResolver(), accountDbId, buddyId, isTyping);
     }
 
     private void onGlobalLayoutUpdated() {
@@ -505,12 +506,12 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddy(), false);
                 onBackPressed();
                 return true;
             }
             case R.id.buddy_info_menu: {
-                BuddyInfoTask buddyInfoTask = new BuddyInfoTask(this, chatHistoryAdapter.getBuddyDbId());
+                BuddyInfoTask buddyInfoTask = new BuddyInfoTask(this, chatHistoryAdapter.getBuddy());
                 TaskExecutor.getInstance().execute(buddyInfoTask);
                 return true;
             }
@@ -522,7 +523,7 @@ public class ChatActivity extends ChiefActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
-                                chatHistoryAdapter.getBuddyDbId());
+                                chatHistoryAdapter.getBuddy());
                         TaskExecutor.getInstance().execute(clearHistoryTask);
                     }
                 });
@@ -563,25 +564,25 @@ public class ChatActivity extends ChiefActivity {
         // Save currently entered text as draft before switching.
         saveMessageTextAsDraft();
 
-        int buddyDbId = getIntentBuddyDbId(intent);
+        Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
-        // Checking for buddy db id is really correct.
-        if (buddyDbId == -1) {
+        // Checking for buddy is really correct.
+        if (buddy == null) {
             return;
         }
 
-        startTitleObservation(buddyDbId);
+        startTitleObservation(buddy);
 
         if (chatHistoryAdapter != null) {
             chatHistoryAdapter.close();
         }
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
         chatList.setAdapter(chatHistoryAdapter);
 
-        setMessageTextFromDraft(buddyDbId);
+        setMessageTextFromDraft(buddy);
         applySharingData(sharingData);
     }
 
@@ -612,7 +613,7 @@ public class ChatActivity extends ChiefActivity {
             }
             case PICK_GALLERY_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
-                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    Buddy buddy = chatHistoryAdapter.getBuddy();
                     if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
                         Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
                         if (bundle != null) {
@@ -621,7 +622,8 @@ public class ChatActivity extends ChiefActivity {
                                 photoEntries.add((PhotoEntry) bundle.getSerializable(key));
                             }
                             scrollBottom();
-                            TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
+                            TaskExecutor.getInstance().execute(
+                                    new SendPhotosTask(this, buddy, photoEntries));
                         }
                     } else if (data.getData() != null) {
                         onFilePicked(data.getData());
@@ -633,7 +635,7 @@ public class ChatActivity extends ChiefActivity {
 
     private void onFilePicked(Uri uri) {
         try {
-            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            Buddy buddy = chatHistoryAdapter.getBuddy();
             MessageCallback callback = new MessageCallback() {
 
                 @Override
@@ -647,8 +649,7 @@ public class ChatActivity extends ChiefActivity {
             };
             scrollBottom();
             UriFile uriFile = UriFile.create(this, uri);
-            TaskExecutor.getInstance().execute(
-                    new SendFileTask(this, buddyDbId, uriFile, callback));
+            TaskExecutor.getInstance().execute(new SendFileTask(this, buddy, uriFile, callback));
         } catch (Throwable ignored) {
         }
     }
@@ -670,15 +671,14 @@ public class ChatActivity extends ChiefActivity {
         // TODO: must be implemented.
     }
 
-    private int getIntentBuddyDbId(Intent intent) {
+    private Buddy getIntentBuddy(Intent intent) {
         Bundle bundle = intent.getExtras();
-        int buddyDbId = -1;
+        Buddy buddy = null;
         // Checking for bundle condition.
         if (bundle != null) {
-            // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+            buddy = bundle.getParcelable(Buddy.KEY_BUDDY_STRUCT);
         }
-        return buddyDbId;
+        return buddy;
     }
 
     private SharingData getIntentSharingData(Intent intent) {
@@ -696,17 +696,18 @@ public class ChatActivity extends ChiefActivity {
         return sharingData;
     }
 
-    private void startTitleObservation(final int buddyDbId) {
+    private void startTitleObservation(final Buddy buddy) {
         if (buddyObserver != null) {
             buddyObserver.stop();
         }
-        buddyObserver = new ChatBuddyObserver(getContentResolver(), buddyDbId);
+        buddyObserver = new ChatBuddyObserver(getContentResolver(), buddy);
     }
 
-    private void setMessageTextFromDraft(int buddyDbId) {
+    private void setMessageTextFromDraft(Buddy buddy) {
         String enteredText;
         try {
-            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
+            enteredText = QueryHelper.getBuddyDraft(getContentResolver(),
+                    buddy.getAccountDbId(), buddy.getBuddyId());
         } catch (BuddyNotFoundException ignored) {
             enteredText = null;
         }
@@ -719,7 +720,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void saveMessageTextAsDraft() {
-        QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
+        QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddy(), getMessageText());
     }
 
     public void scrollBottom() {
@@ -731,7 +732,7 @@ public class ChatActivity extends ChiefActivity {
         if (sharingData != null && sharingData.isValid()) {
             if (sharingData.getUri() != null) {
                 scrollBottom();
-                int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                Buddy buddy = chatHistoryAdapter.getBuddy();
                 MessageCallback callback = new MessageCallback() {
 
                     @Override
@@ -752,7 +753,7 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
                 TaskExecutor.getInstance().execute(
-                        new SendFileTask(this, buddyDbId, uriFiles, callback));
+                        new SendFileTask(this, buddy, uriFiles, callback));
             } else {
                 String share;
                 if (TextUtils.isEmpty(sharingData.getSubject())) {
@@ -839,9 +840,10 @@ public class ChatActivity extends ChiefActivity {
 
         private String getSelectedMessages() {
             // Obtain selected positions.
-            Collection<Long> selectedIds = selectionHelper.getSelectedIds();
-            return QueryHelper.getMessagesTexts(getContentResolver(),
-                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
+            Collection<Long> selectedIds = selectionHelper.getSelected();
+//            return QueryHelper.getMessagesTexts(getContentResolver(),
+//                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
+            return null;
         }
 
         private Intent createShareIntent() {
@@ -858,8 +860,7 @@ public class ChatActivity extends ChiefActivity {
                     .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            selectionHelper.getSelectedIds();
-                            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelectedIds());
+                            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelected());
                             mode.finish();
                         }
                     })
@@ -869,11 +870,12 @@ public class ChatActivity extends ChiefActivity {
 
     private class ClearHistoryTask extends PleaseWaitTask {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
 
-        public ClearHistoryTask(Context context, int buddyDbId) {
+        public ClearHistoryTask(Context context, Buddy buddy) {
             super(context);
-            this.buddyDbId = buddyDbId;
+            // We need to clear history even if this buddy present in any groups.
+            this.buddy = new Buddy(buddy.getAccountDbId(), buddy.getBuddyId());
         }
 
         @Override
@@ -882,7 +884,7 @@ public class ChatActivity extends ChiefActivity {
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
                 if (contentResolver != null) {
-                    QueryHelper.clearHistory(contentResolver, buddyDbId);
+                    QueryHelper.clearHistory(contentResolver, buddy);
                 }
             }
         }
@@ -899,13 +901,13 @@ public class ChatActivity extends ChiefActivity {
 
     private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private String message;
         private final MessageCallback callback;
 
-        public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+        public SendMessageTask(ChiefActivity activity, Buddy buddy, String message, MessageCallback callback) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.message = message;
             this.callback = callback;
         }
@@ -916,10 +918,10 @@ public class ChatActivity extends ChiefActivity {
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
-                QueryHelper.insertMessage(contentResolver, buddyDbId,
-                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
+//                QueryHelper.insertMessage(contentResolver, buddyDbId,
+//                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
                 // Sending protocol message request.
-                RequestHelper.requestMessage(contentResolver, buddyDbId, cookie, message);
+//                RequestHelper.requestMessage(contentResolver, buddy, cookie, message);
             }
         }
 
@@ -941,12 +943,12 @@ public class ChatActivity extends ChiefActivity {
 
     private class SendPhotosTask extends PleaseWaitTask {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private final List<PhotoEntry> selectedPhotos;
 
-        public SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
+        public SendPhotosTask(Context context, Buddy buddy, List<PhotoEntry> photoEntries) {
             super(context);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.selectedPhotos = photoEntries;
         }
 
@@ -968,10 +970,10 @@ public class ChatActivity extends ChiefActivity {
                         String hash = photoEntry.hash;
                         String tag = cookie + ":" + uriFile.getPath();
                         // Create outgoing file messages.
-                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                                uriFile.getName(), contentType, size, hash, tag);
+//                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+//                                uriFile.getName(), contentType, size, hash, tag);
                         // Sending protocol message request.
-                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+//                        RequestHelper.requestFileSend(contentResolver, buddy, cookie, tag, uriFile);
                         counter++;
                     }
                 }
@@ -981,18 +983,18 @@ public class ChatActivity extends ChiefActivity {
 
     private class SendFileTask extends PleaseWaitTask {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private List<UriFile> uriFiles;
         private final MessageCallback callback;
         private Random random;
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
-            this(activity, buddyDbId, Collections.singletonList(uriFile), callback);
+        public SendFileTask(ChiefActivity activity, Buddy buddy, UriFile uriFile, MessageCallback callback) {
+            this(activity, buddy, Collections.singletonList(uriFile), callback);
         }
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, List<UriFile> uriFiles, MessageCallback callback) {
+        public SendFileTask(ChiefActivity activity, Buddy buddy, List<UriFile> uriFiles, MessageCallback callback) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.uriFiles = uriFiles;
             this.callback = callback;
             this.random = new Random();
@@ -1027,10 +1029,10 @@ public class ChatActivity extends ChiefActivity {
                         // ... and async saving in storage.
                         BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
                     }
-                    QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                            uriFile.getName(), contentType, size, hash, tag);
+//                    QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+//                            uriFile.getName(), contentType, size, hash, tag);
                     // Sending protocol message request.
-                    RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+//                    RequestHelper.requestFileSend(contentResolver, buddy, cookie, tag, uriFile);
                 }
             }
         }
@@ -1053,12 +1055,12 @@ public class ChatActivity extends ChiefActivity {
 
     public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private boolean isTyping;
 
-        public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+        public SendTypingTask(ChiefActivity activity, Buddy buddy, boolean isTyping) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.isTyping = isTyping;
         }
 
@@ -1067,8 +1069,10 @@ public class ChatActivity extends ChiefActivity {
             ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
+                int accountDbId = buddy.getAccountDbId();
+                String buddyId = buddy.getBuddyId();
                 // Sending protocol typing request.
-                RequestHelper.requestTyping(contentResolver, buddyDbId, isTyping);
+                RequestHelper.requestTyping(contentResolver, accountDbId, buddyId, isTyping);
             }
         }
     }
@@ -1286,8 +1290,8 @@ public class ChatActivity extends ChiefActivity {
 
     public class ChatBuddyObserver extends BuddyObserver {
 
-        public ChatBuddyObserver(ContentResolver contentResolver, int buddyDbId) {
-            super(contentResolver, buddyDbId);
+        public ChatBuddyObserver(ContentResolver contentResolver, Buddy buddy) {
+            super(contentResolver, buddy);
         }
 
         @Override

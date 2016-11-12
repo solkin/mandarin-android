@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
@@ -15,6 +14,7 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.GsonSingleton;
@@ -22,13 +22,14 @@ import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
-import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -317,51 +318,51 @@ public class QueryHelper {
         queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
     }
 
-    public static void modifyBuddyDraft(ContentResolver contentResolver, int buddyDbId, String buddyDraft) {
+    public static void modifyBuddyDraft(ContentResolver contentResolver, Buddy buddy, String buddyDraft) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DRAFT, buddyDraft);
-        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+        modifyBuddies(contentResolver, Collections.singleton(buddy), contentValues);
     }
 
-    public static void modifyDialog(ContentResolver contentResolver, int buddyDbId, boolean isOpened) {
-        modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened);
+    public static void modifyDialog(ContentResolver contentResolver, Buddy buddy, boolean isOpened) {
+        modifyDialogs(contentResolver, Collections.singleton(buddy), isOpened);
     }
 
-    public static void modifyDialog(ContentResolver contentResolver, int buddyDbId,
+    public static void modifyDialog(ContentResolver contentResolver, Buddy buddy,
                                     boolean isOpened, long lastMessageTime) {
-        modifyDialogs(contentResolver, Collections.singleton(buddyDbId), isOpened, lastMessageTime);
+        modifyDialogs(contentResolver, Collections.singleton(buddy), isOpened, lastMessageTime);
     }
 
-    public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds, boolean isOpened) {
+    public static void modifyDialogs(ContentResolver contentResolver, Collection<Buddy> buddies, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
-        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+        modifyBuddies(contentResolver, buddies, contentValues);
     }
 
-    public static void modifyDialogs(ContentResolver contentResolver, Collection<Integer> buddyDbIds,
+    public static void modifyDialogs(ContentResolver contentResolver, Collection<Buddy> buddies,
                                      boolean isOpened, long lastMessageTime) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME, lastMessageTime);
-        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+        modifyBuddies(contentResolver, buddies, contentValues);
     }
 
-    public static void modifyOperation(ContentResolver contentResolver, int buddyDbId, int operation) {
-        modifyOperation(contentResolver, Collections.singleton(buddyDbId), operation);
+    public static void modifyOperation(ContentResolver contentResolver, Buddy buddy, int operation) {
+        modifyOperation(contentResolver, Collections.singleton(buddy), operation);
     }
 
-    public static void modifyOperation(ContentResolver contentResolver, Collection<Integer> buddyDbIds, int operation) {
+    public static void modifyOperation(ContentResolver contentResolver, Collection<Buddy> buddy, int operation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, operation);
-        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+        modifyBuddies(contentResolver, buddy, contentValues);
     }
 
-    public static void modifyBuddyNick(ContentResolver contentResolver, int buddyDbId,
+    public static void modifyBuddyNick(ContentResolver contentResolver, Buddy buddy,
                                        String buddyNick, boolean isStartOperation) {
-        modifyBuddyNick(contentResolver, Collections.singleton(buddyDbId), buddyNick, isStartOperation);
+        modifyBuddyNick(contentResolver, Collections.singleton(buddy), buddyNick, isStartOperation);
     }
 
-    public static void modifyBuddyNick(ContentResolver contentResolver, Collection<Integer> buddyDbIds,
+    public static void modifyBuddyNick(ContentResolver contentResolver, Collection<Buddy> buddies,
                                        String buddyNick, boolean isStartOperation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
@@ -369,114 +370,118 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, isStartOperation ?
                 GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME : GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
-        modifyBuddies(contentResolver, buddyDbIds, contentValues);
+        modifyBuddies(contentResolver, buddies, contentValues);
     }
 
-    public static void insertMessage(ContentResolver contentResolver, int buddyDbId,
-                                     int messageType, String cookie, String messageText)
-            throws BuddyNotFoundException {
-        insertTextMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                messageType, cookie, 0, messageText);
-    }
+//    public static void insertMessage(ContentResolver contentResolver, int buddyDbId,
+//                                     int messageType, String cookie, String messageText)
+//            throws BuddyNotFoundException {
+//        insertTextMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+//                messageType, cookie, 0, messageText);
+//    }
 
-    public static void insertTextMessage(ContentResolver contentResolver, int accountDbId,
-                                         int buddyDbId, int messageType, String cookie,
-                                         long messageTime, String messageText) {
-        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
-        // Checking for time specified.
-        if (messageTime == 0) {
-            messageTime = System.currentTimeMillis();
-        }
-        // Update last message time and make dialog opened.
-        modifyDialog(contentResolver, buddyDbId, true, messageTime);
-        // No matching request message. Insert new message.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
-        contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-    }
+//    public static void insertTextMessage(ContentResolver contentResolver, int accountDbId,
+//                                         int buddyDbId, int messageType, String cookie,
+//                                         long messageTime, String messageText) {
+//        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
+//        // Checking for time specified.
+//        if (messageTime == 0) {
+//            messageTime = System.currentTimeMillis();
+//        }
+//        // Update last message time and make dialog opened.
+//        modifyDialog(contentResolver, buddyDbId, true, messageTime);
+//        // No matching request message. Insert new message.
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
+//        contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
+//        contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
+//    }
 
-    public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 Uri uri, String name, int contentType, long contentSize,
-                                                 String previewHash, String contentTag)
-            throws BuddyNotFoundException {
-        insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, 0, "", contentType,
-                contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(),
-                name, previewHash, contentTag);
-    }
+//    public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
+//                                                 Uri uri, String name, int contentType, long contentSize,
+//                                                 String previewHash, String contentTag)
+//            throws BuddyNotFoundException {
+//        insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+//                GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, 0, "", contentType,
+//                contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING, uri.toString(),
+//                name, previewHash, contentTag);
+//    }
+//
+//    public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
+//                                                 long time, String originalMessage, Uri uri, String name, int contentType,
+//                                                 long contentSize, String previewHash, String contentTag) throws BuddyNotFoundException {
+//        insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
+//                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage,
+//                contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+//                uri.toString(), name, previewHash, contentTag);
+//    }
 
-    public static void insertIncomingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
-                                                 long time, String originalMessage, Uri uri, String name, int contentType,
-                                                 long contentSize, String previewHash, String contentTag) throws BuddyNotFoundException {
-        insertFileMessage(contentResolver, getBuddyAccountDbId(contentResolver, buddyDbId), buddyDbId,
-                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage,
-                contentType, contentSize, GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                uri.toString(), name, previewHash, contentTag);
-    }
+//    public static void insertFileMessage(ContentResolver contentResolver, int accountDbId,
+//                                         int buddyDbId, int messageType, String cookie,
+//                                         long messageTime, String messageText, int contentType,
+//                                         long contentSize, int contentState, String contentUri,
+//                                         String contentName, String previewHash, String contentTag) {
+//        // Checking for time specified.
+//        if (messageTime == 0) {
+//            messageTime = System.currentTimeMillis();
+//        }
+//        // Update last message time and make dialog opened.
+//        modifyDialog(contentResolver, buddyDbId, true, messageTime);
+//        // No matching request message. Insert new message.
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
+//        contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
+//        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, contentType);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, contentSize);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, contentState);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, contentUri);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
+//        contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
+//        contentValues.put(GlobalProvider.HISTORY_CONTENT_TAG, contentTag);
+//        // Try to modify message or create it.
+//        if (modifyFile(contentResolver, contentValues, messageType, cookie) == 0) {
+//            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+//            contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
+//        }
+//    }
 
-    public static void insertFileMessage(ContentResolver contentResolver, int accountDbId,
-                                         int buddyDbId, int messageType, String cookie,
-                                         long messageTime, String messageText, int contentType,
-                                         long contentSize, int contentState, String contentUri,
-                                         String contentName, String previewHash, String contentTag) {
-        // Checking for time specified.
-        if (messageTime == 0) {
-            messageTime = System.currentTimeMillis();
-        }
-        // Update last message time and make dialog opened.
-        modifyDialog(contentResolver, buddyDbId, true, messageTime);
-        // No matching request message. Insert new message.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, contentType);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, contentSize);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, contentState);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_URI, contentUri);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, contentName);
-        contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, previewHash);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TAG, contentTag);
-        // Try to modify message or create it.
-        if (modifyFile(contentResolver, contentValues, messageType, cookie) == 0) {
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-            contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-        }
-    }
-
-    public static void insertMessage(ContentResolver contentResolver, int accountDbId,
-                                     String buddyId, int messageType, String cookie,
-                                     long messageTime, String messageText)
-            throws BuddyNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-                .descending(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME);
-        // Obtain account db id.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have more than only one entry.
-        if (cursor.moveToFirst()) {
-            // Insert message only for buddy with latest message time.
-            int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Plain message query.
-            insertTextMessage(contentResolver, accountDbId, buddyDbId,
-                    messageType, cookie, messageTime, messageText);
-            // Closing cursor.
-            cursor.close();
-        } else {
-            // Closing cursor.
-            cursor.close();
-            throw new BuddyNotFoundException();
-        }
-    }
+//    public static void insertMessage(ContentResolver contentResolver, int accountDbId,
+//                                     String buddyId, int messageType, String cookie,
+//                                     long messageTime, String messageText)
+//            throws BuddyNotFoundException {
+//        QueryBuilder queryBuilder = new QueryBuilder();
+//        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+//                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
+//                .descending(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME);
+//        // Obtain account db id.
+//        Cursor cursor = null;
+//        try {
+//            cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+//            // Cursor may have more than only one entry.
+//            if (cursor.moveToFirst()) {
+//                // Insert message only for buddy with latest message time.
+//                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+//                // Plain message query.
+//                insertTextMessage(contentResolver, accountDbId, buddyDbId,
+//                        messageType, cookie, messageTime, messageText);
+//            } else {
+//                throw new BuddyNotFoundException();
+//            }
+//        } finally {
+//            if (cursor != null) {
+//                // Closing cursor.
+//                cursor.close();
+//            }
+//        }
+//    }
 
     /**
      * Will append some more cookie to message.
@@ -595,61 +600,61 @@ public class QueryHelper {
         return cursor.getCount() > 0;
     }
 
-    /**
-     * This method helps to get formatted messages from history by ids.
-     * But this method is really, really strange!
-     * Should be rewritten. Sometime.
-     *
-     * @param contentResolver - plain content resolver.
-     * @param timeHelper      - time helper to format messages time
-     * @param messageIds      - messages to be queried.
-     * @return formatted messages.
-     */
-    public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {
-        StringBuilder messageBuilder = new StringBuilder();
-        QueryBuilder queryBuilder = messagesByIds(messageIds);
-        // Get specified messages.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    int messageType = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE));
-                    String messageText = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
-                    long messageTime = cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME));
-                    String messageTimeText = timeHelper.getFormattedTime(messageTime);
-                    String messageDateText = timeHelper.getFormattedDate(messageTime);
-                    int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID));
-                    int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID));
-                    String buddyNick = "Unknown";
-                    try {
-                        // Select message type.
-                        switch (messageType) {
-                            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                                buddyNick = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
-                                break;
-                            }
-                            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
-                                buddyNick = QueryHelper.getAccountName(contentResolver, accountDbId);
-                                break;
-                            }
-                        }
-                    } catch (BuddyNotFoundException ignored) {
-                    } catch (AccountNotFoundException ignored) {
-                    }
-                    // Building message copy.
-                    messageBuilder.append('[').append(buddyNick).append(']').append('\n');
-                    messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
-                    messageBuilder.append(messageText);
-                    messageBuilder.append('\n').append('\n');
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return messageBuilder.toString();
-    }
+//    /**
+//     * This method helps to get formatted messages from history by ids.
+//     * But this method is really, really strange!
+//     * Should be rewritten. Sometime.
+//     *
+//     * @param contentResolver - plain content resolver.
+//     * @param timeHelper      - time helper to format messages time
+//     * @param messageIds      - messages to be queried.
+//     * @return formatted messages.
+//     */
+//    public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {
+//        StringBuilder messageBuilder = new StringBuilder();
+//        QueryBuilder queryBuilder = messagesByIds(messageIds);
+//        // Get specified messages.
+//        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+//        try {
+//            if (cursor != null && cursor.moveToFirst()) {
+//                do {
+//                    int messageType = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE));
+//                    String messageText = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT));
+//                    long messageTime = cursor.getLong(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME));
+//                    String messageTimeText = timeHelper.getFormattedTime(messageTime);
+//                    String messageDateText = timeHelper.getFormattedDate(messageTime);
+//                    int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID));
+//                    int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID));
+//                    String buddyNick = "Unknown";
+//                    try {
+//                        // Select message type.
+//                        switch (messageType) {
+//                            case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
+//                                buddyNick = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
+//                                break;
+//                            }
+//                            case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
+//                                buddyNick = QueryHelper.getAccountName(contentResolver, accountDbId);
+//                                break;
+//                            }
+//                        }
+//                    } catch (BuddyNotFoundException ignored) {
+//                    } catch (AccountNotFoundException ignored) {
+//                    }
+//                    // Building message copy.
+//                    messageBuilder.append('[').append(buddyNick).append(']').append('\n');
+//                    messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
+//                    messageBuilder.append(messageText);
+//                    messageBuilder.append('\n').append('\n');
+//                } while (cursor.moveToNext());
+//            }
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//        }
+//        return messageBuilder.toString();
+//    }
 
     private static QueryBuilder messagesByIds(Collection<Long> messageIds) {
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -665,54 +670,47 @@ public class QueryHelper {
         return queryBuilder;
     }
 
-    private static void modifyBuddy(ContentResolver contentResolver, int buddyDbId, ContentValues contentValues) {
-        modifyBuddies(contentResolver, Collections.singleton(buddyDbId), contentValues);
+    private static void modifyBuddy(ContentResolver contentResolver, Buddy buddy, ContentValues contentValues) {
+        modifyBuddies(contentResolver, Collections.singleton(buddy), contentValues);
     }
 
-    private static void modifyBuddies(ContentResolver contentResolver, Collection<Integer> buddyDbIds, ContentValues contentValues) {
+    private static void modifyBuddies(ContentResolver contentResolver, Collection<Buddy> buddies, ContentValues contentValues) {
+        QueryBuilder queryBuilder = buddiesQueryBuilder(buddies);
+        queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+    }
+
+    private static QueryBuilder buddiesQueryBuilder(Collection<Buddy> buddies) {
         QueryBuilder queryBuilder = new QueryBuilder();
         boolean isFirst = true;
-        for (int buddyDbId : buddyDbIds) {
+        for (Buddy buddy : buddies) {
             if (isFirst) {
                 isFirst = false;
             } else {
                 queryBuilder.or();
             }
-            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
+            String groupName = buddy.getGroupName();
+            queryBuilder
+                    .startComplexExpression()
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                    .and()
+                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+            if (buddy.isGroupClarified()) {
+                queryBuilder.and()
+                        .columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
+            }
+            queryBuilder.finishComplexExpression();
         }
-        queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+        return queryBuilder;
     }
 
     public static void modifyBuddyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
                                          String avatarHash) throws BuddyNotFoundException {
-        // Obtain buddy db id.
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have more than only one entry.
-        if (cursor.moveToFirst()) {
-            // Cycling all the identical buddies in different groups.
-            do {
-                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                // String dbAvatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
-                // Plain buddy modify.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
-                modifyBuddy(contentResolver, buddyDbId, contentValues);
-                /* TODO: think about this.
-                if(!TextUtils.equals(dbAvatarHash, avatarHash)) {
-                    // Avatar changed or removed. No need for previous bitmap in cache.
-                    BitmapCache.getInstance().removeBitmap(dbAvatarHash);
-                }*/
-            } while (cursor.moveToNext());
-            // Closing cursor.
-            cursor.close();
-        } else {
-            // Closing cursor.
-            cursor.close();
-            throw new BuddyNotFoundException();
-        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
+        Buddy buddy = new Buddy(accountDbId, buddyId);
+        modifyBuddy(contentResolver, buddy, contentValues);
     }
 
     public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
@@ -734,13 +732,13 @@ public class QueryHelper {
         if (cursor.moveToFirst()) {
             // Cycling all the identical buddies in different groups.
             do {
-                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
                 avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
                 // Checking for no buddy icon now, so, we must reset avatar hash.
                 if (TextUtils.isEmpty(buddyIcon) && !TextUtils.isEmpty(avatarHash)) {
                     contentValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
                 }
-                modifyBuddy(contentResolver, buddyDbId, contentValues);
+                Buddy buddy = new Buddy(accountDbId, buddyId);
+                modifyBuddy(contentResolver, buddy, contentValues);
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
@@ -758,28 +756,10 @@ public class QueryHelper {
 
     public static void modifyBuddyTyping(ContentResolver contentResolver, int accountDbId, String buddyId,
                                          boolean isTyping) throws BuddyNotFoundException {
-        // Plain buddy modify.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_TYPING, isTyping ? System.currentTimeMillis() : 0);
-        // Obtain buddy db id.
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have more than only one entry.
-        if (cursor.moveToFirst()) {
-            // Cycling all the identical buddies in different groups.
-            do {
-                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                modifyBuddy(contentResolver, buddyDbId, contentValues);
-            } while (cursor.moveToNext());
-            // Closing cursor.
-            cursor.close();
-        } else {
-            // Closing cursor.
-            cursor.close();
-            throw new BuddyNotFoundException();
-        }
+        Buddy buddy = new Buddy(accountDbId, buddyId);
+        modifyBuddy(contentResolver, buddy, contentValues);
     }
 
     public static void replaceOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
@@ -983,7 +963,7 @@ public class QueryHelper {
     }
 
     public static void moveBuddyIntoRecycle(ContentResolver contentResolver, Resources resources,
-                                            int buddyDbId) {
+                                            Buddy buddy) {
         // To move buddy into recycle, we must have such recycle.
         checkOrCreateRecycleGroup(contentResolver, resources);
         // Now, we can move with pleasure.
@@ -993,7 +973,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
-        modifyBuddy(contentResolver, buddyDbId, contentValues);
+        modifyBuddy(contentResolver, buddy, contentValues);
     }
 
     public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
@@ -1015,13 +995,12 @@ public class QueryHelper {
         Logger.log("outdated removed: " + removedBuddies);
     }
 
-    public static void removeBuddy(ContentResolver contentResolver, int buddyDbId) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
+    public static void removeBuddy(ContentResolver contentResolver, Buddy buddy) {
+        QueryBuilder queryBuilder = buddiesQueryBuilder(Collections.singletonList(buddy));
         queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
     }
 
-    public static Collection<Integer> getBuddyDbIds(ContentResolver contentResolver, int accountDbId,
+    public static Collection<Buddy> getBuddies(ContentResolver contentResolver, int accountDbId,
                                                     String buddyId, Map<String, Object> criteria)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -1032,20 +1011,25 @@ public class QueryHelper {
         for (String key : criteria.keySet()) {
             queryBuilder.and().columnEquals(key, criteria.get(key));
         }
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But lets check.
-        if (cursor.moveToFirst()) {
-            List<Integer> buddyDbIds = new ArrayList<Integer>();
-            do {
-                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-                buddyDbIds.add(buddyDbId);
-            } while (cursor.moveToNext());
-            // Closing cursor.
-            cursor.close();
-            return buddyDbIds;
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = new BuddyCursor(queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI));
+            // Cursor may have no more than only one entry. But lets check.
+            if (buddyCursor.moveToFirst()) {
+                Set<Buddy> buddies = new HashSet<>();
+                do {
+                    Buddy buddy = buddyCursor.toBuddy();
+                    buddies.add(buddy);
+                } while (buddyCursor.moveToNext());
+                // Closing cursor.
+                buddyCursor.close();
+                return new ArrayList<>(buddies);
+            }
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
-        // Closing cursor.
-        cursor.close();
         throw new BuddyNotFoundException();
     }
 
@@ -1118,11 +1102,9 @@ public class QueryHelper {
 
     public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain specified buddy. If exist.
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        return getBuddyCursor(contentResolver, queryBuilder);
+        return getBuddyCursor(contentResolver, new QueryBuilder()
+                .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId));
     }
 
     public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
@@ -1150,9 +1132,9 @@ public class QueryHelper {
         }
     }
 
-    public static String getBuddyDraft(ContentResolver contentResolver, int buddyDbId)
+    public static String getBuddyDraft(ContentResolver contentResolver, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, accountDbId, buddyId);
         try {
             return buddyCursor.getBuddyDraft();
         } finally {
@@ -1218,55 +1200,54 @@ public class QueryHelper {
         throw new AccountNotFoundException();
     }
 
-    public static void clearHistory(ContentResolver contentResolver, int buddyDbId) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+    public static void clearHistory(ContentResolver contentResolver, Buddy buddy) {
+        QueryBuilder queryBuilder = buddiesQueryBuilder(Collections.singletonList(buddy));
         queryBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
     }
 
-    public static int getMoreActiveDialog(ContentResolver contentResolver)
-            throws BuddyNotFoundException, MessageNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Query for opened dialogs.
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have more than only one entry.
-        if (cursor.moveToFirst()) {
-            int buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-            // Creating query to history table, contains all messages from all opened dialogs.
-            queryBuilder.recycle();
-            do {
-                int buddyDbId = cursor.getInt(buddyDbIdColumn);
-                queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-                if (!cursor.isLast()) {
-                    queryBuilder.or();
-                }
-            } while (cursor.moveToNext());
-            // Closing cursor.
-            cursor.close();
-            // Query for the most recent message.
-            queryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
-            cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
-            // Cursor may have more than only one entry. We need only first.
-            if (cursor.moveToFirst()) {
-                buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-                int moreActiveBuddyDbId = cursor.getInt(buddyDbIdColumn);
-                // Closing cursor.
-                cursor.close();
-                return moreActiveBuddyDbId;
-            } else {
-                // Closing cursor.
-                cursor.close();
-                // Really no messages.
-                throw new MessageNotFoundException();
-            }
-        } else {
-            // Closing cursor.
-            cursor.close();
-            // No opened dialogs.
-            throw new BuddyNotFoundException();
-        }
-    }
+//    public static int getMoreActiveDialog(ContentResolver contentResolver)
+//            throws BuddyNotFoundException, MessageNotFoundException {
+//        QueryBuilder queryBuilder = new QueryBuilder();
+//        // Query for opened dialogs.
+//        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_DIALOG, 1);
+//        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+//        // Cursor may have more than only one entry.
+//        if (cursor.moveToFirst()) {
+//            int buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
+//            // Creating query to history table, contains all messages from all opened dialogs.
+//            queryBuilder.recycle();
+//            do {
+//                int buddyDbId = cursor.getInt(buddyDbIdColumn);
+//                queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+//                if (!cursor.isLast()) {
+//                    queryBuilder.or();
+//                }
+//            } while (cursor.moveToNext());
+//            // Closing cursor.
+//            cursor.close();
+//            // Query for the most recent message.
+//            queryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
+//            cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+//            // Cursor may have more than only one entry. We need only first.
+//            if (cursor.moveToFirst()) {
+//                buddyDbIdColumn = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+//                int moreActiveBuddyDbId = cursor.getInt(buddyDbIdColumn);
+//                // Closing cursor.
+//                cursor.close();
+//                return moreActiveBuddyDbId;
+//            } else {
+//                // Closing cursor.
+//                cursor.close();
+//                // Really no messages.
+//                throw new MessageNotFoundException();
+//            }
+//        } else {
+//            // Closing cursor.
+//            cursor.close();
+//            // No opened dialogs.
+//            throw new BuddyNotFoundException();
+//        }
+//    }
 
     public static void updateBuddyOrAccountAvatar(AccountRoot accountRoot, String buddyId, String hash) {
         // Check for destination buddy is account.

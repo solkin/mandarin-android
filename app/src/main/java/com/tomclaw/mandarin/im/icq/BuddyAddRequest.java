@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
@@ -32,16 +32,7 @@ public class BuddyAddRequest extends WimRequest {
     protected int parseJson(JSONObject response) throws JSONException {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        // Searching for local buddy db id.
-        int buddyDbId;
-        try {
-            buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getAccountDbId(), groupName, buddyId);
-        } catch (BuddyNotFoundException ignored) {
-            // Wha-a-a-at?! No buddy found. Maybe, it was deleted or never exists?
-            // Heh, delete request.
-            return REQUEST_DELETE;
-        }
+        Buddy buddy = new Buddy(getAccountRoot().getAccountDbId(), groupName, buddyId);
         // Check for server reply.
         if (statusCode == WIM_OK) {
             // We'll delete rename label later, when roster
@@ -49,8 +40,8 @@ public class BuddyAddRequest extends WimRequest {
             return REQUEST_DELETE;
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Move buddy into recycle.
-            QueryHelper.moveBuddyIntoRecycle(getAccountRoot().getContentResolver(), getAccountRoot().getResources(),
-                    buddyDbId);
+            QueryHelper.moveBuddyIntoRecycle(getAccountRoot().getContentResolver(),
+                    getAccountRoot().getResources(), buddy);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.

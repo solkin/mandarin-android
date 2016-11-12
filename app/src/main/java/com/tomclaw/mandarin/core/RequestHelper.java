@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.AccountAvatarRequest;
 import com.tomclaw.mandarin.im.icq.BuddyAddRequest;
@@ -162,20 +163,10 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setMoodRequest);
     }
 
-    public static void requestTyping(ContentResolver contentResolver, int buddyDbId, boolean isTyping) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Cursor may have more than only one entry.
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, typingRequest);
-            }
-            cursor.close();
-        }
+    public static void requestTyping(ContentResolver contentResolver,
+                                     int accountDbId, String buddyId, boolean isTyping) {
+        IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, typingRequest);
     }
 
     public static void requestAdd(ContentResolver contentResolver, int accountDbId, String buddyId,

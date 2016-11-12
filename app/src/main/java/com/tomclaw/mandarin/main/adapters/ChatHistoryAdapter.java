@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
 import com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView;
@@ -68,14 +70,16 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     /**
      * Adapter ID
      */
-    private int buddyDbId = -1;
+    private final int LOADER_ID = 10;
+
+    private Buddy buddy = null;
 
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
     private static int COLUMN_MESSAGE_TYPE;
     private static int COLUMN_MESSAGE_COOKIE;
     private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
-    private static int COLUMN_MESSAGE_BUDDY_DB_ID;
+    private static int COLUMN_MESSAGE_BUDDY_ID;
     private static int COLUMN_ROW_AUTO_ID;
     private static int COLUMN_CONTENT_TYPE;
     private static int COLUMN_CONTENT_SIZE;
@@ -94,30 +98,31 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
 
     private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
+                              Buddy buddy, TimeHelper timeHelper) {
         super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.loaderManager = loaderManager;
         this.timeHelper = timeHelper;
-        setBuddyDbId(buddyBdId);
+        setBuddy(buddy);
         // Initialize smileys.
         SmileyParser.init(context);
         setHasStableIds(true);
     }
 
-    private void setBuddyDbId(int buddyDbId) {
-        if (buddyDbId >= 0) {
+    private void setBuddy(Buddy buddy) {
+        if (!TextUtils.isEmpty(buddy.getBuddyId())) {
             // Destroy current loader.
-            loaderManager.destroyLoader(buddyDbId);
+            loaderManager.destroyLoader(LOADER_ID);
         }
-        this.buddyDbId = buddyDbId;
+        this.buddy = buddy;
         // Initialize loader for adapter Id.
-        loaderManager.initLoader(buddyDbId, null, this);
+        loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-    public int getBuddyDbId() {
-        return buddyDbId;
+    public Buddy getBuddy() {
+        return buddy;
     }
 
     @Override
@@ -135,7 +140,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
             COLUMN_MESSAGE_COOKIE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE);
             COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
-            COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
+            COLUMN_MESSAGE_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ID);
             COLUMN_CONTENT_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE);
             COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
             COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
@@ -243,10 +248,10 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     }
 
     private QueryBuilder getDefaultQueryBuilder() {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        queryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
-        return queryBuilder;
+        return new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, buddy.getAccountDbId()).and()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddy.getBuddyId())
+                .descending(GlobalProvider.ROW_AUTO_ID);
     }
 
     public void setContentMessageClickListener(

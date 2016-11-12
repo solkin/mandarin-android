@@ -183,4 +183,14 @@ public class BuddyCursor implements Closeable {
     public boolean isClosed() {
         return cursor.isClosed();
     }
+
+    public BuddyData toBuddyData() {
+        return new BuddyData(getBuddyGroupId(), getBuddyGroup(), getBuddyId(),
+                getBuddyNick(), getBuddyStatus(), getBuddyStatusTitle(),
+                getBuddyStatusMessage(), getBuddyAvatarHash(), getBuddyLastSeen());
+    }
+
+    public Buddy toBuddy() {
+        return new Buddy(getBuddyAccountDbId(), getBuddyGroup(), getBuddyId());
+    }
 }

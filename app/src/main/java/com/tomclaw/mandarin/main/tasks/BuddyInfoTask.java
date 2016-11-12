@@ -2,23 +2,23 @@ package com.tomclaw.mandarin.main.tasks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.WeakObjectTask;
+import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.BuddyInfoActivity;
 
 public class BuddyInfoTask extends WeakObjectTask<Context> {
 
-    private final int buddyDbId;
+    private final Buddy buddy;
 
-    public BuddyInfoTask(Context context, int buddyDbId) {
+    public BuddyInfoTask(Context context, Buddy buddy) {
         super(context);
-        this.buddyDbId = buddyDbId;
+        this.buddy = buddy;
     }
 
     @Override
@@ -26,20 +26,19 @@ public class BuddyInfoTask extends WeakObjectTask<Context> {
         // Get context from weak reference.
         Context context = getWeakObject();
         if (context != null) {
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
             // Obtain basic buddy info.
-            Cursor cursor = context.getContentResolver().query(Settings.BUDDY_RESOLVER_URI, null,
-                    GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
+            BuddyCursor cursor = QueryHelper.getBuddyCursor(context.getContentResolver(), accountDbId, buddyId);
             if (cursor != null) {
                 // Cursor may have more than only one entry.
                 if (cursor.moveToFirst()) {
-                    int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                    String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE));
-                    String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                    String buddyNick = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NICK));
-                    String avatarHash = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH));
-                    int buddyStatus = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS));
-                    String buddyStatusTitle = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE));
-                    String buddyStatusMessage = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE));
+                    String accountType = cursor.getBuddyAccountType();
+                    String buddyNick = cursor.getBuddyNick();
+                    String avatarHash = cursor.getBuddyAvatarHash();
+                    int buddyStatus = cursor.getBuddyStatus();
+                    String buddyStatusTitle = cursor.getBuddyStatusTitle();
+                    String buddyStatusMessage = cursor.getBuddyStatusMessage();
                     // Now we ready to start buddy info activity.
                     context.startActivity(new Intent(context, BuddyInfoActivity.class)
                             .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)

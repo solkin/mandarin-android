@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.adapters.RosterSharingAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStickyAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
@@ -54,15 +55,18 @@ public class SharingActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
+                Buddy buddy = generalAdapter.getBuddy(position);
+                int accountDbId = buddy.getAccountDbId();
+                String buddyId = buddy.getBuddyId();
+                Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
                 try {
                     // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    QueryHelper.modifyDialog(getContentResolver(), buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ID, buddyId)
                             .putExtra(EXTRA_SHARING_DATA, sharingData);
                     startActivity(intent);
                     finish();

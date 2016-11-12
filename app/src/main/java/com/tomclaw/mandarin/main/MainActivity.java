@@ -25,11 +25,11 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
@@ -143,7 +143,7 @@ public class MainActivity extends ChiefActivity {
         dialogsAdapter.setSelectionModeListener(new RosterDialogsAdapter.SelectionModeListener() {
 
             @Override
-            public void onItemStateChanged(int buddyDbId) {
+            public void onItemStateChanged(Buddy buddy) {
                 // Strange case, but let's check it to be sure.
                 if (actionCallback != null && actionMode != null) {
                     actionCallback.onItemCheckedStateChanged(actionMode);
@@ -160,22 +160,22 @@ public class MainActivity extends ChiefActivity {
             }
 
             @Override
-            public void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper) {
+            public void onLongClicked(Buddy buddy, SelectionHelper<Buddy> selectionHelper) {
                 if (selectionHelper.setSelectionMode(true)) {
                     actionCallback = new MultiChoiceActionCallback(selectionHelper);
                     actionMode = toolbar.startActionMode(actionCallback);
-                    selectionHelper.setChecked(buddyDbId);
-                    onItemStateChanged(buddyDbId);
+                    selectionHelper.setChecked(buddy);
+                    onItemStateChanged(buddy);
                 }
             }
         });
         dialogsAdapter.setClickListener(new RosterDialogsAdapter.ClickListener() {
             @Override
-            public void onItemClicked(int buddyDbId) {
-                Logger.log("Check out dialog with buddy (db id): " + buddyDbId);
+            public void onItemClicked(Buddy buddy) {
+                Logger.log("Check out dialog with: " + buddy.toString());
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                        .putExtra(Buddy.KEY_BUDDY_STRUCT, buddy);
                 startActivity(intent);
             }
         });
@@ -306,9 +306,9 @@ public class MainActivity extends ChiefActivity {
 
     private class MultiChoiceActionCallback implements ActionMode.Callback {
 
-        private SelectionHelper<Integer> selectionHelper;
+        private SelectionHelper<Buddy> selectionHelper;
 
-        MultiChoiceActionCallback(SelectionHelper<Integer> selectionHelper) {
+        MultiChoiceActionCallback(SelectionHelper<Buddy> selectionHelper) {
             this.selectionHelper = selectionHelper;
         }
 
@@ -330,12 +330,12 @@ public class MainActivity extends ChiefActivity {
             menu.clear();
             // Checking for unread dialogs.
             int menuRes = R.menu.chat_list_edit_menu;
-            Collection<Integer> selectedIds = selectionHelper.getSelectedIds();
+            Collection<Buddy> buddies = selectionHelper.getSelected();
             dialogsAdapter.getBuddyCursor().moveToFirst();
             BuddyCursor cursor = dialogsAdapter.getBuddyCursor();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                for (int selectedId : selectedIds) {
-                    if (selectedId == cursor.getBuddyDbId() &&
+                for (Buddy buddy : buddies) {
+                    if (buddy.equals(cursor.toBuddy()) &&
                             cursor.getBuddyUnreadCount() > 0) {
                         menuRes = R.menu.chat_list_unread_edit_menu;
                         break;
@@ -355,8 +355,8 @@ public class MainActivity extends ChiefActivity {
             switch (item.getItemId()) {
                 case R.id.select_all_chats_menu: {
                     for (int c = 0; c < dialogsAdapter.getItemCount(); c++) {
-                        int buddyDbId = dialogsAdapter.getBuddyDbId(c);
-                        selectionHelper.setChecked(buddyDbId);
+                        Buddy buddy = dialogsAdapter.getBuddy(c);
+                        selectionHelper.setChecked(buddy);
                     }
                     onItemCheckedStateChanged(mode);
                     dialogsAdapter.notifyDataSetChanged();
@@ -364,7 +364,7 @@ public class MainActivity extends ChiefActivity {
                 }
                 case R.id.close_chat_menu: {
                     try {
-                        QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);
+                        QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelected(), false);
                     } catch (Exception ignored) {
                         // Nothing to do in this case.
                     }

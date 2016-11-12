@@ -26,6 +26,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -59,7 +60,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     private BuddyCursor buddyCursor;
 
-    private final SelectionHelper<Integer> selectionHelper = new SelectionHelper<>();
+    private final SelectionHelper<Buddy> selectionHelper = new SelectionHelper<>();
 
     private SelectionModeListener selectionModeListener;
     private ClickListener clickListener;
@@ -123,7 +124,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     public void onBindViewHolderCursor(DialogViewHolder holder, Cursor cursor) {
         holder.bind(selectionHelper, buddyCursor, timeHelper);
         holder.bindClickListeners(clickListener, selectionModeListener, selectionHelper,
-                buddyCursor.getBuddyDbId());
+                buddyCursor.toBuddy());
     }
 
     @Override
@@ -136,12 +137,12 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         return buddyCursor;
     }
 
-    public int getBuddyDbId(int position) {
+    public Buddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyDbId();
+        return cursor.toBuddy();
     }
 
     public void setAdapterCallback(RosterAdapterCallback adapterCallback) {
@@ -166,15 +167,15 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     }
 
     public interface SelectionModeListener {
-        void onItemStateChanged(int buddyDbId);
+        void onItemStateChanged(Buddy buddy);
 
         void onNothingSelected();
 
-        void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper);
+        void onLongClicked(Buddy buddy, SelectionHelper<Buddy> selectionHelper);
     }
 
     public interface ClickListener {
-        void onItemClicked(int buddyDbId);
+        void onItemClicked(Buddy buddy);
     }
 
     static class DialogViewHolder extends RecyclerView.ViewHolder {
@@ -199,13 +200,13 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
         }
 
-        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
+        void bind(SelectionHelper<Buddy> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
             Context context = itemView.getContext();
             // Selection indicator.
             int[] attrs = new int[]{R.attr.selectableItemBackground};
             TypedArray ta = context.obtainStyledAttributes(attrs);
             Drawable drawableFromTheme = ta.getDrawable(0);
-            if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {
+            if (selectionHelper.isChecked(buddyCursor.toBuddy())) {
                 int backColor = R.color.orange_normal;
                 itemView.setBackgroundColor(itemView.getResources().getColor(backColor));
             } else {
@@ -280,8 +281,8 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             final String avatarHash = buddyCursor.getBuddyAvatarHash();
             BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
             // On-avatar click listener.
-            final int buddyDbId = buddyCursor.getBuddyDbId();
-            final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddyDbId);
+            final Buddy buddy = buddyCursor.toBuddy();
+            final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddy);
             contactBadge.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -292,27 +293,27 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
         void bindClickListeners(final ClickListener clickListener,
                                 final SelectionModeListener selectionModeListener,
-                                final SelectionHelper<Integer> selectionHelper,
-                                final int buddyDbId) {
+                                final SelectionHelper<Buddy> selectionHelper,
+                                final Buddy buddy) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (selectionHelper.isSelectionMode()) {
-                        selectionHelper.toggleChecked(buddyDbId);
-                        selectionModeListener.onItemStateChanged(buddyDbId);
+                        selectionHelper.toggleChecked(buddy);
+                        selectionModeListener.onItemStateChanged(buddy);
                         // Check for this was last selected item.
                         if (selectionHelper.isEmptySelection()) {
                             selectionModeListener.onNothingSelected();
                         }
                     } else {
-                        clickListener.onItemClicked(buddyDbId);
+                        clickListener.onItemClicked(buddy);
                     }
                 }
             });
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    selectionModeListener.onLongClicked(buddyDbId, selectionHelper);
+                    selectionModeListener.onLongClicked(buddy, selectionHelper);
                     return true;
                 }
             });

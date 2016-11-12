@@ -78,10 +78,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     for (int c = 1; c <= 15 + random.nextInt(15); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
                         String nick = generateRandomWord(random);
+                        String buddyId = String.valueOf(random.nextInt(999999999));
                         boolean isDialog = (random.nextInt(10) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
@@ -101,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 boolean isRead = (messageType != 1);
                                 unreadCount += isRead ? 0 : 1;
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                                cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                                cv3.put(GlobalProvider.HISTORY_BUDDY_ID, String.valueOf(buddyId));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
@@ -121,7 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
                     + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
                     + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
-                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROSTER_BUDDY_ID + ");";
             Logger.log("query: " + query);
             db.execSQL(query);
 

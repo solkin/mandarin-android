@@ -25,6 +25,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -150,8 +151,8 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
         // On-avatar click listener.
-        final int buddyDbId = buddyCursor.getBuddyDbId();
-        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);
+        final Buddy buddy = buddyCursor.toBuddy();
+        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddy);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,12 +192,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         return buddyCursor;
     }
 
-    public int getBuddyDbId(int position) {
+    public Buddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyDbId();
+        return cursor.toBuddy();
     }
 
     public void setRosterFilter(int filter) {

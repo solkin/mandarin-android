@@ -57,11 +57,11 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
         // Show chat activity with concrete buddy.
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
+            int accountDbId = getAccountRoot().getAccountDbId();
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, ChatActivity.class)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId)
+                            .putExtra(GlobalProvider.HISTORY_BUDDY_ID, buddyId)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     PendingIntent.FLAG_CANCEL_CURRENT);
         } catch (Throwable ignored) {

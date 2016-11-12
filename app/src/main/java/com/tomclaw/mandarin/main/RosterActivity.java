@@ -13,6 +13,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
@@ -58,7 +60,7 @@ public class RosterActivity extends ChiefActivity {
 
     private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
     private SearchView.OnQueryTextListener onQueryTextListener;
-    private FloatingActionButton actionButton;
+    private RosterStickyAdapter generalAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,7 @@ public class RosterActivity extends ChiefActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton actionButton = (FloatingActionButton) findViewById(R.id.fab);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +89,6 @@ public class RosterActivity extends ChiefActivity {
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
-        final RosterStickyAdapter generalAdapter;
         // Checking for adapter mode.
         String rosterMode = PreferenceHelper.getRosterMode(this);
         if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
@@ -103,15 +104,17 @@ public class RosterActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
+                Buddy buddy = generalAdapter.getBuddy(position);
+                int accountDbId = buddy.getAccountDbId();
+                String buddyId = buddy.getBuddyId();
+                Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
                 try {
                     // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    QueryHelper.modifyDialog(getContentResolver(), buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                            .putExtra(Buddy.KEY_BUDDY_STRUCT, buddy);
                     startActivity(intent);
                     finish();
                 } catch (Exception e) {
@@ -192,16 +195,17 @@ public class RosterActivity extends ChiefActivity {
 
     private void setFilterValue(int filterValue) {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
-                .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
+                .putInt(ROSTER_FILTER_PREFERENCE, filterValue).apply();
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper<Integer> selectionHelper;
+        private SelectionHelper<Buddy> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged((int) id, checked);
+            Buddy buddy = generalAdapter.getBuddy(position);
+            selectionHelper.onStateChanged(buddy, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
             updateMenu(mode, mode.getMenu());
         }
@@ -233,17 +237,17 @@ public class RosterActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.buddy_info_menu: {
-                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
-                    TaskExecutor.getInstance().execute(new BuddyInfoTask(RosterActivity.this, buddyDbId));
+                    Buddy buddy = selectionHelper.getSelected().iterator().next();
+                    TaskExecutor.getInstance().execute(new BuddyInfoTask(RosterActivity.this, buddy));
                     break;
                 }
                 case R.id.rename_buddy_menu: {
-                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
-                    renameSelectedBuddy(buddyDbId);
+                    Buddy buddy = selectionHelper.getSelected().iterator().next();
+                    renameSelectedBuddy(buddy);
                     break;
                 }
                 case R.id.remove_buddy_menu: {
-                    removeSelectedBuddies(selectionHelper.getSelectedIds());
+                    removeSelectedBuddies(selectionHelper.getSelected());
                     break;
                 }
             }
@@ -256,10 +260,11 @@ public class RosterActivity extends ChiefActivity {
             selectionHelper.clearSelection();
         }
 
-        private void renameSelectedBuddy(final int buddyDbId) {
+        private void renameSelectedBuddy(final Buddy buddy) {
             BuddyCursor buddyCursor = null;
             try {
-                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(), buddyDbId);
+                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(),
+                        buddy.getAccountDbId(), buddy.getBuddyId());
                 final int accountDbId = buddyCursor.getBuddyAccountDbId();
                 final String buddyId = buddyCursor.getBuddyId();
                 final String buddyPreviousNick = buddyCursor.getBuddyNick();
@@ -280,7 +285,7 @@ public class RosterActivity extends ChiefActivity {
                                 String buddySatisfiedNick = buddyNameText.getText().toString();
                                 // Renaming only if buddy nicks are different.
                                 if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
-                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId,
+                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddy,
                                             buddySatisfiedNick, isPersistent);
                                     if (isPersistent) {
                                         RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
@@ -301,8 +306,8 @@ public class RosterActivity extends ChiefActivity {
             }
         }
 
-        private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
-            final Collection<Integer> selectedBuddies = new ArrayList<>(buddyDbIds);
+        private void removeSelectedBuddies(Collection<Buddy> buddyDbIds) {
+            final Collection<Buddy> selectedBuddies = new ArrayList<>(buddyDbIds);
             boolean isMultiple = buddyDbIds.size() > 1;
             String message;
             if (isMultiple) {

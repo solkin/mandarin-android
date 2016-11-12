@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class GlobalProvider extends ContentProvider {
     public static final int ROSTER_BUDDY_OPERATION_REMOVE = 3;
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
-    public static final String HISTORY_BUDDY_DB_ID = "buddy_db_id";
+    public static final String HISTORY_BUDDY_ID = "buddy_id";
     public static final String HISTORY_MESSAGE_ID = "message_id";
     public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
@@ -158,7 +159,7 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_DB_ID + " int, "
+            + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_ID + " text, "
             + HISTORY_MESSAGE_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, "
             + HISTORY_MESSAGE_COOKIE + " text, "
@@ -173,20 +174,12 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_HISTORY_INDEX_BUDDY_SCRIPT = "CREATE INDEX Idx1 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +
-            GlobalProvider.HISTORY_BUDDY_DB_ID + ");";
+            GlobalProvider.HISTORY_BUDDY_ID + ");";
 
     protected static final String DB_CREATE_HISTORY_INDEX_MESSAGE_SCRIPT = "CREATE INDEX Idx2 ON " +
             GlobalProvider.CHAT_HISTORY_TABLE + "(" +
-            GlobalProvider.HISTORY_BUDDY_DB_ID + "," +
+            GlobalProvider.HISTORY_BUDDY_ID + "," +
             GlobalProvider.HISTORY_MESSAGE_TYPE + ");";
-
-    private static final String TMP_C1 = "c1";
-    private static final String TMP_C2 = "c2";
-    private static final String TMP_R1 = "r1";
-
-    private static final String UNREAD_UNSHOWN_COUNT = "unread_unshown_count";
-    private static final String SHOWN_COUNT = "shown_count";
-    private static final String ON_SCREEN_COUNT = "on_screen_count";
 
     public static final int ROW_INVALID = -1;
 
@@ -197,10 +190,6 @@ public class GlobalProvider extends ContentProvider {
     // Methods.
     public static String METHOD_UPDATE_ROSTER = "update_roster";
 
-    public static String KEY_NOTIFICATION_DATA = "key_notification_data";
-    public static String KEY_UNSHOWN = "key_unshown";
-    public static String KEY_JUST_SHOWN = "key_just_shown";
-    public static String KEY_ON_SCREEN = "key_on_screen";
     public static String KEY_ACCOUNT_DB_ID = "key_account_db_id";
     public static String KEY_ACCOUNT_TYPE = "key_account_type";
     public static String KEY_GROUP_DATAS = "key_group_datas";

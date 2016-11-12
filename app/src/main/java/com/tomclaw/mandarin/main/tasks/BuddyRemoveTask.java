@@ -7,8 +7,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.Buddy;
 
 import java.util.Collection;
 
@@ -17,11 +16,11 @@ import java.util.Collection;
  */
 public class BuddyRemoveTask extends PleaseWaitTask {
 
-    private Collection<Integer> buddyDbIds;
+    private Collection<Buddy> buddies;
 
-    public BuddyRemoveTask(Context context, Collection<Integer> buddyDbIds) {
+    public BuddyRemoveTask(Context context, Collection<Buddy> buddies) {
         super(context);
-        this.buddyDbIds = buddyDbIds;
+        this.buddies = buddies;
     }
 
     @Override
@@ -29,25 +28,15 @@ public class BuddyRemoveTask extends PleaseWaitTask {
         Context context = getWeakObject();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
-            for (int buddyDbId : buddyDbIds) {
-                BuddyCursor buddyCursor = null;
-                try {
-                    buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
-                    int accountDbId = buddyCursor.getBuddyAccountDbId();
-                    String groupName = buddyCursor.getBuddyGroup();
-                    String buddyId = buddyCursor.getBuddyId();
-                    // Mark as removing.
-                    QueryHelper.modifyOperation(contentResolver, buddyDbId,
-                            GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
-                    // Remove request.
-                    RequestHelper.requestRemove(contentResolver, accountDbId, groupName, buddyId);
-                } catch (BuddyNotFoundException ignored) {
-                    // Wha-a-a-at?! No buddy found.
-                } finally {
-                    if (buddyCursor != null) {
-                        buddyCursor.close();
-                    }
-                }
+            for (Buddy buddy : buddies) {
+                // Mark as removing.
+                QueryHelper.modifyOperation(contentResolver, buddy,
+                        GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
+                // Remove request.
+                int accountDbId = buddy.getAccountDbId();
+                String groupName = buddy.getGroupName();
+                String buddyId = buddy.getBuddyId();
+                RequestHelper.requestRemove(contentResolver, accountDbId, groupName, buddyId);
             }
         }
     }

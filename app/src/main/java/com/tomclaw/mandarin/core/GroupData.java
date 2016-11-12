@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.core;
 
+import com.tomclaw.mandarin.im.BuddyData;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 

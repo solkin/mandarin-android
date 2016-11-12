@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
@@ -38,11 +39,11 @@ public class BuddyRenameRequest extends WimRequest {
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Searching for local buddy db id with rename operation label.
-        Collection<Integer> buddyDbIds;
+        Collection<Buddy> buddies;
         try {
             Map<String, Object> criteria = new HashMap<>();
             criteria.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME);
-            buddyDbIds = QueryHelper.getBuddyDbIds(getAccountRoot().getContentResolver(),
+            buddies = QueryHelper.getBuddies(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId, criteria);
         } catch (BuddyNotFoundException ignored) {
             // Wha-a-a-at?! No buddy found. Maybe, it was deleted or never exists?
@@ -57,13 +58,13 @@ public class BuddyRenameRequest extends WimRequest {
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Return previous nick.
             QueryHelper.modifyBuddyNick(getAccountRoot().getContentResolver(),
-                    buddyDbIds, buddyPreviousNick, false);
+                    buddies, buddyPreviousNick, false);
             return REQUEST_DELETE;
         } else if (statusCode == 601) {
             // Buddy not found in roster.
             // Set satisfied nick, remove operation flag and it will be done for now.
             QueryHelper.modifyBuddyNick(getAccountRoot().getContentResolver(),
-                    buddyDbIds, buddySatisfiedNick, false);
+                    buddies, buddySatisfiedNick, false);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.

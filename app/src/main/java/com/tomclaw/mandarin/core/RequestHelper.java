@@ -43,25 +43,8 @@ import java.util.List;
  */
 public class RequestHelper {
 
-    public static void requestMessage(ContentResolver contentResolver, int buddyDbId, String cookie, String message) {
-        // Obtain account db id.
-        // TODO: out this method.
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Cursor may have more than only one entry.
-            // TODO: check for at least one buddy present.
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                requestMessage(contentResolver, accountDbId, buddyId, cookie, message);
-            }
-            cursor.close();
-        }
-    }
-
-    public static void requestMessage(ContentResolver contentResolver, int accountDbId, String buddyId,
+    public static void requestMessage(ContentResolver contentResolver,
+                                      int accountDbId, String buddyId,
                                       String cookie, String message) {
         IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
@@ -89,38 +72,20 @@ public class RequestHelper {
                 url, buddyAvatarRequest);
     }
 
-    public static void requestFileSend(ContentResolver contentResolver, int buddyDbId,
+    public static void requestFileSend(ContentResolver contentResolver,
+                                       int accountDbId, String buddyId,
                                        String cookie, String tag, UriFile uriFile) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, tag, uploadRequest);
-            }
-            cursor.close();
-        }
+        RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, tag, uploadRequest);
     }
 
-    public static void requestFileReceive(ContentResolver contentResolver, int buddyDbId,
-                                          String cookie, long time, String fileId, String fileUrl,
+    public static void requestFileReceive(ContentResolver contentResolver,
+                                          int accountDbId, String buddyId, String cookie,
+                                          long time, String fileId, String fileUrl,
                                           String originalMessage, String tag) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
-                        buddyId, cookie, time, fileId, fileUrl, originalMessage, tag);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, tag, downloadRequest);
-            }
-            cursor.close();
-        }
+        RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
+                buddyId, cookie, time, fileId, fileUrl, originalMessage, tag);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, tag, downloadRequest);
     }
 
     public static void requestAccountAvatar(ContentResolver contentResolver, int accountDbId, String url) {

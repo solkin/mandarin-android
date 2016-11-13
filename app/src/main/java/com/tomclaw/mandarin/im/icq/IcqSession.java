@@ -13,6 +13,7 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -455,13 +456,13 @@ public class IcqSession {
     private void processEvent(String eventType, JSONObject eventData) {
         Logger.log("eventType = " + eventType + "; eventData = " + eventData.toString());
         long processStartTime = System.currentTimeMillis();
+        ContentResolver contentResolver = icqAccountRoot.getContentResolver();
         switch (eventType) {
             case BUDDYLIST:
                 try {
                     ArrayList<GroupData> groupDatas = new ArrayList<>();
                     int accountDbId = icqAccountRoot.getAccountDbId();
                     String accountType = icqAccountRoot.getAccountType();
-                    ContentResolver contentResolver = icqAccountRoot.getContentResolver();
                     JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
                     for (int c = 0; c < groupsArray.length(); c++) {
                         JSONObject groupObject = groupsArray.getJSONObject(c);
@@ -510,72 +511,90 @@ public class IcqSession {
                     HistDlgState histDlgState = gson.fromJson(eventData.toString(), HistDlgState.class);
 
                     for (Message message : histDlgState.getMessages()) {
-                        boolean isProcessed = false;
-                        do {
-                            try {
-                                Matcher matcher = URL_REGEX.matcher(message.getText());
-                                while (matcher.find() && matcher.groupCount() == 1) {
-                                    // TODO: also show message body.
-                                    String url = matcher.group();
-                                    String fileId = matcher.group(1);
-                                    int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
-                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn());
-                                    String tag = message.getMsgId() + ":" + url;
-                                    RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                            buddyDbId, String.valueOf(message.getMsgId()), message.getTime() * 1000, fileId, url, message.getText(), tag);
-                                    isProcessed = true;
-                                }
-                                if (!isProcessed) {
-                                    int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-//                                    QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-//                                            icqAccountRoot.getAccountDbId(), histDlgState.getSn(),
-//                                            messageType, String.valueOf(message.getMsgId()),
-//                                            message.getTime() * 1000, message.getText());
-                                }
-                                isProcessed = true;
-                            } catch (BuddyNotFoundException ignored) {
-                                if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
-                                    isProcessed = true;
-                                } else {
-                                    int statusIndex = StatusUtil.STATUS_OFFLINE;
-                                    String statusTitle = getStatusTitle(null, statusIndex);
-                                    String buddyNick = histDlgState.getPersons().get(0).getFriendly();
-                                    String statusMessage = "";
-                                    String buddyIcon = null;
-                                    long lastSeen = -1;
+                        int accountDbId = icqAccountRoot.getAccountDbId();
+                        String accountType = icqAccountRoot.getAccountType();
+                        String buddyId = histDlgState.getSn();
+                        Buddy buddy = new Buddy(accountDbId, buddyId);
+                        boolean buddyExist = QueryHelper.checkBuddy(contentResolver, accountDbId, buddyId);
+                        if (!buddyExist) {
+                            if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                                continue;
+                            } else {
+                                int statusIndex = StatusUtil.STATUS_OFFLINE;
+                                String statusTitle = getStatusTitle(null, statusIndex);
+                                String buddyNick = histDlgState.getPersons().get(0).getFriendly();
+                                String statusMessage = "";
+                                String buddyIcon = null;
+                                long lastSeen = -1;
+                                String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                                long updateTime = System.currentTimeMillis();
 
-                                    String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                                    QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                                            icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                            recycleString, histDlgState.getSn(), buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
-                                }
+                                QueryHelper.updateOrCreateBuddy(
+                                        contentResolver,
+                                        accountDbId,
+                                        accountType,
+                                        updateTime,
+                                        GlobalProvider.GROUP_ID_RECYCLE,
+                                        recycleString,
+                                        buddyId,
+                                        buddyNick,
+                                        statusIndex,
+                                        statusTitle,
+                                        statusMessage,
+                                        buddyIcon,
+                                        lastSeen);
                             }
-                            // This will try to create buddy if such is not present
-                            // in roster and then retry message insertion.
-                        } while (!isProcessed);
+                        }
+                        boolean isProcessed = false;
+//                        Matcher matcher = URL_REGEX.matcher(message.getText());
+//                        while (matcher.find() && matcher.groupCount() == 1) {
+//                            // TODO: also show message body.
+//                            String url = matcher.group();
+//                            String fileId = matcher.group(1);
+//                            String tag = message.getMsgId() + ":" + url;
+//                            RequestHelper.requestFileReceive(
+//                                    contentResolver, accountDbId,
+//                                    buddyId, String.valueOf(message.getMsgId()),
+//                                    message.getTime() * 1000, fileId, url,
+//                                    message.getText(), tag);
+//                            isProcessed = true;
+//                        }
+                        if (!isProcessed) {
+                            int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
+                            long prevMsgId = -1;
+                            QueryHelper.insertTextMessage(
+                                    contentResolver,
+                                    buddy,
+                                    prevMsgId,
+                                    message.getMsgId(),
+                                    messageType,
+                                    message.getReqId(),
+                                    message.getTime() * 1000,
+                                    message.getText());
+                        }
                     }
                 } catch (Throwable ex) {
                     Logger.log("exception while parsing history dialog state", ex);
                 }
                 break;
             case IM_STATE:
-                try {
-                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
-                    for (int c = 0; c < imStatesArray.length(); c++) {
-                        JSONObject imState = imStatesArray.getJSONObject(c);
-                        String state = imState.getString(STATE);
-                        String msgId = imState.getString(MSG_ID);
-                        String sendReqId = imState.optString(SEND_REQ_ID);
-                        for (int i = 0; i < IM_STATES.length; i++) {
-                            if (state.equals(IM_STATES[i])) {
-                                // TODO: something to do maybe?
-                                break;
-                            }
-                        }
-                    }
-                } catch (JSONException ex) {
-                    Logger.log("error while processing im state", ex);
-                }
+//                try {
+//                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
+//                    for (int c = 0; c < imStatesArray.length(); c++) {
+//                        JSONObject imState = imStatesArray.getJSONObject(c);
+//                        String state = imState.getString(STATE);
+//                        String msgId = imState.getString(MSG_ID);
+//                        String sendReqId = imState.optString(SEND_REQ_ID);
+//                        for (int i = 0; i < IM_STATES.length; i++) {
+//                            if (state.equals(IM_STATES[i])) {
+//                                // TODO: something to do maybe?
+//                                break;
+//                            }
+//                        }
+//                    }
+//                } catch (JSONException ex) {
+//                    Logger.log("error while processing im state", ex);
+//                }
                 break;
             case PRESENCE:
                 try {
@@ -597,7 +616,7 @@ public class IcqSession {
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 
-                    QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyStatus(contentResolver, icqAccountRoot.getAccountDbId(),
                             buddyId, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
                 } catch (JSONException ex) {
                     Logger.log("error while processing presence - JSON exception", ex);
@@ -609,7 +628,7 @@ public class IcqSession {
                 try {
                     String buddyId = eventData.getString(AIM_ID);
                     String typingStatus = eventData.getString(TYPING_STATUS);
-                    QueryHelper.modifyBuddyTyping(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyTyping(contentResolver, icqAccountRoot.getAccountDbId(),
                             buddyId, TextUtils.equals(typingStatus, TYPING_STATUS_TYPE));
                 } catch (Throwable ex) {
                     Logger.log("error while processing typing", ex);
@@ -678,6 +697,7 @@ public class IcqSession {
     /**
      * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
      */
+    @SuppressWarnings("WeakerAccess")
     public static String parseMood(String moodUrl) {
         if (moodUrl != null) {
             final String id = getIdParam(moodUrl);
@@ -705,11 +725,13 @@ public class IcqSession {
         return moodUrl;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String signRequest(String method, String url, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         return signRequest(method, url, true, builder);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String signRequest(String method, String url, boolean includeSession, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA());
@@ -728,11 +750,13 @@ public class IcqSession {
                 .concat(StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void obtainCabbageToken() {
         cabbageSession.obtainToken();
         cabbageSession.obtainClient();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void obtainCabbageClient() {
         cabbageSession.obtainClient();
     }

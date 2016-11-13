@@ -14,7 +14,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
-import com.tomclaw.mandarin.im.StrictBuddy;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
 import com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView;
@@ -72,7 +72,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
      */
     private final int LOADER_ID = 10;
 
-    private StrictBuddy buddy = null;
+    private Buddy buddy = null;
 
     private static int COLUMN_MESSAGE_TEXT;
     private static int COLUMN_MESSAGE_TIME;
@@ -99,7 +99,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
     public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
-                              StrictBuddy buddy, TimeHelper timeHelper) {
+                              Buddy buddy, TimeHelper timeHelper) {
         super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
@@ -111,7 +111,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         setHasStableIds(true);
     }
 
-    private void setBuddy(StrictBuddy buddy) {
+    private void setBuddy(Buddy buddy) {
         if (!TextUtils.isEmpty(buddy.getBuddyId())) {
             // Destroy current loader.
             loaderManager.destroyLoader(LOADER_ID);
@@ -121,7 +121,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-    public StrictBuddy getBuddy() {
+    public Buddy getBuddy() {
         return buddy;
     }
 
@@ -237,14 +237,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
                 return 0;
         }
         return type;
-    }
-
-    public long getMessageDbId(int position) throws MessageNotFoundException {
-        Cursor cursor = getCursor();
-        if (cursor == null || !cursor.moveToPosition(position)) {
-            throw new MessageNotFoundException();
-        }
-        return cursor.getLong(COLUMN_ROW_AUTO_ID);
     }
 
     private QueryBuilder getDefaultQueryBuilder() {

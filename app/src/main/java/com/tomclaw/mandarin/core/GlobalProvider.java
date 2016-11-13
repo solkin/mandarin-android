@@ -95,9 +95,10 @@ public class GlobalProvider extends ContentProvider {
 
     public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
     public static final String HISTORY_BUDDY_ID = "buddy_id";
+    public static final String HISTORY_MESSAGE_PREV_ID = "message_prev_id";
     public static final String HISTORY_MESSAGE_ID = "message_id";
-    public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
+    public static final String HISTORY_MESSAGE_TYPE = "message_type";
     public static final String HISTORY_MESSAGE_TIME = "message_time";
     public static final String HISTORY_MESSAGE_TEXT = "message_text";
     public static final String HISTORY_CONTENT_TYPE = "content_type";
@@ -163,6 +164,7 @@ public class GlobalProvider extends ContentProvider {
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_ID + " text, "
+            + HISTORY_MESSAGE_PREV_ID + " int, "
             + HISTORY_MESSAGE_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, "
             + HISTORY_MESSAGE_COOKIE + " text, "

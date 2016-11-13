@@ -8,7 +8,7 @@ public class HistDlgState {
     private String sn;
     private boolean starting;
     private long lastMsgId;
-    private long unreadCnt;//+
+    private long unreadCnt;
     private Yours yours;
     private Theirs theirs;
     private List<Message> messages = Collections.emptyList();

@@ -1,10 +1,13 @@
 package com.tomclaw.mandarin.main.tasks;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.Buddy;
@@ -26,10 +29,12 @@ public class BuddyInfoTask extends WeakObjectTask<Context> {
         // Get context from weak reference.
         Context context = getWeakObject();
         if (context != null) {
+            ContentResolver contentResolver = context.getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
             int accountDbId = buddy.getAccountDbId();
             String buddyId = buddy.getBuddyId();
             // Obtain basic buddy info.
-            BuddyCursor cursor = QueryHelper.getBuddyCursor(context.getContentResolver(), accountDbId, buddyId);
+            BuddyCursor cursor = QueryHelper.getBuddyCursor(databaseLayer, accountDbId, buddyId);
             if (cursor != null) {
                 // Cursor may have more than only one entry.
                 if (cursor.moveToFirst()) {

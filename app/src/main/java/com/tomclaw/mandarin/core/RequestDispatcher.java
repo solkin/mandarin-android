@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * Date: 6/9/13
  * Time: 7:27 PM
  */
+@SuppressWarnings("WeakerAccess")
 public class RequestDispatcher {
 
     private static final long PENDING_REQUEST_DELAY = 4000;
@@ -32,6 +33,7 @@ public class RequestDispatcher {
      */
     private Service service;
     private final SessionHolder sessionHolder;
+    private final DatabaseLayer databaseLayer;
     private final ContentResolver contentResolver;
     private int requestType;
     private DispatcherRunnable runnable;
@@ -48,6 +50,7 @@ public class RequestDispatcher {
         this.requestType = requestType;
         // Variables.
         contentResolver = service.getContentResolver();
+        databaseLayer = ContentResolverLayer.from(contentResolver);
         // Initializing executor and observer.
         initExecutor();
         runnable = new DispatcherRunnable();
@@ -90,8 +93,9 @@ public class RequestDispatcher {
             // We can simply mark is as delayed "REQUEST_LATER".
             ContentValues contentValues = new ContentValues();
             contentValues.put(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
-            contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
-                    GlobalProvider.REQUEST_TAG + "='" + tag + "'", null);
+            new QueryBuilder()
+                    .columnEquals(GlobalProvider.REQUEST_TAG, tag)
+                    .update(databaseLayer, contentValues, Settings.REQUEST_RESOLVER_URI);
             return false;
         }
     }
@@ -104,7 +108,7 @@ public class RequestDispatcher {
             queryBuilder.columnEquals(GlobalProvider.REQUEST_TYPE, requestType).and()
                     .columnNotEquals(GlobalProvider.REQUEST_STATE, Request.REQUEST_LATER);
             // Registering created observers.
-            Cursor requestCursor = queryBuilder.query(contentResolver, Settings.REQUEST_RESOLVER_URI);
+            Cursor requestCursor = queryBuilder.query(databaseLayer, Settings.REQUEST_RESOLVER_URI);
             // Check for we are ready to dispatch.
             if (requestCursor == null) {
                 log("Something strange! Request or account cursor is null.");
@@ -163,7 +167,6 @@ public class RequestDispatcher {
                         log("Normal request and will be processed now.");
                     } else {
                         boolean isDecline = false;
-                        boolean isBreak = false;
                         // Checking for query is persistent.
                         if (isPersistent) {
                             switch (requestState) {
@@ -188,8 +191,9 @@ public class RequestDispatcher {
                         }
                         // Checking for request is obsolete and must be declined.
                         if (isDecline) {
-                            contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
-                                    GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                            new QueryBuilder()
+                                    .columnEquals(GlobalProvider.ROW_AUTO_ID, requestDbId)
+                                    .delete(databaseLayer, Settings.REQUEST_RESOLVER_URI);
                             requests--;
                             break;
                         }
@@ -236,8 +240,9 @@ public class RequestDispatcher {
                     if (requestResult == Request.REQUEST_DELETE) {
                         // Result is delete-type.
                         log("Result is delete-type");
-                        contentResolver.delete(Settings.REQUEST_RESOLVER_URI,
-                                GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                        new QueryBuilder()
+                                .columnEquals(GlobalProvider.ROW_AUTO_ID, requestDbId)
+                                .delete(databaseLayer, Settings.REQUEST_RESOLVER_URI);
                         requests--;
                     } else if (requestResult == Request.REQUEST_PENDING) {
                         // Request wasn't completed. We'll retry request a little bit later.
@@ -253,8 +258,9 @@ public class RequestDispatcher {
                         ContentValues contentValues = new ContentValues();
                         contentValues.put(GlobalProvider.REQUEST_STATE, requestResult);
                         contentValues.put(GlobalProvider.REQUEST_BUNDLE, requestJson);
-                        contentResolver.update(Settings.REQUEST_RESOLVER_URI, contentValues,
-                                GlobalProvider.ROW_AUTO_ID + "='" + requestDbId + "'", null);
+                        new QueryBuilder()
+                                .columnEquals(GlobalProvider.ROW_AUTO_ID, requestDbId)
+                                .update(databaseLayer, contentValues, Settings.REQUEST_RESOLVER_URI);
                     }
                 } while (requestCursor.moveToNext());
             }

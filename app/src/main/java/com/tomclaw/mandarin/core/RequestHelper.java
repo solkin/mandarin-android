@@ -57,12 +57,12 @@ public class RequestHelper {
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(ContentResolverLayer.getInstance(contentResolver), accountDbId, buddyId, url);
+        requestBuddyAvatar(ContentResolverLayer.from(contentResolver), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(SQLiteDatabase sqLiteDatabase, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, buddyId, url);
+        requestBuddyAvatar(SQLiteDatabaseLayer.from(sqLiteDatabase), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(DatabaseLayer databaseLayer, int accountDbId,
@@ -230,13 +230,13 @@ public class RequestHelper {
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(ContentResolverLayer.getInstance(contentResolver), type,
+        insertRequest(ContentResolverLayer.from(contentResolver), type,
                 isPersistent, accountDbId, tag, appSession, request);
     }
 
     private static void insertRequest(SQLiteDatabase sqLiteDatabase, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), type,
+        insertRequest(SQLiteDatabaseLayer.from(sqLiteDatabase), type,
                 isPersistent, accountDbId, tag, appSession, request);
     }
 

@@ -6,11 +6,12 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
@@ -43,7 +44,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_SID;
@@ -76,8 +76,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IMF;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INCLUDE_PRESENCE_FIELDS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INVISIBLE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LANGUAGE;
@@ -88,7 +86,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.MINIMIZE_RESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOBILE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_ICON;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_TITLE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
 import static com.tomclaw.mandarin.im.icq.WimConstants.NAME;
 import static com.tomclaw.mandarin.im.icq.WimConstants.PASSWORD;
@@ -101,7 +98,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.R_PARAM;
-import static com.tomclaw.mandarin.im.icq.WimConstants.SEND_REQ_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_ENDED;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_SECRET;
@@ -119,7 +115,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS_TYPE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.URL_REGEX;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
@@ -457,6 +452,7 @@ public class IcqSession {
         Logger.log("eventType = " + eventType + "; eventData = " + eventData.toString());
         long processStartTime = System.currentTimeMillis();
         ContentResolver contentResolver = icqAccountRoot.getContentResolver();
+        DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
         switch (eventType) {
             case BUDDYLIST:
                 try {
@@ -508,6 +504,7 @@ public class IcqSession {
             case HIST_DLG_STATE:
                 GsonSingleton gson = GsonSingleton.getInstance();
                 try {
+                    boolean isIgnoreUnknown = PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext());
                     HistDlgState histDlgState = gson.fromJson(eventData.toString(), HistDlgState.class);
 
                     for (Message message : histDlgState.getMessages()) {
@@ -515,9 +512,9 @@ public class IcqSession {
                         String accountType = icqAccountRoot.getAccountType();
                         String buddyId = histDlgState.getSn();
                         Buddy buddy = new Buddy(accountDbId, buddyId);
-                        boolean buddyExist = QueryHelper.checkBuddy(contentResolver, accountDbId, buddyId);
+                        boolean buddyExist = QueryHelper.checkBuddy(databaseLayer, accountDbId, buddyId);
                         if (!buddyExist) {
-                            if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
+                            if (isIgnoreUnknown) {
                                 continue;
                             } else {
                                 int statusIndex = StatusUtil.STATUS_OFFLINE;
@@ -530,7 +527,7 @@ public class IcqSession {
                                 long updateTime = System.currentTimeMillis();
 
                                 QueryHelper.updateOrCreateBuddy(
-                                        contentResolver,
+                                        databaseLayer,
                                         accountDbId,
                                         accountType,
                                         updateTime,
@@ -563,7 +560,7 @@ public class IcqSession {
                             int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
                             long prevMsgId = -1;
                             QueryHelper.insertTextMessage(
-                                    contentResolver,
+                                    databaseLayer,
                                     buddy,
                                     prevMsgId,
                                     message.getMsgId(),
@@ -616,7 +613,7 @@ public class IcqSession {
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 
-                    QueryHelper.modifyBuddyStatus(contentResolver, icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyStatus(databaseLayer, icqAccountRoot.getAccountDbId(),
                             buddyId, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
                 } catch (JSONException ex) {
                     Logger.log("error while processing presence - JSON exception", ex);
@@ -628,7 +625,7 @@ public class IcqSession {
                 try {
                     String buddyId = eventData.getString(AIM_ID);
                     String typingStatus = eventData.getString(TYPING_STATUS);
-                    QueryHelper.modifyBuddyTyping(contentResolver, icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyTyping(databaseLayer, icqAccountRoot.getAccountDbId(),
                             buddyId, TextUtils.equals(typingStatus, TYPING_STATUS_TYPE));
                 } catch (Throwable ex) {
                     Logger.log("error while processing typing", ex);

@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.content.res.Resources;
+
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
@@ -40,8 +43,9 @@ public class BuddyAddRequest extends WimRequest {
             return REQUEST_DELETE;
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Move buddy into recycle.
-            QueryHelper.moveBuddyIntoRecycle(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getResources(), buddy);
+            Resources resources = getAccountRoot().getResources();
+            DatabaseLayer databaseLayer = getDatabaseLayer();
+            QueryHelper.moveBuddyIntoRecycle(databaseLayer, resources, buddy);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.

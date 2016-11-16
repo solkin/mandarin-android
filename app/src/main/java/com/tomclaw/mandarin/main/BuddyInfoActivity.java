@@ -14,7 +14,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
@@ -109,7 +110,8 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
         BuddyCursor buddyCursor = null;
         try {
-            buddyCursor = QueryHelper.getRosterBuddyCursor(getContentResolver(), getAccountDbId(), getBuddyId());
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(getContentResolver());
+            buddyCursor = QueryHelper.getRosterBuddyCursor(databaseLayer, getAccountDbId(), getBuddyId());
             buttonSwitcher.setAnimateFirstView(false);
             buttonSwitcher.showNext();
         } catch (BuddyNotFoundException ignored) {
@@ -148,17 +150,18 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
     }
 
     private void openDialog() {
-        TaskExecutor.getInstance().execute(new OpenDialogTask(this));
+        Buddy buddy = new Buddy(getAccountDbId(), getBuddyId());
+        TaskExecutor.getInstance().execute(new OpenDialogTask(this, buddy));
     }
 
-    private class AddBuddyTask extends WeakObjectTask<Context> {
+    private static class AddBuddyTask extends WeakObjectTask<BuddyInfoActivity> {
 
         private int accountDbId;
         private String buddyId;
         private String buddyNick;
         private String avatarHash;
 
-        private AddBuddyTask(Context context, int accountDbId, String buddyId,
+        private AddBuddyTask(BuddyInfoActivity context, int accountDbId, String buddyId,
                              String buddyNick, String avatarHash) {
             super(context);
             this.accountDbId = accountDbId;
@@ -172,15 +175,16 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             Context context = getWeakObject();
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                 // Default adding attributes. May be corrected.
-                String accountType = QueryHelper.getAccountType(contentResolver, accountDbId);
+                String accountType = QueryHelper.getAccountType(databaseLayer, accountDbId);
                 long updateTime = System.currentTimeMillis();
                 String groupName = context.getString(R.string.defaultGroupName);
                 int groupId = 0;
                 String authorizationMsg = context.getString(R.string.authorizationMsg);
                 // Buddy adding procedure.
-                QueryHelper.updateOrCreateGroup(contentResolver, accountDbId, updateTime, groupName, groupId);
-                QueryHelper.replaceOrCreateBuddy(contentResolver, accountDbId, accountType, updateTime,
+                QueryHelper.updateOrCreateGroup(databaseLayer, accountDbId, updateTime, groupName, groupId);
+                QueryHelper.replaceOrCreateBuddy(databaseLayer, accountDbId, accountType, updateTime,
                         groupId, groupName, buddyId, buddyNick, avatarHash);
                 RequestHelper.requestAdd(contentResolver, accountDbId, buddyId, groupName, authorizationMsg);
             }
@@ -188,21 +192,31 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
         @Override
         public void onSuccessMain() {
-            buttonSwitcher.showNext();
+            BuddyInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                activity.buttonSwitcher.showNext();
+            }
         }
     }
 
-    private class OpenDialogTask extends WeakObjectTask<Context> {
+    private static class OpenDialogTask extends WeakObjectTask<BuddyInfoActivity> {
 
-        public OpenDialogTask(Context object) {
+        private Buddy buddy;
+
+        public OpenDialogTask(BuddyInfoActivity object, Buddy buddy) {
             super(object);
+            this.buddy = buddy;
         }
 
         @Override
         public void executeBackground() throws Throwable {
-            Buddy buddy = new Buddy(getAccountDbId(), getBuddyId());
-            // Trying to open dialog with this buddy.
-            QueryHelper.modifyDialog(getContentResolver(), buddy, true);
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                // Trying to open dialog with this buddy.
+                QueryHelper.modifyDialog(databaseLayer, buddy, true);
+            }
         }
 
         @Override
@@ -211,18 +225,17 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             if (context != null) {
                 Intent intent = new Intent(context, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, getAccountDbId())
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_ID, getBuddyId());
-                startActivity(intent);
+                        .putExtra(Buddy.KEY_STRUCT, buddy);
+                context.startActivity(intent);
             }
         }
 
         @Override
         public void onFailMain() {
-            Context context = getWeakObject();
-            if (context != null) {
-                Toast.makeText(context, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
-                buttonSwitcher.showPrevious();
+            BuddyInfoActivity activity = getWeakObject();
+            if (activity != null) {
+                Toast.makeText(activity, R.string.no_buddy_in_roster, Toast.LENGTH_SHORT).show();
+                activity.buttonSwitcher.showPrevious();
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.content.ContentResolver;
 import android.content.Context;
 
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
@@ -23,18 +22,18 @@ public class SessionHolder {
 
     private final List<AccountRoot> accountRootList;
     private final Context context;
-    private final ContentResolver contentResolver;
+    private final DatabaseLayer databaseLayer;
 
     public SessionHolder(Context context) {
         this.context = context;
         // Obtain content resolver to perform queries.
-        contentResolver = context.getContentResolver();
+        databaseLayer = ContentResolverLayer.from(context.getContentResolver());
         accountRootList = new ArrayList<>();
     }
 
     public void load() {
         // Loading accounts from database.
-        QueryHelper.getAccounts(context, accountRootList);
+        QueryHelper.getAccounts(context, databaseLayer, accountRootList);
     }
 
     public AccountRoot holdAccountRoot(int accountDbId) {
@@ -44,7 +43,7 @@ public class SessionHolder {
             accountRoot = getAccount(accountDbId);
         } catch (AccountNotFoundException ignored) {
             // Obtain account root from database.
-            accountRoot = QueryHelper.getAccount(context, accountDbId);
+            accountRoot = QueryHelper.getAccount(context, databaseLayer, accountDbId);
             accountRootList.add(accountRoot);
         }
         return accountRoot;
@@ -63,7 +62,7 @@ public class SessionHolder {
             }
         }
         // Trying to remove all data from database, associated with this account.
-        return QueryHelper.removeAccount(contentResolver, accountDbId);
+        return QueryHelper.removeAccount(databaseLayer, accountDbId);
     }
 
     public void updateAccountStatus(String accountType, String userId, int statusIndex) {

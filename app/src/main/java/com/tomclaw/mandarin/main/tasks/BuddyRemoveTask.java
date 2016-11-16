@@ -3,6 +3,8 @@ package com.tomclaw.mandarin.main.tasks;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -28,9 +30,10 @@ public class BuddyRemoveTask extends PleaseWaitTask {
         Context context = getWeakObject();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
             for (StrictBuddy buddy : buddies) {
                 // Mark as removing.
-                QueryHelper.modifyOperation(contentResolver, buddy,
+                QueryHelper.modifyOperation(databaseLayer, buddy,
                         GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
                 // Remove request.
                 int accountDbId = buddy.getAccountDbId();

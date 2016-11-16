@@ -12,7 +12,8 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.adapters.RosterSharingAdapter;
@@ -32,9 +33,11 @@ public class SharingActivity extends ChiefActivity {
     private SharingData sharingData;
     private RosterStickyAdapter generalAdapter;
     private SearchView.OnQueryTextListener onQueryTextListener;
+    private DatabaseLayer databaseLayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseLayer = ContentResolverLayer.from(getContentResolver());
         super.onCreate(savedInstanceState);
 
         // Parse intent we runned with.
@@ -61,12 +64,11 @@ public class SharingActivity extends ChiefActivity {
                 Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
                 try {
                     // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddy, true);
+                    QueryHelper.modifyDialog(databaseLayer, buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_ID, buddyId)
+                            .putExtra(Buddy.KEY_STRUCT, buddy)
                             .putExtra(EXTRA_SHARING_DATA, sharingData);
                     startActivity(intent);
                     finish();
@@ -127,7 +129,7 @@ public class SharingActivity extends ChiefActivity {
         if (!sharingData.isValid()) {
             Toast.makeText(this, R.string.invalid_file, Toast.LENGTH_SHORT).show();
             finish();
-        } else if (QueryHelper.getAccountsCount(getContentResolver()) == 0) {
+        } else if (QueryHelper.getAccountsCount(databaseLayer) == 0) {
             // This will start account creation.
             Intent accountAddIntent = new Intent(this, IntroActivity.class);
             accountAddIntent.putExtra(IntroActivity.EXTRA_START_HELPER, true);

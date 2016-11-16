@@ -42,6 +42,8 @@ import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
@@ -124,9 +126,11 @@ public class ChatActivity extends ChiefActivity {
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
     private boolean isSendByEnter;
+    private DatabaseLayer databaseLayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseLayer = ContentResolverLayer.from(getContentResolver());
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
 
@@ -151,7 +155,7 @@ public class ChatActivity extends ChiefActivity {
         timeHelper = new TimeHelper(this);
 
         Intent intent = getIntent();
-        final StrictBuddy buddy = getIntentBuddy(intent);
+        final Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
         startTitleObservation(buddy);
@@ -507,7 +511,7 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddy(), false);
+                QueryHelper.modifyDialog(databaseLayer, chatHistoryAdapter.getBuddy(), false);
                 onBackPressed();
                 return true;
             }
@@ -565,7 +569,7 @@ public class ChatActivity extends ChiefActivity {
         // Save currently entered text as draft before switching.
         saveMessageTextAsDraft();
 
-        StrictBuddy buddy = getIntentBuddy(intent);
+        Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
         // Checking for buddy is really correct.
@@ -672,12 +676,12 @@ public class ChatActivity extends ChiefActivity {
         // TODO: must be implemented.
     }
 
-    private StrictBuddy getIntentBuddy(Intent intent) {
+    private Buddy getIntentBuddy(Intent intent) {
         Bundle bundle = intent.getExtras();
-        StrictBuddy buddy = null;
+        Buddy buddy = null;
         // Checking for bundle condition.
         if (bundle != null) {
-            buddy = bundle.getParcelable(StrictBuddy.KEY_STRUCT);
+            buddy = bundle.getParcelable(Buddy.KEY_STRUCT);
         }
         return buddy;
     }
@@ -707,8 +711,8 @@ public class ChatActivity extends ChiefActivity {
     private void setMessageTextFromDraft(Buddy buddy) {
         String enteredText;
         try {
-            enteredText = QueryHelper.getBuddyDraft(getContentResolver(),
-                    buddy.getAccountDbId(), buddy.getBuddyId());
+            enteredText = QueryHelper.getBuddyDraft(
+                    databaseLayer, buddy.getAccountDbId(), buddy.getBuddyId());
         } catch (BuddyNotFoundException ignored) {
             enteredText = null;
         }
@@ -721,7 +725,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void saveMessageTextAsDraft() {
-        QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddy(), getMessageText());
+        QueryHelper.modifyBuddyDraft(databaseLayer, chatHistoryAdapter.getBuddy(), getMessageText());
     }
 
     public void scrollBottom() {
@@ -861,7 +865,7 @@ public class ChatActivity extends ChiefActivity {
                     .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelected());
+                            QueryHelper.removeMessages(databaseLayer, selectionHelper.getSelected());
                             mode.finish();
                         }
                     })
@@ -869,7 +873,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ClearHistoryTask extends PleaseWaitTask {
+    private static class ClearHistoryTask extends PleaseWaitTask {
 
         private final Buddy buddy;
 
@@ -884,8 +888,9 @@ public class ChatActivity extends ChiefActivity {
             Context context = getWeakObject();
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                 if (contentResolver != null) {
-                    QueryHelper.clearHistory(contentResolver, buddy);
+                    QueryHelper.clearHistory(databaseLayer, buddy);
                 }
             }
         }
@@ -900,7 +905,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
+    private static class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final Buddy buddy;
         private String message;
@@ -942,7 +947,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendPhotosTask extends PleaseWaitTask {
+    private static class SendPhotosTask extends PleaseWaitTask {
 
         private final Buddy buddy;
         private final List<PhotoEntry> selectedPhotos;
@@ -982,7 +987,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendFileTask extends PleaseWaitTask {
+    private static class SendFileTask extends PleaseWaitTask {
 
         private final Buddy buddy;
         private List<UriFile> uriFiles;
@@ -1054,7 +1059,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
+    public static class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final Buddy buddy;
         private boolean isTyping;
@@ -1169,7 +1174,7 @@ public class ChatActivity extends ChiefActivity {
             switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
+                    QueryHelper.updateFileState(databaseLayer,
                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
                             GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
                             messageCookie);
@@ -1194,7 +1199,7 @@ public class ChatActivity extends ChiefActivity {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
+                    QueryHelper.updateFileState(databaseLayer,
                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
                             GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
                             messageCookie);
@@ -1229,7 +1234,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopDownloadingTask extends ServiceTask<ChiefActivity> {
+    public static class StopDownloadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1253,13 +1258,15 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
                 }
-                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                QueryHelper.updateFileState(databaseLayer, desiredState,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
             }
         }
     }
 
-    public class StopUploadingTask extends ServiceTask<ChiefActivity> {
+    public static class StopUploadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1283,7 +1290,9 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
                 }
-                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                QueryHelper.updateFileState(databaseLayer, desiredState,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
             }
         }

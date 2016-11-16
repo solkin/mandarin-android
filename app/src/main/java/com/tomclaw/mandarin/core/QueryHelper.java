@@ -1,11 +1,9 @@
 package com.tomclaw.mandarin.core;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -43,11 +41,15 @@ import java.util.Set;
 @SuppressWarnings("WeakerAccess")
 public class QueryHelper {
 
-    public static List<AccountRoot> getAccounts(Context context, List<AccountRoot> accountRootList) {
+    private QueryHelper() {
+    }
+
+    public static List<AccountRoot> getAccounts(Context context, DatabaseLayer databaseLayer,
+                                                List<AccountRoot> accountRootList) {
         // Clearing input list.
         accountRootList.clear();
         // Obtain specified account. If exist.
-        Cursor cursor = context.getContentResolver().query(Settings.ACCOUNT_RESOLVER_URI, null, null, null, null);
+        Cursor cursor = databaseLayer.query(Settings.ACCOUNT_RESOLVER_URI, new QueryBuilder());
         // Cursor may be null, so we must check it.
         if (cursor != null) {
             // Cursor may have more than only one entry.
@@ -68,12 +70,13 @@ public class QueryHelper {
         return accountRootList;
     }
 
-    public static AccountRoot getAccount(Context context, int accountDbId) {
+    public static AccountRoot getAccount(Context context, DatabaseLayer databaseLayer,
+                                         int accountDbId) {
         AccountRoot accountRoot = null;
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         // Obtain account db id.
-        Cursor cursor = queryBuilder.query(context.getContentResolver(), Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Cursor may be null, so we must check it.
         if (cursor != null) {
             // Cursor may have more than only one entry.
@@ -92,13 +95,13 @@ public class QueryHelper {
         return accountRoot;
     }
 
-    public static int getAccountDbId(ContentResolver contentResolver, String accountType, String userId)
+    public static int getAccountDbId(DatabaseLayer databaseLayer, String accountType, String userId)
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain account db id.
         queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
                 .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Cursor may have no more than only one entry. But lets check.
         if (cursor.moveToFirst()) {
             int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
@@ -127,13 +130,13 @@ public class QueryHelper {
         return null;
     }
 
-    public static boolean updateAccount(Context context, AccountRoot accountRoot) {
-        ContentResolver contentResolver = context.getContentResolver();
+    public static boolean updateAccount(Context context, DatabaseLayer databaseLayer,
+                                        AccountRoot accountRoot) {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified account. If exist.
         queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
                 .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Cursor may have only one entry.
         if (cursor.moveToFirst()) {
             long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
@@ -157,7 +160,7 @@ public class QueryHelper {
             // Update query.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-            queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
+            queryBuilder.update(databaseLayer, contentValues, Settings.ACCOUNT_RESOLVER_URI);
             if (accountRoot.isOffline()) {
                 // Update status for account buddies to unknown.
                 contentValues = new ContentValues();
@@ -165,7 +168,7 @@ public class QueryHelper {
                 // Update query.
                 queryBuilder.recycle();
                 queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+                queryBuilder.update(databaseLayer, contentValues, Settings.BUDDY_RESOLVER_URI);
             }
             return true;
         }
@@ -174,13 +177,13 @@ public class QueryHelper {
         return false;
     }
 
-    public static boolean checkAccount(ContentResolver contentResolver, String accountType, String userId) {
+    public static boolean checkAccount(DatabaseLayer databaseLayer, String accountType, String userId) {
         Cursor cursor = null;
         try {
             cursor = new QueryBuilder()
                     .columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType).and()
                     .columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId)
-                    .query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+                    .query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
             return cursor.moveToFirst();
         } finally {
             if (cursor != null) {
@@ -189,13 +192,13 @@ public class QueryHelper {
         }
     }
 
-    public static boolean isAccountActive(ContentResolver contentResolver, int accountDbId) {
+    public static boolean isAccountActive(DatabaseLayer databaseLayer, int accountDbId) {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified accounts. If exist.
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId)
                 .and().columnNotEquals(GlobalProvider.ACCOUNT_STATUS, StatusUtil.STATUS_OFFLINE)
                 .and().columnEquals(GlobalProvider.ACCOUNT_CONNECTING, 0);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Checking for condition is satisfied.
         boolean accountActive = cursor.moveToFirst();
         cursor.close();
@@ -203,20 +206,20 @@ public class QueryHelper {
         return accountActive;
     }
 
-    public static Cursor getActiveAccounts(ContentResolver contentResolver) {
+    public static Cursor getActiveAccounts(DatabaseLayer databaseLayer) {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified accounts. If exist.
         queryBuilder.columnNotEquals(GlobalProvider.ACCOUNT_STATUS, StatusUtil.STATUS_OFFLINE)
                 .and().columnEquals(GlobalProvider.ACCOUNT_CONNECTING, 0);
         // Not so good decision to return simple cursor!
-        return queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        return queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
     }
 
-    public static int getAccountsCount(ContentResolver contentResolver) {
+    public static int getAccountsCount(DatabaseLayer databaseLayer) {
         QueryBuilder queryBuilder = new QueryBuilder();
         Cursor cursor = null;
         try {
-            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
             return cursor.getCount();
         } finally {
             if (cursor != null) {
@@ -233,13 +236,11 @@ public class QueryHelper {
      * @return account db id.
      * @throws AccountNotFoundException
      */
-    public static int insertAccount(Context context, AccountRoot accountRoot)
+    public static int insertAccount(Context context, DatabaseLayer databaseLayer, AccountRoot accountRoot)
             throws AccountNotFoundException, AccountAlreadyExistsException {
-        if (checkAccount(context.getContentResolver(),
-                accountRoot.getAccountType(), accountRoot.getUserId())) {
+        if (checkAccount(databaseLayer, accountRoot.getAccountType(), accountRoot.getUserId())) {
             throw new AccountAlreadyExistsException();
         }
-        ContentResolver contentResolver = context.getContentResolver();
         // Creating new account.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
@@ -251,60 +252,60 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
         contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
         contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
-        contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
+        databaseLayer.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
         // Setting up account db id.
-        accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
+        accountRoot.setAccountDbId(getAccountDbId(databaseLayer, accountRoot.getAccountType(),
                 accountRoot.getUserId()));
         accountRoot.setContext(context);
         return accountRoot.getAccountDbId();
     }
 
-    public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {
+    public static boolean removeAccount(DatabaseLayer databaseLayer, int accountDbId) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         // Obtain account db id.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Cursor may have no more than only one entry. But lets check.
         if (cursor.moveToFirst()) {
             do {
                 QueryBuilder removeBuilder = new QueryBuilder();
                 removeBuilder.columnEquals(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                 // Removing roster groups.
-                removeBuilder.delete(contentResolver, Settings.GROUP_RESOLVER_URI);
+                removeBuilder.delete(databaseLayer, Settings.GROUP_RESOLVER_URI);
                 // Removing roster buddies.
                 removeBuilder.recycle();
                 removeBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                removeBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
+                removeBuilder.delete(databaseLayer, Settings.BUDDY_RESOLVER_URI);
                 // Removing all the history.
                 removeBuilder.recycle();
                 removeBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                removeBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+                removeBuilder.delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
                 // Removing all pending requests.
                 removeBuilder.recycle();
                 removeBuilder.columnEquals(GlobalProvider.REQUEST_ACCOUNT_DB_ID, accountDbId);
-                removeBuilder.delete(contentResolver, Settings.REQUEST_RESOLVER_URI);
+                removeBuilder.delete(databaseLayer, Settings.REQUEST_RESOLVER_URI);
             } while (cursor.moveToNext());
         }
         // Closing cursor.
         cursor.close();
         // And remove account.
-        return queryBuilder.delete(contentResolver, Settings.ACCOUNT_RESOLVER_URI) != 0;
+        return queryBuilder.delete(databaseLayer, Settings.ACCOUNT_RESOLVER_URI) != 0;
     }
 
-    public static void updateAccountAvatar(ContentResolver contentResolver, int accountDbId, String avatarHash) {
+    public static void updateAccountAvatar(DatabaseLayer databaseLayer, int accountDbId, String avatarHash) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, avatarHash);
-        modifyAccount(contentResolver, accountDbId, contentValues);
+        modifyAccount(databaseLayer, accountDbId, contentValues);
     }
 
-    public static String getAccountAvatarHash(ContentResolver contentResolver, int accountDbId)
+    public static String getAccountAvatarHash(DatabaseLayer databaseLayer, int accountDbId)
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified accounts. If exist.
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         Cursor cursor = null;
         try {
-            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
             if (cursor != null && cursor.moveToFirst()) {
                 int avatarHashColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_AVATAR_HASH);
                 return cursor.getString(avatarHashColumnIndex);
@@ -318,57 +319,57 @@ public class QueryHelper {
         throw new AccountNotFoundException();
     }
 
-    private static void modifyAccount(ContentResolver contentResolver, int accountDbId, ContentValues contentValues) {
+    private static void modifyAccount(DatabaseLayer databaseLayer, int accountDbId, ContentValues contentValues) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-        queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
+        queryBuilder.update(databaseLayer, contentValues, Settings.ACCOUNT_RESOLVER_URI);
     }
 
-    public static void modifyBuddyDraft(ContentResolver contentResolver, Buddy buddy, String buddyDraft) {
+    public static void modifyBuddyDraft(DatabaseLayer databaseLayer, Buddy buddy, String buddyDraft) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DRAFT, buddyDraft);
-        modifyBuddies(contentResolver, Collections.singleton(buddy), contentValues);
+        modifyBuddies(databaseLayer, Collections.singleton(buddy), contentValues);
     }
 
-    public static void modifyDialog(ContentResolver contentResolver, Buddy buddy, boolean isOpened) {
-        modifyDialogs(contentResolver, Collections.singleton(buddy), isOpened);
+    public static void modifyDialog(DatabaseLayer databaseLayer, Buddy buddy, boolean isOpened) {
+        modifyDialogs(databaseLayer, Collections.singleton(buddy), isOpened);
     }
 
-    public static void modifyDialog(ContentResolver contentResolver, Buddy buddy,
+    public static void modifyDialog(DatabaseLayer databaseLayer, Buddy buddy,
                                     boolean isOpened, long lastMessageTime) {
-        modifyDialogs(contentResolver, Collections.singleton(buddy), isOpened, lastMessageTime);
+        modifyDialogs(databaseLayer, Collections.singleton(buddy), isOpened, lastMessageTime);
     }
 
-    public static void modifyDialogs(ContentResolver contentResolver, Collection<Buddy> buddies, boolean isOpened) {
+    public static void modifyDialogs(DatabaseLayer databaseLayer, Collection<Buddy> buddies, boolean isOpened) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
-        modifyBuddies(contentResolver, buddies, contentValues);
+        modifyBuddies(databaseLayer, buddies, contentValues);
     }
 
-    public static void modifyDialogs(ContentResolver contentResolver, Collection<Buddy> buddies,
+    public static void modifyDialogs(DatabaseLayer databaseLayer, Collection<Buddy> buddies,
                                      boolean isOpened, long lastMessageTime) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isOpened ? 1 : 0);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME, lastMessageTime);
-        modifyBuddies(contentResolver, buddies, contentValues);
+        modifyBuddies(databaseLayer, buddies, contentValues);
     }
 
-    public static void modifyOperation(ContentResolver contentResolver, Buddy buddy, int operation) {
-        modifyOperation(contentResolver, Collections.singleton(buddy), operation);
+    public static void modifyOperation(DatabaseLayer databaseLayer, Buddy buddy, int operation) {
+        modifyOperation(databaseLayer, Collections.singleton(buddy), operation);
     }
 
-    public static void modifyOperation(ContentResolver contentResolver, Collection<Buddy> buddy, int operation) {
+    public static void modifyOperation(DatabaseLayer databaseLayer, Collection<Buddy> buddy, int operation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, operation);
-        modifyBuddies(contentResolver, buddy, contentValues);
+        modifyBuddies(databaseLayer, buddy, contentValues);
     }
 
-    public static void modifyBuddyNick(ContentResolver contentResolver, Buddy buddy,
+    public static void modifyBuddyNick(DatabaseLayer databaseLayer, Buddy buddy,
                                        String buddyNick, boolean isStartOperation) {
-        modifyBuddyNick(contentResolver, Collections.singleton(buddy), buddyNick, isStartOperation);
+        modifyBuddyNick(databaseLayer, Collections.singleton(buddy), buddyNick, isStartOperation);
     }
 
-    public static void modifyBuddyNick(ContentResolver contentResolver, Collection<Buddy> buddies,
+    public static void modifyBuddyNick(DatabaseLayer databaseLayer, Collection<Buddy> buddies,
                                        String buddyNick, boolean isStartOperation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
@@ -376,7 +377,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, isStartOperation ?
                 GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME : GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
-        modifyBuddies(contentResolver, buddies, contentValues);
+        modifyBuddies(databaseLayer, buddies, contentValues);
     }
 
 //    public static void insertMessage(ContentResolver contentResolver, int buddyDbId,
@@ -386,7 +387,7 @@ public class QueryHelper {
 //                messageType, cookie, 0, messageText);
 //    }
 
-    public static void insertTextMessage(@NonNull ContentResolver contentResolver,
+    public static void insertTextMessage(@NonNull DatabaseLayer databaseLayer,
                                          @NonNull Buddy buddy,
                                          long prevMsgId,
                                          long msgId,
@@ -400,7 +401,7 @@ public class QueryHelper {
         String buddyId = buddy.getBuddyId();
 
         // Update last message time and make dialog opened.
-        modifyDialog(contentResolver, buddy, true, messageTime);
+        modifyDialog(databaseLayer, buddy, true, messageTime);
         // No matching request message. Insert new message.
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
@@ -416,7 +417,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
         contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
-        contentResolver.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
+        databaseLayer.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
     }
 
 //    public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
@@ -503,16 +504,16 @@ public class QueryHelper {
     /**
      * Will append some more cookie to message.
      *
-     * @param contentResolver - content resolver
+     * @param databaseLayer   - data layer
      * @param cookie          - cookie of message to be updated
      * @param cookiesToAdd    - appending cookies
      */
-    public static void addMessageCookie(ContentResolver contentResolver, String cookie, String... cookiesToAdd) {
+    public static void addMessageCookie(DatabaseLayer databaseLayer, String cookie, String... cookiesToAdd) {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
         Cursor cursor = null;
         try {
-            cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+            cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
             if (cursor != null && cursor.moveToFirst()) {
                 String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
                 for (String cookieAdd : cookiesToAdd) {
@@ -521,7 +522,7 @@ public class QueryHelper {
                 // Plain message modify by cookies.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
-                queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+                queryBuilder.update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
             }
         } finally {
             if (cursor != null) {
@@ -530,42 +531,42 @@ public class QueryHelper {
         }
     }
 
-    private static int modifyFile(ContentResolver contentResolver, ContentValues contentValues, int messageType, String cookie) {
+    private static int modifyFile(DatabaseLayer databaseLayer, ContentValues contentValues, int messageType, String cookie) {
         // Plain message modify by cookies.
         QueryBuilder queryBuilder = new QueryBuilder()
                 .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
                 .and().like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        return queryBuilder.update(contentResolver, contentValues, Settings.HISTORY_RESOLVER_URI);
+        return queryBuilder.update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
-    public static void updateFileState(ContentResolver contentResolver, int state, int messageType, String cookie) {
+    public static void updateFileState(DatabaseLayer databaseLayer, int state, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
-        int modified = modifyFile(contentResolver, contentValues, messageType, cookie);
+        int modified = modifyFile(databaseLayer, contentValues, messageType, cookie);
         Logger.log("modified: " + modified);
     }
 
-    public static void updateFileSize(ContentResolver contentResolver, long size, int messageType, String cookie) {
+    public static void updateFileSize(DatabaseLayer databaseLayer, long size, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_SIZE, size);
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        modifyFile(databaseLayer, contentValues, messageType, cookie);
     }
 
-    public static void updateFileProgress(ContentResolver contentResolver, int progress, int messageType, String cookie) {
+    public static void updateFileProgress(DatabaseLayer databaseLayer, int progress, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_PROGRESS, progress);
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        modifyFile(databaseLayer, contentValues, messageType, cookie);
     }
 
-    public static void updateFileStateAndText(ContentResolver contentResolver, int state,
+    public static void updateFileStateAndText(DatabaseLayer databaseLayer, int state,
                                               String text, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, text);
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        modifyFile(databaseLayer, contentValues, messageType, cookie);
     }
 
-    public static void revertFileToMessage(ContentResolver contentResolver, int messageType,
+    public static void revertFileToMessage(DatabaseLayer databaseLayer, int messageType,
                                            String originalMessage, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, originalMessage);
@@ -577,23 +578,23 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.HISTORY_CONTENT_NAME, "");
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, "");
         contentValues.put(GlobalProvider.HISTORY_CONTENT_TAG, "");
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        modifyFile(databaseLayer, contentValues, messageType, cookie);
     }
 
-    public static void updateFileStateAndHash(ContentResolver contentResolver, int state,
+    public static void updateFileStateAndHash(DatabaseLayer databaseLayer, int state,
                                               String hash, int messageType, String cookie) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.HISTORY_CONTENT_STATE, state);
         contentValues.put(GlobalProvider.HISTORY_PREVIEW_HASH, hash);
-        modifyFile(contentResolver, contentValues, messageType, cookie);
+        modifyFile(databaseLayer, contentValues, messageType, cookie);
     }
 
-    public static int getFileState(ContentResolver contentResolver, int messageType, String cookie)
+    public static int getFileState(DatabaseLayer databaseLayer, int messageType, String cookie)
             throws MessageNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder()
                 .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
                 .and().like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 return cursor.getInt(cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE));
@@ -606,14 +607,14 @@ public class QueryHelper {
         throw new MessageNotFoundException();
     }
 
-    public static void removeMessages(ContentResolver contentResolver, Collection<Long> messageIds) {
-        messagesByIds(messageIds).delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+    public static void removeMessages(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
+        messagesByIds(messageIds).delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
     }
 
-    public static boolean isIncomingMessagesPresent(ContentResolver contentResolver, Collection<Long> messageIds) {
+    public static boolean isIncomingMessagesPresent(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
         queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
         return cursor.getCount() > 0;
     }
 
@@ -687,13 +688,13 @@ public class QueryHelper {
         return queryBuilder;
     }
 
-    public static boolean checkBuddy(ContentResolver contentResolver, int accountDbId, String buddyId) {
+    public static boolean checkBuddy(DatabaseLayer databaseLayer, int accountDbId, String buddyId) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
+                .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         Cursor cursor = null;
         try {
-            cursor = new QueryBuilder()
-                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
-                    .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-                    .query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+            cursor = databaseLayer.query(Settings.BUDDY_RESOLVER_URI, queryBuilder);
             return cursor.moveToFirst();
         } finally {
             if (cursor != null) {
@@ -702,22 +703,22 @@ public class QueryHelper {
         }
     }
 
-    private static void modifyBuddy(ContentResolver contentResolver, Buddy buddy, ContentValues contentValues) {
-        modifyBuddies(contentResolver, Collections.singleton(buddy), contentValues);
+    private static void modifyBuddy(DatabaseLayer databaseLayer, Buddy buddy, ContentValues contentValues) {
+        modifyBuddies(databaseLayer, Collections.singleton(buddy), contentValues);
     }
 
-    private static void modifyBuddies(ContentResolver contentResolver, Collection<Buddy> buddies, ContentValues contentValues) {
+    private static void modifyBuddies(DatabaseLayer databaseLayer, Collection<Buddy> buddies, ContentValues contentValues) {
         QueryBuilder queryBuilder = buddiesQueryBuilder(buddies);
-        queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+        queryBuilder.update(databaseLayer, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 
-    private static void modifyStrictBuddy(ContentResolver contentResolver, StrictBuddy buddy, ContentValues contentValues) {
-        modifyStrictBuddies(contentResolver, Collections.singleton(buddy), contentValues);
+    private static void modifyStrictBuddy(DatabaseLayer databaseLayer, StrictBuddy buddy, ContentValues contentValues) {
+        modifyStrictBuddies(databaseLayer, Collections.singleton(buddy), contentValues);
     }
 
-    private static void modifyStrictBuddies(ContentResolver contentResolver, Collection<StrictBuddy> buddies, ContentValues contentValues) {
+    private static void modifyStrictBuddies(DatabaseLayer databaseLayer, Collection<StrictBuddy> buddies, ContentValues contentValues) {
         QueryBuilder queryBuilder = strictBuddiesQueryBuilder(buddies);
-        queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+        queryBuilder.update(databaseLayer, contentValues, Settings.BUDDY_RESOLVER_URI);
     }
 
     private static QueryBuilder buddiesQueryBuilder(Collection<Buddy> buddies) {
@@ -765,15 +766,15 @@ public class QueryHelper {
         return queryBuilder;
     }
 
-    public static void modifyBuddyAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,
+    public static void modifyBuddyAvatar(DatabaseLayer databaseLayer, int accountDbId, String buddyId,
                                          String avatarHash) throws BuddyNotFoundException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
         Buddy buddy = new Buddy(accountDbId, buddyId);
-        modifyBuddy(contentResolver, buddy, contentValues);
+        modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
-    public static void modifyBuddyStatus(ContentResolver contentResolver, int accountDbId, String buddyId,
+    public static void modifyBuddyStatus(DatabaseLayer databaseLayer, int accountDbId, String buddyId,
                                          int buddyStatusIndex, String buddyStatusTitle, String buddyStatusMessage,
                                          String buddyIcon, long lastSeen) throws BuddyNotFoundException {
         // Plain buddy modify.
@@ -787,7 +788,7 @@ public class QueryHelper {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry.
         if (cursor.moveToFirst()) {
             // Cycling all the identical buddies in different groups.
@@ -798,14 +799,14 @@ public class QueryHelper {
                     contentValues.putNull(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH);
                 }
                 Buddy buddy = new Buddy(accountDbId, buddyId);
-                modifyBuddy(contentResolver, buddy, contentValues);
+                modifyBuddy(databaseLayer, buddy, contentValues);
             } while (cursor.moveToNext());
             // Closing cursor.
             cursor.close();
             // There are may be a lot of buddies in lots of groups, but this is the same buddy with the save avatar.
             if (!TextUtils.isEmpty(buddyIcon) && !TextUtils.equals(avatarHash, HttpUtil.getUrlHash(buddyIcon))) {
                 // Avatar is ready.
-                RequestHelper.requestBuddyAvatar(contentResolver, accountDbId, buddyId, buddyIcon);
+                RequestHelper.requestBuddyAvatar(databaseLayer, accountDbId, buddyId, buddyIcon);
             }
         } else {
             // Closing cursor.
@@ -814,15 +815,15 @@ public class QueryHelper {
         }
     }
 
-    public static void modifyBuddyTyping(ContentResolver contentResolver, int accountDbId, String buddyId,
+    public static void modifyBuddyTyping(DatabaseLayer databaseLayer, int accountDbId, String buddyId,
                                          boolean isTyping) throws BuddyNotFoundException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_TYPING, isTyping ? System.currentTimeMillis() : 0);
         Buddy buddy = new Buddy(accountDbId, buddyId);
-        modifyBuddy(contentResolver, buddy, contentValues);
+        modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
-    public static void replaceOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
+    public static void replaceOrCreateBuddy(DatabaseLayer databaseLayer, int accountDbId, String accountType,
                                             long updateTime, int groupId, String groupName, String buddyId,
                                             String buddyNick, String avatarHash) {
         int statusIndex = StatusUtil.STATUS_OFFLINE;
@@ -854,7 +855,7 @@ public class QueryHelper {
         queryBuilder.ascending(GlobalProvider.ROW_AUTO_ID).limit(1);
         BuddyCursor buddyCursor = null;
         try {
-            buddyCursor = getBuddyCursor(contentResolver, queryBuilder);
+            buddyCursor = getBuddyCursor(databaseLayer, queryBuilder);
             long buddyDbId = buddyCursor.getBuddyDbId();
             boolean buddyDialogFlag = buddyCursor.getBuddyDialog();
             // Update dialog flag.
@@ -862,32 +863,14 @@ public class QueryHelper {
             // Update this row.
             queryBuilder.recycle();
             queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId);
-            queryBuilder.update(contentResolver, buddyValues, Settings.BUDDY_RESOLVER_URI);
+            queryBuilder.update(databaseLayer, buddyValues, Settings.BUDDY_RESOLVER_URI);
         } catch (BuddyNotFoundException ignored) {
-            contentResolver.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
+            databaseLayer.insert(Settings.BUDDY_RESOLVER_URI, buddyValues);
         } finally {
             if (buddyCursor != null) {
                 buddyCursor.close();
             }
         }
-    }
-
-    public static void updateOrCreateBuddy(ContentResolver contentResolver, int accountDbId, String accountType,
-                                           long updateTime, int groupId, String groupName, String buddyId,
-                                           String buddyNick, int statusIndex, String statusTitle,
-                                           String statusMessage, String buddyIcon, long lastSeen) {
-        updateOrCreateBuddy(ContentResolverLayer.getInstance(contentResolver), accountDbId,
-                accountType, updateTime, groupId, groupName, buddyId, buddyNick,
-                statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
-    }
-
-    public static void updateOrCreateBuddy(SQLiteDatabase sqLiteDatabase, int accountDbId, String accountType,
-                                           long updateTime, int groupId, String groupName, String buddyId,
-                                           String buddyNick, int statusIndex, String statusTitle,
-                                           String statusMessage, String buddyIcon, long lastSeen) {
-        updateOrCreateBuddy(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId,
-                accountType, updateTime, groupId, groupName, buddyId, buddyNick,
-                statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
     }
 
     public static void updateOrCreateBuddy(DatabaseLayer databaseLayer, int accountDbId, String accountType,
@@ -969,16 +952,6 @@ public class QueryHelper {
         }
     }
 
-    public static void updateOrCreateGroup(ContentResolver contentResolver, int accountDbId, long updateTime,
-                                           String groupName, int groupId) {
-        updateOrCreateGroup(ContentResolverLayer.getInstance(contentResolver), accountDbId, updateTime, groupName, groupId);
-    }
-
-    public static void updateOrCreateGroup(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime,
-                                           String groupName, int groupId) {
-        updateOrCreateGroup(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, updateTime, groupName, groupId);
-    }
-
     public static void updateOrCreateGroup(DatabaseLayer databaseLayer, int accountDbId, long updateTime,
                                            String groupName, int groupId) {
         ContentValues groupValues = new ContentValues();
@@ -998,7 +971,7 @@ public class QueryHelper {
         }
     }
 
-    private static void checkOrCreateRecycleGroup(ContentResolver contentResolver, Resources resources) {
+    private static void checkOrCreateRecycleGroup(DatabaseLayer databaseLayer, Resources resources) {
         String recycleString = resources.getString(R.string.recycle);
 
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -1006,14 +979,14 @@ public class QueryHelper {
                 .and().columnEquals(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         Cursor recycleCursor = null;
         try {
-            recycleCursor = queryBuilder.query(contentResolver, Settings.GROUP_RESOLVER_URI);
+            recycleCursor = queryBuilder.query(databaseLayer, Settings.GROUP_RESOLVER_URI);
             if (!recycleCursor.moveToFirst()) {
                 ContentValues recycleValues = new ContentValues();
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_NAME, recycleString);
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_TYPE, GlobalProvider.GROUP_TYPE_SYSTEM);
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
                 recycleValues.put(GlobalProvider.ROSTER_GROUP_UPDATE_TIME, System.currentTimeMillis());
-                contentResolver.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
+                databaseLayer.insert(Settings.GROUP_RESOLVER_URI, recycleValues);
             }
         } finally {
             if (recycleCursor != null) {
@@ -1022,10 +995,10 @@ public class QueryHelper {
         }
     }
 
-    public static void moveBuddyIntoRecycle(ContentResolver contentResolver, Resources resources,
+    public static void moveBuddyIntoRecycle(DatabaseLayer databaseLayer, Resources resources,
                                             StrictBuddy buddy) {
         // To move buddy into recycle, we must have such recycle.
-        checkOrCreateRecycleGroup(contentResolver, resources);
+        checkOrCreateRecycleGroup(databaseLayer, resources);
         // Now, we can move with pleasure.
         String recycleString = resources.getString(R.string.recycle);
         ContentValues contentValues = new ContentValues();
@@ -1033,15 +1006,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
-        modifyStrictBuddy(contentResolver, buddy, contentValues);
-    }
-
-    public static void removeOutdatedBuddies(ContentResolver contentResolver, int accountDbId, long updateTime) {
-        removeOutdatedBuddies(ContentResolverLayer.getInstance(contentResolver), accountDbId, updateTime);
-    }
-
-    public static void removeOutdatedBuddies(SQLiteDatabase sqLiteDatabase, int accountDbId, long updateTime) {
-        removeOutdatedBuddies(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, updateTime);
+        modifyStrictBuddy(databaseLayer, buddy, contentValues);
     }
 
     public static void removeOutdatedBuddies(DatabaseLayer databaseLayer, int accountDbId, long updateTime) {
@@ -1055,12 +1020,12 @@ public class QueryHelper {
         Logger.log("outdated removed: " + removedBuddies);
     }
 
-    public static void removeBuddy(ContentResolver contentResolver, StrictBuddy buddy) {
+    public static void removeBuddy(DatabaseLayer databaseLayer, StrictBuddy buddy) {
         QueryBuilder queryBuilder = strictBuddiesQueryBuilder(Collections.singletonList(buddy));
-        queryBuilder.delete(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        queryBuilder.delete(databaseLayer, Settings.BUDDY_RESOLVER_URI);
     }
 
-    public static Collection<Buddy> getBuddies(ContentResolver contentResolver, int accountDbId,
+    public static Collection<Buddy> getBuddies(DatabaseLayer databaseLayer, int accountDbId,
                                                String buddyId, Map<String, Object> criteria)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -1073,7 +1038,7 @@ public class QueryHelper {
         }
         BuddyCursor buddyCursor = null;
         try {
-            buddyCursor = new BuddyCursor(queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI));
+            buddyCursor = new BuddyCursor(queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI));
             // Cursor may have no more than only one entry. But lets check.
             if (buddyCursor.moveToFirst()) {
                 Set<Buddy> buddies = new HashSet<>();
@@ -1093,13 +1058,13 @@ public class QueryHelper {
         throw new BuddyNotFoundException();
     }
 
-    public static int getBuddyDbId(ContentResolver contentResolver, int accountDbId, String buddyId)
+    public static int getBuddyDbId(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain account db id.
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have more than only one entry. Let's get first.
         if (cursor.moveToFirst()) {
             int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
@@ -1112,14 +1077,14 @@ public class QueryHelper {
         throw new BuddyNotFoundException();
     }
 
-    public static int getBuddyDbId(ContentResolver contentResolver, int accountDbId, String groupName, String buddyId)
+    public static int getBuddyDbId(DatabaseLayer databaseLayer, int accountDbId, String groupName, String buddyId)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain account db id.
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
         // Cursor may have no more than only one entry. But lets check.
         if (cursor.moveToFirst()) {
             int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
@@ -1130,11 +1095,6 @@ public class QueryHelper {
         // Closing cursor.
         cursor.close();
         throw new BuddyNotFoundException();
-    }
-
-    private static BuddyCursor getBuddyCursor(ContentResolver contentResolver, QueryBuilder queryBuilder)
-            throws BuddyNotFoundException {
-        return getBuddyCursor(ContentResolverLayer.getInstance(contentResolver), queryBuilder);
     }
 
     private static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, QueryBuilder queryBuilder)
@@ -1149,7 +1109,7 @@ public class QueryHelper {
         throw new BuddyNotFoundException();
     }
 
-    public static BuddyCursor getRosterBuddyCursor(ContentResolver contentResolver, int accountDbId, String buddyId)
+    public static BuddyCursor getRosterBuddyCursor(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         // Obtain specified buddy. If exist.
@@ -1157,68 +1117,88 @@ public class QueryHelper {
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_GROUP_ID, GlobalProvider.GROUP_ID_RECYCLE)
                 .and().columnNotEquals(GlobalProvider.ROSTER_BUDDY_OPERATION, GlobalProvider.ROSTER_BUDDY_OPERATION_REMOVE);
-        return getBuddyCursor(contentResolver, queryBuilder);
+        return getBuddyCursor(databaseLayer, queryBuilder);
     }
 
-    public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int accountDbId, String buddyId)
+    public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
-        return getBuddyCursor(contentResolver, new QueryBuilder()
+        return getBuddyCursor(databaseLayer, new QueryBuilder()
                 .columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId));
     }
 
-    public static BuddyCursor getBuddyCursor(ContentResolver contentResolver, int buddyDbId)
+    public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, int buddyDbId)
             throws BuddyNotFoundException {
-        return getBuddyCursor(contentResolver, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
+        return getBuddyCursor(databaseLayer, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
     }
 
-    public static int getBuddyAccountDbId(ContentResolver contentResolver, int buddyDbId)
+    @Deprecated
+    public static int getBuddyAccountDbId(DatabaseLayer databaseLayer, int buddyDbId)
             throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        BuddyCursor buddyCursor = null;
         try {
+            buddyCursor = getBuddyCursor(databaseLayer, buddyDbId);
             return buddyCursor.getBuddyAccountDbId();
         } finally {
-            buddyCursor.close();
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
     }
 
-    public static String getBuddyNick(ContentResolver contentResolver, int buddyDbId)
+    @Deprecated
+    public static String getBuddyNick(DatabaseLayer databaseLayer, int buddyDbId)
             throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        BuddyCursor buddyCursor = null;
         try {
+            buddyCursor = getBuddyCursor(databaseLayer, buddyDbId);
             return buddyCursor.getBuddyNick();
         } finally {
-            buddyCursor.close();
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
     }
 
-    public static String getBuddyDraft(ContentResolver contentResolver, int accountDbId, String buddyId)
+    @Deprecated
+    public static String getBuddyDraft(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, accountDbId, buddyId);
+        BuddyCursor buddyCursor = null;
         try {
+            buddyCursor = getBuddyCursor(databaseLayer, accountDbId, buddyId);
             return buddyCursor.getBuddyDraft();
         } finally {
-            buddyCursor.close();
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
     }
 
-    public static String getBuddyAvatarHash(ContentResolver contentResolver, int accountDbId, String buddyId)
+    @Deprecated
+    public static String getBuddyAvatarHash(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, accountDbId, buddyId);
+        BuddyCursor buddyCursor = null;
         try {
+            buddyCursor = getBuddyCursor(databaseLayer, accountDbId, buddyId);
             return buddyCursor.getBuddyAvatarHash();
         } finally {
-            buddyCursor.close();
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
         }
     }
 
-    public static boolean checkDialog(ContentResolver contentResolver, int buddyDbId) {
+    @Deprecated
+    public static boolean checkDialog(DatabaseLayer databaseLayer, int buddyDbId) {
         try {
-            BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+            BuddyCursor buddyCursor = null;
             try {
+                buddyCursor = getBuddyCursor(databaseLayer, buddyDbId);
                 return buddyCursor.getBuddyDialog();
             } finally {
-                buddyCursor.close();
+                if (buddyCursor != null) {
+                    buddyCursor.close();
+                }
             }
         } catch (BuddyNotFoundException ignored) {
             // No buddy - no dialog.
@@ -1226,12 +1206,12 @@ public class QueryHelper {
         }
     }
 
-    public static String getAccountName(ContentResolver contentResolver, int accountDbId)
+    public static String getAccountName(DatabaseLayer databaseLayer, int accountDbId)
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Checking for there is at least one account and switching to it.
         if (cursor.moveToFirst()) {
             // Obtain necessary column index.
@@ -1244,12 +1224,12 @@ public class QueryHelper {
         throw new AccountNotFoundException();
     }
 
-    public static String getAccountType(ContentResolver contentResolver, int accountDbId)
+    public static String getAccountType(DatabaseLayer databaseLayer, int accountDbId)
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
         // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
         // Checking for there is at least one account and switching to it.
         if (cursor.moveToFirst()) {
             String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
@@ -1260,9 +1240,9 @@ public class QueryHelper {
         throw new AccountNotFoundException();
     }
 
-    public static void clearHistory(ContentResolver contentResolver, Buddy buddy) {
+    public static void clearHistory(DatabaseLayer databaseLayer, Buddy buddy) {
         QueryBuilder queryBuilder = buddiesQueryBuilder(Collections.singletonList(buddy));
-        queryBuilder.delete(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        queryBuilder.delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
     }
 
 //    public static int getMoreActiveDialog(ContentResolver contentResolver)
@@ -1309,7 +1289,11 @@ public class QueryHelper {
 //        }
 //    }
 
-    public static void updateBuddyOrAccountAvatar(AccountRoot accountRoot, String buddyId, String hash) {
+    @Deprecated
+    public static void updateBuddyOrAccountAvatar(DatabaseLayer databaseLayer,
+                                                  AccountRoot accountRoot,
+                                                  String buddyId,
+                                                  String hash) {
         // Check for destination buddy is account.
         if (TextUtils.equals(buddyId, accountRoot.getUserId())) {
             accountRoot.setAvatarHash(hash);
@@ -1317,18 +1301,20 @@ public class QueryHelper {
         }
         try {
             // Attempt to update buddy avatar.
-            QueryHelper.modifyBuddyAvatar(accountRoot.getContentResolver(),
+            QueryHelper.modifyBuddyAvatar(databaseLayer,
                     accountRoot.getAccountDbId(), buddyId, hash);
         } catch (BuddyNotFoundException ignored) {
         }
     }
 
-    public static String getBuddyOrAccountAvatarHash(AccountRoot accountRoot, String buddyId)
+    @Deprecated
+    public static String getBuddyOrAccountAvatarHash(DatabaseLayer databaseLayer,
+                                                     AccountRoot accountRoot, String buddyId)
             throws AccountNotFoundException, BuddyNotFoundException {
         // Check for destination buddy is account.
         if (TextUtils.equals(buddyId, accountRoot.getUserId())) {
-            return getAccountAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId());
+            return getAccountAvatarHash(databaseLayer, accountRoot.getAccountDbId());
         }
-        return getBuddyAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId(), buddyId);
+        return getBuddyAvatarHash(databaseLayer, accountRoot.getAccountDbId(), buddyId);
     }
 }

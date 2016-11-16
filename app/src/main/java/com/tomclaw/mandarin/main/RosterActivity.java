@@ -25,6 +25,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -61,9 +63,11 @@ public class RosterActivity extends ChiefActivity {
     private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
     private SearchView.OnQueryTextListener onQueryTextListener;
     private RosterStickyAdapter generalAdapter;
+    private DatabaseLayer databaseLayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseLayer = ContentResolverLayer.from(getContentResolver());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.roster_activity);
@@ -108,11 +112,11 @@ public class RosterActivity extends ChiefActivity {
                 Logger.log("Opening dialog with buddy: " + buddy.toString());
                 try {
                     // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddy, true);
+                    QueryHelper.modifyDialog(databaseLayer, buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(StrictBuddy.KEY_STRUCT, buddy);
+                            .putExtra(Buddy.KEY_STRUCT, buddy);
                     startActivity(intent);
                     finish();
                 } catch (Exception e) {
@@ -261,7 +265,7 @@ public class RosterActivity extends ChiefActivity {
         private void renameSelectedBuddy(final Buddy buddy) {
             BuddyCursor buddyCursor = null;
             try {
-                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(),
+                buddyCursor = QueryHelper.getBuddyCursor(databaseLayer,
                         buddy.getAccountDbId(), buddy.getBuddyId());
                 final int accountDbId = buddyCursor.getBuddyAccountDbId();
                 final String buddyId = buddyCursor.getBuddyId();
@@ -283,7 +287,7 @@ public class RosterActivity extends ChiefActivity {
                                 String buddySatisfiedNick = buddyNameText.getText().toString();
                                 // Renaming only if buddy nicks are different.
                                 if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
-                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddy,
+                                    QueryHelper.modifyBuddyNick(databaseLayer, buddy,
                                             buddySatisfiedNick, isPersistent);
                                     if (isPersistent) {
                                         RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,

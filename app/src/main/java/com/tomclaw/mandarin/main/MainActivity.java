@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -177,7 +180,7 @@ public class MainActivity extends ChiefActivity {
                 Logger.log("Check out dialog with: " + buddy.toString());
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(StrictBuddy.KEY_STRUCT, buddy);
+                        .putExtra(Buddy.KEY_STRUCT, buddy);
                 startActivity(intent);
             }
         });
@@ -366,8 +369,10 @@ public class MainActivity extends ChiefActivity {
                 }
                 case R.id.close_chat_menu: {
                     try {
+                        ContentResolver contentResolver = getContentResolver();
+                        DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                         Collection<Buddy> selectedBuddies = Collections.<Buddy>unmodifiableCollection(selectionHelper.getSelected());
-                        QueryHelper.modifyDialogs(getContentResolver(), selectedBuddies, false);
+                        QueryHelper.modifyDialogs(databaseLayer, selectedBuddies, false);
                     } catch (Exception ignored) {
                         // Nothing to do in this case.
                     }

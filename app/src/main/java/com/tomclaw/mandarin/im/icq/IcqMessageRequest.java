@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -42,6 +43,7 @@ public class IcqMessageRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
@@ -52,7 +54,7 @@ public class IcqMessageRequest extends WimRequest {
             String msgId = dataObject.getString(MSG_ID);
             // This will mark message with server-side msgId
             // to provide message stated in fetch events.
-            QueryHelper.addMessageCookie(getAccountRoot().getContentResolver(), requestId, msgId);
+            QueryHelper.addMessageCookie(databaseLayer, requestId, msgId);
             return REQUEST_DELETE;
         } else if (statusCode >= 460 && statusCode <= 606) {
             // Target error. Mark message as error and delete request from pending operations.

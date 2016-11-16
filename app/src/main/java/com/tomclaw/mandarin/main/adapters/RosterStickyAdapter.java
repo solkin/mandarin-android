@@ -21,6 +21,8 @@ import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -234,11 +236,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
 
         @Override
         public Cursor runQuery(CharSequence constraint) {
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(context.getContentResolver());
             String searchField = constraint.toString().toUpperCase();
             QueryBuilder queryBuilder = getDefaultQueryBuilder();
             queryBuilder.and().startComplexExpression().like(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, searchField)
                     .or().like(GlobalProvider.ROSTER_BUDDY_ID, constraint).finishComplexExpression();
-            return queryBuilder.query(context.getContentResolver(), Settings.BUDDY_RESOLVER_URI);
+            return queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
         }
     }
 }

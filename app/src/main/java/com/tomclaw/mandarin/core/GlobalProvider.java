@@ -87,6 +87,11 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_LAST_TYPING = "buddy_last_typing";
     public static final String ROSTER_BUDDY_OPERATION = "buddy_operation";
     public static final String ROSTER_BUDDY_LAST_MESSAGE_TIME = "buddy_last_message_time";
+    public static final String ROSTER_BUDDY_LAST_MESSAGE_ID = "buddy_last_message_id";
+    public static final String ROSTER_BUDDY_DELETED_UP_TO = "buddy_deleted_up_to";
+    public static final String ROSTER_BUDDY_YOURS_LAST_READ = "buddy_yours_last_read";
+    public static final String ROSTER_BUDDY_THEIRS_LAST_DELIVERED = "buddy_theirs_last_delivered";
+    public static final String ROSTER_BUDDY_THEIRS_LAST_READ = "buddy_theirs_last_read";
 
     public static final int ROSTER_BUDDY_OPERATION_NO = 0;
     public static final int ROSTER_BUDDY_OPERATION_ADD = 1;
@@ -159,7 +164,12 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_SEARCH_FIELD + " text, " + ROSTER_BUDDY_DRAFT + " text, "
             + ROSTER_BUDDY_LAST_SEEN + " int default -1, " + ROSTER_BUDDY_LAST_TYPING + " int default 0, "
             + ROSTER_BUDDY_OPERATION + " int default " + ROSTER_BUDDY_OPERATION_NO + ", "
-            + ROSTER_BUDDY_LAST_MESSAGE_TIME + " int default 0" + ");";
+            + ROSTER_BUDDY_LAST_MESSAGE_TIME + " int default 0" + ", "
+            + ROSTER_BUDDY_LAST_MESSAGE_ID + " int default 0" + ", "
+            + ROSTER_BUDDY_DELETED_UP_TO + " int default 0" + ", "
+            + ROSTER_BUDDY_YOURS_LAST_READ + " int default 0" + ", "
+            + ROSTER_BUDDY_THEIRS_LAST_DELIVERED + " int default 0" + ", "
+            + ROSTER_BUDDY_THEIRS_LAST_READ + " int default 0" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
@@ -194,6 +204,7 @@ public class GlobalProvider extends ContentProvider {
 
     // Methods.
     public static String METHOD_UPDATE_ROSTER = "update_roster";
+    public static String METHOD_INSERT_MESSAGE = "insert_message";
 
     public static String KEY_ACCOUNT_DB_ID = "key_account_db_id";
     public static String KEY_ACCOUNT_TYPE = "key_account_type";
@@ -324,6 +335,7 @@ public class GlobalProvider extends ContentProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Bundle call(@NonNull String method, String arg, Bundle extras) {
+        DatabaseLayer databaseLayer = SQLiteDatabaseLayer.from(sqLiteDatabase);
         if (method.equals(METHOD_UPDATE_ROSTER)) {
             long updateTime = System.currentTimeMillis();
             int accountDbId = extras.getInt(KEY_ACCOUNT_DB_ID);
@@ -336,17 +348,17 @@ public class GlobalProvider extends ContentProvider {
             sqLiteDatabase.beginTransaction();
             try {
                 for (GroupData groupData : groupDatas) {
-                    QueryHelper.updateOrCreateGroup(sqLiteDatabase, accountDbId, updateTime,
+                    QueryHelper.updateOrCreateGroup(databaseLayer, accountDbId, updateTime,
                             groupData.getGroupName(), groupData.getGroupId());
                     for (BuddyData buddyData : groupData.getBuddyDatas()) {
                         buddiesCount++;
-                        QueryHelper.updateOrCreateBuddy(sqLiteDatabase, accountDbId, accountType, updateTime,
+                        QueryHelper.updateOrCreateBuddy(databaseLayer, accountDbId, accountType, updateTime,
                                 buddyData.getGroupId(), buddyData.getGroupName(), buddyData.getBuddyId(),
                                 buddyData.getBuddyNick(), buddyData.getStatusIndex(), buddyData.getStatusTitle(),
                                 buddyData.getStatusMessage(), buddyData.getBuddyIcon(), buddyData.getLastSeen());
                     }
                 }
-                QueryHelper.removeOutdatedBuddies(sqLiteDatabase, accountDbId, updateTime);
+                QueryHelper.removeOutdatedBuddies(databaseLayer, accountDbId, updateTime);
                 sqLiteDatabase.setTransactionSuccessful();
             } finally {
                 sqLiteDatabase.endTransaction();
@@ -357,6 +369,66 @@ public class GlobalProvider extends ContentProvider {
                     "(speed: " + (buddiesCount * 1000 / updateDelay) + " buddies/sec)");
             // Notify interested observers.
             getContentResolver().notifyChange(Settings.GROUP_RESOLVER_URI, null);
+            getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+        } else if (method.equals(METHOD_INSERT_MESSAGE)) {
+            sqLiteDatabase.beginTransaction();
+            try {
+//                int accountDbId = -1;
+//                String accountType = null;
+//                boolean isIgnoreUnknown = false;
+//                HistDlgState histDlgState = null;
+//
+//                for (Message message : histDlgState.getMessages()) {
+//                    String buddyId = histDlgState.getSn();
+//                    Buddy buddy = new Buddy(accountDbId, buddyId);
+//                    boolean buddyExist = QueryHelper.checkBuddy(sqLiteDatabase, accountDbId, buddyId);
+//                    if (!buddyExist) {
+//                        if (isIgnoreUnknown) {
+//                            continue;
+//                        } else {
+//                            int statusIndex = StatusUtil.STATUS_OFFLINE;
+//                            String statusTitle = getStatusTitle(null, statusIndex);
+//                            String buddyNick = histDlgState.getPersons().get(0).getFriendly();
+//                            String statusMessage = "";
+//                            String buddyIcon = null;
+//                            long lastSeen = -1;
+//                            String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+//                            long updateTime = System.currentTimeMillis();
+//
+//                            QueryHelper.updateOrCreateBuddy(
+//                                    contentResolver,
+//                                    accountDbId,
+//                                    accountType,
+//                                    updateTime,
+//                                    GlobalProvider.GROUP_ID_RECYCLE,
+//                                    recycleString,
+//                                    buddyId,
+//                                    buddyNick,
+//                                    statusIndex,
+//                                    statusTitle,
+//                                    statusMessage,
+//                                    buddyIcon,
+//                                    lastSeen);
+//                        }
+//                    }
+//                    int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
+//                    long prevMsgId = -1;
+//                    QueryHelper.insertTextMessage(
+//                            contentResolver,
+//                            buddy,
+//                            prevMsgId,
+//                            message.getMsgId(),
+//                            messageType,
+//                            message.getReqId(),
+//                            message.getTime() * 1000,
+//                            message.getText());
+//                }
+
+                sqLiteDatabase.setTransactionSuccessful();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
+            getContentResolver().notifyChange(Settings.HISTORY_RESOLVER_URI, null);
             getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
         }
         return null;

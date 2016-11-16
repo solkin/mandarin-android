@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.Service;
+import android.content.ContentResolver;
 
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.Unobfuscatable;
@@ -39,6 +40,11 @@ public abstract class Request<A extends AccountRoot> implements Unobfuscatable {
 
     public Service getService() {
         return service;
+    }
+
+    public DatabaseLayer getDatabaseLayer() {
+        ContentResolver contentResolver = getAccountRoot().getContentResolver();
+        return ContentResolverLayer.from(contentResolver);
     }
 
     /**

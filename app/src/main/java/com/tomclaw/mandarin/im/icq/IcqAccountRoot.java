@@ -309,9 +309,10 @@ public class IcqAccountRoot extends AccountRoot {
         String moodIcon = myInfo.optMoodIcon();
         String statusMessage = myInfo.optStatusMsg();
         String moodTitle = myInfo.optMoodTitle();
+        String accountType = getAccountType();
 
-        int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
-        String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
+        int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
+        String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
 
         // Checking for we are disconnecting now.
         if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) {

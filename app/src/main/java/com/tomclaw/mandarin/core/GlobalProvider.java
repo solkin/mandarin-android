@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 /**
@@ -88,7 +89,6 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_OPERATION = "buddy_operation";
     public static final String ROSTER_BUDDY_LAST_MESSAGE_TIME = "buddy_last_message_time";
     public static final String ROSTER_BUDDY_LAST_MESSAGE_ID = "buddy_last_message_id";
-    public static final String ROSTER_BUDDY_DELETED_UP_TO = "buddy_deleted_up_to";
     public static final String ROSTER_BUDDY_YOURS_LAST_READ = "buddy_yours_last_read";
     public static final String ROSTER_BUDDY_THEIRS_LAST_DELIVERED = "buddy_theirs_last_delivered";
     public static final String ROSTER_BUDDY_THEIRS_LAST_READ = "buddy_theirs_last_read";
@@ -166,7 +166,6 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_OPERATION + " int default " + ROSTER_BUDDY_OPERATION_NO + ", "
             + ROSTER_BUDDY_LAST_MESSAGE_TIME + " int default 0" + ", "
             + ROSTER_BUDDY_LAST_MESSAGE_ID + " int default 0" + ", "
-            + ROSTER_BUDDY_DELETED_UP_TO + " int default 0" + ", "
             + ROSTER_BUDDY_YOURS_LAST_READ + " int default 0" + ", "
             + ROSTER_BUDDY_THEIRS_LAST_DELIVERED + " int default 0" + ", "
             + ROSTER_BUDDY_THEIRS_LAST_READ + " int default 0" + ");";
@@ -201,14 +200,6 @@ public class GlobalProvider extends ContentProvider {
     // Database helper object.
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase sqLiteDatabase;
-
-    // Methods.
-    public static String METHOD_UPDATE_ROSTER = "update_roster";
-    public static String METHOD_INSERT_MESSAGE = "insert_message";
-
-    public static String KEY_ACCOUNT_DB_ID = "key_account_db_id";
-    public static String KEY_ACCOUNT_TYPE = "key_account_type";
-    public static String KEY_GROUP_DATAS = "key_group_datas";
 
     // URI id.
     private static final int URI_REQUEST = 1;
@@ -335,101 +326,16 @@ public class GlobalProvider extends ContentProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Bundle call(@NonNull String method, String arg, Bundle extras) {
-        DatabaseLayer databaseLayer = SQLiteDatabaseLayer.from(sqLiteDatabase);
-        if (method.equals(METHOD_UPDATE_ROSTER)) {
-            long updateTime = System.currentTimeMillis();
-            int accountDbId = extras.getInt(KEY_ACCOUNT_DB_ID);
-            String accountType = extras.getString(KEY_ACCOUNT_TYPE);
-            ArrayList<GroupData> groupDatas = (ArrayList<GroupData>) extras.getSerializable(KEY_GROUP_DATAS);
-            if (groupDatas == null) {
-                return null;
-            }
-            int buddiesCount = 0;
-            sqLiteDatabase.beginTransaction();
-            try {
-                for (GroupData groupData : groupDatas) {
-                    QueryHelper.updateOrCreateGroup(databaseLayer, accountDbId, updateTime,
-                            groupData.getGroupName(), groupData.getGroupId());
-                    for (BuddyData buddyData : groupData.getBuddyDatas()) {
-                        buddiesCount++;
-                        QueryHelper.updateOrCreateBuddy(databaseLayer, accountDbId, accountType, updateTime,
-                                buddyData.getGroupId(), buddyData.getGroupName(), buddyData.getBuddyId(),
-                                buddyData.getBuddyNick(), buddyData.getStatusIndex(), buddyData.getStatusTitle(),
-                                buddyData.getStatusMessage(), buddyData.getBuddyIcon(), buddyData.getLastSeen());
-                    }
-                }
-                QueryHelper.removeOutdatedBuddies(databaseLayer, accountDbId, updateTime);
-                sqLiteDatabase.setTransactionSuccessful();
-            } finally {
-                sqLiteDatabase.endTransaction();
-            }
-            long updateDelay = System.currentTimeMillis() - updateTime;
-            // Show some tasty info :)
-            Logger.log("roster processing " + buddiesCount + " buddies/" + updateDelay + " msec " +
-                    "(speed: " + (buddiesCount * 1000 / updateDelay) + " buddies/sec)");
-            // Notify interested observers.
-            getContentResolver().notifyChange(Settings.GROUP_RESOLVER_URI, null);
-            getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
-        } else if (method.equals(METHOD_INSERT_MESSAGE)) {
-            sqLiteDatabase.beginTransaction();
-            try {
-//                int accountDbId = -1;
-//                String accountType = null;
-//                boolean isIgnoreUnknown = false;
-//                HistDlgState histDlgState = null;
-//
-//                for (Message message : histDlgState.getMessages()) {
-//                    String buddyId = histDlgState.getSn();
-//                    Buddy buddy = new Buddy(accountDbId, buddyId);
-//                    boolean buddyExist = QueryHelper.checkBuddy(sqLiteDatabase, accountDbId, buddyId);
-//                    if (!buddyExist) {
-//                        if (isIgnoreUnknown) {
-//                            continue;
-//                        } else {
-//                            int statusIndex = StatusUtil.STATUS_OFFLINE;
-//                            String statusTitle = getStatusTitle(null, statusIndex);
-//                            String buddyNick = histDlgState.getPersons().get(0).getFriendly();
-//                            String statusMessage = "";
-//                            String buddyIcon = null;
-//                            long lastSeen = -1;
-//                            String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-//                            long updateTime = System.currentTimeMillis();
-//
-//                            QueryHelper.updateOrCreateBuddy(
-//                                    contentResolver,
-//                                    accountDbId,
-//                                    accountType,
-//                                    updateTime,
-//                                    GlobalProvider.GROUP_ID_RECYCLE,
-//                                    recycleString,
-//                                    buddyId,
-//                                    buddyNick,
-//                                    statusIndex,
-//                                    statusTitle,
-//                                    statusMessage,
-//                                    buddyIcon,
-//                                    lastSeen);
-//                        }
-//                    }
-//                    int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-//                    long prevMsgId = -1;
-//                    QueryHelper.insertTextMessage(
-//                            contentResolver,
-//                            buddy,
-//                            prevMsgId,
-//                            message.getMsgId(),
-//                            messageType,
-//                            message.getReqId(),
-//                            message.getTime() * 1000,
-//                            message.getText());
-//                }
-
-                sqLiteDatabase.setTransactionSuccessful();
-            } finally {
-                sqLiteDatabase.endTransaction();
-            }
-            getContentResolver().notifyChange(Settings.HISTORY_RESOLVER_URI, null);
-            getContentResolver().notifyChange(Settings.BUDDY_RESOLVER_URI, null);
+        try {
+            Logger.log("now proceed " + method + " database method");
+            Context context = getContext();
+            Class clazz = Class.forName(method);
+            Constructor<DatabaseTask> constructor = clazz.getConstructor(Context.class,
+                    SQLiteDatabase.class, Bundle.class);
+            DatabaseTask databaseTask = constructor.newInstance(context, sqLiteDatabase, extras);
+            TaskExecutor.getInstance().execute(databaseTask);
+        } catch (Throwable ex) {
+            Logger.log("unable to execute method " + method + " due to exception", ex);
         }
         return null;
     }

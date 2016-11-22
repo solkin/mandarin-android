@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
-public class Yours {
+import java.io.Serializable;
+
+public class Yours implements Serializable {
 
     private long lastRead;
 

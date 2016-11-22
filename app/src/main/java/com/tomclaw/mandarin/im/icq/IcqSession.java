@@ -16,28 +16,24 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyData;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.dto.Message;
+import com.tomclaw.mandarin.im.icq.tasks.ProcessDialogStateTask;
+import com.tomclaw.mandarin.im.tasks.UpdateRosterTask;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.NameValuePair;
 import com.tomclaw.mandarin.util.StringUtil;
-import com.tomclaw.mandarin.util.UrlParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
@@ -453,12 +449,12 @@ public class IcqSession {
         long processStartTime = System.currentTimeMillis();
         ContentResolver contentResolver = icqAccountRoot.getContentResolver();
         DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+        String accountType = icqAccountRoot.getAccountType();
         switch (eventType) {
             case BUDDYLIST:
                 try {
                     ArrayList<GroupData> groupDatas = new ArrayList<>();
                     int accountDbId = icqAccountRoot.getAccountDbId();
-                    String accountType = icqAccountRoot.getAccountType();
                     JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
                     for (int c = 0; c < groupsArray.length(); c++) {
                         JSONObject groupObject = groupsArray.getJSONObject(c);
@@ -477,8 +473,8 @@ public class IcqSession {
                             String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
-                            int statusIndex = getStatusIndex(moodIcon, buddyStatus);
-                            String statusTitle = getStatusTitle(moodTitle, statusIndex);
+                            int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
+                            String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
                             String buddyType = buddyObject.getString(USER_TYPE);
                             String buddyIcon = buddyObject.optString(BUDDY_ICON);
                             String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
@@ -493,10 +489,11 @@ public class IcqSession {
                     }
                     // Prepare parameters to call update roster method.
                     Bundle bundle = new Bundle();
-                    bundle.putInt(GlobalProvider.KEY_ACCOUNT_DB_ID, accountDbId);
-                    bundle.putString(GlobalProvider.KEY_ACCOUNT_TYPE, accountType);
-                    bundle.putSerializable(GlobalProvider.KEY_GROUP_DATAS, groupDatas);
-                    contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_ROSTER, null, bundle);
+                    bundle.putInt(UpdateRosterTask.KEY_ACCOUNT_DB_ID, accountDbId);
+                    bundle.putString(UpdateRosterTask.KEY_ACCOUNT_TYPE, accountType);
+                    bundle.putSerializable(UpdateRosterTask.KEY_GROUP_DATAS, groupDatas);
+                    contentResolver.call(Settings.BUDDY_RESOLVER_URI,
+                            UpdateRosterTask.class.getName(), null, bundle);
                 } catch (JSONException ex) {
                     Logger.log("exception while parsing buddy list", ex);
                 }
@@ -504,72 +501,80 @@ public class IcqSession {
             case HIST_DLG_STATE:
                 GsonSingleton gson = GsonSingleton.getInstance();
                 try {
+                    int accountDbId = icqAccountRoot.getAccountDbId();
+                    String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
                     boolean isIgnoreUnknown = PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext());
                     HistDlgState histDlgState = gson.fromJson(eventData.toString(), HistDlgState.class);
 
-                    for (Message message : histDlgState.getMessages()) {
-                        int accountDbId = icqAccountRoot.getAccountDbId();
-                        String accountType = icqAccountRoot.getAccountType();
-                        String buddyId = histDlgState.getSn();
-                        Buddy buddy = new Buddy(accountDbId, buddyId);
-                        boolean buddyExist = QueryHelper.checkBuddy(databaseLayer, accountDbId, buddyId);
-                        if (!buddyExist) {
-                            if (isIgnoreUnknown) {
-                                continue;
-                            } else {
-                                int statusIndex = StatusUtil.STATUS_OFFLINE;
-                                String statusTitle = getStatusTitle(null, statusIndex);
-                                String buddyNick = histDlgState.getPersons().get(0).getFriendly();
-                                String statusMessage = "";
-                                String buddyIcon = null;
-                                long lastSeen = -1;
-                                String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                                long updateTime = System.currentTimeMillis();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(ProcessDialogStateTask.KEY_ACCOUNT_DB_ID, accountDbId);
+                    bundle.putString(ProcessDialogStateTask.KEY_ACCOUNT_TYPE, accountType);
+                    bundle.putBoolean(ProcessDialogStateTask.KEY_IGNORE_UNKNOWN, isIgnoreUnknown);
+                    bundle.putString(ProcessDialogStateTask.KEY_RECYCLE_STRING, recycleString);
+                    bundle.putSerializable(ProcessDialogStateTask.KEY_DIALOG_STATE, histDlgState);
+                    contentResolver.call(Settings.HISTORY_RESOLVER_URI,
+                            ProcessDialogStateTask.class.getName(), null, bundle);
 
-                                QueryHelper.updateOrCreateBuddy(
-                                        databaseLayer,
-                                        accountDbId,
-                                        accountType,
-                                        updateTime,
-                                        GlobalProvider.GROUP_ID_RECYCLE,
-                                        recycleString,
-                                        buddyId,
-                                        buddyNick,
-                                        statusIndex,
-                                        statusTitle,
-                                        statusMessage,
-                                        buddyIcon,
-                                        lastSeen);
-                            }
-                        }
-                        boolean isProcessed = false;
-//                        Matcher matcher = URL_REGEX.matcher(message.getText());
-//                        while (matcher.find() && matcher.groupCount() == 1) {
-//                            // TODO: also show message body.
-//                            String url = matcher.group();
-//                            String fileId = matcher.group(1);
-//                            String tag = message.getMsgId() + ":" + url;
-//                            RequestHelper.requestFileReceive(
-//                                    contentResolver, accountDbId,
-//                                    buddyId, String.valueOf(message.getMsgId()),
-//                                    message.getTime() * 1000, fileId, url,
-//                                    message.getText(), tag);
-//                            isProcessed = true;
+//                    for (Message message : histDlgState.getMessages()) {
+//                        String buddyId = histDlgState.getSn();
+//                        Buddy buddy = new Buddy(accountDbId, buddyId);
+//                        boolean buddyExist = QueryHelper.checkBuddy(databaseLayer, accountDbId, buddyId);
+//                        if (!buddyExist) {
+//                            if (isIgnoreUnknown) {
+//                                continue;
+//                            } else {
+//                                int statusIndex = StatusUtil.STATUS_OFFLINE;
+//                                String statusTitle = IcqStatusUtil.getStatusTitle(accountType, null, statusIndex);
+//                                String buddyNick = histDlgState.getPersons().get(0).getFriendly();
+//                                String statusMessage = "";
+//                                String buddyIcon = null;
+//                                long lastSeen = -1;
+//                                long updateTime = System.currentTimeMillis();
+//
+//                                QueryHelper.updateOrCreateBuddy(
+//                                        databaseLayer,
+//                                        accountDbId,
+//                                        accountType,
+//                                        updateTime,
+//                                        GlobalProvider.GROUP_ID_RECYCLE,
+//                                        recycleString,
+//                                        buddyId,
+//                                        buddyNick,
+//                                        statusIndex,
+//                                        statusTitle,
+//                                        statusMessage,
+//                                        buddyIcon,
+//                                        lastSeen);
+//                            }
 //                        }
-                        if (!isProcessed) {
-                            int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-                            long prevMsgId = -1;
-                            QueryHelper.insertTextMessage(
-                                    databaseLayer,
-                                    buddy,
-                                    prevMsgId,
-                                    message.getMsgId(),
-                                    messageType,
-                                    message.getReqId(),
-                                    message.getTime() * 1000,
-                                    message.getText());
-                        }
-                    }
+//                        boolean isProcessed = false;
+////                        Matcher matcher = URL_REGEX.matcher(message.getText());
+////                        while (matcher.find() && matcher.groupCount() == 1) {
+////                            // TODO: also show message body.
+////                            String url = matcher.group();
+////                            String fileId = matcher.group(1);
+////                            String tag = message.getMsgId() + ":" + url;
+////                            RequestHelper.requestFileReceive(
+////                                    contentResolver, accountDbId,
+////                                    buddyId, String.valueOf(message.getMsgId()),
+////                                    message.getTime() * 1000, fileId, url,
+////                                    message.getText(), tag);
+////                            isProcessed = true;
+////                        }
+//                        if (!isProcessed) {
+//                            int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
+//                            long prevMsgId = -1;
+//                            QueryHelper.insertTextMessage(
+//                                    databaseLayer,
+//                                    buddy,
+//                                    prevMsgId,
+//                                    message.getMsgId(),
+//                                    messageType,
+//                                    message.getReqId(),
+//                                    message.getTime() * 1000,
+//                                    message.getText());
+//                        }
+//                    }
                 } catch (Throwable ex) {
                     Logger.log("exception while parsing history dialog state", ex);
                 }
@@ -602,8 +607,8 @@ public class IcqSession {
                     String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
                     String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
 
-                    int statusIndex = getStatusIndex(moodIcon, buddyStatus);
-                    String statusTitle = getStatusTitle(moodTitle, statusIndex);
+                    int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
+                    String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
 
                     String buddyIcon = eventData.optString(BUDDY_ICON);
                     String bigBuddyIcon = eventData.optString(WimConstants.BIG_BUDDY_ICON);
@@ -646,80 +651,6 @@ public class IcqSession {
                 break;
         }
         Logger.log("processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
-    }
-
-    protected String getStatusTitle(String moodTitle, int statusIndex) {
-        // Define status title.
-        String statusTitle;
-        if (TextUtils.isEmpty(moodTitle)) {
-            // Default title for status index.
-            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
-        } else {
-            // Buddy specified title.
-            statusTitle = moodTitle;
-        }
-        return statusTitle;
-    }
-
-    protected int getStatusIndex(String moodIcon, String buddyStatus) {
-        int statusIndex;
-        // Checking for mood present.
-        if (!TextUtils.isEmpty(moodIcon)) {
-            try {
-                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
-            } catch (StatusNotFoundException ignored) {
-            }
-        }
-        try {
-            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
-        } catch (StatusNotFoundException ex) {
-            statusIndex = StatusUtil.STATUS_OFFLINE;
-        }
-        return statusIndex;
-    }
-
-    /**
-     * Returns "id" parameter value from specified URL
-     */
-    private static String getIdParam(String url) {
-        URI uri = URI.create(url);
-        for (NameValuePair param : UrlParser.parse(uri, "UTF-8")) {
-            if (param.getName().equals("id")) {
-                return param.getValue();
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static String parseMood(String moodUrl) {
-        if (moodUrl != null) {
-            final String id = getIdParam(moodUrl);
-
-            InputStream is = new InputStream() {
-                int pos = 0;
-                int length = id.length();
-
-                @Override
-                public int read() throws IOException {
-                    if (pos == length) return -1;
-                    char c1 = id.charAt(pos++);
-                    char c2 = id.charAt(pos++);
-
-                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
-                }
-            };
-            DataInputStream dis = new DataInputStream(is);
-            try {
-                return dis.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return moodUrl;
     }
 
     @SuppressWarnings("WeakerAccess")

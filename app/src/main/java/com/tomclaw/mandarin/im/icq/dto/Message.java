@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
 
     private long msgId;
     private String reqId;

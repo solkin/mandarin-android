@@ -1,6 +1,8 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
-public class Person {
+import java.io.Serializable;
+
+public class Person implements Serializable {
 
     private String sn;
     private String friendly;

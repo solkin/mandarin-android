@@ -1,13 +1,15 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class HistDlgState {
+public class HistDlgState implements Serializable {
 
     private String sn;
-    private boolean starting;
+    private Boolean starting;
     private long lastMsgId;
+    private Long delUpto;
     private long unreadCnt;
     private Yours yours;
     private Theirs theirs;
@@ -20,7 +22,14 @@ public class HistDlgState {
     }
 
     public boolean isStarting() {
-        return starting;
+        if (starting != null) {
+            return starting;
+        }
+        return false;
+    }
+
+    public Long getDelUpTo() {
+        return delUpto;
     }
 
     public long getLastMsgId() {

@@ -611,6 +611,16 @@ public class QueryHelper {
         messagesByIds(messageIds).delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static void removeMessagesUpTo(DatabaseLayer databaseLayer, Buddy buddy, long messageId) {
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+        new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddyId).and()
+                .less(GlobalProvider.HISTORY_MESSAGE_ID, messageId)
+                .delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
+    }
+
     public static boolean isIncomingMessagesPresent(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
         queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
@@ -813,6 +823,21 @@ public class QueryHelper {
             cursor.close();
             throw new BuddyNotFoundException();
         }
+    }
+
+    public static void modifyDialogState(DatabaseLayer databaseLayer, Buddy buddy, long unreadCnt,
+                                         long lastMessageTime, long lastMsgId, long yoursLastRead,
+                                         long theirsLastDelivered, long theirsLastRead) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, unreadCnt);
+        if (lastMessageTime != Long.MIN_VALUE) {
+            contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME, lastMessageTime);
+        }
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_ID, lastMsgId);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_YOURS_LAST_READ, yoursLastRead);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_DELIVERED, theirsLastDelivered);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_READ, theirsLastRead);
+        modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
     public static void modifyBuddyTyping(DatabaseLayer databaseLayer, int accountDbId, String buddyId,
@@ -1077,26 +1102,6 @@ public class QueryHelper {
         throw new BuddyNotFoundException();
     }
 
-    public static int getBuddyDbId(DatabaseLayer databaseLayer, int accountDbId, String groupName, String buddyId)
-            throws BuddyNotFoundException {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain account db id.
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_GROUP, groupName)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
-        Cursor cursor = queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But lets check.
-        if (cursor.moveToFirst()) {
-            int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Closing cursor.
-            cursor.close();
-            return buddyDbId;
-        }
-        // Closing cursor.
-        cursor.close();
-        throw new BuddyNotFoundException();
-    }
-
     private static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, QueryBuilder queryBuilder)
             throws BuddyNotFoundException {
         Cursor cursor = databaseLayer.query(Settings.BUDDY_RESOLVER_URI, queryBuilder);
@@ -1130,20 +1135,6 @@ public class QueryHelper {
     public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, int buddyDbId)
             throws BuddyNotFoundException {
         return getBuddyCursor(databaseLayer, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
-    }
-
-    @Deprecated
-    public static int getBuddyAccountDbId(DatabaseLayer databaseLayer, int buddyDbId)
-            throws BuddyNotFoundException {
-        BuddyCursor buddyCursor = null;
-        try {
-            buddyCursor = getBuddyCursor(databaseLayer, buddyDbId);
-            return buddyCursor.getBuddyAccountDbId();
-        } finally {
-            if (buddyCursor != null) {
-                buddyCursor.close();
-            }
-        }
     }
 
     @Deprecated
@@ -1188,38 +1179,21 @@ public class QueryHelper {
         }
     }
 
-    @Deprecated
-    public static boolean checkDialog(DatabaseLayer databaseLayer, int buddyDbId) {
-        try {
-            BuddyCursor buddyCursor = null;
-            try {
-                buddyCursor = getBuddyCursor(databaseLayer, buddyDbId);
-                return buddyCursor.getBuddyDialog();
-            } finally {
-                if (buddyCursor != null) {
-                    buddyCursor.close();
-                }
-            }
-        } catch (BuddyNotFoundException ignored) {
-            // No buddy - no dialog.
-            return false;
-        }
-    }
-
     public static String getAccountName(DatabaseLayer databaseLayer, int accountDbId)
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-        // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
-        // Checking for there is at least one account and switching to it.
-        if (cursor.moveToFirst()) {
-            // Obtain necessary column index.
-            int nameColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
-            String accountName = cursor.getString(nameColumnIndex);
-            // Closing cursor.
-            cursor.close();
-            return accountName;
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
+            if (cursor.moveToFirst()) {
+                int nameColumnIndex = cursor.getColumnIndex(GlobalProvider.ACCOUNT_NAME);
+                return cursor.getString(nameColumnIndex);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         throw new AccountNotFoundException();
     }
@@ -1228,14 +1202,16 @@ public class QueryHelper {
             throws AccountNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-        // Obtain specified account. If exist.
-        Cursor cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
-        // Checking for there is at least one account and switching to it.
-        if (cursor.moveToFirst()) {
-            String accountType = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
-            // Closing cursor.
-            cursor.close();
-            return accountType;
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(databaseLayer, Settings.ACCOUNT_RESOLVER_URI);
+            if (cursor.moveToFirst()) {
+                return cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_TYPE));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         throw new AccountNotFoundException();
     }

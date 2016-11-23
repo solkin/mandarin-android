@@ -881,8 +881,8 @@ public class QueryHelper {
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(databaseLayer, queryBuilder);
-            long buddyDbId = buddyCursor.getBuddyDbId();
-            boolean buddyDialogFlag = buddyCursor.getBuddyDialog();
+            long buddyDbId = buddyCursor.getDbId();
+            boolean buddyDialogFlag = buddyCursor.getDialog();
             // Update dialog flag.
             buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag ? 1 : 0);
             // Update this row.
@@ -928,10 +928,10 @@ public class QueryHelper {
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(databaseLayer, queryBuilder);
-            long buddyDbId = buddyCursor.getBuddyDbId();
-            boolean buddyDialogFlag = buddyCursor.getBuddyDialog();
-            avatarHash = buddyCursor.getBuddyAvatarHash();
-            int buddyOperation = buddyCursor.getBuddyOperation();
+            long buddyDbId = buddyCursor.getDbId();
+            boolean buddyDialogFlag = buddyCursor.getDialog();
+            avatarHash = buddyCursor.getAvatarHash();
+            int buddyOperation = buddyCursor.getOperation();
             // Update dialog flag.
             buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, buddyDialogFlag ? 1 : 0);
             // Checking for no buddy icon now, so, we must reset avatar hash.
@@ -1125,6 +1125,11 @@ public class QueryHelper {
         return getBuddyCursor(databaseLayer, queryBuilder);
     }
 
+    public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, Buddy buddy)
+            throws BuddyNotFoundException {
+        return getBuddyCursor(databaseLayer, buddy.getAccountDbId(), buddy.getBuddyId());
+    }
+
     public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, int accountDbId, String buddyId)
             throws BuddyNotFoundException {
         return getBuddyCursor(databaseLayer, new QueryBuilder()
@@ -1157,7 +1162,7 @@ public class QueryHelper {
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(databaseLayer, accountDbId, buddyId);
-            return buddyCursor.getBuddyDraft();
+            return buddyCursor.getDraft();
         } finally {
             if (buddyCursor != null) {
                 buddyCursor.close();
@@ -1171,7 +1176,7 @@ public class QueryHelper {
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = getBuddyCursor(databaseLayer, accountDbId, buddyId);
-            return buddyCursor.getBuddyAvatarHash();
+            return buddyCursor.getAvatarHash();
         } finally {
             if (buddyCursor != null) {
                 buddyCursor.close();

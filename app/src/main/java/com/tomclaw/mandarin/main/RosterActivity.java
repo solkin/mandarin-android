@@ -267,10 +267,10 @@ public class RosterActivity extends ChiefActivity {
             try {
                 buddyCursor = QueryHelper.getBuddyCursor(databaseLayer,
                         buddy.getAccountDbId(), buddy.getBuddyId());
-                final int accountDbId = buddyCursor.getBuddyAccountDbId();
+                final int accountDbId = buddyCursor.getAccountDbId();
                 final String buddyId = buddyCursor.getBuddyId();
                 final String buddyPreviousNick = buddyCursor.getBuddyNick();
-                final boolean isPersistent = (buddyCursor.getBuddyGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
+                final boolean isPersistent = (buddyCursor.getGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
 
                 View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
 

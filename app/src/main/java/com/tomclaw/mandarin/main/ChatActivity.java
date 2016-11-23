@@ -61,7 +61,6 @@ import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -1306,17 +1305,17 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onBuddyInfoChanged(final BuddyCursor buddyCursor) {
-            final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
-                    buddyCursor.getBuddyStatus());
+            final int icon = StatusUtil.getStatusDrawable(buddyCursor.getAccountType(),
+                    buddyCursor.getStatus());
             final String title = buddyCursor.getBuddyNick();
             final String subtitle;
 
-            long lastTyping = buddyCursor.getBuddyLastTyping();
+            long lastTyping = buddyCursor.getLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                 subtitle = getString(R.string.typing);
             } else {
-                long lastSeen = buddyCursor.getBuddyLastSeen();
+                long lastSeen = buddyCursor.getLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
                     String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
@@ -1339,7 +1338,7 @@ public class ChatActivity extends ChiefActivity {
 
                     subtitle = lastSeenText;
                 } else {
-                    subtitle = buddyCursor.getBuddyStatusTitle();
+                    subtitle = buddyCursor.getStatusTitle();
                 }
             }
 

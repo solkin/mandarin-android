@@ -38,12 +38,12 @@ public class BuddyInfoTask extends WeakObjectTask<Context> {
             if (cursor != null) {
                 // Cursor may have more than only one entry.
                 if (cursor.moveToFirst()) {
-                    String accountType = cursor.getBuddyAccountType();
+                    String accountType = cursor.getAccountType();
                     String buddyNick = cursor.getBuddyNick();
-                    String avatarHash = cursor.getBuddyAvatarHash();
-                    int buddyStatus = cursor.getBuddyStatus();
-                    String buddyStatusTitle = cursor.getBuddyStatusTitle();
-                    String buddyStatusMessage = cursor.getBuddyStatusMessage();
+                    String avatarHash = cursor.getAvatarHash();
+                    int buddyStatus = cursor.getStatus();
+                    String buddyStatusTitle = cursor.getStatusTitle();
+                    String buddyStatusMessage = cursor.getStatusMessage();
                     // Now we ready to start buddy info activity.
                     context.startActivity(new Intent(context, BuddyInfoActivity.class)
                             .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)

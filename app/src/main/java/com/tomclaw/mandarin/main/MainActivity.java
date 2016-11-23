@@ -341,7 +341,7 @@ public class MainActivity extends ChiefActivity {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 for (Buddy buddy : buddies) {
                     if (buddy.equals(cursor.toBuddy()) &&
-                            cursor.getBuddyUnreadCount() > 0) {
+                            cursor.getUnreadCount() > 0) {
                         menuRes = R.menu.chat_list_unread_edit_menu;
                         break;
                     }

@@ -11,6 +11,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
@@ -107,6 +108,19 @@ public class ProcessDialogStateTask extends DatabaseTask {
         long yoursLastRead = histDlgState.getYours().getLastRead();
         long theirsLastDelivered = histDlgState.getTheirs().getLastDelivered();
         long theirsLastRead = histDlgState.getTheirs().getLastRead();
+
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = QueryHelper.getBuddyCursor(databaseLayer, buddy);
+            lastMsgId = Math.max(lastMsgId, buddyCursor.getLastMessageId());
+            yoursLastRead = Math.max(yoursLastRead, buddyCursor.getYoursLastRead());
+            theirsLastDelivered = Math.max(theirsLastDelivered, buddyCursor.getTheirsLastDelivered());
+            theirsLastRead = Math.max(theirsLastRead, buddyCursor.getTheirsLastRead());
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
+        }
 
         QueryHelper.modifyDialogState(databaseLayer, buddy, unreadCnt, lastMessageTime,
                 lastMsgId, yoursLastRead, theirsLastDelivered, theirsLastRead);

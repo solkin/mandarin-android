@@ -214,12 +214,12 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             }
             ta.recycle();
             // Status image.
-            String accountType = buddyCursor.getBuddyAccountType();
-            int statusIndex = buddyCursor.getBuddyStatus();
+            String accountType = buddyCursor.getAccountType();
+            int statusIndex = buddyCursor.getStatus();
             int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
             // Status text.
-            String statusTitle = buddyCursor.getBuddyStatusTitle();
-            String statusMessage = buddyCursor.getBuddyStatusMessage();
+            String statusTitle = buddyCursor.getStatusTitle();
+            String statusMessage = buddyCursor.getStatusMessage();
             if (statusIndex == StatusUtil.STATUS_OFFLINE
                     || TextUtils.equals(statusTitle, statusMessage)) {
                 // Buddy status is offline now or status message is only status title.
@@ -227,14 +227,14 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 statusMessage = "";
             }
             SpannableString statusString;
-            long lastTyping = buddyCursor.getBuddyLastTyping();
+            long lastTyping = buddyCursor.getLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                 String typingText = itemView.getContext().getString(R.string.typing);
                 statusString = new SpannableString(typingText);
                 statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, typingText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                long lastSeen = buddyCursor.getBuddyLastSeen();
+                long lastSeen = buddyCursor.getLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
                     String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
@@ -263,7 +263,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 }
             }
             // Unread count.
-            int unreadCount = buddyCursor.getBuddyUnreadCount();
+            int unreadCount = buddyCursor.getUnreadCount();
             // Applying values.
             buddyNick.setText(buddyCursor.getBuddyNick());
             buddyStatus.setImageResource(statusImageResource);
@@ -275,10 +275,10 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 counterLayout.setVisibility(View.GONE);
             }
             // Draft message.
-            String buddyDraft = buddyCursor.getBuddyDraft();
+            String buddyDraft = buddyCursor.getDraft();
             draftIndicator.setVisibility(TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
             // Avatar.
-            final String avatarHash = buddyCursor.getBuddyAvatarHash();
+            final String avatarHash = buddyCursor.getAvatarHash();
             BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
             // On-avatar click listener.
             final StrictBuddy buddy = buddyCursor.toBuddy();

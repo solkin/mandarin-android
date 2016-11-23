@@ -243,7 +243,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return new QueryBuilder()
                 .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, buddy.getAccountDbId()).and()
                 .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddy.getBuddyId())
-                .descending(GlobalProvider.ROW_AUTO_ID);
+                .descending(GlobalProvider.HISTORY_MESSAGE_ID);
     }
 
     public void setContentMessageClickListener(

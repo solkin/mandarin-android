@@ -826,11 +826,11 @@ public class QueryHelper {
     }
 
     public static void modifyDialogState(DatabaseLayer databaseLayer, Buddy buddy, long unreadCnt,
-                                         long lastMessageTime, long lastMsgId, long yoursLastRead,
+                                         @Nullable Long lastMessageTime, long lastMsgId, long yoursLastRead,
                                          long theirsLastDelivered, long theirsLastRead) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, unreadCnt);
-        if (lastMessageTime != Long.MIN_VALUE) {
+        if (lastMessageTime != null) {
             contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME, lastMessageTime);
         }
         contentValues.put(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_ID, lastMsgId);

@@ -80,7 +80,7 @@ public class ProcessDialogStateTask extends DatabaseTask {
             }
         }
 
-        long lastMessageTime = Long.MIN_VALUE;
+        Long lastMessageTime = Long.MIN_VALUE;
         for (Message message : histDlgState.getMessages()) {
             int messageType = message.isOutgoing() ?
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING :
@@ -99,6 +99,9 @@ public class ProcessDialogStateTask extends DatabaseTask {
             if (messageTime > lastMessageTime) {
                 lastMessageTime = messageTime;
             }
+        }
+        if (lastMessageTime == Long.MIN_VALUE) {
+            lastMessageTime = null;
         }
 
         // TODO: calculate values with remote and local data

@@ -8,8 +8,8 @@ import java.io.Closeable;
 
 /**
  * Created by ivsolkin on 26.11.16.
+ * Cursor wrapper for history table
  */
-
 public class MessageCursor implements Closeable {
 
     private Cursor cursor;

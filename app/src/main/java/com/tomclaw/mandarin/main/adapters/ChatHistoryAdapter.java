@@ -25,6 +25,7 @@ import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingTextView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingVideoView;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
@@ -40,6 +41,8 @@ import java.lang.reflect.Constructor;
  */
 public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int LOADER_ID = 10;
 
     private static final int[] ITEM_LAYOUTS = new int[]{
             0,
@@ -65,22 +68,15 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             OutgoingFileView.class
     };
 
-    private TimeHelper timeHelper;
-
-    /**
-     * Adapter ID
-     */
-    private final int LOADER_ID = 10;
-
-    private Buddy buddy = null;
-
-    private MessageCursor messageCursor;
-
     private Context context;
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
+    private TimeHelper timeHelper;
+    private Buddy buddy = null;
+    private MessageCursor messageCursor;
     private ContentMessageClickListener contentMessageClickListener;
     private SelectionModeListener selectionModeListener;
+    private HistoryIntegrityListener historyIntegrityListener;
 
     private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
@@ -100,11 +96,9 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
 
     private void setBuddy(Buddy buddy) {
         if (!TextUtils.isEmpty(buddy.getBuddyId())) {
-            // Destroy current loader.
             loaderManager.destroyLoader(LOADER_ID);
         }
         this.buddy = buddy;
-        // Initialize loader for adapter Id.
         loaderManager.initLoader(LOADER_ID, null, this);
     }
 
@@ -142,7 +136,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         }
     }
 
-    public MessageCursor getMessageCursor() {
+    private MessageCursor getMessageCursor() {
         return messageCursor;
     }
 
@@ -242,10 +236,16 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         this.selectionModeListener = selectionModeListener;
     }
 
+    public void setHistoryIntegrityListener(HistoryIntegrityListener historyIntegrityListener) {
+        this.historyIntegrityListener = historyIntegrityListener;
+    }
+
     @Override
     public void onBindViewHolderCursor(BaseHistoryView holder, Cursor cursor) {
         MessageCursor messageCursor = getMessageCursor();
         long messageDbId = messageCursor.getMessageDbId();
+        long messageId = messageCursor.getMessageId();
+        long messagePrevId = messageCursor.getMessagePrevId();
         int messageType = messageCursor.getMessageType();
         CharSequence messageText = SmileyParser.getInstance()
                 .addSmileySpans(messageCursor.getMessageText());
@@ -264,8 +264,23 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        boolean dateVisible = !(messageCursor.moveToNext() && messageDateText
-                .equals(timeHelper.getFormattedDate(messageCursor.getMessageTime())));
+        boolean isMove = messageCursor.moveToNext();
+        boolean dateVisible = true;
+        if (isMove) {
+            long movedMessageTime = messageCursor.getMessageTime();
+            String movedMessageDateText = timeHelper.getFormattedDate(movedMessageTime);
+            dateVisible = !messageDateText.equals(movedMessageDateText);
+        }
+        if (messagePrevId == -1) {
+            long movedMessageId = 0;
+            if (isMove) {
+                movedMessageId = messageCursor.getMessageId();
+            }
+            Logger.log("Hole between " + movedMessageId + " and " + messageId);
+            if (historyIntegrityListener != null) {
+                historyIntegrityListener.onHole(buddy, movedMessageId, messageId);
+            }
+        }
         // Creating chat history item to bind the view.
         ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime,
                 messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
@@ -274,10 +289,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         holder.setContentClickListener(contentMessageClickListener);
         holder.setSelectionModeListener(selectionModeListener);
         holder.bind(historyItem);
-    }
-
-    public TimeHelper getTimeHelper() {
-        return timeHelper;
     }
 
     public interface ContentMessageClickListener {
@@ -293,7 +304,8 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 
-    public interface AdapterListener {
-        void onPreviewClicked(String filePath, String previewHash);
+    public interface HistoryIntegrityListener {
+
+        void onHole(Buddy buddy, long fromMessageId, long tillMessageId);
     }
 }

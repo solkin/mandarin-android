@@ -24,17 +24,14 @@ public class CabbageSession {
     }
 
     public void obtainClient() {
-        String authToken = accountRoot.getAuthToken();
-        CabbageAddClientRequest request = new CabbageAddClientRequest(createRequestId(), authToken,
-                HttpUtil.getUserAgent(), BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
+        CabbageAddClientRequest request = new CabbageAddClientRequest(HttpUtil.getUserAgent(),
+                BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
         invokeCabbageRequest(request);
     }
 
     public void refreshClient() {
-        String authToken = accountRoot.getAuthToken();
-        long clientId = accountRoot.getClientId();
-        CabbageModClientRequest request = new CabbageModClientRequest(createRequestId(), authToken,
-                clientId, HttpUtil.getUserAgent(), BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
+        CabbageModClientRequest request = new CabbageModClientRequest(HttpUtil.getUserAgent(),
+                BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
         invokeCabbageRequest(request);
     }
 
@@ -50,9 +47,5 @@ public class CabbageSession {
             }
             result = request.onRequest(accountRoot, null);
         } while (result != Request.REQUEST_DELETE && result != Request.REQUEST_SKIP);
-    }
-
-    private String createRequestId() {
-        return String.valueOf(System.currentTimeMillis());
     }
 }

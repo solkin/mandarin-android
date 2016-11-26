@@ -105,6 +105,7 @@ public class ChatActivity extends ChiefActivity {
     private MultiChoiceActionCallback actionCallback;
     private ContentClickListener contentClickListener;
     private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
+    private ChatHistoryAdapter.HistoryIntegrityListener historyIntegrityListener;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -189,10 +190,12 @@ public class ChatActivity extends ChiefActivity {
                 }
             }
         };
+        historyIntegrityListener = new ChatHistoryIntegrityListener();
 
         chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
+        chatHistoryAdapter.setHistoryIntegrityListener(historyIntegrityListener);
 
         chatList = (RecyclerView) findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
@@ -584,6 +587,7 @@ public class ChatActivity extends ChiefActivity {
         chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
+        chatHistoryAdapter.setHistoryIntegrityListener(historyIntegrityListener);
         chatList.setAdapter(chatHistoryAdapter);
 
         setMessageTextFromDraft(buddy);
@@ -1230,6 +1234,20 @@ public class ChatActivity extends ChiefActivity {
                 intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
                 startActivity(intent);
             }
+        }
+    }
+
+    public class ChatHistoryIntegrityListener implements ChatHistoryAdapter.HistoryIntegrityListener {
+
+        @Override
+        public void onHole(Buddy buddy, long fromMessageId, long tillMessageId) {
+            ContentResolver contentResolver = getContentResolver();
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
+            String patchVersion = null;
+            int count = 100;
+            RequestHelper.requestHistoryBlock(contentResolver,
+                    accountDbId, buddyId, fromMessageId, tillMessageId, patchVersion, count);
         }
     }
 

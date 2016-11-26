@@ -10,6 +10,8 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.util.Locale;
+
 /**
  * Created with IntelliJ IDEA.
  * User: anton
@@ -437,5 +439,15 @@ public class IcqAccountRoot extends AccountRoot {
 
     public WellKnownUrls getWellKnownUrls() {
         return wellKnownUrls;
+    }
+
+    public String getLocaleId() {
+        Locale locale = Locale.getDefault();
+        String lang = locale.getLanguage();
+        String country = locale.getCountry();
+        if(TextUtils.isEmpty(lang) || TextUtils.isEmpty(country)) {
+            return "en-US";
+        }
+        return lang + '-' + country;
     }
 }

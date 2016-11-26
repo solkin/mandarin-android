@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
  */
 public abstract class CabbageIcqRequest extends CabbageRequest {
 
-    public CabbageIcqRequest(String requestId, String authToken) {
-        super(requestId, authToken);
+    public CabbageIcqRequest() {
+        super();
     }
 
     protected void addProperty(JsonObject root) {

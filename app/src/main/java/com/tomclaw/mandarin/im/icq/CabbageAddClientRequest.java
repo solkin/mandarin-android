@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import com.google.gson.JsonObject;
+import com.tomclaw.mandarin.util.Logger;
 
 import org.json.JSONObject;
 
@@ -13,9 +14,8 @@ public class CabbageAddClientRequest extends CabbageRequest {
     private final int buildNumber;
     private final String versionName;
 
-    public CabbageAddClientRequest(String requestId, String authToken,
-                                   String userAgent, int buildNumber, String versionName) {
-        super(requestId, authToken);
+    public CabbageAddClientRequest(String userAgent, int buildNumber, String versionName) {
+        super();
         this.userAgent = userAgent;
         this.buildNumber = buildNumber;
         this.versionName = versionName;
@@ -25,6 +25,7 @@ public class CabbageAddClientRequest extends CabbageRequest {
     protected int parseResults(JSONObject results) throws Throwable {
         long clientId = results.getLong("clientId");
         String appStamp = results.getString("appStamp");
+        Logger.log("cabbage client added: " + clientId + " (appStamp: " + appStamp + ")");
         getAccountRoot().onCabbageClientObtained(clientId, appStamp);
         return REQUEST_DELETE;
     }

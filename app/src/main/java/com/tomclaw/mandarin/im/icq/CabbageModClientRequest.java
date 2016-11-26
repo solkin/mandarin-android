@@ -13,9 +13,8 @@ public class CabbageModClientRequest extends CabbageTrueRequest {
     private final int buildNumber;
     private final String versionName;
 
-    public CabbageModClientRequest(String requestId, String authToken, long clientId,
-                                   String userAgent, int buildNumber, String versionName) {
-        super(requestId, authToken, clientId);
+    public CabbageModClientRequest(String userAgent, int buildNumber, String versionName) {
+        super();
         this.userAgent = userAgent;
         this.buildNumber = buildNumber;
         this.versionName = versionName;

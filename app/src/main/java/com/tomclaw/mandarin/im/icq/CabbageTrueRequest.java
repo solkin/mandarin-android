@@ -7,15 +7,13 @@ import com.google.gson.JsonObject;
  */
 public abstract class CabbageTrueRequest extends CabbageRequest {
 
-    private long clientId;
-
-    public CabbageTrueRequest(String requestId, String authToken, long clientId) {
-        super(requestId, authToken);
-        this.clientId = clientId;
+    public CabbageTrueRequest() {
+        super();
     }
 
     @Override
     protected void addProperty(JsonObject root) {
+        long clientId = getAccountRoot().getClientId();
         root.addProperty("clientId", clientId);
     }
 }

@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.im.icq.BuddyRemoveRequest;
 import com.tomclaw.mandarin.im.icq.BuddyRenameRequest;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.im.icq.EndSessionRequest;
+import com.tomclaw.mandarin.im.icq.HistoryBlockRequest;
 import com.tomclaw.mandarin.im.icq.IcqFileDownloadRequest;
 import com.tomclaw.mandarin.im.icq.IcqFileUploadRequest;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
@@ -184,6 +185,15 @@ public class RequestHelper {
         // Yes, this is upload operation, but is very tiny upload and be better in short queue.
         UploadAvatarRequest uploadAvatarRequest = new UploadAvatarRequest(UploadAvatarRequest.TYPE_LARGE_AVATAR, hash);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, uploadAvatarRequest);
+    }
+
+    public static void requestHistoryBlock(ContentResolver contentResolver,
+                                           int accountDbId, String buddyId,
+                                           long fromMessageId, long tillMessageId,
+                                           String patchVersion, int count) {
+        HistoryBlockRequest historyBlockRequest = new HistoryBlockRequest(
+                buddyId, fromMessageId, tillMessageId, patchVersion, count);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, historyBlockRequest);
     }
 
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,

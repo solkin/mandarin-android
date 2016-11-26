@@ -22,11 +22,9 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
     private static final OkHttpClient client = new OkHttpClient.Builder().build(); // TODO: replace with single instance
 
     private final String requestId;
-    private String authToken;
 
-    public CabbageRequest(String requestId, String authToken) {
-        this.requestId = requestId;
-        this.authToken = authToken;
+    public CabbageRequest() {
+        requestId = createRequestId();
     }
 
     @Override
@@ -81,13 +79,21 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
     private RequestBody getBody() {
         JsonObject root = new JsonObject();
         root.addProperty("method", getMethodName());
-        root.addProperty("reqId", requestId);
-        root.addProperty("authToken", authToken);
+        root.addProperty("reqId", createRequestId());
+        root.addProperty("authToken", getAuthToken());
         addProperty(root);
         JsonObject params = new JsonObject();
         appendParams(params);
         root.add("params", params);
         return new UrlEncodedBody(root.toString());
+    }
+
+    protected String getAuthToken() {
+        return getAccountRoot().getAuthToken();
+    }
+
+    public String createRequestId() {
+        return String.valueOf(System.currentTimeMillis());
     }
 
     protected abstract void addProperty(JsonObject root);

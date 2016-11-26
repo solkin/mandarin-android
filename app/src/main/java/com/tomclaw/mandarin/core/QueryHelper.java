@@ -387,39 +387,6 @@ public class QueryHelper {
 //                messageType, cookie, 0, messageText);
 //    }
 
-    public static void insertTextMessage(@NonNull DatabaseLayer databaseLayer,
-                                         @NonNull Buddy buddy,
-                                         long prevMsgId,
-                                         long msgId,
-                                         int messageType,
-                                         @Nullable String cookie,
-                                         long messageTime,
-                                         @NonNull String messageText) {
-        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
-
-        int accountDbId = buddy.getAccountDbId();
-        String buddyId = buddy.getBuddyId();
-
-        // Update last message time and make dialog opened.
-        modifyDialog(databaseLayer, buddy, true, messageTime);
-        // No matching request message. Insert new message.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ID, buddyId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, prevMsgId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, msgId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
-        if (cookie == null) {
-            contentValues.putNull(GlobalProvider.HISTORY_MESSAGE_COOKIE);
-        } else {
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        }
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
-        databaseLayer.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-    }
-
 //    public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
 //                                                 Uri uri, String name, int contentType, long contentSize,
 //                                                 String previewHash, String contentTag)

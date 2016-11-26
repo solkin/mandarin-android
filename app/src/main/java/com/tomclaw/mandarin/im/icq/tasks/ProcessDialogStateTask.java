@@ -1,9 +1,12 @@
 package com.tomclaw.mandarin.im.icq.tasks;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
@@ -16,10 +19,15 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.dto.Message;
+import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.QueryBuilder;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.tomclaw.mandarin.core.GlobalProvider.CHAT_HISTORY_TABLE;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
 
 /**
  * Created by ivsolkin on 23.11.16.
@@ -81,14 +89,17 @@ public class ProcessDialogStateTask extends DatabaseTask {
         }
 
         Long lastMessageTime = Long.MIN_VALUE;
+
+        SQLiteDatabase sqLiteDatabase = getDatabase();
         for (Message message : histDlgState.getMessages()) {
             int messageType = message.isOutgoing() ?
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING :
                     GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
             long prevMsgId = -1;
             long messageTime = TimeUnit.SECONDS.toMillis(message.getTime());
-            QueryHelper.insertTextMessage(
-                    databaseLayer,
+
+            insertTextMessage(
+                    sqLiteDatabase,
                     buddy,
                     prevMsgId,
                     message.getMsgId(),
@@ -104,13 +115,11 @@ public class ProcessDialogStateTask extends DatabaseTask {
             lastMessageTime = null;
         }
 
-        // TODO: calculate values with remote and local data
-        // TODO: keep in mind, that dialog state may come without messages at all
         long unreadCnt = histDlgState.getUnreadCnt();
         long lastMsgId = histDlgState.getLastMsgId();
-        long yoursLastRead = histDlgState.getYours().getLastRead();
-        long theirsLastDelivered = histDlgState.getTheirs().getLastDelivered();
-        long theirsLastRead = histDlgState.getTheirs().getLastRead();
+        long yoursLastRead = histDlgState.getYoursLastRead();
+        long theirsLastDelivered = histDlgState.getTheirsLastDelivered();
+        long theirsLastRead = histDlgState.getTheirsLastRead();
 
         BuddyCursor buddyCursor = null;
         try {
@@ -128,7 +137,9 @@ public class ProcessDialogStateTask extends DatabaseTask {
         QueryHelper.modifyDialogState(databaseLayer, buddy, unreadCnt, lastMessageTime,
                 lastMsgId, yoursLastRead, theirsLastDelivered, theirsLastRead);
 
-        QueryHelper.removeMessagesUpTo(databaseLayer, buddy, histDlgState.getDelUpTo());
+        if (histDlgState.getDelUpTo() != null) {
+            QueryHelper.removeMessagesUpTo(databaseLayer, buddy, histDlgState.getDelUpTo());
+        }
     }
 
     @Override
@@ -139,5 +150,48 @@ public class ProcessDialogStateTask extends DatabaseTask {
     @Override
     protected String getOperationDescription() {
         return "process dialog state";
+    }
+
+    public static void insertTextMessage(@NonNull SQLiteDatabase sqLiteDatabase,
+                                         @NonNull Buddy buddy,
+                                         long prevMsgId,
+                                         long msgId,
+                                         int messageType,
+                                         @Nullable String cookie,
+                                         long messageTime,
+                                         @NonNull String messageText) {
+        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
+
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
+        contentValues.put(GlobalProvider.HISTORY_BUDDY_ID, buddyId);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, prevMsgId);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, msgId);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
+        if (cookie == null) {
+            contentValues.putNull(GlobalProvider.HISTORY_MESSAGE_COOKIE);
+        } else {
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        }
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
+
+        long rowId = sqLiteDatabase.insertWithOnConflict(CHAT_HISTORY_TABLE, null,
+                contentValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (rowId == -1) {
+            Logger.log("insertTextMessage: message present: " + msgId + " and will be updated");
+            contentValues.clear();
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, prevMsgId);
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
+            String select = new QueryBuilder()
+                    .columnEquals(HISTORY_MESSAGE_ID, msgId)
+                    .getSelect();
+            sqLiteDatabase.update(CHAT_HISTORY_TABLE, contentValues, select, null);
+        }
     }
 }

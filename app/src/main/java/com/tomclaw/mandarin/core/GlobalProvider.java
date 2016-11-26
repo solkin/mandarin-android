@@ -13,11 +13,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -174,9 +172,9 @@ public class GlobalProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_ID + " text, "
             + HISTORY_MESSAGE_PREV_ID + " int, "
-            + HISTORY_MESSAGE_ID + " int, "
+            + HISTORY_MESSAGE_ID + " int unique, "
             + HISTORY_MESSAGE_TYPE + " int, "
-            + HISTORY_MESSAGE_COOKIE + " text, "
+            + HISTORY_MESSAGE_COOKIE + " text unique, "
             + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_TEXT + " text, "
             + HISTORY_CONTENT_TYPE + " int default " + HISTORY_CONTENT_TYPE_TEXT + ", "

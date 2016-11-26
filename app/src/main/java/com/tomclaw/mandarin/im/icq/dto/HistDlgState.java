@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -7,12 +9,13 @@ import java.util.List;
 public class HistDlgState implements Serializable {
 
     private String sn;
-    private Boolean starting;
+    private @Nullable Boolean starting;
     private long lastMsgId;
-    private Long delUpto;
+    private @Nullable String patchVersion;
+    private @Nullable Long delUpto;
     private long unreadCnt;
-    private Yours yours;
-    private Theirs theirs;
+    private @Nullable Yours yours;
+    private @Nullable Theirs theirs;
     private List<Message> messages = Collections.emptyList();
     private long olderMsgId;
     private List<Person> persons = Collections.emptyList();
@@ -28,7 +31,11 @@ public class HistDlgState implements Serializable {
         return false;
     }
 
-    public Long getDelUpTo() {
+    public @Nullable String getPatchVersion() {
+        return patchVersion;
+    }
+
+    public @Nullable Long getDelUpTo() {
         return delUpto;
     }
 
@@ -40,12 +47,16 @@ public class HistDlgState implements Serializable {
         return unreadCnt;
     }
 
-    public Yours getYours() {
-        return yours;
+    public long getYoursLastRead() {
+        return yours == null ? 0 : yours.getLastRead();
     }
 
-    public Theirs getTheirs() {
-        return theirs;
+    public long getTheirsLastDelivered() {
+        return theirs == null ? 0 : theirs.getLastDelivered();
+    }
+
+    public long getTheirsLastRead() {
+        return theirs == null ? 0 : theirs.getLastRead();
     }
 
     public List<Message> getMessages() {

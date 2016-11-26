@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.core;
+package com.tomclaw.mandarin.im;
 
 import com.tomclaw.mandarin.im.BuddyData;
 

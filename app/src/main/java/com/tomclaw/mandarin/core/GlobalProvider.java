@@ -172,7 +172,7 @@ public class GlobalProvider extends ContentProvider {
             + ROW_AUTO_ID + " integer primary key autoincrement, "
             + HISTORY_BUDDY_ACCOUNT_DB_ID + " int, " + HISTORY_BUDDY_ID + " text, "
             + HISTORY_MESSAGE_PREV_ID + " int, "
-            + HISTORY_MESSAGE_ID + " int unique, "
+            + HISTORY_MESSAGE_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, "
             + HISTORY_MESSAGE_COOKIE + " text unique, "
             + HISTORY_MESSAGE_TIME + " int, "

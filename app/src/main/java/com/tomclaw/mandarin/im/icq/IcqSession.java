@@ -8,17 +8,14 @@ import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.GroupData;
+import com.tomclaw.mandarin.im.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
-import com.tomclaw.mandarin.im.icq.dto.Message;
 import com.tomclaw.mandarin.im.icq.tasks.ProcessDialogStateTask;
 import com.tomclaw.mandarin.im.tasks.UpdateRosterTask;
 import com.tomclaw.mandarin.util.GsonSingleton;
@@ -514,67 +511,6 @@ public class IcqSession {
                     bundle.putSerializable(ProcessDialogStateTask.KEY_DIALOG_STATE, histDlgState);
                     contentResolver.call(Settings.HISTORY_RESOLVER_URI,
                             ProcessDialogStateTask.class.getName(), null, bundle);
-
-//                    for (Message message : histDlgState.getMessages()) {
-//                        String buddyId = histDlgState.getSn();
-//                        Buddy buddy = new Buddy(accountDbId, buddyId);
-//                        boolean buddyExist = QueryHelper.checkBuddy(databaseLayer, accountDbId, buddyId);
-//                        if (!buddyExist) {
-//                            if (isIgnoreUnknown) {
-//                                continue;
-//                            } else {
-//                                int statusIndex = StatusUtil.STATUS_OFFLINE;
-//                                String statusTitle = IcqStatusUtil.getStatusTitle(accountType, null, statusIndex);
-//                                String buddyNick = histDlgState.getPersons().get(0).getFriendly();
-//                                String statusMessage = "";
-//                                String buddyIcon = null;
-//                                long lastSeen = -1;
-//                                long updateTime = System.currentTimeMillis();
-//
-//                                QueryHelper.updateOrCreateBuddy(
-//                                        databaseLayer,
-//                                        accountDbId,
-//                                        accountType,
-//                                        updateTime,
-//                                        GlobalProvider.GROUP_ID_RECYCLE,
-//                                        recycleString,
-//                                        buddyId,
-//                                        buddyNick,
-//                                        statusIndex,
-//                                        statusTitle,
-//                                        statusMessage,
-//                                        buddyIcon,
-//                                        lastSeen);
-//                            }
-//                        }
-//                        boolean isProcessed = false;
-////                        Matcher matcher = URL_REGEX.matcher(message.getText());
-////                        while (matcher.find() && matcher.groupCount() == 1) {
-////                            // TODO: also show message body.
-////                            String url = matcher.group();
-////                            String fileId = matcher.group(1);
-////                            String tag = message.getMsgId() + ":" + url;
-////                            RequestHelper.requestFileReceive(
-////                                    contentResolver, accountDbId,
-////                                    buddyId, String.valueOf(message.getMsgId()),
-////                                    message.getTime() * 1000, fileId, url,
-////                                    message.getText(), tag);
-////                            isProcessed = true;
-////                        }
-//                        if (!isProcessed) {
-//                            int messageType = message.isOutgoing() ? GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING : GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-//                            long prevMsgId = -1;
-//                            QueryHelper.insertTextMessage(
-//                                    databaseLayer,
-//                                    buddy,
-//                                    prevMsgId,
-//                                    message.getMsgId(),
-//                                    messageType,
-//                                    message.getReqId(),
-//                                    message.getTime() * 1000,
-//                                    message.getText());
-//                        }
-//                    }
                 } catch (Throwable ex) {
                     Logger.log("exception while parsing history dialog state", ex);
                 }

@@ -7,13 +7,11 @@ import android.os.Bundle;
 
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
-import com.tomclaw.mandarin.core.GroupData;
+import com.tomclaw.mandarin.im.GroupData;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.BuddyData;
-import com.tomclaw.mandarin.util.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

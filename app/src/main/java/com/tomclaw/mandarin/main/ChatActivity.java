@@ -1245,7 +1245,8 @@ public class ChatActivity extends ChiefActivity {
             int accountDbId = buddy.getAccountDbId();
             String buddyId = buddy.getBuddyId();
             String patchVersion = null;
-            int count = 100;
+            int count = 10;
+            // TODO: mark hole as requested.
             RequestHelper.requestHistoryBlock(contentResolver,
                     accountDbId, buddyId, fromMessageId, tillMessageId, patchVersion, count);
         }

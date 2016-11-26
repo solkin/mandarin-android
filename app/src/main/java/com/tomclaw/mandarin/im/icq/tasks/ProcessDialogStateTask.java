@@ -15,13 +15,16 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.dto.Message;
+import com.tomclaw.mandarin.im.tasks.HistoryMergeTask;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -91,26 +94,28 @@ public class ProcessDialogStateTask extends DatabaseTask {
         Long lastMessageTime = Long.MIN_VALUE;
 
         SQLiteDatabase sqLiteDatabase = getDatabase();
+        ArrayList<MessageData> messages = new ArrayList<>();
+        long prevMsgId = -1;
         for (Message message : histDlgState.getMessages()) {
             int messageType = message.isOutgoing() ?
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING :
                     GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
-            long prevMsgId = -1;
             long messageTime = TimeUnit.SECONDS.toMillis(message.getTime());
 
-            insertTextMessage(
-                    sqLiteDatabase,
-                    buddy,
-                    prevMsgId,
-                    message.getMsgId(),
-                    messageType,
-                    message.getReqId(),
-                    messageTime,
-                    message.getText());
+            MessageData messageData = new MessageData(accountDbId, buddyId, prevMsgId,
+                    message.getMsgId(), message.getReqId(), messageType, messageTime, message.getText());
+            messages.add(messageData);
             if (messageTime > lastMessageTime) {
                 lastMessageTime = messageTime;
             }
         }
+        if (!messages.isEmpty()) {
+            Bundle mergeBundle = new Bundle();
+            mergeBundle.putSerializable(HistoryMergeTask.KEY_MESSAGES, messages);
+            HistoryMergeTask historyMergeTask = new HistoryMergeTask(context, sqLiteDatabase, mergeBundle);
+            historyMergeTask.executeBackground();
+        }
+
         if (lastMessageTime == Long.MIN_VALUE) {
             lastMessageTime = null;
         }
@@ -150,48 +155,5 @@ public class ProcessDialogStateTask extends DatabaseTask {
     @Override
     protected String getOperationDescription() {
         return "process dialog state";
-    }
-
-    public static void insertTextMessage(@NonNull SQLiteDatabase sqLiteDatabase,
-                                         @NonNull Buddy buddy,
-                                         long prevMsgId,
-                                         long msgId,
-                                         int messageType,
-                                         @Nullable String cookie,
-                                         long messageTime,
-                                         @NonNull String messageText) {
-        Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
-
-        int accountDbId = buddy.getAccountDbId();
-        String buddyId = buddy.getBuddyId();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ID, buddyId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, prevMsgId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, msgId);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
-        if (cookie == null) {
-            contentValues.putNull(GlobalProvider.HISTORY_MESSAGE_COOKIE);
-        } else {
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
-        }
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
-
-        long rowId = sqLiteDatabase.insertWithOnConflict(CHAT_HISTORY_TABLE, null,
-                contentValues, SQLiteDatabase.CONFLICT_IGNORE);
-        if (rowId == -1) {
-            Logger.log("insertTextMessage: message present: " + msgId + " and will be updated");
-            contentValues.clear();
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, prevMsgId);
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, messageTime);
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, messageText);
-            String select = new QueryBuilder()
-                    .columnEquals(HISTORY_MESSAGE_ID, msgId)
-                    .getSelect();
-            sqLiteDatabase.update(CHAT_HISTORY_TABLE, contentValues, select, null);
-        }
     }
 }

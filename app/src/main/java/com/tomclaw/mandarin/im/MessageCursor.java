@@ -175,4 +175,12 @@ public class MessageCursor implements Closeable {
     public boolean isClosed() {
         return cursor.isClosed();
     }
+
+    public MessageData toMessageData() {
+        return new MessageData(getBuddyAccountDbId(), getBuddyId(), getMessagePrevId(),
+                getMessageId(), getCookie(), getMessageType(),
+                getMessageTime(), getMessageText(), getContentType(), getContentSize(),
+                getContentState(), getContentProgress(), getContentUri(), getContentName(),
+                getPreviewHash(), getContentTag());
+    }
 }

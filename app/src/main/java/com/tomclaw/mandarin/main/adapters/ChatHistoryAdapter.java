@@ -271,20 +271,22 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             String movedMessageDateText = timeHelper.getFormattedDate(movedMessageTime);
             dateVisible = !messageDateText.equals(movedMessageDateText);
         }
-        if (messagePrevId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID) {
-            long upperMessageId = 0;
-            if (isMoved) {
-                upperMessageId = messageCursor.getMessageId();
-            }
+        long upperMessageId = 0;
+        if (isMoved) {
+            upperMessageId = messageCursor.getMessageId();
+        }
+        if (messagePrevId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID ||
+                (isMoved && upperMessageId != messagePrevId)) {
             Logger.log("Hole between " + upperMessageId + " and " + messageId);
             if (historyIntegrityListener != null) {
                 historyIntegrityListener.onHole(buddy, upperMessageId, messageId);
             }
         }
         // Creating chat history item to bind the view.
-        ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime,
-                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
-                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageId, messagePrevId, messageDbId,
+                messageType, messageText, messageTime, messageCookie, contentType, contentSize,
+                contentState, contentProgress, contentName, contentUri, previewHash, contentTag,
+                messageTimeText, messageDateText, dateVisible);
         holder.setSelectionHelper(selectionHelper);
         holder.setContentClickListener(contentMessageClickListener);
         holder.setSelectionModeListener(selectionModeListener);

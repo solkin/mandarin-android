@@ -44,4 +44,6 @@
 
         <include layout="@layout/time_inc_block" />
     </LinearLayout>
+
+    <include layout="@layout/chat_item_addon" />
 </LinearLayout>

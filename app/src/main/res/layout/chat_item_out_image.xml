@@ -92,4 +92,6 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <include layout="@layout/chat_item_addon" />
 </LinearLayout>

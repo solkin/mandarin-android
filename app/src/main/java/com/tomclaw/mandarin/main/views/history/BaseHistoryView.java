@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -24,6 +25,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
     private TextView messageDate;
     private ImageView deliveryState;
     private TextView timeView;
+    private View addonView;
+    private TextView fromIdView;
+    private TextView tillIdView;
 
     private ChatHistoryItem historyItem;
     private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
@@ -35,6 +39,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         this.itemView = itemView;
         dateLayout = itemView.findViewById(getDateLayoutViewId());
         messageDate = (TextView) itemView.findViewById(getDateTextViewId());
+        addonView = itemView.findViewById(R.id.addon_layout);
+        fromIdView = (TextView) itemView.findViewById(R.id.from_message_id);
+        tillIdView = (TextView) itemView.findViewById(R.id.till_message_id);
         if (hasDeliveryState()) {
             deliveryState = (ImageView) itemView.findViewById(R.id.message_delivery);
         }
@@ -74,6 +81,13 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         } else {
             // Update visibility.
             dateLayout.setVisibility(View.GONE);
+        }
+        if (Settings.HISTORY_DEBUG) {
+            addonView.setVisibility(View.VISIBLE);
+            fromIdView.setText(String.valueOf(historyItem.getMessagePrevId()));
+            tillIdView.setText(String.valueOf(historyItem.getMessageId()));
+        } else {
+            addonView.setVisibility(View.GONE);
         }
         if (hasDeliveryState()) {
             // TODO: Implement delivery and read history based on message id.

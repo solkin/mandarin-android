@@ -47,10 +47,10 @@ public class HistoryBlockRequest extends CabbageTrueRequest {
         GsonSingleton gson = GsonSingleton.getInstance();
         HistoryMessages historyMessages = gson.fromJson(results.toString(), HistoryMessages.class);
         Logger.log("messages received: " + historyMessages.getMessages().size());
+        ArrayList<MessageData> messages = new ArrayList<>();
+        int accountDbId = getAccountRoot().getAccountDbId();
+        long prevMsgId = GlobalProvider.HISTORY_MESSAGE_ID_INVALID;
         if (!historyMessages.getMessages().isEmpty()) {
-            int accountDbId = getAccountRoot().getAccountDbId();
-            long prevMsgId = GlobalProvider.HISTORY_MESSAGE_ID_INVALID;
-            ArrayList<MessageData> messages = new ArrayList<>();
             List<Message> sortedMessages = historyMessages.getMessages();
             Collections.sort(sortedMessages, new MessagesComparator());
             for (Message message : sortedMessages) {
@@ -63,22 +63,22 @@ public class HistoryBlockRequest extends CabbageTrueRequest {
                 messages.add(messageData);
                 prevMsgId = message.getMsgId();
             }
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(HistoryMergeTask.KEY_MESSAGES, messages);
-            if (count < 0 || messages.size() < count) {
-                // This is all messages between fromMessageId and tillMessageId, so we can mark
-                // tillMessageId, that its previous message is the last message from received
-                // messages or fromMessageId, if no messages received.
-                Buddy buddy = new Buddy(accountDbId, buddyId);
-                long lastMsgPrevId = (prevMsgId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID) ?
-                        fromMessageId : prevMsgId;
-                bundle.putParcelable(HistoryMergeTask.KEY_LAST_MESSAGE_BUDDY, buddy);
-                bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_PREV_ID, lastMsgPrevId);
-                bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_ID, tillMessageId);
-            }
-            getAccountRoot().getContentResolver().call(Settings.HISTORY_RESOLVER_URI,
-                    HistoryMergeTask.class.getName(), null, bundle);
         }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(HistoryMergeTask.KEY_MESSAGES, messages);
+        if (count < 0 || messages.isEmpty()) {
+            // This is all messages between fromMessageId and tillMessageId, so we can mark
+            // tillMessageId, that its previous message is the last message from received
+            // messages or fromMessageId, if no messages received.
+            Buddy buddy = new Buddy(accountDbId, buddyId);
+            long lastMsgPrevId = (prevMsgId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID) ?
+                    fromMessageId : prevMsgId;
+            bundle.putParcelable(HistoryMergeTask.KEY_LAST_MESSAGE_BUDDY, buddy);
+            bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_PREV_ID, lastMsgPrevId);
+            bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_ID, tillMessageId);
+        }
+        getAccountRoot().getContentResolver().call(Settings.HISTORY_RESOLVER_URI,
+                HistoryMergeTask.class.getName(), null, bundle);
         return REQUEST_DELETE;
     }
 

@@ -588,9 +588,26 @@ public class QueryHelper {
                 .delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static void markMessageRequested(DatabaseLayer databaseLayer, Buddy buddy, long messageId) {
+        modifyMessagePrevId(databaseLayer, buddy, messageId, GlobalProvider.HISTORY_MESSAGE_ID_REQUESTED);
+    }
+
+    public static void modifyMessagePrevId(DatabaseLayer databaseLayer, Buddy buddy,
+                                           long messageId, long messagePrevId) {
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, messagePrevId);
+        new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddyId).and()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_ID, messageId)
+                .update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
     public static boolean isIncomingMessagesPresent(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
-        QueryBuilder queryBuilder = messagesByIds(messageIds);
-        queryBuilder.and().columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
+        QueryBuilder queryBuilder = messagesByIds(messageIds).and()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
         Cursor cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
         return cursor.getCount() > 0;
     }
@@ -793,8 +810,9 @@ public class QueryHelper {
     }
 
     public static void modifyDialogState(DatabaseLayer databaseLayer, Buddy buddy, long unreadCnt,
-                                         @Nullable Long lastMessageTime, long lastMsgId, long yoursLastRead,
-                                         long theirsLastDelivered, long theirsLastRead) {
+                                         @Nullable Long lastMessageTime, long lastMsgId,
+                                         long yoursLastRead, long theirsLastDelivered,
+                                         long theirsLastRead, String patchVersion) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, unreadCnt);
         if (lastMessageTime != null) {
@@ -804,6 +822,7 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_YOURS_LAST_READ, yoursLastRead);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_DELIVERED, theirsLastDelivered);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_READ, theirsLastRead);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_PATCH_VERSION, patchVersion);
         modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
@@ -1107,6 +1126,20 @@ public class QueryHelper {
     public static BuddyCursor getBuddyCursor(DatabaseLayer databaseLayer, int buddyDbId)
             throws BuddyNotFoundException {
         return getBuddyCursor(databaseLayer, new QueryBuilder().columnEquals(GlobalProvider.ROW_AUTO_ID, buddyDbId));
+    }
+
+    public static String getBuddyPatchVersion(DatabaseLayer databaseLayer, Buddy buddy) {
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = getBuddyCursor(databaseLayer, buddy);
+            return buddyCursor.getPatchVersion();
+        } catch (BuddyNotFoundException ignored) {
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
+        }
+        return null;
     }
 
     @Deprecated

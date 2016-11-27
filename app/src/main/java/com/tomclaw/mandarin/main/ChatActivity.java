@@ -1241,14 +1241,16 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onHole(Buddy buddy, long fromMessageId, long tillMessageId) {
+            Logger.log("");
             ContentResolver contentResolver = getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+            int count = -Settings.HISTORY_BLOCK_SIZE;
             int accountDbId = buddy.getAccountDbId();
             String buddyId = buddy.getBuddyId();
-            String patchVersion = null;
-            int count = 10;
-            // TODO: mark hole as requested.
+            String patchVersion = QueryHelper.getBuddyPatchVersion(databaseLayer, buddy);
             RequestHelper.requestHistoryBlock(contentResolver,
                     accountDbId, buddyId, fromMessageId, tillMessageId, patchVersion, count);
+            QueryHelper.markMessageRequested(databaseLayer, buddy, tillMessageId);
         }
     }
 

@@ -1,12 +1,10 @@
 package com.tomclaw.mandarin.im.icq.tasks;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
@@ -21,16 +19,11 @@ import com.tomclaw.mandarin.im.icq.IcqStatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.dto.Message;
 import com.tomclaw.mandarin.im.tasks.HistoryMergeTask;
-import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.QueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static com.tomclaw.mandarin.core.GlobalProvider.CHAT_HISTORY_TABLE;
-import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
 
 /**
  * Created by ivsolkin on 23.11.16.
@@ -66,13 +59,13 @@ public class ProcessDialogStateTask extends DatabaseTask {
             if (isIgnoreUnknown) {
                 return;
             } else {
-                int statusIndex = StatusUtil.STATUS_OFFLINE;
-                String statusTitle = IcqStatusUtil.getStatusTitle(accountType, null, statusIndex);
-                String buddyNick = histDlgState.getPersons().get(0).getFriendly();
-                String statusMessage = "";
-                String buddyIcon = null;
-                long lastSeen = -1;
-                long updateTime = System.currentTimeMillis();
+                final int statusIndex = StatusUtil.STATUS_OFFLINE;
+                final String statusTitle = IcqStatusUtil.getStatusTitle(accountType, null, statusIndex);
+                final String buddyNick = histDlgState.getPersons().get(0).getFriendly();
+                final String statusMessage = "";
+                final String buddyIcon = null;
+                final long lastSeen = -1;
+                final long updateTime = System.currentTimeMillis();
 
                 QueryHelper.updateOrCreateBuddy(
                         databaseLayer,
@@ -125,14 +118,26 @@ public class ProcessDialogStateTask extends DatabaseTask {
         long yoursLastRead = histDlgState.getYoursLastRead();
         long theirsLastDelivered = histDlgState.getTheirsLastDelivered();
         long theirsLastRead = histDlgState.getTheirsLastRead();
+        long delUpTo = histDlgState.getDelUpTo();
+        String patchVersion = histDlgState.getPatchVersion();
 
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = QueryHelper.getBuddyCursor(databaseLayer, buddy);
-            lastMsgId = Math.max(lastMsgId, buddyCursor.getLastMessageId());
-            yoursLastRead = Math.max(yoursLastRead, buddyCursor.getYoursLastRead());
-            theirsLastDelivered = Math.max(theirsLastDelivered, buddyCursor.getTheirsLastDelivered());
-            theirsLastRead = Math.max(theirsLastRead, buddyCursor.getTheirsLastRead());
+            long localYoursLastRead = buddyCursor.getYoursLastRead();
+            yoursLastRead = Math.max(yoursLastRead, localYoursLastRead);
+            delUpTo = Math.max(delUpTo, buddyCursor.getDelUpTo());
+            String localPatchVersion = buddyCursor.getPatchVersion();
+            if (!TextUtils.equals(patchVersion, localPatchVersion)) {
+                // TODO: now we must invalidate all history?!
+            }
+            if (delUpTo != localYoursLastRead) {
+                QueryHelper.removeMessagesUpTo(databaseLayer, buddy, histDlgState.getDelUpTo());
+                QueryHelper.markMessageRequested(databaseLayer, buddy, histDlgState.getDelUpTo());
+            }
+            if (!buddyCursor.getDialog() && histDlgState.isStarting()) {
+                QueryHelper.modifyDialog(databaseLayer, buddy, true);
+            }
         } finally {
             if (buddyCursor != null) {
                 buddyCursor.close();
@@ -140,11 +145,7 @@ public class ProcessDialogStateTask extends DatabaseTask {
         }
 
         QueryHelper.modifyDialogState(databaseLayer, buddy, unreadCnt, lastMessageTime,
-                lastMsgId, yoursLastRead, theirsLastDelivered, theirsLastRead);
-
-        if (histDlgState.getDelUpTo() != null) {
-            QueryHelper.removeMessagesUpTo(databaseLayer, buddy, histDlgState.getDelUpTo());
-        }
+                lastMsgId, yoursLastRead, theirsLastDelivered, theirsLastRead, patchVersion);
     }
 
     @Override

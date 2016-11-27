@@ -40,6 +40,8 @@ public class BuddyCursor implements Closeable {
     private static int COLUMN_ROSTER_BUDDY_YOURS_LAST_READ;
     private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED;
     private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ;
+    private static int COLUMN_ROSTER_BUDDY_DEL_UP_TO;
+    private static int COLUMN_ROSTER_BUDDY_PATCH_VERSION;
 
     public BuddyCursor() {
     }
@@ -82,6 +84,8 @@ public class BuddyCursor implements Closeable {
             COLUMN_ROSTER_BUDDY_YOURS_LAST_READ = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_YOURS_LAST_READ);
             COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_DELIVERED);
             COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_READ);
+            COLUMN_ROSTER_BUDDY_DEL_UP_TO = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DEL_UP_TO);
+            COLUMN_ROSTER_BUDDY_PATCH_VERSION = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_PATCH_VERSION);
             isColumnsRead = true;
         }
     }
@@ -184,6 +188,14 @@ public class BuddyCursor implements Closeable {
 
     public long getTheirsLastRead() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ);
+    }
+
+    public long getDelUpTo() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_DEL_UP_TO);
+    }
+
+    public String getPatchVersion() {
+        return cursor.getString(COLUMN_ROSTER_BUDDY_PATCH_VERSION);
     }
 
     public boolean moveToFirst() {

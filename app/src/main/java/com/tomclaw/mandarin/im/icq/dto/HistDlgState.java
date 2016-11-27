@@ -9,16 +9,22 @@ import java.util.List;
 public class HistDlgState implements Serializable {
 
     private String sn;
+
     private @Nullable Boolean starting;
-    private long lastMsgId;
-    private @Nullable String patchVersion;
-    private @Nullable Long delUpto;
+
     private long unreadCnt;
+
+    private long lastMsgId;
+    private long olderMsgId;
+    private @Nullable Long delUpto;
+
     private @Nullable Yours yours;
     private @Nullable Theirs theirs;
-    private List<Message> messages = Collections.emptyList();
-    private long olderMsgId;
+
+    private @Nullable String patchVersion;
+
     private List<Person> persons = Collections.emptyList();
+    private List<Message> messages = Collections.emptyList();
 
     public String getSn() {
         return sn;
@@ -35,8 +41,8 @@ public class HistDlgState implements Serializable {
         return patchVersion;
     }
 
-    public @Nullable Long getDelUpTo() {
-        return delUpto;
+    public long getDelUpTo() {
+        return delUpto == null ? 0 : delUpto;
     }
 
     public long getLastMsgId() {

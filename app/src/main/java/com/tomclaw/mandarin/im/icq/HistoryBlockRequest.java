@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.google.gson.JsonObject;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.im.icq.dto.HistoryMessages;
 import com.tomclaw.mandarin.im.icq.dto.Message;
@@ -16,6 +17,8 @@ import com.tomclaw.mandarin.util.Logger;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,9 +49,11 @@ public class HistoryBlockRequest extends CabbageTrueRequest {
         Logger.log("messages received: " + historyMessages.getMessages().size());
         if (!historyMessages.getMessages().isEmpty()) {
             int accountDbId = getAccountRoot().getAccountDbId();
-            long prevMsgId = -1;
+            long prevMsgId = GlobalProvider.HISTORY_MESSAGE_ID_INVALID;
             ArrayList<MessageData> messages = new ArrayList<>();
-            for (Message message : historyMessages.getMessages()) {
+            List<Message> sortedMessages = historyMessages.getMessages();
+            Collections.sort(sortedMessages, new MessagesComparator());
+            for (Message message : sortedMessages) {
                 int messageType = message.isOutgoing() ?
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING :
                         GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING;
@@ -60,6 +65,17 @@ public class HistoryBlockRequest extends CabbageTrueRequest {
             }
             Bundle bundle = new Bundle();
             bundle.putSerializable(HistoryMergeTask.KEY_MESSAGES, messages);
+            if (count < 0 || messages.size() < count) {
+                // This is all messages between fromMessageId and tillMessageId, so we can mark
+                // tillMessageId, that its previous message is the last message from received
+                // messages or fromMessageId, if no messages received.
+                Buddy buddy = new Buddy(accountDbId, buddyId);
+                long lastMsgPrevId = (prevMsgId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID) ?
+                        fromMessageId : prevMsgId;
+                bundle.putParcelable(HistoryMergeTask.KEY_LAST_MESSAGE_BUDDY, buddy);
+                bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_PREV_ID, lastMsgPrevId);
+                bundle.putLong(HistoryMergeTask.KEY_LAST_MESSAGE_ID, tillMessageId);
+            }
             getAccountRoot().getContentResolver().call(Settings.HISTORY_RESOLVER_URI,
                     HistoryMergeTask.class.getName(), null, bundle);
         }
@@ -76,14 +92,22 @@ public class HistoryBlockRequest extends CabbageTrueRequest {
         String aimSid = getAccountRoot().getAimSid();
         String localeId = getAccountRoot().getLocaleId();
         String patch = TextUtils.isEmpty(patchVersion) ? "init" : patchVersion;
+        // Cabbage protocol has upside-down from-till index ¯\_(ツ)_/¯
+        long from = fromMessageId;
+        long till = tillMessageId;
+        if (from != -1 && from < till) {
+            long tmp = from;
+            from = till;
+            till = tmp;
+        }
         params.addProperty("sn", buddyId);
-        params.addProperty("fromMsgId", fromMessageId);
+        params.addProperty("fromMsgId", from);
         params.addProperty("count", count);
         params.addProperty("patchVersion", patch);
         params.addProperty("aimSid", aimSid);
         params.addProperty("lang", localeId);
-        if (tillMessageId != 0) {
-            params.addProperty("tillMsgId", tillMessageId);
+        if (till != 0) {
+            params.addProperty("tillMsgId", till);
         }
     }
 }

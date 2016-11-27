@@ -90,6 +90,8 @@ public class GlobalProvider extends ContentProvider {
     public static final String ROSTER_BUDDY_YOURS_LAST_READ = "buddy_yours_last_read";
     public static final String ROSTER_BUDDY_THEIRS_LAST_DELIVERED = "buddy_theirs_last_delivered";
     public static final String ROSTER_BUDDY_THEIRS_LAST_READ = "buddy_theirs_last_read";
+    public static final String ROSTER_BUDDY_DEL_UP_TO = "buddy_del_up_to";
+    public static final String ROSTER_BUDDY_PATCH_VERSION = "buddy_patch_version";
 
     public static final int ROSTER_BUDDY_OPERATION_NO = 0;
     public static final int ROSTER_BUDDY_OPERATION_ADD = 1;
@@ -129,6 +131,9 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_CONTENT_STATE_RUNNING = 4;
     public static final int HISTORY_CONTENT_STATE_FAILED = 5;
 
+    public static final int HISTORY_MESSAGE_ID_INVALID = -1;
+    public static final int HISTORY_MESSAGE_ID_REQUESTED = -2;
+
     // Database create scripts.
     protected static final String DB_CREATE_REQUEST_TABLE_SCRIPT = "create table " + REQUEST_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, " + REQUEST_TYPE + " int, "
@@ -166,7 +171,9 @@ public class GlobalProvider extends ContentProvider {
             + ROSTER_BUDDY_LAST_MESSAGE_ID + " int default 0" + ", "
             + ROSTER_BUDDY_YOURS_LAST_READ + " int default 0" + ", "
             + ROSTER_BUDDY_THEIRS_LAST_DELIVERED + " int default 0" + ", "
-            + ROSTER_BUDDY_THEIRS_LAST_READ + " int default 0" + ");";
+            + ROSTER_BUDDY_THEIRS_LAST_READ + " int default 0" + ", "
+            + ROSTER_BUDDY_DEL_UP_TO + " int default 0" + ", "
+            + ROSTER_BUDDY_PATCH_VERSION + " text" + ");";
 
     protected static final String DB_CREATE_HISTORY_TABLE_SCRIPT = "create table " + CHAT_HISTORY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "

@@ -12,6 +12,7 @@ public class Settings {
 
     public static final int LED_COLOR_RGB = 0xffff6600;
     public static final int LED_BLINK_DELAY = 1000;
+    public static final int HISTORY_BLOCK_SIZE = 5;
     public static long NOTIFICATION_MIN_DELAY = 1500;
     public static int MESSAGES_COLLAPSE_DELAY = 2 * 60 * 1000;
     public static final int TYPING_DELAY = 5 * 1000;

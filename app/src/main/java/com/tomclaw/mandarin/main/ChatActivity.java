@@ -201,6 +201,7 @@ public class ChatActivity extends ChiefActivity {
         chatLayoutManager = new ChatLayoutManager(this);
         chatList.setLayoutManager(chatLayoutManager);
         chatList.setHasFixedSize(true);
+        chatList.setItemAnimator(null);
         chatList.setAdapter(chatHistoryAdapter);
 
         int chatBackground = PreferenceHelper.getChatBackground(this);
@@ -1241,7 +1242,7 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onHole(Buddy buddy, long fromMessageId, long tillMessageId) {
-            Logger.log("");
+            Logger.log("chat history hole detected");
             ContentResolver contentResolver = getContentResolver();
             DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
             int count = -Settings.HISTORY_BLOCK_SIZE;

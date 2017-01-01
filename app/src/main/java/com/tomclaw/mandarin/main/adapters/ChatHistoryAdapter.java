@@ -276,7 +276,8 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             upperMessageId = messageCursor.getMessageId();
         }
         if (messagePrevId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID ||
-                (isMoved && upperMessageId != messagePrevId)) {
+                (isMoved && upperMessageId != messagePrevId &&
+                        messagePrevId != GlobalProvider.HISTORY_MESSAGE_ID_REQUESTED)) {
             Logger.log("Hole between " + upperMessageId + " and " + messageId);
             if (historyIntegrityListener != null) {
                 historyIntegrityListener.onHole(buddy, upperMessageId, messageId);

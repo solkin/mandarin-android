@@ -25,6 +25,7 @@ import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.IcqTypingRequest;
 import com.tomclaw.mandarin.im.icq.LargeAvatarRequest;
 import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
+import com.tomclaw.mandarin.im.icq.SetDialogStateRequest;
 import com.tomclaw.mandarin.im.icq.SetMoodRequest;
 import com.tomclaw.mandarin.im.icq.SetPermitDenyRequest;
 import com.tomclaw.mandarin.im.icq.SetStateRequest;
@@ -194,6 +195,12 @@ public class RequestHelper {
         HistoryBlockRequest historyBlockRequest = new HistoryBlockRequest(
                 buddyId, fromMessageId, tillMessageId, patchVersion, count);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, historyBlockRequest);
+    }
+
+    public static void requestSetDialogState(ContentResolver contentResolver, int accountDbId,
+                                             String buddyId, long messageId) {
+        SetDialogStateRequest setDialogStateRequest = new SetDialogStateRequest(buddyId, messageId);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setDialogStateRequest);
     }
 
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,

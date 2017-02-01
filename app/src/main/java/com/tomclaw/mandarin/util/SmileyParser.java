@@ -54,8 +54,8 @@ public class SmileyParser {
         mContext = context;
         mSmileyTexts = mContext.getResources().getStringArray(DEFAULT_SMILEY_TEXTS);
         mSmileyDrawables = mContext.getResources().obtainTypedArray(DEFAULT_SMILEY_IMAGES);
-        mSmileyToRes = new HashMap<String, Integer>();
-        mResToSmileys = new SparseArray<String>();
+        mSmileyToRes = new HashMap<>();
+        mResToSmileys = new SparseArray<>();
         buildSmileys();
         mPattern = buildPattern();
     }

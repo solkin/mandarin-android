@@ -5,11 +5,12 @@ package com.tomclaw.mandarin.main;
  */
 public class ChatHistoryItem {
 
+    private long messageId;
+    private long messagePrevId;
     private long messageDbId;
     private int messageType;
     private CharSequence messageText;
     private long messageTime;
-    private int messageState;
     private String messageCookie;
     private int contentType;
     private long contentSize;
@@ -23,17 +24,19 @@ public class ChatHistoryItem {
     private String messageDateText;
     private boolean dateVisible;
 
-    public ChatHistoryItem(long messageDbId, int messageType, CharSequence messageText, long messageTime,
-                           int messageState, String messageCookie, int contentType,
+    public ChatHistoryItem(long messageId, long messagePrevId, long messageDbId,
+                           int messageType, CharSequence messageText,
+                           long messageTime, String messageCookie, int contentType,
                            long contentSize, int contentState, int contentProgress,
                            String contentName, String contentUri, String previewHash,
                            String contentTag, String messageTimeText, String messageDateText,
                            boolean dateVisible) {
+        this.messageId = messageId;
+        this.messagePrevId = messagePrevId;
         this.messageDbId = messageDbId;
         this.messageType = messageType;
         this.messageText = messageText;
         this.messageTime = messageTime;
-        this.messageState = messageState;
         this.messageCookie = messageCookie;
         this.contentType = contentType;
         this.contentSize = contentSize;
@@ -46,6 +49,14 @@ public class ChatHistoryItem {
         this.messageTimeText = messageTimeText;
         this.messageDateText = messageDateText;
         this.dateVisible = dateVisible;
+    }
+
+    public long getMessageId() {
+        return messageId;
+    }
+
+    public long getMessagePrevId() {
+        return messagePrevId;
     }
 
     public long getMessageDbId() {
@@ -62,10 +73,6 @@ public class ChatHistoryItem {
 
     public long getMessageTime() {
         return messageTime;
-    }
-
-    public int getMessageState() {
-        return messageState;
     }
 
     public String getMessageCookie() {

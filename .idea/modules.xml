@@ -3,15 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/libs/appcompat/appcompat.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ogna-android/libs/design/design.iml" filepath="$PROJECT_DIR$/../ogna-android/libs/design/design.iml" />
       <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" filepath="$PROJECT_DIR$/libs/preferencefragment/preferencefragment.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ogna-android/libs/recyclerview/recyclerview.iml" filepath="$PROJECT_DIR$/../ogna-android/libs/recyclerview/recyclerview.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/round-progress/round-progress.iml" filepath="$PROJECT_DIR$/libs/round-progress/round-progress.iml" />
       <module fileurl="file://$PROJECT_DIR$/smileys/smileys.iml" filepath="$PROJECT_DIR$/smileys/smileys.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" filepath="$PROJECT_DIR$/libs/smileys-mandarin/smileys-mandarin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" filepath="$PROJECT_DIR$/libs/sticky-list-headers/sticky-list-headers.iml" />
     </modules>
   </component>
 </project>

@@ -21,35 +21,35 @@ public class SelectionHelper<K> {
         isSelectionMode = false;
     }
 
-    public void onStateChanged(K id, boolean checked) {
+    public void onStateChanged(K item, boolean checked) {
         if (checked) {
-            setChecked(id);
+            setChecked(item);
         } else {
-            setUnchecked(id);
+            setUnchecked(item);
         }
     }
 
-    public void toggleChecked(K id) {
-        if (isChecked(id)) {
-            setUnchecked(id);
+    public void toggleChecked(K item) {
+        if (isChecked(item)) {
+            setUnchecked(item);
         } else {
-            setChecked(id);
+            setChecked(item);
         }
     }
 
-    public void setChecked(K id) {
-        selection.add(id);
+    public void setChecked(K item) {
+        selection.add(item);
     }
 
-    public boolean isChecked(K id) {
-        return selection.contains(id);
+    public boolean isChecked(K item) {
+        return selection.contains(item);
     }
 
-    public void setUnchecked(K id) {
-        selection.remove(id);
+    public void setUnchecked(K item) {
+        selection.remove(item);
     }
 
-    public Collection<K> getSelectedIds() {
+    public Collection<K> getSelected() {
         return Collections.unmodifiableSet(selection);
     }
 

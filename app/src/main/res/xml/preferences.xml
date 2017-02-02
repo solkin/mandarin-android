@@ -2,120 +2,115 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-            android:title="@string/pref_base_title"
-            android:key="@string/pref_base_settings">
+        android:title="@string/pref_base_title"
+        android:key="@string/pref_base_settings">
         <CheckBoxPreference
-                android:key="@string/pref_autorun"
-                android:summary="@string/pref_summary_autorun"
-                android:title="@string/pref_title_autorun"
-                android:defaultValue="@bool/pref_autorun_default"/>
+            android:key="@string/pref_autorun"
+            android:summary="@string/pref_summary_autorun"
+            android:title="@string/pref_title_autorun"
+            android:defaultValue="@bool/pref_autorun_default" />
         <CheckBoxPreference
-                android:key="@string/pref_music_auto_status"
-                android:summary="@string/pref_summary_music_auto_status"
-                android:title="@string/pref_title_music_auto_status"
-                android:defaultValue="@bool/pref_music_auto_status_default"/>
+            android:key="@string/pref_music_auto_status"
+            android:summary="@string/pref_summary_music_auto_status"
+            android:title="@string/pref_title_music_auto_status"
+            android:defaultValue="@bool/pref_music_auto_status_default" />
         <CheckBoxPreference
-                android:key="@string/pref_dark_theme"
-                android:title="@string/pref_title_dark_theme"
-                android:defaultValue="@bool/pref_dark_theme_default"/>
+            android:key="@string/pref_dark_theme"
+            android:title="@string/pref_title_dark_theme"
+            android:defaultValue="@bool/pref_dark_theme_default" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/pref_buddy_list_title"
-            android:key="@string/pref_buddy_list_settings">
+        android:title="@string/pref_buddy_list_title"
+        android:key="@string/pref_buddy_list_settings">
         <CheckBoxPreference
-                android:key="@string/pref_show_temp"
-                android:summary="@string/pref_summary_show_temp"
-                android:title="@string/pref_title_show_temp"
-                android:defaultValue="@bool/pref_show_temp_default"/>
+            android:key="@string/pref_show_temp"
+            android:summary="@string/pref_summary_show_temp"
+            android:title="@string/pref_title_show_temp"
+            android:defaultValue="@bool/pref_show_temp_default" />
         <CheckBoxPreference
-                android:key="@string/pref_ignore_unknown"
-                android:summary="@string/pref_summary_ignore_unknown"
-                android:title="@string/pref_title_ignore_unknown"
-                android:defaultValue="@bool/pref_ignore_unknown_default"/>
+            android:key="@string/pref_ignore_unknown"
+            android:summary="@string/pref_summary_ignore_unknown"
+            android:title="@string/pref_title_ignore_unknown"
+            android:defaultValue="@bool/pref_ignore_unknown_default" />
         <ListPreference
-                android:key="@string/pref_roster_mode"
-                android:summary="@string/pref_summary_roster_mode"
-                android:title="@string/pref_title_roster_mode"
-                android:defaultValue="@string/pref_roster_mode_default"
-                android:entries="@array/pref_roster_mode_strings"
-                android:entryValues="@array/pref_roster_mode_values"/>
+            android:key="@string/pref_roster_mode"
+            android:summary="@string/pref_summary_roster_mode"
+            android:title="@string/pref_title_roster_mode"
+            android:defaultValue="@string/pref_roster_mode_default"
+            android:entries="@array/pref_roster_mode_strings"
+            android:entryValues="@array/pref_roster_mode_values" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/pref_chat_title"
-            android:key="@string/pref_chat_settings">
+        android:title="@string/pref_chat_title"
+        android:key="@string/pref_chat_settings">
         <CheckBoxPreference
-                android:key="@string/pref_collapse_messages"
-                android:summary="@string/pref_summary_collapse_messages"
-                android:title="@string/pref_title_collapse_messages"
-                android:defaultValue="@bool/pref_collapse_messages_default"/>
+            android:key="@string/pref_chat_background"
+            android:title="@string/pref_title_chat_background"
+            android:defaultValue="@bool/pref_chat_background_default" />
         <CheckBoxPreference
-                android:key="@string/pref_chat_background"
-                android:title="@string/pref_title_chat_background"
-                android:defaultValue="@bool/pref_chat_background_default"/>
+            android:key="@string/pref_chat_show_keyboard"
+            android:summary="@string/pref_summary_chat_show_keyboard"
+            android:title="@string/pref_title_chat_show_keyboard"
+            android:defaultValue="@bool/pref_chat_show_keyboard_default" />
         <CheckBoxPreference
-                android:key="@string/pref_chat_show_keyboard"
-                android:summary="@string/pref_summary_chat_show_keyboard"
-                android:title="@string/pref_title_chat_show_keyboard"
-                android:defaultValue="@bool/pref_chat_show_keyboard_default"/>
-        <CheckBoxPreference
-                android:key="@string/pref_send_by_enter"
-                android:summary="@string/pref_summary_send_by_enter"
-                android:title="@string/pref_title_send_by_enter"
-                android:defaultValue="@bool/pref_send_by_enter_default"/>
+            android:key="@string/pref_send_by_enter"
+            android:summary="@string/pref_summary_send_by_enter"
+            android:title="@string/pref_title_send_by_enter"
+            android:defaultValue="@bool/pref_send_by_enter_default" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/pref_files_title"
-            android:key="@string/pref_file_settings">
+        android:title="@string/pref_files_title"
+        android:key="@string/pref_file_settings">
         <ListPreference
-                android:key="@string/pref_files_auto_receive"
-                android:summary="@string/pref_summary_files_auto_receive"
-                android:title="@string/pref_title_files_auto_receive"
-                android:defaultValue="@string/pref_files_auto_receive_default"
-                android:entries="@array/pref_files_auto_receive_strings"
-                android:entryValues="@array/pref_files_auto_receive_values"/>
+            android:key="@string/pref_files_auto_receive"
+            android:summary="@string/pref_summary_files_auto_receive"
+            android:title="@string/pref_title_files_auto_receive"
+            android:defaultValue="@string/pref_files_auto_receive_default"
+            android:entries="@array/pref_files_auto_receive_strings"
+            android:entryValues="@array/pref_files_auto_receive_values" />
         <ListPreference
-                android:key="@string/pref_image_compression"
-                android:summary="@string/pref_summary_image_compression"
-                android:title="@string/pref_title_image_compression"
-                android:defaultValue="@string/pref_image_compression_default"
-                android:entries="@array/pref_image_compression_strings"
-                android:entryValues="@array/pref_image_compression_values"/>
+            android:key="@string/pref_image_compression"
+            android:summary="@string/pref_summary_image_compression"
+            android:title="@string/pref_title_image_compression"
+            android:defaultValue="@string/pref_image_compression_default"
+            android:entries="@array/pref_image_compression_strings"
+            android:entryValues="@array/pref_image_compression_values" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/pref_notifications_title"
-            android:key="@string/pref_notification_settings">
+        android:title="@string/pref_notifications_title"
+        android:key="@string/pref_notification_settings">
         <CheckBoxPreference
-                android:key="@string/pref_sound"
-                android:disableDependentsState="false"
-                android:title="@string/pref_title_sound"
-                android:defaultValue="@bool/pref_sound_default"/>
+            android:key="@string/pref_sound"
+            android:disableDependentsState="false"
+            android:title="@string/pref_title_sound"
+            android:defaultValue="@bool/pref_sound_default" />
         <RingtonePreference
-                android:dependency="@string/pref_sound"
-                android:summary="@string/pref_summary_notification_sound"
-                android:title="@string/pref_title_notification_sound"
-                android:key="@string/pref_notification_sound"
-                android:defaultValue="@string/pref_notification_sound_default"
-                android:ringtoneType="notification"
-                android:showDefault="true"
-                android:showSilent="true"/>
+            android:dependency="@string/pref_sound"
+            android:summary="@string/pref_summary_notification_sound"
+            android:title="@string/pref_title_notification_sound"
+            android:key="@string/pref_notification_sound"
+            android:defaultValue="@string/pref_notification_sound_default"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true" />
         <CheckBoxPreference
-                android:key="@string/pref_vibrate"
-                android:title="@string/pref_title_vibrate"
-                android:defaultValue="@bool/pref_vibrate_default"/>
+            android:key="@string/pref_vibrate"
+            android:title="@string/pref_title_vibrate"
+            android:defaultValue="@bool/pref_vibrate_default" />
         <CheckBoxPreference
-                android:key="@string/pref_lights"
-                android:summary="@string/pref_summary_lights"
-                android:title="@string/pref_title_lights"
-                android:defaultValue="@bool/pref_lights_default"/>
+            android:key="@string/pref_lights"
+            android:summary="@string/pref_summary_lights"
+            android:title="@string/pref_title_lights"
+            android:defaultValue="@bool/pref_lights_default" />
         <CheckBoxPreference
-                android:key="@string/pref_quite_chat"
-                android:summary="@string/pref_summary_quite_chat"
-                android:title="@string/pref_title_quite_chat"
-                android:defaultValue="@bool/pref_quite_chat_default"/>
+            android:key="@string/pref_quite_chat"
+            android:summary="@string/pref_summary_quite_chat"
+            android:title="@string/pref_title_quite_chat"
+            android:defaultValue="@bool/pref_quite_chat_default" />
         <CheckBoxPreference
-                android:key="@string/pref_private_notifications"
-                android:summary="@string/pref_summary_private_notifications"
-                android:title="@string/pref_title_private_notifications"
-                android:defaultValue="@bool/pref_private_notifications_default"/>
+            android:key="@string/pref_private_notifications"
+            android:summary="@string/pref_summary_private_notifications"
+            android:title="@string/pref_title_private_notifications"
+            android:defaultValue="@bool/pref_private_notifications_default" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -5,15 +5,16 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FilterQueryProvider;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.MessageCursor;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.views.history.BaseHistoryView;
 import com.tomclaw.mandarin.main.views.history.incoming.IncomingFileView;
@@ -24,6 +25,7 @@ import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingFileView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingImageView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingTextView;
 import com.tomclaw.mandarin.main.views.history.outgoing.OutgoingVideoView;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
@@ -39,6 +41,8 @@ import java.lang.reflect.Constructor;
  */
 public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int LOADER_ID = 10;
 
     private static final int[] ITEM_LAYOUTS = new int[]{
             0,
@@ -64,64 +68,42 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             OutgoingFileView.class
     };
 
-    private TimeHelper timeHelper;
-
-    /**
-     * Adapter ID
-     */
-    private int buddyDbId = -1;
-
-    private static int COLUMN_MESSAGE_TEXT;
-    private static int COLUMN_MESSAGE_TIME;
-    private static int COLUMN_MESSAGE_TYPE;
-    private static int COLUMN_MESSAGE_STATE;
-    private static int COLUMN_MESSAGE_COOKIE;
-    private static int COLUMN_MESSAGE_ACCOUNT_DB_ID;
-    private static int COLUMN_MESSAGE_BUDDY_DB_ID;
-    private static int COLUMN_MESSAGE_READ;
-    private static int COLUMN_ROW_AUTO_ID;
-    private static int COLUMN_CONTENT_TYPE;
-    private static int COLUMN_CONTENT_SIZE;
-    private static int COLUMN_CONTENT_STATE;
-    private static int COLUMN_CONTENT_PROGRESS;
-    private static int COLUMN_CONTENT_URI;
-    private static int COLUMN_CONTENT_NAME;
-    private static int COLUMN_PREVIEW_HASH;
-    private static int COLUMN_CONTENT_TAG;
-
     private Context context;
     private LayoutInflater inflater;
     private LoaderManager loaderManager;
+    private TimeHelper timeHelper;
+    private Buddy buddy = null;
+    private MessageCursor messageCursor;
     private ContentMessageClickListener contentMessageClickListener;
     private SelectionModeListener selectionModeListener;
+    private HistoryIntegrityListener historyIntegrityListener;
 
     private final SelectionHelper<Long> selectionHelper = new SelectionHelper<>();
 
-    public ChatHistoryAdapter(Context context, LoaderManager loaderManager, int buddyBdId, TimeHelper timeHelper) {
+    public ChatHistoryAdapter(Context context, LoaderManager loaderManager,
+                              Buddy buddy, TimeHelper timeHelper) {
         super(null);
         this.context = context;
         this.inflater = LayoutInflater.from(context);
+        this.messageCursor = new MessageCursor();
         this.loaderManager = loaderManager;
         this.timeHelper = timeHelper;
-        setBuddyDbId(buddyBdId);
-        setFilterQueryProvider(new ChatFilterQueryProvider());
+        setBuddy(buddy);
         // Initialize smileys.
         SmileyParser.init(context);
         setHasStableIds(true);
     }
 
-    private void setBuddyDbId(int buddyDbId) {
-        if (buddyDbId >= 0) {
-            // Destroy current loader.
-            loaderManager.destroyLoader(buddyDbId);
+    private void setBuddy(Buddy buddy) {
+        if (!TextUtils.isEmpty(buddy.getBuddyId())) {
+            loaderManager.destroyLoader(LOADER_ID);
         }
-        this.buddyDbId = buddyDbId;
-        // Initialize loader for adapter Id.
-        loaderManager.initLoader(buddyDbId, null, this);
+        this.buddy = buddy;
+        loaderManager.initLoader(LOADER_ID, null, this);
     }
 
-    public int getBuddyDbId() {
-        return buddyDbId;
+    public Buddy getBuddy() {
+        return buddy;
     }
 
     @Override
@@ -132,25 +114,6 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         if (cursor != null && !cursor.isClosed()) {
-            // Detecting columns.
-            COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
-            COLUMN_MESSAGE_TEXT = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TEXT);
-            COLUMN_MESSAGE_TIME = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TIME);
-            COLUMN_MESSAGE_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_TYPE);
-            COLUMN_MESSAGE_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_STATE);
-            COLUMN_MESSAGE_COOKIE = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE);
-            COLUMN_MESSAGE_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
-            COLUMN_MESSAGE_BUDDY_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_DB_ID);
-            COLUMN_MESSAGE_READ = cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_READ);
-            COLUMN_CONTENT_TYPE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TYPE);
-            COLUMN_CONTENT_SIZE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_SIZE);
-            COLUMN_CONTENT_STATE = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_STATE);
-            COLUMN_CONTENT_PROGRESS = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_PROGRESS);
-            COLUMN_CONTENT_URI = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_URI);
-            COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
-            COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
-            COLUMN_CONTENT_TAG = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TAG);
-            // Changing current cursor.
             swapCursor(cursor);
         }
     }
@@ -158,6 +121,23 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         close();
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        messageCursor.switchCursor(newCursor);
+        return super.swapCursor(newCursor);
+    }
+
+    public void close() {
+        Cursor cursor = swapCursor(null);
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+    }
+
+    private MessageCursor getMessageCursor() {
+        return messageCursor;
     }
 
     @Override
@@ -177,14 +157,14 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
 
     @Override
     public int getItemViewType(int position) {
-        Cursor cursor = getCursor();
+        MessageCursor cursor = getMessageCursor();
         int type;
         try {
             if (cursor == null || !cursor.moveToPosition(position)) {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
-            int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-            int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
+            int messageType = cursor.getMessageType();
+            int contentType = cursor.getContentType();
             type = getItemType(messageType, contentType);
         } catch (Throwable ex) {
             type = 0;
@@ -240,19 +220,11 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return type;
     }
 
-    public long getMessageDbId(int position) throws MessageNotFoundException {
-        Cursor cursor = getCursor();
-        if (cursor == null || !cursor.moveToPosition(position)) {
-            throw new MessageNotFoundException();
-        }
-        return cursor.getLong(COLUMN_ROW_AUTO_ID);
-    }
-
     private QueryBuilder getDefaultQueryBuilder() {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
-        queryBuilder.descending(GlobalProvider.ROW_AUTO_ID);
-        return queryBuilder;
+        return new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, buddy.getAccountDbId()).and()
+                .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddy.getBuddyId())
+                .descending(GlobalProvider.HISTORY_MESSAGE_ID);
     }
 
     public void setContentMessageClickListener(
@@ -264,67 +236,67 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         this.selectionModeListener = selectionModeListener;
     }
 
-    public void close() {
-        Cursor cursor = swapCursor(null);
-        // Maybe, previous non-closed cursor present?
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
+    public void setHistoryIntegrityListener(HistoryIntegrityListener historyIntegrityListener) {
+        this.historyIntegrityListener = historyIntegrityListener;
     }
 
     @Override
     public void onBindViewHolderCursor(BaseHistoryView holder, Cursor cursor) {
-        // Message data.
-        long messageDbId = cursor.getLong(COLUMN_ROW_AUTO_ID);
-        int messageType = cursor.getInt(COLUMN_MESSAGE_TYPE);
-        CharSequence messageText = SmileyParser.getInstance().addSmileySpans(
-                cursor.getString(COLUMN_MESSAGE_TEXT));
-        long messageTime = cursor.getLong(COLUMN_MESSAGE_TIME);
-        int messageState = cursor.getInt(COLUMN_MESSAGE_STATE);
-        final String messageCookie = cursor.getString(COLUMN_MESSAGE_COOKIE);
+        MessageCursor messageCursor = getMessageCursor();
+        long messageDbId = messageCursor.getMessageDbId();
+        long messageId = messageCursor.getMessageId();
+        long messagePrevId = messageCursor.getMessagePrevId();
+        int messageType = messageCursor.getMessageType();
+        CharSequence messageText = SmileyParser.getInstance()
+                .addSmileySpans(messageCursor.getMessageText());
+        long messageTime = messageCursor.getMessageTime();
+        final String messageCookie = messageCursor.getCookie();
         // Content message data
-        int contentType = cursor.getInt(COLUMN_CONTENT_TYPE);
-        long contentSize = cursor.getLong(COLUMN_CONTENT_SIZE);
-        final int contentState = cursor.getInt(COLUMN_CONTENT_STATE);
-        int contentProgress = cursor.getInt(COLUMN_CONTENT_PROGRESS);
-        final String contentName = cursor.getString(COLUMN_CONTENT_NAME);
-        final String contentUri = cursor.getString(COLUMN_CONTENT_URI);
-        String previewHash = cursor.getString(COLUMN_PREVIEW_HASH);
-        final String contentTag = cursor.getString(COLUMN_CONTENT_TAG);
+        int contentType = messageCursor.getContentType();
+        long contentSize = messageCursor.getContentSize();
+        final int contentState = messageCursor.getContentState();
+        int contentProgress = messageCursor.getContentProgress();
+        final String contentName = messageCursor.getContentName();
+        final String contentUri = messageCursor.getContentUri();
+        String previewHash = messageCursor.getPreviewHash();
+        final String contentTag = messageCursor.getContentTag();
         String messageTimeText = timeHelper.getFormattedTime(messageTime);
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         // Showing or hiding date.
         // Go to previous message and comparing dates.
-        boolean dateVisible = !(cursor.moveToNext() && messageDateText
-                .equals(timeHelper.getFormattedDate(cursor.getLong(COLUMN_MESSAGE_TIME))));
+        boolean isMoved = messageCursor.moveToNext();
+        boolean dateVisible = true;
+        if (isMoved) {
+            long movedMessageTime = messageCursor.getMessageTime();
+            String movedMessageDateText = timeHelper.getFormattedDate(movedMessageTime);
+            dateVisible = !messageDateText.equals(movedMessageDateText);
+        }
+        long upperMessageId = 0;
+        if (isMoved) {
+            upperMessageId = messageCursor.getMessageId();
+        }
+        if (messagePrevId == GlobalProvider.HISTORY_MESSAGE_ID_INVALID ||
+                (isMoved && upperMessageId != messagePrevId &&
+                        messagePrevId != GlobalProvider.HISTORY_MESSAGE_ID_REQUESTED)) {
+            Logger.log("Hole between " + upperMessageId + " and " + messageId);
+            if (historyIntegrityListener != null) {
+                historyIntegrityListener.onHole(buddy, upperMessageId, messageId);
+            }
+        }
         // Creating chat history item to bind the view.
-        ChatHistoryItem historyItem = new ChatHistoryItem(messageDbId, messageType, messageText, messageTime, messageState,
-                messageCookie, contentType, contentSize, contentState, contentProgress, contentName,
-                contentUri, previewHash, contentTag, messageTimeText, messageDateText, dateVisible);
+        ChatHistoryItem historyItem = new ChatHistoryItem(messageId, messagePrevId, messageDbId,
+                messageType, messageText, messageTime, messageCookie, contentType, contentSize,
+                contentState, contentProgress, contentName, contentUri, previewHash, contentTag,
+                messageTimeText, messageDateText, dateVisible);
         holder.setSelectionHelper(selectionHelper);
         holder.setContentClickListener(contentMessageClickListener);
         holder.setSelectionModeListener(selectionModeListener);
         holder.bind(historyItem);
     }
 
-    public TimeHelper getTimeHelper() {
-        return timeHelper;
-    }
-
-    private class ChatFilterQueryProvider implements FilterQueryProvider {
-
-        @Override
-        public Cursor runQuery(CharSequence constraint) {
-            String searchField = constraint.toString().toUpperCase();
-            QueryBuilder queryBuilder = getDefaultQueryBuilder();
-            queryBuilder.and().likeIgnoreCase(GlobalProvider.HISTORY_SEARCH_FIELD, searchField);
-            return queryBuilder.query(context.getContentResolver(), Settings.HISTORY_RESOLVER_URI);
-        }
-    }
-
     public interface ContentMessageClickListener {
 
-        public void onClicked(ChatHistoryItem historyItem);
+        void onClicked(ChatHistoryItem historyItem);
     }
 
     public interface SelectionModeListener {
@@ -335,7 +307,8 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 
-    public interface AdapterListener {
-        void onPreviewClicked(String filePath, String previewHash);
+    public interface HistoryIntegrityListener {
+
+        void onHole(Buddy buddy, long fromMessageId, long tillMessageId);
     }
 }

@@ -1,111 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarTheme"/>
+        android:id="@+id/toolbar"
+        style="@style/ToolbarTheme" />
+
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.tomclaw.mandarin.main.views.AccountsDrawerLayout
+            android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <com.tomclaw.mandarin.main.views.AccountsDrawerLayout
-                android:id="@+id/drawer_layout"
+
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
                 <ViewFlipper
                     android:id="@+id/roster_view_flipper"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inAnimation="@android:anim/fade_in"
+                    android:outAnimation="@android:anim/fade_out">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/chats_list_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:inAnimation="@android:anim/fade_in"
-                        android:outAnimation="@android:anim/fade_out">
-                    <android.support.v7.widget.RecyclerView
-                            android:id="@+id/chats_list_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingBottom="86dp"
-                            android:clipToPadding="false"
-                            android:scrollbars="vertical"
-                            android:scrollbarStyle="outsideOverlay"/>
+                        android:paddingBottom="86dp"
+                        android:clipToPadding="false"
+                        android:scrollbars="vertical"
+                        android:scrollbarStyle="outsideOverlay" />
+
                     <LinearLayout
-                            android:id="@+id/empty_view"
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:paddingLeft="32dp"
-                            android:paddingRight="32dp">
+                        android:id="@+id/empty_view"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:paddingLeft="32dp"
+                        android:paddingRight="32dp">
+
                         <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/dialogs_empty_view"
-                                android:contentDescription="@string/no_dialogs_opened"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/dialogs_empty_view"
+                            android:contentDescription="@string/no_dialogs_opened" />
+
                         <com.tomclaw.mandarin.main.views.TightTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/no_dialogs_opened"
-                                android:textSize="16sp"
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:paddingTop="12dp"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_dialogs_opened"
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:paddingTop="12dp" />
                     </LinearLayout>
                 </ViewFlipper>
+
                 <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_add"
-                        android:layout_gravity="bottom|end"
-                        android:layout_marginRight="18dp"
-                        android:layout_marginBottom="22dp"
-                        app:elevation="4dp"
-                        app:pressedTranslationZ="12dp"
-                        app:fabSize="normal"/>
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginBottom="22dp"
+                    app:elevation="4dp"
+                    app:pressedTranslationZ="12dp"
+                    app:fabSize="normal" />
             </FrameLayout>
-            <LinearLayout android:layout_width="300dp"
-                          android:layout_height="match_parent"
-                          android:layout_gravity="start"
-                          android:orientation="vertical"
-                          android:background="?attr/profile_panel_background">
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:orientation="vertical"
+                android:background="?attr/profile_panel_background">
+
                 <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:id="@+id/accounts_list_view"
-                        android:layout_gravity="center"
-                        android:choiceMode="none"
-                        android:layout_weight="1"
-                        android:divider="@android:color/transparent"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/accounts_list_view"
+                    android:layout_gravity="center"
+                    android:choiceMode="none"
+                    android:layout_weight="1"
+                    android:divider="@android:color/transparent" />
+
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="?attr/separator_navbar" />
+
+                    <Button
+                        android:id="@+id/add_account_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:text="@string/add_account"
+                        android:drawableLeft="@drawable/ic_add"
+                        style="@style/Button.NavBar" />
+
                     <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1px"
-                            android:background="?attr/separator_navbar"/>
-                    <Button android:id="@+id/add_account_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/add_account"
-                            android:drawableLeft="@drawable/ic_add"
-                            style="@style/Button.NavBar"/>
-                    <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1px"
-                            android:background="?attr/separator_navbar"/>
-                    <Button android:id="@+id/connection_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/accounts_shutdown"
-                            android:drawableLeft="@drawable/ic_disconnect"
-                            style="@style/Button.NavBar"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="?attr/separator_navbar" />
+
+                    <Button
+                        android:id="@+id/connection_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/accounts_shutdown"
+                        android:drawableLeft="@drawable/ic_disconnect"
+                        style="@style/Button.NavBar" />
                 </LinearLayout>
             </LinearLayout>
         </com.tomclaw.mandarin.main.views.AccountsDrawerLayout>
-        <include layout="@layout/toolbar_shadow_view"/>
+
+        <include layout="@layout/toolbar_shadow_view" />
     </FrameLayout>
 </LinearLayout>

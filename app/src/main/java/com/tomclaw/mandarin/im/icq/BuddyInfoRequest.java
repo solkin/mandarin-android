@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -69,6 +70,8 @@ public class BuddyInfoRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
         intent.putExtra(INFO_RESPONSE, true);
@@ -102,13 +105,15 @@ public class BuddyInfoRequest extends WimRequest {
                     // Check for such avatar is already loaded.
                     String avatarHash;
                     try {
-                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(getAccountRoot(), buddyId);
+                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(
+                                databaseLayer, getAccountRoot(), buddyId);
                     } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
                         // No buddy - no avatar.
                         avatarHash = null;
                     }
                     if (TextUtils.equals(avatarHash, hash)) {
-                        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
+                        QueryHelper.updateBuddyOrAccountAvatar(
+                                databaseLayer, getAccountRoot(), buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {
                         RequestHelper.requestLargeAvatar(
@@ -125,13 +130,15 @@ public class BuddyInfoRequest extends WimRequest {
                         // Check for such avatar is already loaded.
                         String avatarHash;
                         try {
-                            avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(getAccountRoot(), buddyId);
+                            avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(
+                                    databaseLayer, getAccountRoot(), buddyId);
                         } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
                             // No buddy - no avatar.
                             avatarHash = null;
                         }
                         if (TextUtils.equals(avatarHash, hash)) {
-                            QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
+                            QueryHelper.updateBuddyOrAccountAvatar(
+                                    databaseLayer, getAccountRoot(), buddyId, hash);
                             intent.putExtra(BUDDY_AVATAR_HASH, hash);
                         } else {
                             RequestHelper.requestSearchAvatar(context.getContentResolver(),

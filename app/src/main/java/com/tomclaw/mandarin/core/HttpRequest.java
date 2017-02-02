@@ -8,7 +8,6 @@ import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -65,7 +64,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
      */
     protected abstract int parseResponse(InputStream httpResponseStream) throws Throwable;
 
-    protected byte[] getBody() throws IOException {
+    protected byte[] getBody() throws Throwable {
         return HttpUtil.stringToArray(getParams().build());
     }
 

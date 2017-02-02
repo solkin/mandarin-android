@@ -1,21 +1,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="?attr/chat_input_background"
-              android:gravity="center"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/chat_input_background"
+    android:gravity="center"
+    android:orientation="vertical">
 
     <com.tomclaw.mandarin.main.views.FixedViewPager
-            android:id="@+id/smileys_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+        android:id="@+id/smileys_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <com.tomclaw.mandarin.main.views.CirclePageIndicator
-            android:id="@+id/circle_pager"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"/>
+        android:id="@+id/circle_pager"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
 
 </LinearLayout>

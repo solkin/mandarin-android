@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/addon_layout"
+    android:gravity="center_horizontal"
+    android:paddingTop="5dp">
+
+    <com.tomclaw.mandarin.main.views.TightTextView
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:background="@drawable/addon_back"
+        android:id="@+id/from_message_id"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:visibility="visible"
+        android:typeface="monospace"
+        android:textSize="10sp"
+        android:textColor="#CA2657"
+        tools:text="6357668774908330024"/>
+
+    <com.tomclaw.mandarin.main.views.TightTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:visibility="visible"
+        android:typeface="monospace"
+        android:textSize="12sp"
+        android:textColor="?chat_date_color"
+        android:text="➛"/>
+
+    <com.tomclaw.mandarin.main.views.TightTextView
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:background="@drawable/addon_back"
+        android:id="@+id/till_message_id"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:visibility="visible"
+        android:typeface="monospace"
+        android:textSize="10sp"
+        android:textColor="#CA2657"
+        tools:text="6357673486487388889"/>
+</LinearLayout>

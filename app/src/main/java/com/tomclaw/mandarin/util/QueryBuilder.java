@@ -1,12 +1,13 @@
 package com.tomclaw.mandarin.util;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
+
+import com.tomclaw.mandarin.core.DatabaseLayer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -116,20 +117,16 @@ public class QueryBuilder {
         return this;
     }
 
-    public Cursor query(ContentResolver contentResolver, Uri uri) {
-        return query(contentResolver, uri, null);
+    public Cursor query(DatabaseLayer databaseLayer, Uri uri) {
+        return databaseLayer.query(uri, this);
     }
 
-    public Cursor query(ContentResolver contentResolver, Uri uri, String[] projection) {
-        return contentResolver.query(uri, projection, select.toString(), null, sort.toString());
+    public int delete(DatabaseLayer databaseLayer, Uri uri) {
+        return databaseLayer.delete(uri, this);
     }
 
-    public int delete(ContentResolver contentResolver, Uri uri) {
-        return contentResolver.delete(uri, select.toString(), null);
-    }
-
-    public int update(ContentResolver contentResolver, ContentValues contentValues, Uri uri) {
-        return contentResolver.update(uri, contentValues, select.toString(), null);
+    public int update(DatabaseLayer databaseLayer, ContentValues contentValues, Uri uri) {
+        return databaseLayer.update(uri, contentValues, this);
     }
 
     public CursorLoader createCursorLoader(Context context, Uri uri) {

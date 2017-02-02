@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -56,9 +57,11 @@ public class UserInfoRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        IcqAccountRoot accountRoot = getAccountRoot();
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
-        intent.putExtra(ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
+        intent.putExtra(ACCOUNT_DB_ID, accountRoot.getAccountDbId());
         intent.putExtra(BUDDY_ID, buddyId);
         // Start to JSON parsing.
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
@@ -68,7 +71,7 @@ public class UserInfoRequest extends WimRequest {
             JSONObject data = responseObject.getJSONObject("data");
             JSONArray users = data.getJSONArray("users");
             if (users.length() > 0) {
-                Context context = getAccountRoot().getContext();
+                Context context = accountRoot.getContext();
                 // Only first profile we need.
                 JSONObject user = users.getJSONObject(0);
                 String iconId = user.optString("iconId");
@@ -87,17 +90,19 @@ public class UserInfoRequest extends WimRequest {
                     // Check for such avatar is already loaded.
                     String avatarHash;
                     try {
-                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(getAccountRoot(), buddyId);
+                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(
+                                databaseLayer, accountRoot, buddyId);
                     } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
                         // No buddy - no avatar.
                         avatarHash = null;
                     }
                     if (TextUtils.equals(avatarHash, hash)) {
-                        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
+                        QueryHelper.updateBuddyOrAccountAvatar(
+                                databaseLayer, accountRoot, buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {
                         RequestHelper.requestLargeAvatar(
-                                context.getContentResolver(), getAccountRoot().getAccountDbId(),
+                                context.getContentResolver(), accountRoot.getAccountDbId(),
                                 buddyId, CoreService.getAppSession(), buddyIcon);
                     }
                 }

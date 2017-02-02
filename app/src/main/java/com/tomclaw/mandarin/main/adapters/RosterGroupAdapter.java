@@ -36,7 +36,7 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.header_text))
-                .setText(cursor.getBuddyGroup().toUpperCase());
+                .setText(cursor.getGroup().toUpperCase());
         return convertView;
     }
 
@@ -46,7 +46,7 @@ public class RosterGroupAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        String groupName = cursor.getBuddyGroup();
+        String groupName = cursor.getGroup();
         Integer groupId = groupsMap.get(groupName);
         if (groupId == null) {
             groupId = groupsMap.size();

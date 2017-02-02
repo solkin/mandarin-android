@@ -16,7 +16,6 @@ import android.os.CountDownTimer;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +42,8 @@ import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
-import com.tomclaw.mandarin.core.BuddyObserver;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
@@ -57,8 +57,9 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.UriFile;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
@@ -104,6 +105,7 @@ public class ChatActivity extends ChiefActivity {
     private MultiChoiceActionCallback actionCallback;
     private ContentClickListener contentClickListener;
     private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
+    private ChatHistoryAdapter.HistoryIntegrityListener historyIntegrityListener;
 
     private View popupView;
     private LinearLayout smileysFooter;
@@ -124,9 +126,11 @@ public class ChatActivity extends ChiefActivity {
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
     private boolean isSendByEnter;
+    private DatabaseLayer databaseLayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseLayer = ContentResolverLayer.from(getContentResolver());
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
 
@@ -151,10 +155,10 @@ public class ChatActivity extends ChiefActivity {
         timeHelper = new TimeHelper(this);
 
         Intent intent = getIntent();
-        final int buddyDbId = getIntentBuddyDbId(intent);
+        final Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
-        startTitleObservation(buddyDbId);
+        startTitleObservation(buddy);
         buddyObserver.touch();
 
         contentClickListener = new ContentClickListener();
@@ -186,22 +190,18 @@ public class ChatActivity extends ChiefActivity {
                 }
             }
         };
+        historyIntegrityListener = new ChatHistoryIntegrityListener();
 
-        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter = new ChatHistoryAdapter(this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
+        chatHistoryAdapter.setHistoryIntegrityListener(historyIntegrityListener);
 
         chatList = (RecyclerView) findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
-        chatLayoutManager.setDataChangedListener(new ChatLayoutManager.DataChangedListener() {
-            @Override
-            public void onDataChanged() {
-                readVisibleMessages();
-            }
-        });
-        chatList.addOnScrollListener(new ChatScrollListener(chatLayoutManager));
         chatList.setLayoutManager(chatLayoutManager);
         chatList.setHasFixedSize(true);
+        chatList.setItemAnimator(null);
         chatList.setAdapter(chatHistoryAdapter);
 
         int chatBackground = PreferenceHelper.getChatBackground(this);
@@ -210,7 +210,7 @@ public class ChatActivity extends ChiefActivity {
         // Send button and message field initialization.
         final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
         messageText = (EditText) findViewById(R.id.message_text);
-        setMessageTextFromDraft(buddyDbId);
+        setMessageTextFromDraft(buddy);
         applySharingData(sharingData);
         messageText.setOnClickListener(new View.OnClickListener() {
 
@@ -358,7 +358,7 @@ public class ChatActivity extends ChiefActivity {
         final String message = getMessageText().trim();
         Logger.log("message = " + message);
         if (!TextUtils.isEmpty(message)) {
-            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            Buddy buddy = chatHistoryAdapter.getBuddy();
             messageText.setText("");
             scrollBottom();
             MessageCallback callback = new MessageCallback() {
@@ -373,19 +373,21 @@ public class ChatActivity extends ChiefActivity {
                 }
             };
             TaskExecutor.getInstance().execute(
-                    new SendMessageTask(this, buddyDbId, message, callback));
+                    new SendMessageTask(this, buddy, message, callback));
         }
     }
 
     private void setTyping(boolean isTyping) {
-        int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+        Buddy buddy = chatHistoryAdapter.getBuddy();
         TaskExecutor.getInstance().execute(
-                new SendTypingTask(this, buddyDbId, isTyping));
+                new SendTypingTask(this, buddy, isTyping));
     }
 
     private void setTypingSync(boolean isTyping) {
-        RequestHelper.requestTyping(getContentResolver(),
-                chatHistoryAdapter.getBuddyDbId(), isTyping);
+        Buddy buddy = chatHistoryAdapter.getBuddy();
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+        RequestHelper.requestTyping(getContentResolver(), accountDbId, buddyId, isTyping);
     }
 
     private void onGlobalLayoutUpdated() {
@@ -512,12 +514,12 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.close_chat_menu: {
-                QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
+                QueryHelper.modifyDialog(databaseLayer, chatHistoryAdapter.getBuddy(), false);
                 onBackPressed();
                 return true;
             }
             case R.id.buddy_info_menu: {
-                BuddyInfoTask buddyInfoTask = new BuddyInfoTask(this, chatHistoryAdapter.getBuddyDbId());
+                BuddyInfoTask buddyInfoTask = new BuddyInfoTask(this, chatHistoryAdapter.getBuddy());
                 TaskExecutor.getInstance().execute(buddyInfoTask);
                 return true;
             }
@@ -529,7 +531,7 @@ public class ChatActivity extends ChiefActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
-                                chatHistoryAdapter.getBuddyDbId());
+                                chatHistoryAdapter.getBuddy());
                         TaskExecutor.getInstance().execute(clearHistoryTask);
                     }
                 });
@@ -570,25 +572,26 @@ public class ChatActivity extends ChiefActivity {
         // Save currently entered text as draft before switching.
         saveMessageTextAsDraft();
 
-        int buddyDbId = getIntentBuddyDbId(intent);
+        Buddy buddy = getIntentBuddy(intent);
         SharingData sharingData = getIntentSharingData(intent);
 
-        // Checking for buddy db id is really correct.
-        if (buddyDbId == -1) {
+        // Checking for buddy is really correct.
+        if (buddy == null) {
             return;
         }
 
-        startTitleObservation(buddyDbId);
+        startTitleObservation(buddy);
 
         if (chatHistoryAdapter != null) {
             chatHistoryAdapter.close();
         }
-        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddyDbId, timeHelper);
+        chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, getLoaderManager(), buddy, timeHelper);
         chatHistoryAdapter.setContentMessageClickListener(contentClickListener);
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
+        chatHistoryAdapter.setHistoryIntegrityListener(historyIntegrityListener);
         chatList.setAdapter(chatHistoryAdapter);
 
-        setMessageTextFromDraft(buddyDbId);
+        setMessageTextFromDraft(buddy);
         applySharingData(sharingData);
     }
 
@@ -619,7 +622,7 @@ public class ChatActivity extends ChiefActivity {
             }
             case PICK_GALLERY_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
-                    int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                    Buddy buddy = chatHistoryAdapter.getBuddy();
                     if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
                         Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
                         if (bundle != null) {
@@ -628,7 +631,8 @@ public class ChatActivity extends ChiefActivity {
                                 photoEntries.add((PhotoEntry) bundle.getSerializable(key));
                             }
                             scrollBottom();
-                            TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
+                            TaskExecutor.getInstance().execute(
+                                    new SendPhotosTask(this, buddy, photoEntries));
                         }
                     } else if (data.getData() != null) {
                         onFilePicked(data.getData());
@@ -640,7 +644,7 @@ public class ChatActivity extends ChiefActivity {
 
     private void onFilePicked(Uri uri) {
         try {
-            int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+            Buddy buddy = chatHistoryAdapter.getBuddy();
             MessageCallback callback = new MessageCallback() {
 
                 @Override
@@ -654,8 +658,7 @@ public class ChatActivity extends ChiefActivity {
             };
             scrollBottom();
             UriFile uriFile = UriFile.create(this, uri);
-            TaskExecutor.getInstance().execute(
-                    new SendFileTask(this, buddyDbId, uriFile, callback));
+            TaskExecutor.getInstance().execute(new SendFileTask(this, buddy, uriFile, callback));
         } catch (Throwable ignored) {
         }
     }
@@ -670,7 +673,6 @@ public class ChatActivity extends ChiefActivity {
     protected void onResume() {
         super.onResume();
         isPaused = false;
-        readVisibleMessages();
     }
 
     @Override
@@ -678,15 +680,14 @@ public class ChatActivity extends ChiefActivity {
         // TODO: must be implemented.
     }
 
-    private int getIntentBuddyDbId(Intent intent) {
+    private Buddy getIntentBuddy(Intent intent) {
         Bundle bundle = intent.getExtras();
-        int buddyDbId = -1;
+        Buddy buddy = null;
         // Checking for bundle condition.
         if (bundle != null) {
-            // Setup active page.
-            buddyDbId = bundle.getInt(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+            buddy = bundle.getParcelable(Buddy.KEY_STRUCT);
         }
-        return buddyDbId;
+        return buddy;
     }
 
     private SharingData getIntentSharingData(Intent intent) {
@@ -704,17 +705,18 @@ public class ChatActivity extends ChiefActivity {
         return sharingData;
     }
 
-    private void startTitleObservation(final int buddyDbId) {
+    private void startTitleObservation(final Buddy buddy) {
         if (buddyObserver != null) {
             buddyObserver.stop();
         }
-        buddyObserver = new ChatBuddyObserver(getContentResolver(), buddyDbId);
+        buddyObserver = new ChatBuddyObserver(getContentResolver(), buddy);
     }
 
-    private void setMessageTextFromDraft(int buddyDbId) {
+    private void setMessageTextFromDraft(Buddy buddy) {
         String enteredText;
         try {
-            enteredText = QueryHelper.getBuddyDraft(getContentResolver(), buddyDbId);
+            enteredText = QueryHelper.getBuddyDraft(
+                    databaseLayer, buddy.getAccountDbId(), buddy.getBuddyId());
         } catch (BuddyNotFoundException ignored) {
             enteredText = null;
         }
@@ -727,38 +729,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void saveMessageTextAsDraft() {
-        QueryHelper.modifyBuddyDraft(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), getMessageText());
-    }
-
-    private void readMessagesAsync(int buddyDbId, long firstMessageDbId, long lastMessageDbId) {
-        // This can be executed while activity became invisible to user,
-        // so we must check it here. After activity restored, messages will be read automatically.
-        // Also, activity might be gone to destroy in a moments.
-        if (!isPaused && !isGoToDestroy) {
-            // Ultra high-demand thread required.
-            // But this thread way must be rewritten.
-            new Thread(new ReadMessagesTask(this, buddyDbId,
-                    firstMessageDbId, lastMessageDbId)).start();
-        }
-    }
-
-    private void readVisibleMessages() {
-        final int firstVisiblePosition = chatLayoutManager.findFirstVisibleItemPosition();
-        final int lastVisiblePosition = chatLayoutManager.findLastVisibleItemPosition();
-        Logger.log("Reading visible messages ["
-                + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-        // Checking for the list view is ready.
-        if (lastVisiblePosition >= firstVisiblePosition) {
-            final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-            try {
-                final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstVisiblePosition);
-                final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastVisiblePosition);
-                readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
-            } catch (MessageNotFoundException ignored) {
-                Logger.log("Error while marking messages as read positions ["
-                        + firstVisiblePosition + "] -> [" + lastVisiblePosition + "]");
-            }
-        }
+        QueryHelper.modifyBuddyDraft(databaseLayer, chatHistoryAdapter.getBuddy(), getMessageText());
     }
 
     public void scrollBottom() {
@@ -770,7 +741,7 @@ public class ChatActivity extends ChiefActivity {
         if (sharingData != null && sharingData.isValid()) {
             if (sharingData.getUri() != null) {
                 scrollBottom();
-                int buddyDbId = chatHistoryAdapter.getBuddyDbId();
+                Buddy buddy = chatHistoryAdapter.getBuddy();
                 MessageCallback callback = new MessageCallback() {
 
                     @Override
@@ -791,7 +762,7 @@ public class ChatActivity extends ChiefActivity {
                     }
                 }
                 TaskExecutor.getInstance().execute(
-                        new SendFileTask(this, buddyDbId, uriFiles, callback));
+                        new SendFileTask(this, buddy, uriFiles, callback));
             } else {
                 String share;
                 if (TextUtils.isEmpty(sharingData.getSubject())) {
@@ -863,9 +834,6 @@ public class ChatActivity extends ChiefActivity {
                 case R.id.message_remove:
                     removeSelectedMessages(mode);
                     return true;
-                case R.id.message_unread:
-                    unreadSelectedMessages(mode);
-                    return true;
                 default:
                     return false;
             }
@@ -881,9 +849,10 @@ public class ChatActivity extends ChiefActivity {
 
         private String getSelectedMessages() {
             // Obtain selected positions.
-            Collection<Long> selectedIds = selectionHelper.getSelectedIds();
-            return QueryHelper.getMessagesTexts(getContentResolver(),
-                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
+            Collection<Long> selectedIds = selectionHelper.getSelected();
+//            return QueryHelper.getMessagesTexts(getContentResolver(),
+//                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
+            return null;
         }
 
         private Intent createShareIntent() {
@@ -900,126 +869,22 @@ public class ChatActivity extends ChiefActivity {
                     .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            selectionHelper.getSelectedIds();
-                            QueryHelper.removeMessages(getContentResolver(), selectionHelper.getSelectedIds());
+                            QueryHelper.removeMessages(databaseLayer, selectionHelper.getSelected());
                             mode.finish();
                         }
                     })
                     .setNeutralButton(R.string.do_not_remove, null).show();
         }
-
-        private void unreadSelectedMessages(final ActionMode mode) {
-            final Collection<Long> selectedIds = new ArrayList<>(selectionHelper.getSelectedIds());
-            if (!selectedIds.isEmpty() && QueryHelper.isIncomingMessagesPresent(getContentResolver(), selectedIds)) {
-                new AlertDialog.Builder(ChatActivity.this)
-                        .setTitle(R.string.unread_messages)
-                        .setMessage(R.string.mark_messages_unread)
-                        .setPositiveButton(R.string.yes_mark, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mode.finish();
-                                isGoToDestroy = true;
-                                QueryHelper.unreadMessages(getContentResolver(), selectedIds);
-                                openMainActivity();
-                            }
-                        })
-                        .setNeutralButton(R.string.no_need, null).show();
-            } else {
-                Toast.makeText(ChatActivity.this, R.string.no_incoming_selected, Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
-    private class ChatScrollListener extends RecyclerView.OnScrollListener {
+    private static class ClearHistoryTask extends PleaseWaitTask {
 
-        private LinearLayoutManager layoutManager;
-        private int startFirstVisiblePosition, startLastVisiblePosition;
+        private final Buddy buddy;
 
-        private ChatScrollListener(LinearLayoutManager layoutManager) {
-            this.layoutManager = layoutManager;
-            startFirstVisiblePosition = -1;
-            startLastVisiblePosition = -1;
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView view, int scrollState) {
-            int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-            int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-            switch (scrollState) {
-                case RecyclerView.SCROLL_STATE_DRAGGING: {
-                    // Scroll stared.
-                    if (startFirstVisiblePosition == -1 && startLastVisiblePosition == -1) {
-                        startFirstVisiblePosition = firstVisiblePosition;
-                        startLastVisiblePosition = lastVisiblePosition;
-                    }
-                    break;
-                }
-                case RecyclerView.SCROLL_STATE_IDLE: {
-                    // Scroll ended.
-                    // Scroll ended.
-                    int firstPosition;
-                    int lastPosition;
-                    if (firstVisiblePosition > startFirstVisiblePosition) {
-                        // Scroll to bottom.
-                        firstPosition = startFirstVisiblePosition;
-                        lastPosition = lastVisiblePosition;
-                    } else {
-                        // Scroll to top.
-                        firstPosition = firstVisiblePosition;
-                        lastPosition = startLastVisiblePosition;
-                    }
-                    startFirstVisiblePosition = -1;
-                    startLastVisiblePosition = -1;
-                    Logger.log("Scroll: " + firstPosition + " -> " + lastPosition);
-                    final int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    try {
-                        final long firstMessageDbId = chatHistoryAdapter.getMessageDbId(firstPosition);
-                        final long lastMessageDbId = chatHistoryAdapter.getMessageDbId(lastPosition);
-                        readMessagesAsync(buddyDbId, firstMessageDbId, lastMessageDbId);
-                    } catch (MessageNotFoundException ignored) {
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    private class ReadMessagesTask extends WeakObjectTask<Context> {
-
-        private final int buddyDbId;
-        private final long firstMessageDbId;
-        private final long lastMessageDbId;
-
-        public ReadMessagesTask(Context context, int buddyDbId,
-                                long firstMessageDbId, long lastMessageDbId) {
+        public ClearHistoryTask(Context context, Buddy buddy) {
             super(context);
-            this.buddyDbId = buddyDbId;
-            this.firstMessageDbId = Math.min(firstMessageDbId, lastMessageDbId);
-            this.lastMessageDbId = Math.max(firstMessageDbId, lastMessageDbId);
-        }
-
-        @Override
-        public void executeBackground() throws MessageNotFoundException {
-            Context context = getWeakObject();
-            if (context != null) {
-                ContentResolver contentResolver = context.getContentResolver();
-                if (PreferenceHelper.isQuiteChat(context)) {
-                    QueryHelper.fastReadMessages(contentResolver,
-                            buddyDbId, firstMessageDbId, lastMessageDbId);
-                }
-                QueryHelper.readMessages(contentResolver,
-                        buddyDbId, firstMessageDbId, lastMessageDbId);
-            }
-        }
-    }
-
-    private class ClearHistoryTask extends PleaseWaitTask {
-
-        private final int buddyDbId;
-
-        public ClearHistoryTask(Context context, int buddyDbId) {
-            super(context);
-            this.buddyDbId = buddyDbId;
+            // We need to clear history even if this buddy present in any groups.
+            this.buddy = buddy;
         }
 
         @Override
@@ -1027,8 +892,9 @@ public class ChatActivity extends ChiefActivity {
             Context context = getWeakObject();
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                 if (contentResolver != null) {
-                    QueryHelper.clearHistory(contentResolver, buddyDbId);
+                    QueryHelper.clearHistory(databaseLayer, buddy);
                 }
             }
         }
@@ -1043,15 +909,15 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
+    private static class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private String message;
         private final MessageCallback callback;
 
-        public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+        public SendMessageTask(ChiefActivity activity, Buddy buddy, String message, MessageCallback callback) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.message = message;
             this.callback = callback;
         }
@@ -1062,11 +928,10 @@ public class ChatActivity extends ChiefActivity {
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
                 String cookie = String.valueOf(System.currentTimeMillis());
-                boolean isCollapseMessages = PreferenceHelper.isCollapseMessages(activity);
-                QueryHelper.insertMessage(contentResolver, isCollapseMessages, buddyDbId,
-                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
+//                QueryHelper.insertMessage(contentResolver, buddyDbId,
+//                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
                 // Sending protocol message request.
-                RequestHelper.requestMessage(contentResolver, buddyDbId, cookie, message);
+//                RequestHelper.requestMessage(contentResolver, buddy, cookie, message);
             }
         }
 
@@ -1086,14 +951,14 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendPhotosTask extends PleaseWaitTask {
+    private static class SendPhotosTask extends PleaseWaitTask {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private final List<PhotoEntry> selectedPhotos;
 
-        public SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
+        public SendPhotosTask(Context context, Buddy buddy, List<PhotoEntry> photoEntries) {
             super(context);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.selectedPhotos = photoEntries;
         }
 
@@ -1115,10 +980,10 @@ public class ChatActivity extends ChiefActivity {
                         String hash = photoEntry.hash;
                         String tag = cookie + ":" + uriFile.getPath();
                         // Create outgoing file messages.
-                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                                uriFile.getName(), contentType, size, hash, tag);
+//                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+//                                uriFile.getName(), contentType, size, hash, tag);
                         // Sending protocol message request.
-                        RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+//                        RequestHelper.requestFileSend(contentResolver, buddy, cookie, tag, uriFile);
                         counter++;
                     }
                 }
@@ -1126,20 +991,20 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendFileTask extends PleaseWaitTask {
+    private static class SendFileTask extends PleaseWaitTask {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private List<UriFile> uriFiles;
         private final MessageCallback callback;
         private Random random;
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
-            this(activity, buddyDbId, Collections.singletonList(uriFile), callback);
+        public SendFileTask(ChiefActivity activity, Buddy buddy, UriFile uriFile, MessageCallback callback) {
+            this(activity, buddy, Collections.singletonList(uriFile), callback);
         }
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, List<UriFile> uriFiles, MessageCallback callback) {
+        public SendFileTask(ChiefActivity activity, Buddy buddy, List<UriFile> uriFiles, MessageCallback callback) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.uriFiles = uriFiles;
             this.callback = callback;
             this.random = new Random();
@@ -1174,10 +1039,10 @@ public class ChatActivity extends ChiefActivity {
                         // ... and async saving in storage.
                         BitmapCache.getInstance().saveBitmapAsync(hash, bitmap, Bitmap.CompressFormat.JPEG);
                     }
-                    QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
-                            uriFile.getName(), contentType, size, hash, tag);
+//                    QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),
+//                            uriFile.getName(), contentType, size, hash, tag);
                     // Sending protocol message request.
-                    RequestHelper.requestFileSend(contentResolver, buddyDbId, cookie, tag, uriFile);
+//                    RequestHelper.requestFileSend(contentResolver, buddy, cookie, tag, uriFile);
                 }
             }
         }
@@ -1198,14 +1063,14 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
+    public static class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
-        private final int buddyDbId;
+        private final Buddy buddy;
         private boolean isTyping;
 
-        public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+        public SendTypingTask(ChiefActivity activity, Buddy buddy, boolean isTyping) {
             super(activity);
-            this.buddyDbId = buddyDbId;
+            this.buddy = buddy;
             this.isTyping = isTyping;
         }
 
@@ -1214,8 +1079,10 @@ public class ChatActivity extends ChiefActivity {
             ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
+                int accountDbId = buddy.getAccountDbId();
+                String buddyId = buddy.getBuddyId();
                 // Sending protocol typing request.
-                RequestHelper.requestTyping(contentResolver, buddyDbId, isTyping);
+                RequestHelper.requestTyping(contentResolver, accountDbId, buddyId, isTyping);
             }
         }
     }
@@ -1311,7 +1178,7 @@ public class ChatActivity extends ChiefActivity {
             switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
+                    QueryHelper.updateFileState(databaseLayer,
                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
                             GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
                             messageCookie);
@@ -1336,7 +1203,7 @@ public class ChatActivity extends ChiefActivity {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
+                    QueryHelper.updateFileState(databaseLayer,
                             GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
                             GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
                             messageCookie);
@@ -1371,7 +1238,24 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopDownloadingTask extends ServiceTask<ChiefActivity> {
+    public class ChatHistoryIntegrityListener implements ChatHistoryAdapter.HistoryIntegrityListener {
+
+        @Override
+        public void onHole(Buddy buddy, long fromMessageId, long tillMessageId) {
+            Logger.log("chat history hole detected");
+            ContentResolver contentResolver = getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+            int count = -Settings.HISTORY_BLOCK_SIZE;
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
+            String patchVersion = QueryHelper.getBuddyPatchVersion(databaseLayer, buddy);
+            RequestHelper.requestHistoryBlock(contentResolver,
+                    accountDbId, buddyId, fromMessageId, tillMessageId, patchVersion, count);
+            QueryHelper.markMessageRequested(databaseLayer, buddy, tillMessageId);
+        }
+    }
+
+    public static class StopDownloadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1395,13 +1279,15 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
                 }
-                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                QueryHelper.updateFileState(databaseLayer, desiredState,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, messageCookie);
             }
         }
     }
 
-    public class StopUploadingTask extends ServiceTask<ChiefActivity> {
+    public static class StopUploadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1425,7 +1311,9 @@ public class ChatActivity extends ChiefActivity {
                 } else {
                     desiredState = GlobalProvider.HISTORY_CONTENT_STATE_STOPPED;
                 }
-                QueryHelper.updateFileState(activity.getContentResolver(), desiredState,
+                ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                QueryHelper.updateFileState(databaseLayer, desiredState,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, messageCookie);
             }
         }
@@ -1433,23 +1321,23 @@ public class ChatActivity extends ChiefActivity {
 
     public class ChatBuddyObserver extends BuddyObserver {
 
-        public ChatBuddyObserver(ContentResolver contentResolver, int buddyDbId) {
-            super(contentResolver, buddyDbId);
+        public ChatBuddyObserver(ContentResolver contentResolver, Buddy buddy) {
+            super(contentResolver, buddy);
         }
 
         @Override
         public void onBuddyInfoChanged(final BuddyCursor buddyCursor) {
-            final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
-                    buddyCursor.getBuddyStatus());
+            final int icon = StatusUtil.getStatusDrawable(buddyCursor.getAccountType(),
+                    buddyCursor.getStatus());
             final String title = buddyCursor.getBuddyNick();
             final String subtitle;
 
-            long lastTyping = buddyCursor.getBuddyLastTyping();
+            long lastTyping = buddyCursor.getLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                 subtitle = getString(R.string.typing);
             } else {
-                long lastSeen = buddyCursor.getBuddyLastSeen();
+                long lastSeen = buddyCursor.getLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
                     String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
@@ -1472,7 +1360,7 @@ public class ChatActivity extends ChiefActivity {
 
                     subtitle = lastSeenText;
                 } else {
-                    subtitle = buddyCursor.getBuddyStatusTitle();
+                    subtitle = buddyCursor.getStatusTitle();
                 }
             }
 

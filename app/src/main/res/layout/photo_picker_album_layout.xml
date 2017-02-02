@@ -1,48 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="top">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_gravity="top">
 
     <com.tomclaw.mandarin.main.views.ThumbnailView
-            android:id="@+id/media_photo_image"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="@color/thumbnail_back"/>
+        android:id="@+id/media_photo_image"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/thumbnail_back" />
 
     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="28dp"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal"
-            android:background="#7f000000">
+        android:layout_width="fill_parent"
+        android:layout_height="28dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="#7f000000">
 
         <com.tomclaw.mandarin.main.views.TightTextView
-                android:layout_height="fill_parent"
-                android:layout_width="0dp"
-                android:id="@+id/album_name"
-                android:textSize="13dp"
-                android:gravity="center_vertical"
-                android:textColor="#ffffffff"
-                android:layout_weight="1"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="8dp"/>
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:id="@+id/album_name"
+            android:textSize="13dp"
+            android:gravity="center_vertical"
+            android:textColor="#ffffffff"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginLeft="8dp" />
 
         <com.tomclaw.mandarin.main.views.TightTextView
-                android:layout_height="fill_parent"
-                android:layout_width="wrap_content"
-                android:id="@+id/album_count"
-                android:textSize="13dp"
-                android:gravity="center_vertical"
-                android:textColor="#ffaaaaaa"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"/>
+            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:id="@+id/album_count"
+            android:textSize="13dp"
+            android:gravity="center_vertical"
+            android:textColor="#ffaaaaaa"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp" />
 
     </LinearLayout>
 

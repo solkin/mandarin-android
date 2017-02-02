@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingTop="16dp"
-              android:paddingLeft="@dimen/dialog_padding"
-              android:paddingRight="@dimen/dialog_padding">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingLeft="@dimen/dialog_padding"
+    android:paddingRight="@dimen/dialog_padding">
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/select_status_description"
-            android:textSize="16sp"
-            android:paddingBottom="12dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/select_status_description"
+        android:textSize="16sp"
+        android:paddingBottom="12dp" />
 
     <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/status_spinner"
-            android:spinnerMode="dialog"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_spinner"
+        android:spinnerMode="dialog" />
 
     <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/status_message_change_hint"
-            android:fontFamily="sans-serif-light"
-            android:textSize="17sp"
-            android:id="@+id/status_message_edit"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/status_message_change_hint"
+        android:fontFamily="sans-serif-light"
+        android:textSize="17sp"
+        android:id="@+id/status_message_edit" />
 
 </LinearLayout>

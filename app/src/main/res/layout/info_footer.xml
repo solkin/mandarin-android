@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="8dp"
-              android:background="?attr/block_info_divider_background"
-              android:visibility="gone">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:background="?attr/block_info_divider_background"
+    android:visibility="gone">
+
     <View
-            android:layout_width="wrap_content"
-            android:layout_height="4dp"
-            android:background="@drawable/block_info_divider_gradient"/>
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:background="@drawable/block_info_divider_gradient" />
 </LinearLayout>

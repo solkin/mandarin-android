@@ -1,44 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/first_screen_bg"
-            android:scaleType="centerCrop"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/first_screen_bg"
+        android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true" />
+
     <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarTheme"
-            android:background="@android:color/transparent"/>
+        android:id="@+id/toolbar"
+        style="@style/ToolbarTheme"
+        android:background="@android:color/transparent" />
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/sms_code_header_view"
-            android:text="@string/sms_code_header"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textColor="#ffffff"
-            android:layout_above="@+id/sms_code_field"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
-            android:fontFamily="sans-serif-light"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sms_code_header_view"
+        android:text="@string/sms_code_header"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:layout_above="@+id/sms_code_field"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:fontFamily="sans-serif-light" />
+
     <EditText
-            android:id="@+id/sms_code_field"
-            style="@style/IntroSmsCodeField"
-            android:hint="- - - -"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:imeOptions="actionDone"/>
+        android:id="@+id/sms_code_field"
+        style="@style/IntroSmsCodeField"
+        android:hint="- - - -"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:imeOptions="actionDone" />
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:id="@+id/resend_code_view"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="6dp"
-            style="@style/ResendCodeView"
-            android:text="@string/resend_code"/>
+        android:id="@+id/resend_code_view"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
+        style="@style/ResendCodeView"
+        android:text="@string/resend_code" />
 </RelativeLayout>

@@ -12,13 +12,14 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.NotifiableDownloadRequest;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.DownloadCancelledException;
 import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.FileHelper;
@@ -75,6 +76,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     public String getUrl() throws Throwable {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+
         String fileInfoUrl = "http://files.icq.net/get/" + fileId + "?json=1&meta=1";
         HttpURLConnection connection = (HttpURLConnection) new URL(fileInfoUrl).openConnection();
         String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
@@ -133,12 +136,12 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             }
             // Make directories for this path.
             storeFile.getParentFile().mkdirs();
-            int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
+            int buddyDbId = QueryHelper.getBuddyDbId(databaseLayer, getAccountRoot().getAccountDbId(), buddyId);
             int contentType = getContentType(mimeType);
             Uri uri = Uri.fromFile(storeFile);
-            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
+//            TODO: reimplement this.
+//            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
+//                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
             if (!isStartDownload(isFirstAttempt, fileSize)) {
                 // All other attempts will be manual.
@@ -147,10 +150,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             }
             return downloadLink;
         } else {
-            QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
-                    PreferenceHelper.isCollapseMessages(getAccountRoot().getContext()),
-                    getAccountRoot().getAccountDbId(), buddyId, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                    GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED, cookie, time, originalMessage);
+//            QueryHelper.insertMessage(getAccountRoot().getContentResolver(),
+//                    getAccountRoot().getAccountDbId(), buddyId,
+//                    GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie, time, originalMessage);
             throw new DownloadException();
         }
     }
@@ -223,11 +225,11 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         // Show chat activity with concrete buddy.
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
+            int accountDbId = getAccountRoot().getAccountDbId();
+            Buddy buddy = new Buddy(accountDbId, buddyId);
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, ChatActivity.class)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .putExtra(Buddy.KEY_STRUCT, buddy)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     PendingIntent.FLAG_CANCEL_CURRENT);
         } catch (Throwable ignored) {
@@ -242,12 +244,13 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected String getDescription() {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        int accountDbId = getAccountRoot().getAccountDbId();
         String buddyNick = "";
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
-            buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
+            int buddyDbId = QueryHelper.getBuddyDbId(databaseLayer, accountDbId, buddyId);
+            buddyNick = QueryHelper.getBuddyNick(databaseLayer, buddyDbId);
         } catch (Throwable ignored) {
         }
         if (TextUtils.isEmpty(buddyNick)) {
@@ -258,8 +261,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onStartedDelegate() throws DownloadCancelledException, DownloadException {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         try {
-            int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
+            int contentState = QueryHelper.getFileState(databaseLayer,
                     GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
             if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT) {
                 throw new DownloadCancelledException();
@@ -271,8 +275,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onDownload() {
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateFileState(databaseLayer, GlobalProvider.HISTORY_CONTENT_STATE_RUNNING,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 
     @Override
@@ -282,13 +287,15 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onProgressUpdated(int progress) {
-        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress,
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateFileProgress(databaseLayer, progress,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 
     @Override
     protected void onSuccessDelegate() {
-        QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateFileStateAndText(databaseLayer,
                 GlobalProvider.HISTORY_CONTENT_STATE_STABLE, getUrlMessage(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
         // Update file in system gallery.
@@ -297,7 +304,8 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onFailDelegate() {
-        QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.revertFileToMessage(databaseLayer,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, originalMessage, cookie);
         // Checking for file is being created.
         if (storeFile != null) {
@@ -308,9 +316,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     @Override
     protected void onCancelDelegate() {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         // Update message to be in waiting state.
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
-                GlobalProvider.HISTORY_CONTENT_STATE_STOPPED, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
+        QueryHelper.updateFileState(databaseLayer, GlobalProvider.HISTORY_CONTENT_STATE_STOPPED,
+                GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.tomclaw.mandarin.core.BitmapRequest;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 
 /**
@@ -23,7 +24,8 @@ public class LargeAvatarRequest extends BitmapRequest<IcqAccountRoot> {
 
     @Override
     protected void onBitmapSaved(String hash) {
-        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateBuddyOrAccountAvatar(databaseLayer, getAccountRoot(), buddyId, hash);
         Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
         intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
         intent.putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());

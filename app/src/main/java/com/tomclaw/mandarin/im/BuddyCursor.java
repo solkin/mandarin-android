@@ -8,6 +8,7 @@ import java.io.Closeable;
 
 /**
  * Created by solkin on 23/03/14.
+ * Cursor wrapper for roster table
  */
 public class BuddyCursor implements Closeable {
 
@@ -35,6 +36,12 @@ public class BuddyCursor implements Closeable {
     private static int COLUMN_ROSTER_BUDDY_LAST_SEEN;
     private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
     private static int COLUMN_ROSTER_BUDDY_OPERATION;
+    private static int COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID;
+    private static int COLUMN_ROSTER_BUDDY_YOURS_LAST_READ;
+    private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED;
+    private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ;
+    private static int COLUMN_ROSTER_BUDDY_DEL_UP_TO;
+    private static int COLUMN_ROSTER_BUDDY_PATCH_VERSION;
 
     public BuddyCursor() {
     }
@@ -73,6 +80,12 @@ public class BuddyCursor implements Closeable {
             COLUMN_ROSTER_BUDDY_LAST_SEEN = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_SEEN);
             COLUMN_ROSTER_BUDDY_LAST_TYPING = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_TYPING);
             COLUMN_ROSTER_BUDDY_OPERATION = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_OPERATION);
+            COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_ID);
+            COLUMN_ROSTER_BUDDY_YOURS_LAST_READ = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_YOURS_LAST_READ);
+            COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_DELIVERED);
+            COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_READ);
+            COLUMN_ROSTER_BUDDY_DEL_UP_TO = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DEL_UP_TO);
+            COLUMN_ROSTER_BUDDY_PATCH_VERSION = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_PATCH_VERSION);
             isColumnsRead = true;
         }
     }
@@ -89,11 +102,11 @@ public class BuddyCursor implements Closeable {
         return cursor;
     }
 
-    public int getBuddyAccountDbId() {
+    public int getAccountDbId() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID);
     }
 
-    public int getBuddyDbId() {
+    public int getDbId() {
         return cursor.getInt(COLUMN_ROW_AUTO_ID);
     }
 
@@ -105,60 +118,84 @@ public class BuddyCursor implements Closeable {
         return cursor.getString(COLUMN_ROSTER_BUDDY_NICK);
     }
 
-    public String getBuddyGroup() {
+    public String getGroup() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_GROUP);
     }
 
-    public int getBuddyGroupId() {
+    public int getGroupId() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_GROUP_ID);
     }
 
-    public boolean getBuddyDialog() {
+    public boolean getDialog() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_DIALOG) != 0;
     }
 
-    public int getBuddyStatus() {
+    public int getStatus() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_STATUS);
     }
 
-    public String getBuddyStatusTitle() {
+    public String getStatusTitle() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_TITLE);
     }
 
-    public String getBuddyStatusMessage() {
+    public String getStatusMessage() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_STATUS_MESSAGE);
     }
 
-    public String getBuddyAccountType() {
+    public String getAccountType() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE);
     }
 
-    public int getBuddyAlphabetIndex() {
+    public int getAlphabetIndex() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_ALPHABET_INDEX);
     }
 
-    public int getBuddyUnreadCount() {
+    public int getUnreadCount() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_UNREAD_COUNT);
     }
 
-    public String getBuddyAvatarHash() {
+    public String getAvatarHash() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_AVATAR_HASH);
     }
 
-    public String getBuddyDraft() {
+    public String getDraft() {
         return cursor.getString(COLUMN_ROSTER_BUDDY_DRAFT);
     }
 
-    public long getBuddyLastSeen() {
+    public long getLastSeen() {
         return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_SEEN);
     }
 
-    public long getBuddyLastTyping() {
+    public long getLastTyping() {
         return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_TYPING);
     }
 
-    public int getBuddyOperation() {
+    public int getOperation() {
         return cursor.getInt(COLUMN_ROSTER_BUDDY_OPERATION);
+    }
+
+    public long getLastMessageId() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID);
+    }
+
+    public long getYoursLastRead() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_YOURS_LAST_READ);
+    }
+
+    public long getTheirsLastDelivered() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED);
+    }
+
+    public long getTheirsLastRead() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ);
+    }
+
+    public long getDelUpTo() {
+        return cursor.getInt(COLUMN_ROSTER_BUDDY_DEL_UP_TO);
+    }
+
+    public String getPatchVersion() {
+        return cursor.getString(COLUMN_ROSTER_BUDDY_PATCH_VERSION);
     }
 
     public boolean moveToFirst() {
@@ -182,5 +219,15 @@ public class BuddyCursor implements Closeable {
 
     public boolean isClosed() {
         return cursor.isClosed();
+    }
+
+    public BuddyData toBuddyData() {
+        return new BuddyData(getGroupId(), getGroup(), getBuddyId(),
+                getBuddyNick(), getStatus(), getStatusTitle(),
+                getStatusMessage(), getAvatarHash(), getLastSeen());
+    }
+
+    public StrictBuddy toBuddy() {
+        return new StrictBuddy(getAccountDbId(), getGroup(), getBuddyId());
     }
 }

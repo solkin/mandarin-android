@@ -1,111 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="8dp">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="8dp">
+
         <View
-                android:layout_width="wrap_content"
-                android:layout_height="4dp"
-                android:background="@drawable/block_info_divider_gradient"/>
+            android:layout_width="wrap_content"
+            android:layout_height="4dp"
+            android:background="@drawable/block_info_divider_gradient" />
     </LinearLayout>
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:id="@+id/info_base_title"
-            android:text="@string/info_base"
-            style="@style/BuddyInfoBlockHeader"
-            android:visibility="gone"/>
+        android:id="@+id/info_base_title"
+        android:text="@string/info_base"
+        style="@style/BuddyInfoBlockHeader"
+        android:visibility="gone" />
+
     <LinearLayout
-            android:id="@+id/base_info"
-            style="@style/BuddyInfoBlockContent"
-            android:visibility="gone">
+        android:id="@+id/base_info"
+        style="@style/BuddyInfoBlockContent"
+        android:visibility="gone">
+
         <include
-                android:id="@+id/friendly_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/friendly_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/first_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/first_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/last_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/last_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/gender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/birth_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/birth_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
     </LinearLayout>
-    <include layout="@layout/info_footer"
-             android:id="@+id/info_base_footer"/>
+
+    <include
+        layout="@layout/info_footer"
+        android:id="@+id/info_base_footer" />
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:id="@+id/info_extended_title"
-            android:text="@string/info_extended"
-            style="@style/BuddyInfoBlockHeader"
-            android:visibility="gone"/>
+        android:id="@+id/info_extended_title"
+        android:text="@string/info_extended"
+        style="@style/BuddyInfoBlockHeader"
+        android:visibility="gone" />
+
     <LinearLayout
-            android:id="@+id/extended_info"
-            style="@style/BuddyInfoBlockContent"
-            android:visibility="gone">
+        android:id="@+id/extended_info"
+        style="@style/BuddyInfoBlockContent"
+        android:visibility="gone">
+
         <include
-                android:id="@+id/children"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/children"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/smoking"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/smoking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
+
         <include
-                android:id="@+id/website"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                layout="@layout/info_item"/>
+            android:id="@+id/website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            layout="@layout/info_item" />
     </LinearLayout>
-    <include layout="@layout/info_footer"
-             android:id="@+id/info_extended_footer"/>
+
+    <include
+        layout="@layout/info_footer"
+        android:id="@+id/info_extended_footer" />
+
     <com.tomclaw.mandarin.main.views.TightTextView
-            android:id="@+id/info_about_me_title"
-            android:text="@string/about_me"
-            style="@style/BuddyInfoBlockHeader"
-            android:visibility="gone"/>
+        android:id="@+id/info_about_me_title"
+        android:text="@string/about_me"
+        style="@style/BuddyInfoBlockHeader"
+        android:visibility="gone" />
+
     <LinearLayout
-            android:orientation="vertical"
-            style="@style/BuddyInfoBlockContent"
-            android:id="@+id/about_me"
-            android:visibility="gone">
+        android:orientation="vertical"
+        style="@style/BuddyInfoBlockContent"
+        android:id="@+id/about_me"
+        android:visibility="gone">
+
         <com.tomclaw.mandarin.main.views.TightTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/info_value"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/info_value" />
     </LinearLayout>
-    <include layout="@layout/info_footer"
-             android:id="@+id/info_about_me_footer"/>
+
+    <include
+        layout="@layout/info_footer"
+        android:id="@+id/info_about_me_footer" />
 </LinearLayout>

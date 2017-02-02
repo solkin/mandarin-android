@@ -6,47 +6,42 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BuddyData;
-import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.GroupData;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
+import com.tomclaw.mandarin.im.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
+import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
+import com.tomclaw.mandarin.im.icq.tasks.ProcessDialogStateTask;
+import com.tomclaw.mandarin.im.tasks.UpdateRosterTask;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.NameValuePair;
 import com.tomclaw.mandarin.util.StringUtil;
-import com.tomclaw.mandarin.util.UrlParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AIM_SID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AMP;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ASSERT_CAPS;
-import static com.tomclaw.mandarin.im.icq.WimConstants.AUTORESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDIES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDYLIST;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDY_ICON;
@@ -68,29 +63,24 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.FETCH_BASE_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.GROUPS_ARRAY;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_DLG_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IMF;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES;
-import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INCLUDE_PRESENCE_FIELDS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INVISIBLE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LANGUAGE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LAST_SEEN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_ID;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MESSAGE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MINIMIZE_RESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOBILE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_ICON;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_TITLE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
 import static com.tomclaw.mandarin.im.icq.WimConstants.NAME;
-import static com.tomclaw.mandarin.im.icq.WimConstants.OFFLINE_IM;
 import static com.tomclaw.mandarin.im.icq.WimConstants.PASSWORD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.PEEK;
 import static com.tomclaw.mandarin.im.icq.WimConstants.POLL_TIMEOUT;
@@ -101,19 +91,16 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.R_PARAM;
-import static com.tomclaw.mandarin.im.icq.WimConstants.SEND_REQ_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_ENDED;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_SECRET;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_TIMEOUT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SIG_SHA256;
-import static com.tomclaw.mandarin.im.icq.WimConstants.SOURCE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.START_SESSION_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_MSG;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TIMEOUT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.TIMESTAMP;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_A;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TOKEN_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TS;
@@ -121,7 +108,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS_TYPE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.URL_REGEX;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
@@ -136,7 +122,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
 public class IcqSession {
 
     public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
-    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,userAddedToBuddyList,service,buddyRegistered,hist";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,bigBuddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
@@ -158,8 +144,11 @@ public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
 
+    private CabbageSession cabbageSession;
+
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
+        cabbageSession = new CabbageSession(icqAccountRoot);
     }
 
     public int clientLogin() {
@@ -371,6 +360,9 @@ public class IcqSession {
      * false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
+        cabbageSession.obtainToken();
+        cabbageSession.obtainClient();
+        cabbageSession.refreshClient();
         Logger.log("start events fetching");
         do {
             try {
@@ -452,13 +444,14 @@ public class IcqSession {
     private void processEvent(String eventType, JSONObject eventData) {
         Logger.log("eventType = " + eventType + "; eventData = " + eventData.toString());
         long processStartTime = System.currentTimeMillis();
+        ContentResolver contentResolver = icqAccountRoot.getContentResolver();
+        DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+        String accountType = icqAccountRoot.getAccountType();
         switch (eventType) {
             case BUDDYLIST:
                 try {
                     ArrayList<GroupData> groupDatas = new ArrayList<>();
                     int accountDbId = icqAccountRoot.getAccountDbId();
-                    String accountType = icqAccountRoot.getAccountType();
-                    ContentResolver contentResolver = icqAccountRoot.getContentResolver();
                     JSONArray groupsArray = eventData.getJSONArray(GROUPS_ARRAY);
                     for (int c = 0; c < groupsArray.length(); c++) {
                         JSONObject groupObject = groupsArray.getJSONObject(c);
@@ -477,8 +470,8 @@ public class IcqSession {
                             String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
-                            int statusIndex = getStatusIndex(moodIcon, buddyStatus);
-                            String statusTitle = getStatusTitle(moodTitle, statusIndex);
+                            int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
+                            String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
                             String buddyType = buddyObject.getString(USER_TYPE);
                             String buddyIcon = buddyObject.optString(BUDDY_ICON);
                             String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
@@ -493,115 +486,53 @@ public class IcqSession {
                     }
                     // Prepare parameters to call update roster method.
                     Bundle bundle = new Bundle();
-                    bundle.putInt(GlobalProvider.KEY_ACCOUNT_DB_ID, accountDbId);
-                    bundle.putString(GlobalProvider.KEY_ACCOUNT_TYPE, accountType);
-                    bundle.putSerializable(GlobalProvider.KEY_GROUP_DATAS, groupDatas);
-                    contentResolver.call(Settings.BUDDY_RESOLVER_URI, GlobalProvider.METHOD_UPDATE_ROSTER, null, bundle);
+                    bundle.putInt(UpdateRosterTask.KEY_ACCOUNT_DB_ID, accountDbId);
+                    bundle.putString(UpdateRosterTask.KEY_ACCOUNT_TYPE, accountType);
+                    bundle.putSerializable(UpdateRosterTask.KEY_GROUP_DATAS, groupDatas);
+                    contentResolver.call(Settings.BUDDY_RESOLVER_URI,
+                            UpdateRosterTask.class.getName(), null, bundle);
                 } catch (JSONException ex) {
                     Logger.log("exception while parsing buddy list", ex);
                 }
                 break;
-            case IM:
-            case OFFLINE_IM:  // TODO: offlineIM is differ!
+            case HIST_DLG_STATE:
+                GsonSingleton gson = GsonSingleton.getInstance();
                 try {
-                    String messageText = eventData.getString(MESSAGE);
-                    String cookie = eventData.optString(MSG_ID);
-                    if (TextUtils.isEmpty(cookie)) {
-                        cookie = String.valueOf(System.currentTimeMillis());
-                    }
-                    long messageTime = eventData.getLong(TIMESTAMP);
-                    String imf = eventData.getString(IMF);
-                    String autoResponse = eventData.getString(AUTORESPONSE);
-                    JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
-                    String buddyId;
-                    String buddyNick;
-                    int statusIndex;
-                    String statusTitle;
-                    String statusMessage = "";
-                    String buddyIcon;
-                    long lastSeen = -1;
-                    if (sourceObject != null) {
-                        buddyId = sourceObject.getString(AIM_ID);
-                        buddyNick = sourceObject.optString(FRIENDLY);
-                        String buddyStatus = sourceObject.optString(STATE);
-                        String buddyType = sourceObject.optString(USER_TYPE);
-                        buddyIcon = sourceObject.optString(BUDDY_ICON);
-                        String bigBuddyIcon = sourceObject.optString(WimConstants.BIG_BUDDY_ICON);
-                        if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                            buddyIcon = bigBuddyIcon;
-                        }
-                        lastSeen = sourceObject.optLong(LAST_SEEN, -1);
-                        statusIndex = getStatusIndex(null, buddyStatus);
-                    } else {
-                        buddyId = eventData.getString(AIM_ID);
-                        buddyNick = eventData.optString(FRIENDLY);
-                        buddyIcon = null;
-                        statusIndex = StatusUtil.STATUS_OFFLINE;
-                    }
-                    if (TextUtils.isEmpty(buddyNick)) {
-                        buddyNick = buddyId;
-                    }
-                    statusTitle = getStatusTitle(null, statusIndex);
+                    int accountDbId = icqAccountRoot.getAccountDbId();
+                    String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
+                    boolean isIgnoreUnknown = PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext());
+                    HistDlgState histDlgState = gson.fromJson(eventData.toString(), HistDlgState.class);
 
-                    boolean isProcessed = false;
-                    do {
-                        try {
-                            Matcher matcher = URL_REGEX.matcher(messageText);
-                            while (matcher.find() && matcher.groupCount() == 1) {
-                                // TODO: also show message body.
-                                String url = matcher.group();
-                                String fileId = matcher.group(1);
-                                int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
-                                        icqAccountRoot.getAccountDbId(), buddyId);
-                                String tag = cookie + ":" + url;
-                                RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                        buddyDbId, cookie, messageTime * 1000, fileId, url, messageText, tag);
-                                isProcessed = true;
-                            }
-                            if (!isProcessed) {
-                                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
-                                        PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                                        icqAccountRoot.getAccountDbId(), buddyId,
-                                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                        GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED, cookie,
-                                        messageTime * 1000, messageText);
-                            }
-                            isProcessed = true;
-                        } catch (BuddyNotFoundException ignored) {
-                            if (PreferenceHelper.isIgnoreUnknown(icqAccountRoot.getContext())) {
-                                isProcessed = true;
-                            } else {
-                                String recycleString = icqAccountRoot.getResources().getString(R.string.recycle);
-                                QueryHelper.updateOrCreateBuddy(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
-                                        icqAccountRoot.getAccountType(), System.currentTimeMillis(), GlobalProvider.GROUP_ID_RECYCLE,
-                                        recycleString, buddyId, buddyNick, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
-                            }
-                        }
-                        // This will try to create buddy if such is not present
-                        // in roster and then retry message insertion.
-                    } while (!isProcessed);
-                } catch (JSONException ex) {
-                    Logger.log("error while processing im - JSON exception", ex);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(ProcessDialogStateTask.KEY_ACCOUNT_DB_ID, accountDbId);
+                    bundle.putString(ProcessDialogStateTask.KEY_ACCOUNT_TYPE, accountType);
+                    bundle.putBoolean(ProcessDialogStateTask.KEY_IGNORE_UNKNOWN, isIgnoreUnknown);
+                    bundle.putString(ProcessDialogStateTask.KEY_RECYCLE_STRING, recycleString);
+                    bundle.putSerializable(ProcessDialogStateTask.KEY_DIALOG_STATE, histDlgState);
+                    contentResolver.call(Settings.HISTORY_RESOLVER_URI,
+                            ProcessDialogStateTask.class.getName(), null, bundle);
+                } catch (Throwable ex) {
+                    Logger.log("exception while parsing history dialog state", ex);
                 }
                 break;
             case IM_STATE:
-                try {
-                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
-                    for (int c = 0; c < imStatesArray.length(); c++) {
-                        JSONObject imState = imStatesArray.getJSONObject(c);
-                        String state = imState.getString(STATE);
-                        String msgId = imState.getString(MSG_ID);
-                        String sendReqId = imState.optString(SEND_REQ_ID);
-                        for (int i = 0; i < IM_STATES.length; i++) {
-                            if (state.equals(IM_STATES[i])) {
-                                QueryHelper.updateMessageState(icqAccountRoot.getContentResolver(), i, sendReqId, msgId);
-                                break;
-                            }
-                        }
-                    }
-                } catch (JSONException ex) {
-                    Logger.log("error while processing im state", ex);
-                }
+//                try {
+//                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
+//                    for (int c = 0; c < imStatesArray.length(); c++) {
+//                        JSONObject imState = imStatesArray.getJSONObject(c);
+//                        String state = imState.getString(STATE);
+//                        String msgId = imState.getString(MSG_ID);
+//                        String sendReqId = imState.optString(SEND_REQ_ID);
+//                        for (int i = 0; i < IM_STATES.length; i++) {
+//                            if (state.equals(IM_STATES[i])) {
+//                                // TODO: something to do maybe?
+//                                break;
+//                            }
+//                        }
+//                    }
+//                } catch (JSONException ex) {
+//                    Logger.log("error while processing im state", ex);
+//                }
                 break;
             case PRESENCE:
                 try {
@@ -612,8 +543,8 @@ public class IcqSession {
                     String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
                     String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
 
-                    int statusIndex = getStatusIndex(moodIcon, buddyStatus);
-                    String statusTitle = getStatusTitle(moodTitle, statusIndex);
+                    int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
+                    String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
 
                     String buddyIcon = eventData.optString(BUDDY_ICON);
                     String bigBuddyIcon = eventData.optString(WimConstants.BIG_BUDDY_ICON);
@@ -623,7 +554,7 @@ public class IcqSession {
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 
-                    QueryHelper.modifyBuddyStatus(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyStatus(databaseLayer, icqAccountRoot.getAccountDbId(),
                             buddyId, statusIndex, statusTitle, statusMessage, buddyIcon, lastSeen);
                 } catch (JSONException ex) {
                     Logger.log("error while processing presence - JSON exception", ex);
@@ -635,7 +566,7 @@ public class IcqSession {
                 try {
                     String buddyId = eventData.getString(AIM_ID);
                     String typingStatus = eventData.getString(TYPING_STATUS);
-                    QueryHelper.modifyBuddyTyping(icqAccountRoot.getContentResolver(), icqAccountRoot.getAccountDbId(),
+                    QueryHelper.modifyBuddyTyping(databaseLayer, icqAccountRoot.getAccountDbId(),
                             buddyId, TextUtils.equals(typingStatus, TYPING_STATUS_TYPE));
                 } catch (Throwable ex) {
                     Logger.log("error while processing typing", ex);
@@ -658,84 +589,13 @@ public class IcqSession {
         Logger.log("processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
     }
 
-    protected String getStatusTitle(String moodTitle, int statusIndex) {
-        // Define status title.
-        String statusTitle;
-        if (TextUtils.isEmpty(moodTitle)) {
-            // Default title for status index.
-            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
-        } else {
-            // Buddy specified title.
-            statusTitle = moodTitle;
-        }
-        return statusTitle;
-    }
-
-    protected int getStatusIndex(String moodIcon, String buddyStatus) {
-        int statusIndex;
-        // Checking for mood present.
-        if (!TextUtils.isEmpty(moodIcon)) {
-            try {
-                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
-            } catch (StatusNotFoundException ignored) {
-            }
-        }
-        try {
-            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
-        } catch (StatusNotFoundException ex) {
-            statusIndex = StatusUtil.STATUS_OFFLINE;
-        }
-        return statusIndex;
-    }
-
-    /**
-     * Returns "id" parameter value from specified URL
-     */
-    private static String getIdParam(String url) {
-        URI uri = URI.create(url);
-        for (NameValuePair param : UrlParser.parse(uri, "UTF-8")) {
-            if (param.getName().equals("id")) {
-                return param.getValue();
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
-     */
-    public static String parseMood(String moodUrl) {
-        if (moodUrl != null) {
-            final String id = getIdParam(moodUrl);
-
-            InputStream is = new InputStream() {
-                int pos = 0;
-                int length = id.length();
-
-                @Override
-                public int read() throws IOException {
-                    if (pos == length) return -1;
-                    char c1 = id.charAt(pos++);
-                    char c2 = id.charAt(pos++);
-
-                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
-                }
-            };
-            DataInputStream dis = new DataInputStream(is);
-            try {
-                return dis.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return moodUrl;
-    }
-
+    @SuppressWarnings("WeakerAccess")
     public String signRequest(String method, String url, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         return signRequest(method, url, true, builder);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String signRequest(String method, String url, boolean includeSession, HttpParamsBuilder builder)
             throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         builder.appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA());
@@ -752,5 +612,16 @@ public class IcqSession {
         return url.concat(WimConstants.QUE).concat(params).concat(WimConstants.AMP)
                 .concat(WimConstants.SIG_SHA256).concat(EQUAL)
                 .concat(StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public void obtainCabbageToken() {
+        cabbageSession.obtainToken();
+        cabbageSession.obtainClient();
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public void obtainCabbageClient() {
+        cabbageSession.obtainClient();
     }
 }

@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import com.tomclaw.mandarin.core.BitmapRequest;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.Logger;
@@ -27,7 +28,8 @@ public class BuddyAvatarRequest extends BitmapRequest<IcqAccountRoot> {
     protected void onBitmapSaved(String hash) {
         Logger.log("Update destination buddy " + buddyId + " avatar hash to " + hash);
         try {
-            QueryHelper.modifyBuddyAvatar(getAccountRoot().getContentResolver(),
+            DatabaseLayer databaseLayer = getDatabaseLayer();
+            QueryHelper.modifyBuddyAvatar(databaseLayer,
                     getAccountRoot().getAccountDbId(), buddyId, hash);
             Logger.log("Avatar complex operations succeeded!");
         } catch (BuddyNotFoundException ignored) {

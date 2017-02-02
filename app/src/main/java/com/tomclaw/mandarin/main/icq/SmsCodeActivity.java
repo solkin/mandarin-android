@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -282,7 +285,9 @@ public class SmsCodeActivity extends ChiefActivity {
         hideProgress();
         try {
             // Store account into database.
-            int accountDbId = QueryHelper.insertAccount(this, accountRoot);
+            ContentResolver contentResolver = getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+            int accountDbId = QueryHelper.insertAccount(this, databaseLayer, accountRoot);
             getServiceInteraction().holdAccount(accountDbId);
             // Connect account right now!
             int connectStatus = StatusUtil.getDefaultOnlineStatus(accountRoot.getAccountType());

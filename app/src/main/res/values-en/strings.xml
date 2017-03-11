@@ -402,4 +402,5 @@
     <string name="pref_title_private_notifications">Private notifications</string>
     <string name="buddy_ignore">Ignore messages</string>
     <string name="buddy_unignore">Allow messaging</string>
+    <string name="account_instance">Close sessions</string>
 </resources>

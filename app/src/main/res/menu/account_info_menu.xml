@@ -19,6 +19,10 @@
         </menu>
     </item>
     <item
+        android:id="@+id/account_instance"
+        app:showAsAction="never"
+        android:title="@string/account_instance" />
+    <item
         android:id="@+id/account_remove"
         app:showAsAction="never"
         android:title="@string/account_remove"

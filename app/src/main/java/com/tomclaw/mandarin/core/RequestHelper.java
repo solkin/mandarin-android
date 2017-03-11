@@ -67,6 +67,11 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
     }
 
+    public static void leaveOtherSessions(ContentResolver contentResolver, int accountDbId) {
+        IcqMessageRequest messageRequest = new IcqMessageRequest("aolsystemmsg", "1", "aolsystemmsg_auto_cookie");
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
+    }
+
     public static void endSession(ContentResolver contentResolver, int accountDbId) {
         EndSessionRequest endSessionRequest = new EndSessionRequest();
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, endSessionRequest);

@@ -407,4 +407,5 @@
     <string name="pref_title_private_notifications">Приватные уведомления</string>
     <string name="buddy_ignore">Игнорировать</string>
     <string name="buddy_unignore">Не игнорировать</string>
+    <string name="account_instance">Закрыть сессии</string>
 </resources>

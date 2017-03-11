@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BuddyData;
+import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.GroupData;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -150,7 +151,8 @@ public class IcqSession {
     public static final int EXTERNAL_UNKNOWN = 0;
     public static final int EXTERNAL_SESSION_OK = 200;
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
-    private static final int EXTERNAL_FETCH_OK = 200;
+    public static final int EXTERNAL_FETCH_OK = 200;
+    public static final int EXTERNAL_FORBIDDEN = 403;
 
     private static final int TIMEOUT_SOCKET_ADDITION = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int TIMEOUT_CONNECTION = (int) TimeUnit.MINUTES.toMillis(2);
@@ -352,6 +354,9 @@ public class IcqSession {
                     // Update renew token result in database.
                     icqAccountRoot.setRenewTokenResult(login, tokenA, expiresIn);
                     break;
+                }
+                case EXTERNAL_FORBIDDEN: {
+                    return EXTERNAL_UNKNOWN;
                 }
                 default: {
                     return EXTERNAL_UNKNOWN;

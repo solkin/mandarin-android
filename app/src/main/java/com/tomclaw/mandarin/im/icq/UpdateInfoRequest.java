@@ -23,21 +23,17 @@ public class UpdateInfoRequest extends WimRequest {
     private String lastName;
     private int gender;
     private long birthDate;
-    private int childrenCount;
-    private boolean smoking;
     private String city;
     private String webSite;
     private String aboutMe;
 
-    public UpdateInfoRequest(String friendlyName, String firstName, String lastName, int gender, long birthDate,
-                             int childrenCount, boolean smoking, String city, String webSite, String aboutMe) {
+    public UpdateInfoRequest(String friendlyName, String firstName, String lastName, int gender,
+                             long birthDate, String city, String webSite, String aboutMe) {
         this.friendlyName = friendlyName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.childrenCount = childrenCount;
-        this.smoking = smoking;
         this.city = city;
         this.webSite = webSite;
         this.aboutMe = aboutMe;
@@ -87,8 +83,6 @@ public class UpdateInfoRequest extends WimRequest {
             params.appendParam("set", getFieldValue("lastName", lastName));
             params.appendParam("set", getFieldValue("gender", genderString));
             params.appendParam("set", getPairValue("homeAddress", "city", city));
-            params.appendParam("set", getFieldValue("children", childrenCount));
-            params.appendParam("set", getFieldValue("smoking", smoking));
             params.appendParam("set", getFieldValue("website1", webSite));
             if (birthDate > new GregorianCalendar(0, 0, 0).getTimeInMillis()) {
                 params.appendParam("set", getFieldValue("birthDate", birthDate / 1000));

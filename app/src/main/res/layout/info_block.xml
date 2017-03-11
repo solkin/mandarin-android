@@ -86,20 +86,6 @@
         android:visibility="gone">
 
         <include
-            android:id="@+id/children"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
-
-        <include
-            android:id="@+id/smoking"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
-
-        <include
             android:id="@+id/website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

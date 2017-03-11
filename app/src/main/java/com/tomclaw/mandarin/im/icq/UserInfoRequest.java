@@ -129,8 +129,6 @@ public class UserInfoRequest extends WimRequest {
                         }
                     }
 
-                    putExtra(intent, R.id.children, profile.optInt("children"));
-                    putExtra(intent, R.id.smoking, profile.optBoolean("smoking"));
                     putExtra(intent, R.id.website, profile.optString("website1"));
                     if (profile.has("birthDate")) {
                         long birthDate = profile.optLong("birthDate") * 1000;

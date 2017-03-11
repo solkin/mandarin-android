@@ -224,57 +224,6 @@
 
                                     <com.tomclaw.mandarin.main.views.TightTextView
                                         style="@style/UserInfoFieldTitle"
-                                        android:text="@string/children" />
-
-                                    <Spinner
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:paddingLeft="4dp"
-                                        android:paddingTop="8dp"
-                                        android:id="@+id/children_selector"
-                                        android:textSize="16sp"
-                                        android:gravity="left" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:layout_weight="1"
-                                    android:paddingLeft="8dp"
-                                    android:paddingRight="0dp">
-
-                                    <com.tomclaw.mandarin.main.views.TightTextView
-                                        style="@style/UserInfoFieldTitle"
-                                        android:text="@string/smoking" />
-
-                                    <Spinner
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:id="@+id/smoking_selector"
-                                        android:paddingLeft="4dp"
-                                        android:paddingTop="8dp"
-                                        android:textSize="16sp"
-                                        android:gravity="left" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingTop="12dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:layout_weight="1"
-                                    android:paddingLeft="0dp"
-                                    android:paddingRight="8dp">
-
-                                    <com.tomclaw.mandarin.main.views.TightTextView
-                                        style="@style/UserInfoFieldTitle"
                                         android:text="@string/city" />
 
                                     <EditText
@@ -291,7 +240,8 @@
                                     android:orientation="vertical"
                                     android:layout_weight="1"
                                     android:paddingLeft="8dp"
-                                    android:paddingRight="0dp">
+                                    android:paddingRight="0dp"
+                                    android:visibility="gone">
 
                                     <com.tomclaw.mandarin.main.views.TightTextView
                                         style="@style/UserInfoFieldTitle"

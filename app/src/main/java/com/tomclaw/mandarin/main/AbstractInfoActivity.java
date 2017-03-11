@@ -54,6 +54,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     private String firstName;
     private String lastName;
     private String aboutMe;
+    private String website;
 
     private boolean ignored;
 
@@ -210,6 +211,15 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         }
     }
 
+    private void updateExtendedInfo() {
+        String website = getWebsite();
+        if (TextUtils.isEmpty(website)) {
+            findViewById(R.id.info_extended_title).setVisibility(View.GONE);
+            findViewById(R.id.extended_info).setVisibility(View.GONE);
+            findViewById(R.id.info_extended_footer).setVisibility(View.GONE);
+        }
+    }
+
     public abstract void onBuddyInfoRequestError();
 
     private void hideProgressBar() {
@@ -319,12 +329,15 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                                     setLastName(value);
                                 } else if (keyInt == R.id.about_me) {
                                     setAboutMe(value);
+                                } else if (keyInt == R.id.website) {
+                                    setWebsite(value);
                                 }
                             }
                         }
                     }
                     updateBuddyNick();
                     updateAboutMe();
+                    updateExtendedInfo();
                 } else {
                     Logger.log("No info case :(");
                     onBuddyInfoRequestError();
@@ -412,6 +425,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         return aboutMe;
     }
 
+    public String getWebsite() {
+        return website;
+    }
+
     public boolean isIgnored() {
         return ignored;
     }
@@ -426,6 +443,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     public void setIgnored(boolean ignored) {

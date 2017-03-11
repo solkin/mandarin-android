@@ -237,11 +237,11 @@ public class RequestHelper {
     }
 
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,
-                                      String firstName, String lastName, int gender, long birthDate, int childrenCount,
-                                      boolean smoking, String city, String webSite,
+                                      String firstName, String lastName, int gender, long birthDate,
+                                      String city, String webSite,
                                       String aboutMe) {
-        UpdateInfoRequest updateInfoRequest = new UpdateInfoRequest(friendlyName, firstName, lastName, gender,
-                birthDate, childrenCount, smoking, city, webSite, aboutMe);
+        UpdateInfoRequest updateInfoRequest = new UpdateInfoRequest(friendlyName, firstName,
+                lastName, gender, birthDate, city, webSite, aboutMe);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, updateInfoRequest);
     }
 

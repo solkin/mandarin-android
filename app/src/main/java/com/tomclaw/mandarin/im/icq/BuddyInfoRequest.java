@@ -169,13 +169,6 @@ public class BuddyInfoRequest extends WimRequest {
                         }
                     }
 
-                    int childrenCount = profile.optInt("children");
-                    if (childrenCount > 0) {
-                        putExtra(intent, R.id.children, R.string.children, childrenCount);
-                    } else {
-                        putExtra(intent, R.id.children, R.string.children, false);
-                    }
-                    putExtra(intent, R.id.smoking, R.string.smoking, profile.optBoolean("smoking"));
                     putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
                     if (profile.has("birthDate")) {
                         long birthDate = profile.optLong("birthDate") * 1000;

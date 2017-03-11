@@ -26,18 +26,6 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
         genderAdapter.setDropDownViewResource(R.layout.user_info_gender_spinner_dropdown_item);
         Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
         genderSelector.setAdapter(genderAdapter);
-
-        ArrayAdapter<String> childrenAdapter = new ArrayAdapter<>(this, R.layout.user_info_gender_spinner_item,
-                getResources().getStringArray(R.array.children_spinner_strings));
-        childrenAdapter.setDropDownViewResource(R.layout.user_info_gender_spinner_dropdown_item);
-        Spinner childrenSelector = (Spinner) findViewById(R.id.children_selector);
-        childrenSelector.setAdapter(childrenAdapter);
-
-        ArrayAdapter<String> smokingAdapter = new ArrayAdapter<>(this, R.layout.user_info_gender_spinner_item,
-                getResources().getStringArray(R.array.smoking_spinner_strings));
-        smokingAdapter.setDropDownViewResource(R.layout.user_info_gender_spinner_dropdown_item);
-        Spinner smokingSelector = (Spinner) findViewById(R.id.smoking_selector);
-        smokingSelector.setAdapter(smokingAdapter);
     }
 
     @Override
@@ -60,17 +48,6 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
                 } else if (keyInt == R.id.gender) {
                     Spinner spinner = (Spinner) findViewById(R.id.gender_selector);
                     spinner.setSelection(bundle.getInt(key));
-                } else if (keyInt == R.id.children) {
-                    Spinner spinner = (Spinner) findViewById(R.id.children_selector);
-                    int value = bundle.getInt(key);
-                    if (value > spinner.getCount() - 1) {
-                        value = spinner.getCount() - 1;
-                    }
-                    spinner.setSelection(value);
-                } else if (keyInt == R.id.smoking) {
-                    Spinner spinner = (Spinner) findViewById(R.id.smoking_selector);
-                    int value = bundle.getBoolean(key) ? 1 : 0;
-                    spinner.setSelection(value);
                 } else if (keyInt == R.id.birth_date) {
                     DatePickerView birthDateView = (DatePickerView) findViewById(R.id.birth_date);
                     long birthDate = bundle.getLong(key);
@@ -92,14 +69,12 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
         String lastName = getLastName();
         int gender = getSpinnerValue(R.id.gender_selector);
         long birthDate = getDateValue(R.id.birth_date);
-        int childrenCount = getSpinnerValue(R.id.children_selector);
-        boolean smoking = getSpinnerValue(R.id.smoking_selector) == 1;
         String city = getTextValue(R.id.city);
         String webSite = getTextValue(R.id.website);
         String aboutMe = getTextValue(R.id.about_me);
 
         RequestHelper.updateUserInfo(getContentResolver(), getAccountDbId(), friendlyName, firstName,
-                lastName, gender, birthDate, childrenCount, smoking, city, webSite, aboutMe);
+                lastName, gender, birthDate, city, webSite, aboutMe);
     }
 
     @Override

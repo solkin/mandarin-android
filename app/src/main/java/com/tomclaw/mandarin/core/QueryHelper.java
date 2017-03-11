@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
@@ -24,6 +25,9 @@ import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -788,10 +792,20 @@ public class QueryHelper {
      * @return formatted messages.
      */
     public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {
-        StringBuilder messageBuilder = new StringBuilder();
         QueryBuilder queryBuilder = messagesByIds(messageIds);
+        StringWriter writer = new StringWriter();
+        try {
+            outputMessagesTexts(contentResolver, timeHelper, queryBuilder, writer);
+        } catch (IOException ignored) {
+        }
+        return writer.toString();
+    }
+
+    public static void outputMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper,
+                                           QueryBuilder queryBuilder, Writer writer) throws IOException {
         // Get specified messages.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        SparseArray<String> buddyNickMap = new SparseArray<>();
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -807,7 +821,12 @@ public class QueryHelper {
                         // Select message type.
                         switch (messageType) {
                             case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                                buddyNick = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
+                                String nick = buddyNickMap.get(buddyDbId);
+                                if (nick == null) {
+                                    nick = QueryHelper.getBuddyNick(contentResolver, buddyDbId);
+                                    buddyNickMap.put(buddyDbId, nick);
+                                }
+                                buddyNick = nick;
                                 break;
                             }
                             case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
@@ -819,10 +838,10 @@ public class QueryHelper {
                     } catch (AccountNotFoundException ignored) {
                     }
                     // Building message copy.
-                    messageBuilder.append('[').append(buddyNick).append(']').append('\n');
-                    messageBuilder.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
-                    messageBuilder.append(messageText);
-                    messageBuilder.append('\n').append('\n');
+                    writer.append('[').append(buddyNick).append(']').append('\n');
+                    writer.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
+                    writer.append(messageText);
+                    writer.append('\n').append('\n');
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -830,7 +849,6 @@ public class QueryHelper {
                 cursor.close();
             }
         }
-        return messageBuilder.toString();
     }
 
     private static QueryBuilder messagesByIds(Collection<Long> messageIds) {
@@ -1327,6 +1345,16 @@ public class QueryHelper {
         BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
         try {
             return buddyCursor.getBuddyNick();
+        } finally {
+            buddyCursor.close();
+        }
+    }
+
+    public static String getBuddyId(ContentResolver contentResolver, int buddyDbId)
+            throws BuddyNotFoundException {
+        BuddyCursor buddyCursor = getBuddyCursor(contentResolver, buddyDbId);
+        try {
+            return buddyCursor.getBuddyId();
         } finally {
             buddyCursor.close();
         }

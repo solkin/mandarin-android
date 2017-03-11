@@ -408,4 +408,8 @@
     <string name="buddy_ignore">Игнорировать</string>
     <string name="buddy_unignore">Не игнорировать</string>
     <string name="account_instance">Закрыть сессии</string>
+    <string name="export_history">Экспорт истории</string>
+    <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её на каких-то своих целях. Продолжаем?</string>
+    <string name="export_history_failed">Не удалось экспортировать историю</string>
+    <string name="extory_exported">История успешно экспортирована в:\n</string>
 </resources>

@@ -371,4 +371,8 @@
     <string name="buddy_ignore">忽略消息</string>
     <string name="buddy_unignore">允許短信</string>
     <string name="account_instance">关闭会话</string>
+    <string name="export_history">导出历史</string>
+    <string name="export_history_text">此对话框中的聊天记录将保存到此设备上的文本文档，以便您可以将其用于某些用途。 继续？</string>
+    <string name="export_history_failed">历史导出操作失败</string>
+    <string name="extory_exported">历史已成功出口到:\n</string>
 </resources>

@@ -403,4 +403,8 @@
     <string name="buddy_ignore">Ignore messages</string>
     <string name="buddy_unignore">Allow messaging</string>
     <string name="account_instance">Close sessions</string>
+    <string name="export_history">Export history</string>
+    <string name="export_history_text">Chat history from this dialog will be saved to a text document on this device so that you can use it for some of your purposes. Continue?</string>
+    <string name="export_history_failed">History export operation failed</string>
+    <string name="extory_exported">History has been successfully exported to:\n</string>
 </resources>

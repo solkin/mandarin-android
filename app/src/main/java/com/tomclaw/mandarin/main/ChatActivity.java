@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -21,8 +22,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -68,12 +72,17 @@ import com.tomclaw.mandarin.main.views.ScrollingTextView;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -511,6 +520,24 @@ public class ChatActivity extends ChiefActivity {
                 onBackPressed();
                 return true;
             }
+            case R.id.export_history_menu: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.export_history);
+                builder.setMessage(R.string.export_history_text);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
+                                ChatActivity.this,
+                                timeHelper,
+                                chatHistoryAdapter.getBuddyDbId());
+                        TaskExecutor.getInstance().execute(exportHistoryTask);
+                    }
+                });
+                builder.setNegativeButton(R.string.no, null);
+                builder.show();
+                return true;
+            }
             case R.id.close_chat_menu: {
                 QueryHelper.modifyDialog(getContentResolver(), chatHistoryAdapter.getBuddyDbId(), false);
                 onBackPressed();
@@ -831,11 +858,11 @@ public class ChatActivity extends ChiefActivity {
 
         private SelectionHelper<Long> selectionHelper;
 
-        public MultiChoiceActionCallback(SelectionHelper<Long> selectionHelper) {
+        MultiChoiceActionCallback(SelectionHelper<Long> selectionHelper) {
             this.selectionHelper = selectionHelper;
         }
 
-        public void onItemCheckedStateChanged(ActionMode mode, long id) {
+        void onItemCheckedStateChanged(ActionMode mode, long id) {
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
 
@@ -990,8 +1017,8 @@ public class ChatActivity extends ChiefActivity {
         private final long firstMessageDbId;
         private final long lastMessageDbId;
 
-        public ReadMessagesTask(Context context, int buddyDbId,
-                                long firstMessageDbId, long lastMessageDbId) {
+        ReadMessagesTask(Context context, int buddyDbId,
+                         long firstMessageDbId, long lastMessageDbId) {
             super(context);
             this.buddyDbId = buddyDbId;
             this.firstMessageDbId = Math.min(firstMessageDbId, lastMessageDbId);
@@ -1017,7 +1044,7 @@ public class ChatActivity extends ChiefActivity {
 
         private final int buddyDbId;
 
-        public ClearHistoryTask(Context context, int buddyDbId) {
+        ClearHistoryTask(Context context, int buddyDbId) {
             super(context);
             this.buddyDbId = buddyDbId;
         }
@@ -1043,13 +1070,89 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
+    private class ExportHistoryTask extends PleaseWaitTask {
+
+        private final TimeHelper timeHelper;
+        private final int buddyDbId;
+        private String infoExportPath = null;
+
+        ExportHistoryTask(Context context, TimeHelper timeHelper, int buddyDbId) {
+            super(context);
+            this.timeHelper = timeHelper;
+            this.buddyDbId = buddyDbId;
+        }
+
+        @Override
+        public void executeBackground() throws Throwable {
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
+                if (contentResolver != null) {
+                    String buddyId = QueryHelper.getBuddyId(contentResolver, buddyDbId);
+                    QueryBuilder queryBuilder = new QueryBuilder()
+                            .columnEquals(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .ascending(GlobalProvider.ROW_AUTO_ID);
+                    String type;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        type = Environment.DIRECTORY_DOCUMENTS;
+                    } else {
+                        type = Environment.DIRECTORY_DOWNLOADS;
+                    }
+                    File directory = Environment.getExternalStoragePublicDirectory(type);
+                    String fileName = "history_" + buddyId + ".txt";
+                    infoExportPath = directory.getName() + "/" + fileName;
+                    File file = new File(directory, fileName);
+                    OutputStream outputStream = null;
+                    try {
+                        file.delete();
+                        file.createNewFile();
+                        outputStream = new FileOutputStream(file);
+                        PrintWriter writer = new PrintWriter(outputStream);
+                        QueryHelper.outputMessagesTexts(contentResolver, timeHelper, queryBuilder, writer);
+                        writer.flush();
+                    } finally {
+                        if (outputStream != null) {
+                            try {
+                                outputStream.close();
+                            } catch (IOException ignored) {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            Context context = getWeakObject();
+            if (context != null) {
+                String text = context.getString(R.string.extory_exported);
+                Spannable s = new SpannableString(text + infoExportPath);
+                s.setSpan(new TypefaceSpan("monospace"), text.length(), s.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage(s);
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.show();
+            }
+        }
+
+        @Override
+        public void onFailMain() {
+            Context context = getWeakObject();
+            if (context != null) {
+                Toast.makeText(context, R.string.export_history_failed, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private String message;
         private final MessageCallback callback;
 
-        public SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
+        SendMessageTask(ChiefActivity activity, int buddyDbId, String message, MessageCallback callback) {
             super(activity);
             this.buddyDbId = buddyDbId;
             this.message = message;
@@ -1091,7 +1194,7 @@ public class ChatActivity extends ChiefActivity {
         private final int buddyDbId;
         private final List<PhotoEntry> selectedPhotos;
 
-        public SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
+        SendPhotosTask(Context context, int buddyDbId, List<PhotoEntry> photoEntries) {
             super(context);
             this.buddyDbId = buddyDbId;
             this.selectedPhotos = photoEntries;
@@ -1133,11 +1236,11 @@ public class ChatActivity extends ChiefActivity {
         private final MessageCallback callback;
         private Random random;
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
+        SendFileTask(ChiefActivity activity, int buddyDbId, UriFile uriFile, MessageCallback callback) {
             this(activity, buddyDbId, Collections.singletonList(uriFile), callback);
         }
 
-        public SendFileTask(ChiefActivity activity, int buddyDbId, List<UriFile> uriFiles, MessageCallback callback) {
+        SendFileTask(ChiefActivity activity, int buddyDbId, List<UriFile> uriFiles, MessageCallback callback) {
             super(activity);
             this.buddyDbId = buddyDbId;
             this.uriFiles = uriFiles;
@@ -1198,12 +1301,12 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class SendTypingTask extends WeakObjectTask<ChiefActivity> {
+    private class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private boolean isTyping;
 
-        public SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
+        SendTypingTask(ChiefActivity activity, int buddyDbId, boolean isTyping) {
             super(activity);
             this.buddyDbId = buddyDbId;
             this.isTyping = isTyping;
@@ -1279,14 +1382,14 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public abstract class MessageCallback {
+    abstract class MessageCallback {
 
         public abstract void onSuccess();
 
         public abstract void onFailed();
     }
 
-    public class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
+    private class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
 
         @Override
         public void onClicked(ChatHistoryItem historyItem) {
@@ -1306,8 +1409,8 @@ public class ChatActivity extends ChiefActivity {
             }
         }
 
-        public void onIncomingClicked(int contentState, String contentTag, String contentUri,
-                                      String contentName, String previewHash, String messageCookie) {
+        void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                               String contentName, String previewHash, String messageCookie) {
             switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
                     RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
@@ -1330,8 +1433,8 @@ public class ChatActivity extends ChiefActivity {
             }
         }
 
-        public void onOutgoingClicked(int contentState, String contentTag, String contentUri,
-                                      String contentName, String previewHash, String messageCookie) {
+        void onOutgoingClicked(int contentState, String contentTag, String contentUri,
+                               String contentName, String previewHash, String messageCookie) {
             switch (contentState) {
                 case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
                 case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
@@ -1371,12 +1474,12 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopDownloadingTask extends ServiceTask<ChiefActivity> {
+    private class StopDownloadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
 
-        public StopDownloadingTask(ChiefActivity object, String contentTag, String messageCookie) {
+        StopDownloadingTask(ChiefActivity object, String contentTag, String messageCookie) {
             super(object);
             this.contentTag = contentTag;
             this.messageCookie = messageCookie;
@@ -1401,12 +1504,12 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class StopUploadingTask extends ServiceTask<ChiefActivity> {
+    private class StopUploadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
 
-        public StopUploadingTask(ChiefActivity object, String contentTag, String messageCookie) {
+        StopUploadingTask(ChiefActivity object, String contentTag, String messageCookie) {
             super(object);
             this.contentTag = contentTag;
             this.messageCookie = messageCookie;
@@ -1431,9 +1534,9 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public class ChatBuddyObserver extends BuddyObserver {
+    private class ChatBuddyObserver extends BuddyObserver {
 
-        public ChatBuddyObserver(ContentResolver contentResolver, int buddyDbId) {
+        ChatBuddyObserver(ContentResolver contentResolver, int buddyDbId) {
             super(contentResolver, buddyDbId);
         }
 

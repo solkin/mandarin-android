@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Random;
 
 /**
  * Created by Solkin on 03.11.2014.
@@ -91,8 +92,7 @@ public class BitmapFile extends VirtualFile {
 
     public static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
         try {
-            File file = File.createTempFile(
-                    FileHelper.getFileBaseFromName(fileName) + System.currentTimeMillis(),
+            File file = File.createTempFile("MND_",
                     "." + FileHelper.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);

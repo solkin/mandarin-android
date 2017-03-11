@@ -107,7 +107,7 @@
         <item name="chat_placeholder_tint_inc">#a0a0a0</item>
         <item name="chat_placeholder_tint_out">#818181</item>
 
-        <item name="profile_panel_background">#EE232323</item>
+        <item name="profile_panel_background">#262626</item>
         <item name="separator_navbar">#44000000</item>
         <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>
@@ -175,7 +175,7 @@
         <item name="chat_placeholder_tint_inc">#60616161</item>
         <item name="chat_placeholder_tint_out">#60616161</item>
 
-        <item name="profile_panel_background">#EE151515</item>
+        <item name="profile_panel_background">#151515</item>
         <item name="separator_navbar">#44000000</item>
         <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>

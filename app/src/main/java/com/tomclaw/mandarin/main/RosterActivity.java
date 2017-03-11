@@ -191,7 +191,7 @@ public class RosterActivity extends ChiefActivity {
 
     private void setFilterValue(int filterValue) {
         PreferenceManager.getDefaultSharedPreferences(RosterActivity.this).edit()
-                .putInt(ROSTER_FILTER_PREFERENCE, filterValue).commit();
+                .putInt(ROSTER_FILTER_PREFERENCE, filterValue).apply();
     }
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {

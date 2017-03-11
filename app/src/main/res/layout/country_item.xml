@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="top"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="12dp"
+    android:paddingTop="12dp">
 
     <com.tomclaw.mandarin.main.views.TightTextView
-        android:textSize="18sp"
         android:id="@+id/settings_row_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="top"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:layout_gravity="top" />
+        android:textSize="16sp"
+        tools:text="Бермуды" />
 
     <com.tomclaw.mandarin.main.views.TightTextView
-        android:textSize="18sp"
-        android:fontFamily="sans-serif-light"
         android:id="@+id/settings_row_text_detail"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="right"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="12dp"
+        android:fontFamily="sans-serif-light"
         android:gravity="center_vertical"
-        android:layout_gravity="right" />
+        android:textColor="?attr/colorAccent"
+        android:textSize="16sp"
+        tools:text="+404" />
 
 </FrameLayout>

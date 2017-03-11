@@ -1,51 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <FrameLayout
-            android:id="@+id/buddy_image_container"
+        android:id="@+id/buddy_image_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/buddy_info_avatar_height">
+
+        <com.tomclaw.mandarin.main.views.ContactImage
             android:layout_width="match_parent"
-            android:layout_height="@dimen/buddy_info_avatar_height">
+            android:layout_height="match_parent"
+            android:id="@+id/buddy_image"
+            android:src="@drawable/def_avatar"
+            android:scaleType="centerCrop" />
+
         <com.tomclaw.mandarin.main.views.ContactImage
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/buddy_image"
-                android:src="@drawable/def_avatar"
-                android:scaleType="centerCrop"/>
-        <com.tomclaw.mandarin.main.views.ContactImage
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/buddy_image_update"
-                android:scaleType="centerCrop"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/buddy_image_update"
+            android:scaleType="centerCrop" />
     </FrameLayout>
 
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="0dp"
-            android:background="?info_block_background">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="0dp"
+        android:background="?info_block_background">
+
         <com.tomclaw.mandarin.main.views.TightTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/buddy_nick"
-                android:fontFamily="sans-serif"
-                android:textSize="20sp"
-                android:textColor="?info_block_text"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buddy_nick"
+            android:fontFamily="sans-serif"
+            android:textSize="20sp"
+            android:textColor="?info_block_text" />
+
         <com.tomclaw.mandarin.main.views.TightTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/buddy_id"
-                android:fontFamily="sans-serif"
-                android:textSize="14sp"
-                android:textColor="?info_block_text"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buddy_id"
+            android:fontFamily="sans-serif"
+            android:textSize="14sp"
+            android:textColor="?info_block_text" />
     </LinearLayout>
+
     <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="?info_block_divider"/>
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="?info_block_divider" />
 </LinearLayout>

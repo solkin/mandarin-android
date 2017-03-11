@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/select_all_chats_menu"
-          android:icon="@drawable/ic_select_all"
-          app:showAsAction="ifRoom"
-          android:title="@string/select_all"/>
-    <item android:id="@+id/mark_as_read_chat_menu"
-          android:icon="@drawable/ic_action_read"
-          app:showAsAction="always"
-          android:title="@string/mark_as_read"/>
-    <item android:id="@+id/close_chat_menu"
-          android:icon="@drawable/ic_close_dialog"
-          app:showAsAction="always"
-          android:title="@string/close_chat_short"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/select_all_chats_menu"
+        android:icon="@drawable/ic_select_all"
+        app:showAsAction="ifRoom"
+        android:title="@string/select_all" />
+    <item
+        android:id="@+id/mark_as_read_chat_menu"
+        android:icon="@drawable/ic_action_read"
+        app:showAsAction="always"
+        android:title="@string/mark_as_read" />
+    <item
+        android:id="@+id/close_chat_menu"
+        android:icon="@drawable/ic_close_dialog"
+        app:showAsAction="always"
+        android:title="@string/close_chat_short" />
 </menu>

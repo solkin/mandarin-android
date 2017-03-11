@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarTheme"/>
+        android:id="@+id/toolbar"
+        style="@style/ToolbarTheme" />
+
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <ListView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/listView"/>
-        <com.tomclaw.mandarin.main.views.TightTextView android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:textColor="#808080"
-                  android:gravity="center"
-                  android:textSize="24sp"
-                  android:id="@+id/searchEmptyView"
-                  android:visibility="gone"
-                  android:layout_gravity="top"/>
-        <include layout="@layout/toolbar_shadow_view"/>
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/listView" />
+
+        <com.tomclaw.mandarin.main.views.TightTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#808080"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:id="@+id/searchEmptyView"
+            android:visibility="gone"
+            android:layout_gravity="top" />
+
+        <include layout="@layout/toolbar_shadow_view" />
     </FrameLayout>
 </LinearLayout>

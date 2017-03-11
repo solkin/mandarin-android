@@ -74,7 +74,8 @@
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
 
         <!-- Dropdown Spinner Attributes -->
-        <item name="actionDropDownStyle">@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar</item>
+        <item name="actionDropDownStyle">@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar
+        </item>
 
         <item name="alertDialogTheme">@style/AlertDialogCustomLight</item>
 
@@ -234,18 +235,19 @@
         <item name="color">@android:color/white</item>
     </style>
 
-    <style name="ActionBar.Theme.Light" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-    </style>
+    <style name="ActionBar.Theme.Light" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse"></style>
 
     <style name="ActionBar.Theme.Opaque" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title</item>
-        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle</item>
+        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle
+        </item>
     </style>
 
     <style name="ActionBar.Theme.Opaque.Translucent" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/tint_color</item>
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title</item>
-        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle</item>
+        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle
+        </item>
     </style>
 
     <style name="Button.NavBar" parent="android:Widget.Button">
@@ -275,6 +277,7 @@
         <item name="android:textColor">#454545</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
     </style>
+
     <style name="Chat.Message" parent="android:Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -286,6 +289,7 @@
         <item name="android:singleLine">false</item>
         <item name="android:textColor">?chat_text_color</item>
     </style>
+
     <style name="Theme.Mandarin.Intro" parent="Theme.AppCompat">
         <item name="windowActionBarOverlay">true</item>
         <item name="colorAccent">@color/accent_color</item>
@@ -295,12 +299,15 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
     <style name="ActionBar.Theme.Opaque.Intro" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="windowActionBarOverlay">true</item>
         <item name="background">@android:color/transparent</item>
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title</item>
-        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle</item>
+        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle
+        </item>
     </style>
+
     <style name="PhoneNumberBlock">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -308,6 +315,7 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
     </style>
+
     <style name="IntroEditField">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -318,6 +326,7 @@
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-thin</item>
         <item name="android:textSize">24sp</item>
     </style>
+
     <style name="IntroSmsCodeField">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -330,6 +339,7 @@
         <item name="android:typeface">monospace</item>
         <item name="android:inputType">number</item>
     </style>
+
     <style name="IntroHeaderView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -338,6 +348,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="CountryNameView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -347,18 +358,21 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="CountryCodeView">
         <item name="android:textSize">28dp</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-thin</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">#959595</item>
     </style>
+
     <style name="PhoneNumberView">
         <item name="android:textSize">28dp</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-thin</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="PrivacyPolicyView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -370,6 +384,7 @@
         <item name="android:textColor">#ffffff</item>
         <item name="android:textColorLink">#ffffff</item>
     </style>
+
     <style name="ResendCodeView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -378,6 +393,7 @@
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-light</item>
         <item name="android:textColor">@drawable/resend_code_color</item>
     </style>
+
     <style name="BuddyInfoBlockHeader">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
@@ -389,6 +405,7 @@
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif</item>
         <item name="android:textColor">?info_block_header_text_color</item>
     </style>
+
     <style name="BuddyInfoBlockContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -397,6 +414,7 @@
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingBottom">16dp</item>
     </style>
+
     <style name="BuddyInfoItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -406,6 +424,7 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">?info_item_title_text_color</item>
     </style>
+
     <style name="BuddyInfoItemValue">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -414,6 +433,7 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">?info_item_value_text_color</item>
     </style>
+
     <style name="UserInfoFieldTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -422,11 +442,13 @@
         <item name="android:paddingLeft">4dp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
+
     <style name="UserInfoEditField">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
     </style>
+
     <style name="FormHeader">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

@@ -294,8 +294,6 @@ public class SmsCodeActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
-        } catch (AccountAlreadyExistsException ignored) {
-            showError(R.string.account_already_exists);
         } catch (Throwable ignored) {
             showError(R.string.account_add_fail);
         }

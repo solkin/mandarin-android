@@ -97,16 +97,18 @@ public class QueryHelper {
         // Obtain account db id.
         queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
                 .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have no more than only one entry. But lets check.
-        if (cursor.moveToFirst()) {
-            int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Closing cursor.
-            cursor.close();
-            return accountDbId;
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            // Cursor may have no more than only one entry. But lets check.
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        // Closing cursor.
-        cursor.close();
         throw new AccountNotFoundException();
     }
 
@@ -126,64 +128,54 @@ public class QueryHelper {
         return null;
     }
 
-    public static boolean updateAccount(Context context, AccountRoot accountRoot) {
+    public static void updateAccount(Context context, AccountRoot accountRoot)
+            throws AccountNotFoundException {
         ContentResolver contentResolver = context.getContentResolver();
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain specified account. If exist.
-        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType())
-                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have only one entry.
-        if (cursor.moveToFirst()) {
-            long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-            // Closing cursor.
-            cursor.close();
-            // We must update account. Name, password, status, bundle.
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
-            contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
-            contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
-            // Checking for no user icon now, so, we must reset avatar hash.
-            if (TextUtils.isEmpty(accountRoot.getAvatarHash())) {
-                contentValues.putNull(GlobalProvider.ACCOUNT_AVATAR_HASH);
-            } else {
-                contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, accountRoot.getAvatarHash());
-            }
-            contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
-            // Update query.
-            queryBuilder.recycle();
-            queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
-            queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
-            if (accountRoot.isOffline()) {
-                // Update status for account buddies to unknown.
-                contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnEquals(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType()).and()
+                .columnEquals(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
+        Cursor cursor = null;
+        try {
+            cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
+            // Cursor may have only one entry.
+            if (cursor.moveToFirst()) {
+                long accountDbId = cursor.getLong(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
+                // We must update account. Name, password, status, bundle.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+                contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+                contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+                contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+                contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
+                // Checking for no user icon now, so, we must reset avatar hash.
+                if (TextUtils.isEmpty(accountRoot.getAvatarHash())) {
+                    contentValues.putNull(GlobalProvider.ACCOUNT_AVATAR_HASH);
+                } else {
+                    contentValues.put(GlobalProvider.ACCOUNT_AVATAR_HASH, accountRoot.getAvatarHash());
+                }
+                contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
+                contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
                 // Update query.
                 queryBuilder.recycle();
-                queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+                queryBuilder.columnEquals(GlobalProvider.ROW_AUTO_ID, accountDbId);
+                queryBuilder.update(contentResolver, contentValues, Settings.ACCOUNT_RESOLVER_URI);
+                if (accountRoot.isOffline()) {
+                    // Update status for account buddies to unknown.
+                    contentValues = new ContentValues();
+                    contentValues.put(GlobalProvider.ROSTER_BUDDY_STATUS, StatusUtil.STATUS_OFFLINE);
+                    // Update query.
+                    queryBuilder.recycle();
+                    queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
+                    queryBuilder.update(contentResolver, contentValues, Settings.BUDDY_RESOLVER_URI);
+                }
+                return;
             }
-            return true;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        // Closing cursor.
-        cursor.close();
-        return false;
-    }
-
-    public static boolean checkAccount(ContentResolver contentResolver, String accountType, String userId) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain specified account. If exist.
-        queryBuilder.columnEquals(GlobalProvider.ACCOUNT_TYPE, accountType)
-                .and().columnEquals(GlobalProvider.ACCOUNT_USER_ID, userId);
-        Cursor cursor = queryBuilder.query(contentResolver, Settings.ACCOUNT_RESOLVER_URI);
-        // Cursor may have one entry or nothing.
-        boolean accountExists = cursor.moveToFirst();
-        // Closing cursor.
-        cursor.close();
-        return accountExists;
+        throw new AccountNotFoundException();
     }
 
     public static boolean isAccountActive(ContentResolver contentResolver, int accountDbId) {
@@ -231,29 +223,32 @@ public class QueryHelper {
      * @throws AccountNotFoundException
      */
     public static int insertAccount(Context context, AccountRoot accountRoot)
-            throws AccountNotFoundException, AccountAlreadyExistsException {
-        if (checkAccount(context.getContentResolver(),
-                accountRoot.getAccountType(), accountRoot.getUserId())) {
-            throw new AccountAlreadyExistsException();
+            throws AccountNotFoundException {
+        try {
+            int accountDbId = getAccountDbId(context.getContentResolver(),
+                    accountRoot.getAccountType(), accountRoot.getUserId());
+            updateAccount(context, accountRoot);
+            return accountDbId;
+        } catch (AccountNotFoundException ex) {
+            ContentResolver contentResolver = context.getContentResolver();
+            // Creating new account.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
+            contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
+            contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
+            contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
+            contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
+            contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
+            contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
+            contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
+            // Setting up account db id.
+            accountRoot.setAccountDbId(getAccountDbId(contentResolver,
+                    accountRoot.getAccountType(), accountRoot.getUserId()));
+            accountRoot.setContext(context);
+            return accountRoot.getAccountDbId();
         }
-        ContentResolver contentResolver = context.getContentResolver();
-        // Creating new account.
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
-        contentValues.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
-        contentValues.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
-        contentValues.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
-        contentValues.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-        contentValues.put(GlobalProvider.ACCOUNT_STATUS_TITLE, accountRoot.getStatusTitle());
-        contentValues.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, accountRoot.getStatusMessage());
-        contentValues.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
-        contentValues.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
-        contentResolver.insert(Settings.ACCOUNT_RESOLVER_URI, contentValues);
-        // Setting up account db id.
-        accountRoot.setAccountDbId(getAccountDbId(contentResolver, accountRoot.getAccountType(),
-                accountRoot.getUserId()));
-        accountRoot.setContext(context);
-        return accountRoot.getAccountDbId();
     }
 
     public static boolean removeAccount(ContentResolver contentResolver, int accountDbId) {

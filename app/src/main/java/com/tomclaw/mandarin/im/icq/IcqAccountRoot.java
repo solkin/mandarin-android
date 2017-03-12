@@ -74,6 +74,8 @@ public class IcqAccountRoot extends AccountRoot {
                                             Logger.log("login: " + "can't renew token and no password :(");
                                             // Show notification.
                                             updateAccountState(StatusUtil.STATUS_OFFLINE, false);
+                                            onAuthLost();
+                                            return;
                                         }
                                         break;
                                     }

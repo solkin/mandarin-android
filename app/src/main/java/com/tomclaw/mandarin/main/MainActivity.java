@@ -48,6 +48,8 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static com.tomclaw.mandarin.im.AccountRoot.AUTH_LOST;
+
 public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
@@ -300,6 +302,9 @@ public class MainActivity extends ChiefActivity {
 
     public void onCoreServiceIntent(Intent intent) {
         Logger.log("onCoreServiceIntent");
+        if (intent.getBooleanExtra(AUTH_LOST, false)) {
+            startActivity(new Intent(this, IntroActivity.class));
+        }
     }
 
     private void openSettings() {

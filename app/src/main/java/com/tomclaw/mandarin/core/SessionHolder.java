@@ -42,6 +42,9 @@ public class SessionHolder {
         try {
             // Checking for account root already in list.
             accountRoot = getAccount(accountDbId);
+            if (accountRoot.isOffline()) {
+                reloadAccountRoot(accountDbId);
+            }
         } catch (AccountNotFoundException ignored) {
             // Obtain account root from database.
             accountRoot = QueryHelper.getAccount(context, accountDbId);
@@ -50,9 +53,19 @@ public class SessionHolder {
         return accountRoot;
     }
 
+    public void reloadAccountRoot(int accountDbId) {
+        for (AccountRoot accountRoot : accountRootList) {
+            if (accountRoot.getAccountDbId() == accountDbId) {
+                accountRootList.remove(accountRoot);
+                break;
+            }
+        }
+        AccountRoot accountRoot = QueryHelper.getAccount(context, accountDbId);
+        accountRootList.add(accountRoot);
+    }
+
     public boolean removeAccountRoot(int accountDbId) {
         for (AccountRoot accountRoot : accountRootList) {
-            // Checking for account type and user id.
             if (accountRoot.getAccountDbId() == accountDbId) {
                 // Disconnect first of all.
                 // TODO: we must wait until disconnect completed!

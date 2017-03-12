@@ -215,8 +215,6 @@ public class PlainLoginActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
-        } catch (AccountAlreadyExistsException ignored) {
-            Toast.makeText(this, R.string.account_already_exists, Toast.LENGTH_LONG).show();
         } catch (Throwable ignored) {
             Toast.makeText(this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
         }

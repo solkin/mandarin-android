@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "1.95"
+        versionName "1.9.5"
         resConfigs "ru", "en", "zh"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }

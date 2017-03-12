@@ -14,6 +14,7 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
@@ -98,7 +99,7 @@ public class BuddyInfoRequest extends WimRequest {
                     buddyIcon = buddyIcon.replace(iconId, largeIconId);
                     buddyIcon = buddyIcon.replace("buddyIcon", "largeBuddyIcon");
                     String hash = HttpUtil.getUrlHash(buddyIcon);
-                    Log.d(Settings.LOG_TAG, "large buddy icon: " + buddyIcon);
+                    Logger.log("large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
                     String avatarHash;
                     try {

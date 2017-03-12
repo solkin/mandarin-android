@@ -431,6 +431,7 @@ public class IcqSession {
                 } finally {
                     fetchEventConnection.disconnect();
                 }
+                Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             } catch (Throwable ex) {
                 Logger.log("fetch events exception: " + ex.getMessage());
                 try {

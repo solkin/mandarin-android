@@ -212,6 +212,7 @@ public class ChatActivity extends ChiefActivity {
         chatList.setLayoutManager(chatLayoutManager);
         chatList.setHasFixedSize(true);
         chatList.setAdapter(chatHistoryAdapter);
+        chatList.setItemAnimator(null);
 
         int chatBackground = PreferenceHelper.getChatBackground(this);
         chatList.setBackgroundResource(chatBackground);
@@ -789,8 +790,13 @@ public class ChatActivity extends ChiefActivity {
     }
 
     public void scrollBottom() {
-        chatList.scrollToPosition(0);
-        chatList.requestLayout();
+        chatList.post(new Runnable() {
+            @Override
+            public void run() {
+                chatList.scrollToPosition(0);
+                chatList.requestLayout();
+            }
+        });
     }
 
     private void applySharingData(SharingData sharingData) {

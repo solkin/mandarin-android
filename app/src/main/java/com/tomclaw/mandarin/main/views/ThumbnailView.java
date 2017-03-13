@@ -2,13 +2,13 @@ package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by Solkin on 05.11.2014.
  */
-public class ThumbnailView extends ImageView implements LazyImageView {
+public class ThumbnailView extends AppCompatImageView implements LazyImageView {
 
     public ThumbnailView(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -233,7 +233,10 @@
     <string name="last_seen_time" formatted="false">Был(а) в %s</string>
     <string name="typing">набирает сообщение…</string>
     <string name="unknown_buddy">Без имени</string>
-    <string name="pref_title_dark_theme">Тёмная тема оформления</string>
+    <string name="pref_title_theme">Тема оформления</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="black">Чёрная</string>
     <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать
         сообщения от неизвестных людей.
     </string>
@@ -292,7 +295,7 @@
     <string name="group_by_status">По статусу</string>
     <string name="pref_title_roster_mode">Отображение контактов</string>
     <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
-    <string name="app_version">Версия %1$s (%2$s)</string>
+    <string name="app_version">Версия %1$s (%2$d)</string>
     <string name="city_search">Город</string>
     <string name="mark_as_read">Прочитано</string>
     <string name="mark_as_read_all">Прочитано всё</string>

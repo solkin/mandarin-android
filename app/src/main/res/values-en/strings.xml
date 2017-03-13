@@ -231,7 +231,10 @@
     <string name="last_seen_time" formatted="false">Last seen at %s</string>
     <string name="typing">is typing…</string>
     <string name="unknown_buddy">Unknown buddy</string>
-    <string name="pref_title_dark_theme">Dark theme</string>
+    <string name="pref_title_theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="black">Black</string>
     <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
     </string>
     <string name="pref_title_ignore_unknown">Ignore strangers</string>
@@ -288,7 +291,7 @@
     <string name="group_by_status">Group by status</string>
     <string name="pref_title_roster_mode">Buddylist view</string>
     <string name="pref_summary_roster_mode">Sorting &amp; grouping your buddies</string>
-    <string name="app_version">Version %1$s (%2$s)</string>
+    <string name="app_version">Version %1$s (%2$d)</string>
     <string name="city_search">City</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="mark_as_read_all">Mark all as read</string>

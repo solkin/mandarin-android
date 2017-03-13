@@ -32,6 +32,18 @@
         <item>@string/yes</item>
     </string-array>
 
+    <string-array name="pref_theme_strings">
+        <item>@string/light</item>
+        <item>@string/dark</item>
+        <item>@string/black</item>
+    </string-array>
+
+    <string-array name="pref_theme_values">
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_black</item>
+    </string-array>
+
     <string-array name="pref_roster_mode_strings">
         <item>@string/group_by_alphabet</item>
         <item>@string/group_by_groups</item>
@@ -69,6 +81,10 @@
         <item>@string/compression_medium</item>
         <item>@string/compression_low_quality</item>
     </string-array>
+
+    <string name="theme_light" translatable="false">light</string>
+    <string name="theme_dark" translatable="false">dark</string>
+    <string name="theme_black" translatable="false">black</string>
 
     <string name="roster_mode_alphabet" translatable="false">alphabet</string>
     <string name="roster_mode_groups" translatable="false">groups</string>

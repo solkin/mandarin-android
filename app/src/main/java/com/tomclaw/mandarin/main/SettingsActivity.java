@@ -32,8 +32,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(PreferenceHelper.isDarkTheme(this) ?
-                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        int themeRes = PreferenceHelper.getThemeRes(this);
+        setTheme(themeRes);
 
         super.onCreate(savedInstanceState);
 
@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
                         MusicStateReceiver.sendEventToService(context);
                     }
                 }
-            } else if (TextUtils.equals(key, getString(R.string.pref_dark_theme))) {
+            } else if (TextUtils.equals(key, getString(R.string.pref_theme))) {
                 Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
                 overridePendingTransition(0, 0);

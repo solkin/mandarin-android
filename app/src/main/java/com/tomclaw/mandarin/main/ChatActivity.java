@@ -1102,6 +1102,7 @@ public class ChatActivity extends ChiefActivity {
                     String fileName = "history_" + buddyId + ".txt";
                     infoExportPath = directory.getName() + "/" + fileName;
                     File file = new File(directory, fileName);
+                    file.getParentFile().mkdirs();
                     OutputStream outputStream = null;
                     try {
                         file.delete();

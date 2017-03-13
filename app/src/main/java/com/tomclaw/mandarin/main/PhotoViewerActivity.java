@@ -69,8 +69,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(PreferenceHelper.isDarkTheme(this) ?
-                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        int themeRes = PreferenceHelper.getThemeRes(this);
+        setTheme(themeRes);
 
         super.onCreate(savedInstanceState);
 

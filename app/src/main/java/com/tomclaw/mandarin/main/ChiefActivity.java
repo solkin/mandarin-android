@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
@@ -34,7 +35,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
     private ServiceConnection serviceConnection;
     private boolean isServiceBound;
     private boolean isCoreServiceReady;
-    private boolean isDarkTheme;
+    private int themeRes;
 
     private List<CoreServiceListener> coreServiceListeners;
 
@@ -45,7 +46,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         Logger.log("ChiefActivity onCreate");
 
-        isDarkTheme = PreferenceHelper.isDarkTheme(this);
+        themeRes = PreferenceHelper.getThemeRes(this);
         updateTheme();
         updateIcon();
 
@@ -54,7 +55,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
         coreServiceListeners = new ArrayList<>();
 
         setContentView(R.layout.progress);
-        /** Starting service **/
+        // Starting service.
         isServiceBound = false;
         isCoreServiceReady = false;
 
@@ -62,7 +63,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
     }
 
     public void updateTheme() {
-        setTheme(isDarkTheme ? R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        setTheme(themeRes);
     }
 
     public void updateIcon() {
@@ -75,7 +76,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isDarkTheme != PreferenceHelper.isDarkTheme(this)) {
+        if (themeRes != PreferenceHelper.getThemeRes(this)) {
             Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             finish();
             startActivity(intent);

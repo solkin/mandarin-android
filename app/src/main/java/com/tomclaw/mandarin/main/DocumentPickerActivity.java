@@ -95,8 +95,8 @@ public class DocumentPickerActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstance) {
-        setTheme(PreferenceHelper.isDarkTheme(this) ?
-                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        int themeRes = PreferenceHelper.getThemeRes(this);
+        setTheme(themeRes);
 
         super.onCreate(savedInstance);
 

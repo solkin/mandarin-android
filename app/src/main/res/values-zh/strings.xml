@@ -214,7 +214,10 @@
     <string name="last_seen_time" formatted="false">上次在线于 %s</string>
     <string name="typing">正在输入…</string>
     <string name="unknown_buddy">未知的伙伴</string>
-    <string name="pref_title_dark_theme">深色主题</string>
+    <string name="pref_title_theme">设计主题</string>
+    <string name="light">浅色</string>
+    <string name="dark">黑暗</string>
+    <string name="black">黑色</string>
     <string name="pref_summary_ignore_unknown">只接收在我的伙伴列表的人所发的消息</string>
     <string name="pref_title_ignore_unknown">忽略陌生人</string>
 
@@ -267,7 +270,7 @@
     <string name="group_by_status">以状态分组</string>
     <string name="pref_title_roster_mode">伙伴列表视图</string>
     <string name="pref_summary_roster_mode">给您的伙伴排序 &amp; 分组</string>
-    <string name="app_version">版本 %1$s (%2$s)</string>
+    <string name="app_version">版本 %1$s (%2$d)</string>
     <string name="city_search">城市</string>
     <string name="mark_as_read">标记已读</string>
     <string name="mark_as_read_all">全部标记已读</string>

@@ -52,7 +52,7 @@ public class BubbleImageView extends AppCompatImageView implements LazyImageView
         setScaleType(ScaleType.CENTER);
         int previewSize = getResources().getDimensionPixelSize(R.dimen.preview_size);
         getLayoutParams().width = previewSize;
-        getLayoutParams().height = previewSize * 9 / 16;
+        getLayoutParams().height = previewSize;
         setBackgroundDrawable(new BubbleColorDrawable(getContext(), bubbleColor, corner));
         setColorFilter(placeholderTintColor);
         setImageResource(resource);

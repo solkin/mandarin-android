@@ -121,7 +121,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                     throw ex;
                 } catch (SocketTimeoutException ex) {
                     // Pretty network exception.
-                    Logger.log("Io exception while uploading", ex);
+                    Logger.log("SocketTimeoutException exception while uploading", ex);
                     Thread.sleep(3000);
                 } catch (InterruptedIOException ex) {
                     // Thread interrupted exception.

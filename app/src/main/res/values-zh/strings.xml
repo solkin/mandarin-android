@@ -85,8 +85,6 @@
     <string name="pref_title_vibrate">震动</string>
     <string name="buddy_status">状态</string>
     <string name="pref_chat_title">对话</string>
-    <string name="pref_title_collapse_messages">合并消息</string>
-    <string name="pref_summary_collapse_messages">如果消息之间到达时间小于 2 分钟，则合并消息。</string>
     <string name="pref_base_title">基本</string>
     <string name="pref_title_autorun">自动运行服务</string>
     <string name="pref_summary_autorun">即便您重启手机也会保持在线</string>
@@ -214,7 +212,10 @@
     <string name="last_seen_time" formatted="false">上次在线于 %s</string>
     <string name="typing">正在输入…</string>
     <string name="unknown_buddy">未知的伙伴</string>
-    <string name="pref_title_dark_theme">深色主题</string>
+    <string name="pref_title_theme">设计主题</string>
+    <string name="light">浅色</string>
+    <string name="dark">黑暗</string>
+    <string name="black">黑色</string>
     <string name="pref_summary_ignore_unknown">只接收在我的伙伴列表的人所发的消息</string>
     <string name="pref_title_ignore_unknown">忽略陌生人</string>
 
@@ -267,7 +268,7 @@
     <string name="group_by_status">以状态分组</string>
     <string name="pref_title_roster_mode">伙伴列表视图</string>
     <string name="pref_summary_roster_mode">给您的伙伴排序 &amp; 分组</string>
-    <string name="app_version">版本 %1$s (%2$s)</string>
+    <string name="app_version">版本 %1$s (%2$d)</string>
     <string name="city_search">城市</string>
     <string name="mark_as_read">标记已读</string>
     <string name="mark_as_read_all">全部标记已读</string>
@@ -370,4 +371,9 @@
     <string name="pref_title_private_notifications">個人通知</string>
     <string name="buddy_ignore">忽略消息</string>
     <string name="buddy_unignore">允許短信</string>
+    <string name="account_instance">关闭会话</string>
+    <string name="export_history">导出历史</string>
+    <string name="export_history_text">此对话框中的聊天记录将保存到此设备上的文本文档，以便您可以将其用于某些用途。 继续？</string>
+    <string name="export_history_failed">历史导出操作失败</string>
+    <string name="extory_exported">历史已成功出口到:\n</string>
 </resources>

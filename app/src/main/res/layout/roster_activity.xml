@@ -2,9 +2,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,13 +15,14 @@
         android:layout_height="match_parent">
 
         <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+            android:id="@+id/roster_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="86dp"
-            android:clipToPadding="false"
-            android:id="@+id/roster_list_view"
             android:layout_gravity="center"
             android:choiceMode="multipleChoiceModal"
+            android:clipToPadding="false"
+            android:paddingBottom="86dp"
+            android:dividerHeight="0dp"
             app:isDrawingListUnderStickyHeader="false" />
 
         <include layout="@layout/toolbar_shadow_view" />
@@ -30,12 +31,12 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_contact"
             android:layout_gravity="bottom|end"
-            android:layout_marginRight="18dp"
             android:layout_marginBottom="22dp"
+            android:layout_marginRight="18dp"
+            android:src="@drawable/ic_add_contact"
             app:elevation="4dp"
-            app:pressedTranslationZ="12dp"
-            app:fabSize="normal" />
+            app:fabSize="normal"
+            app:pressedTranslationZ="12dp" />
     </FrameLayout>
 </LinearLayout>

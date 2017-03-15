@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.icq.IcqEditUserInfoActivity;
@@ -87,6 +88,8 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 builder.setNegativeButton(R.string.do_not_remove, null);
                 builder.show();
                 return true;
+            case R.id.account_instance:
+                RequestHelper.leaveOtherSessions(getContentResolver(), getAccountDbId());
             default:
                 return super.onOptionsItemSelected(item);
         }

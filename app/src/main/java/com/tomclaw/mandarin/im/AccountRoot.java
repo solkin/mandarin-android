@@ -2,12 +2,15 @@ package com.tomclaw.mandarin.im;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
+import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
@@ -17,6 +20,8 @@ import com.tomclaw.mandarin.util.Unobfuscatable;
  * Time: 1:54 AM
  */
 public abstract class AccountRoot implements Unobfuscatable {
+
+    public static final String AUTH_LOST = "auth_lost";
 
     /**
      * User info
@@ -271,8 +276,23 @@ public abstract class AccountRoot implements Unobfuscatable {
      */
     public void updateAccount() {
         // Update database info.
-        DatabaseLayer databaseLayer = ContentResolverLayer.from(context.getContentResolver());
-        QueryHelper.updateAccount(context, databaseLayer, this);
+        try {
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(context.getContentResolver());
+            QueryHelper.updateAccount(context, databaseLayer, this);
+        } catch (AccountNotFoundException ignored) {
+            // Impossible case.
+        }
+    }
+
+    public void onAuthLost() {
+        // Context is always service if account managed by SessionHolder.
+        if (context instanceof CoreService) {
+            CoreService service = (CoreService) context;
+            Intent intent = new Intent(CoreService.ACTION_CORE_SERVICE);
+            intent.putExtra(CoreService.EXTRA_STAFF_PARAM, false);
+            intent.putExtra(AUTH_LOST, true);
+            service.sendBroadcast(intent);
+        }
     }
 
     /**

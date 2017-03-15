@@ -15,6 +15,7 @@ import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
@@ -86,7 +87,7 @@ public class UserInfoRequest extends WimRequest {
                     buddyIcon = buddyIcon.replace(iconId, largeIconId);
                     buddyIcon = buddyIcon.replace("buddyIcon", "largeBuddyIcon");
                     String hash = HttpUtil.getUrlHash(buddyIcon);
-                    Log.d(Settings.LOG_TAG, "large buddy icon: " + buddyIcon);
+                    Logger.log("large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
                     String avatarHash;
                     try {
@@ -134,8 +135,6 @@ public class UserInfoRequest extends WimRequest {
                         }
                     }
 
-                    putExtra(intent, R.id.children, profile.optInt("children"));
-                    putExtra(intent, R.id.smoking, profile.optBoolean("smoking"));
                     putExtra(intent, R.id.website, profile.optString("website1"));
                     if (profile.has("birthDate")) {
                         long birthDate = profile.optLong("birthDate") * 1000;

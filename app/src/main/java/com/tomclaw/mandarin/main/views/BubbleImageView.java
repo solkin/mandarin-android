@@ -3,8 +3,8 @@ package com.tomclaw.mandarin.main.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.BubbleBitmapDrawable;
@@ -14,7 +14,7 @@ import com.tomclaw.mandarin.main.Corner;
 /**
  * Created by Solkin on 18.10.2014.
  */
-public class BubbleImageView extends ImageView implements LazyImageView {
+public class BubbleImageView extends AppCompatImageView implements LazyImageView {
 
     private int placeholderTintColor;
     private int bubbleColor;
@@ -52,7 +52,7 @@ public class BubbleImageView extends ImageView implements LazyImageView {
         setScaleType(ScaleType.CENTER);
         int previewSize = getResources().getDimensionPixelSize(R.dimen.preview_size);
         getLayoutParams().width = previewSize;
-        getLayoutParams().height = previewSize * 9 / 16;
+        getLayoutParams().height = previewSize;
         setBackgroundDrawable(new BubbleColorDrawable(getContext(), bubbleColor, corner));
         setColorFilter(placeholderTintColor);
         setImageResource(resource);

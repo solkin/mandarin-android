@@ -50,8 +50,32 @@ public class PreferenceHelper {
         return getBooleanPreference(context, R.string.pref_autorun, R.bool.pref_autorun_default);
     }
 
-    public static boolean isDarkTheme(Context context) {
-        return getBooleanPreference(context, R.string.pref_dark_theme, R.bool.pref_dark_theme_default);
+    public static int getThemeRes(Context context) {
+        String theme = getTheme(context);
+        int themeRes;
+        if (TextUtils.equals(theme, context.getString(R.string.theme_black))) {
+            themeRes = R.style.Theme_Mandarin_Black;
+        } else if (TextUtils.equals(theme, context.getString(R.string.theme_dark))) {
+            themeRes = R.style.Theme_Mandarin_Dark;
+        } else {
+            themeRes = R.style.Theme_Mandarin_Light;
+        }
+        return themeRes;
+    }
+
+    public static String getTheme(Context context) {
+        String preferenceKey = context.getResources().getString(R.string.pref_theme);
+        String defaultValue = context.getResources().getString(R.string.pref_theme_default);
+        String theme = getSharedPreferences(context).getString(preferenceKey, null);
+        if (TextUtils.isEmpty(theme)) {
+            theme = isLegacyDarkTheme(context) ? context.getResources().getString(R.string.theme_dark) : defaultValue;
+            setStringPreference(context, R.string.pref_theme, theme);
+        }
+        return theme;
+    }
+
+    public static boolean isLegacyDarkTheme(Context context) {
+        return getBooleanPreference(context, R.string.legacy_pref_dark_theme, R.bool.legacy_pref_dark_theme_default);
     }
 
     public static boolean isIgnoreUnknown(Context context) {

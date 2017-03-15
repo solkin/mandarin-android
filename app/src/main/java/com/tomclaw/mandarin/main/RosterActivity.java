@@ -126,13 +126,13 @@ public class RosterActivity extends ChiefActivity {
         });
         generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());
 
-        final ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setDisplayShowTitleEnabled(false);
-        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(mActionBar.getThemedContext(),
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(actionBar.getThemedContext(),
                 R.array.roster_filter_strings, android.R.layout.simple_spinner_dropdown_item);
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        mActionBar.setListNavigationCallbacks(filterAdapter, new ActionBar.OnNavigationListener() {
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(filterAdapter, new ActionBar.OnNavigationListener() {
 
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -142,7 +142,7 @@ public class RosterActivity extends ChiefActivity {
                 return true;
             }
         });
-        mActionBar.setSelectedNavigationItem(generalAdapter.getRosterFilter());
+        actionBar.setSelectedNavigationItem(generalAdapter.getRosterFilter());
 
         onQueryTextListener = new SearchView.OnQueryTextListener() {
             @Override

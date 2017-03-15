@@ -91,10 +91,6 @@
     <string name="pref_title_vibrate">Вибрация</string>
     <string name="buddy_status">Статус</string>
     <string name="pref_chat_title">Переписка</string>
-    <string name="pref_title_collapse_messages">Объединение сообщений</string>
-    <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
-        течение двух минут
-    </string>
     <string name="pref_base_title">Основное</string>
     <string name="pref_title_autorun">Фоновый автозапуск</string>
     <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
@@ -233,7 +229,10 @@
     <string name="last_seen_time" formatted="false">Был(а) в %s</string>
     <string name="typing">набирает сообщение…</string>
     <string name="unknown_buddy">Без имени</string>
-    <string name="pref_title_dark_theme">Тёмная тема оформления</string>
+    <string name="pref_title_theme">Тема оформления</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="black">Чёрная</string>
     <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать
         сообщения от неизвестных людей.
     </string>
@@ -292,7 +291,7 @@
     <string name="group_by_status">По статусу</string>
     <string name="pref_title_roster_mode">Отображение контактов</string>
     <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
-    <string name="app_version">Версия %1$s (%2$s)</string>
+    <string name="app_version">Версия %1$s (%2$d)</string>
     <string name="city_search">Город</string>
     <string name="mark_as_read">Прочитано</string>
     <string name="mark_as_read_all">Прочитано всё</string>
@@ -407,4 +406,9 @@
     <string name="pref_title_private_notifications">Приватные уведомления</string>
     <string name="buddy_ignore">Игнорировать</string>
     <string name="buddy_unignore">Не игнорировать</string>
+    <string name="account_instance">Закрыть сессии</string>
+    <string name="export_history">Экспорт истории</string>
+    <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её на каких-то своих целях. Продолжаем?</string>
+    <string name="export_history_failed">Не удалось экспортировать историю</string>
+    <string name="extory_exported">История успешно экспортирована в:\n</string>
 </resources>

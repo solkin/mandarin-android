@@ -17,4 +17,8 @@
         android:icon="@drawable/ic_delete"
         app:showAsAction="never"
         android:title="@string/message_remove" />
+    <item
+        android:id="@+id/message_unread"
+        app:showAsAction="never"
+        android:title="@string/message_unread" />
 </menu>

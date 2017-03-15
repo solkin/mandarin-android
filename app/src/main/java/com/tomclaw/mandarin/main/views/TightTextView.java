@@ -1,14 +1,14 @@
 package com.tomclaw.mandarin.main.views;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 /**
  * Created by solkin on 09.09.14.
  */
-public class TightTextView extends TextView {
+public class TightTextView extends AppCompatTextView {
     private boolean hasMaxWidth;
     public int maxWidth;
 

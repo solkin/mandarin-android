@@ -19,6 +19,7 @@
             android:layout_height="match_parent"
             android:id="@+id/sharing_list_view"
             android:layout_gravity="center"
+            android:dividerHeight="0dp"
             app:isDrawingListUnderStickyHeader="false" />
 
         <include layout="@layout/toolbar_shadow_view" />

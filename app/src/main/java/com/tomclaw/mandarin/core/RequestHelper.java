@@ -52,6 +52,11 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
     }
 
+    public static void leaveOtherSessions(ContentResolver contentResolver, int accountDbId) {
+        IcqMessageRequest messageRequest = new IcqMessageRequest("aolsystemmsg", "1", "aolsystemmsg_auto_cookie");
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
+    }
+
     public static void endSession(ContentResolver contentResolver, int accountDbId) {
         EndSessionRequest endSessionRequest = new EndSessionRequest();
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, endSessionRequest);
@@ -204,11 +209,11 @@ public class RequestHelper {
     }
 
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,
-                                      String firstName, String lastName, int gender, long birthDate, int childrenCount,
-                                      boolean smoking, String city, String webSite,
+                                      String firstName, String lastName, int gender, long birthDate,
+                                      String city, String webSite,
                                       String aboutMe) {
-        UpdateInfoRequest updateInfoRequest = new UpdateInfoRequest(friendlyName, firstName, lastName, gender,
-                birthDate, childrenCount, smoking, city, webSite, aboutMe);
+        UpdateInfoRequest updateInfoRequest = new UpdateInfoRequest(friendlyName, firstName,
+                lastName, gender, birthDate, city, webSite, aboutMe);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, updateInfoRequest);
     }
 

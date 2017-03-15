@@ -16,7 +16,7 @@
     <string name="pref_chat_show_keyboard" translatable="false">pref_chat_show_keyboard</string>
     <string name="pref_send_by_enter" translatable="false">pref_send_by_enter</string>
     <string name="pref_music_auto_status" translatable="false">pref_music_auto_status</string>
-    <string name="pref_dark_theme" translatable="false">pref_dark_theme</string>
+    <string name="pref_theme" translatable="false">pref_theme</string>
     <string name="pref_ignore_unknown" translatable="false">pref_ignore_unknown</string>
     <string name="pref_roster_mode" translatable="false">pref_roster_mode</string>
     <string name="pref_file_settings" translatable="false">pref_file_settings</string>
@@ -24,4 +24,5 @@
     <string name="pref_image_compression" translatable="false">pref_image_compression</string>
 
     <string name="pref_show_start_helper" translatable="false">pref_show_start_helper</string>
+    <string name="legacy_pref_dark_theme" translatable="false">pref_dark_theme</string>
 </resources>

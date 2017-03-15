@@ -43,6 +43,7 @@
     <color name="resend_code_enabled">@color/orange_normal</color>
     <color name="light_back_color">#f0f0f0</color>
     <color name="dark_back_color">#FF101010</color>
+    <color name="black_back_color">#000000</color>
     <color name="check_selected_color">@color/orange_normal</color>
     <color name="check_unselected_color">#501c1c1c</color>
     <color name="thumbnail_back">#333333</color>
@@ -86,10 +87,10 @@
         <item name="buddy_primary_color">@color/primary_text_default_material_light</item>
         <item name="buddy_secondary_color">@color/secondary_text_default_material_light</item>
 
-        <item name="header_head_color">#d9d9d9</item>
-        <item name="header_back_color">#e6e6e6</item>
+        <item name="header_head_color">@android:color/transparent</item>
+        <item name="header_back_color">@android:color/transparent</item>
         <item name="header_font_color">#ff6600</item>
-        <item name="header_line_color">#d9d9d9</item>
+        <item name="header_line_color">@android:color/transparent</item>
 
         <item name="chat_date_color">#FF111111</item>
         <item name="chat_time_color">#FF727272</item>
@@ -107,7 +108,7 @@
         <item name="chat_placeholder_tint_inc">#a0a0a0</item>
         <item name="chat_placeholder_tint_out">#818181</item>
 
-        <item name="profile_panel_background">#EE232323</item>
+        <item name="profile_panel_background">#262626</item>
         <item name="separator_navbar">#44000000</item>
         <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>
@@ -154,10 +155,10 @@
         <item name="buddy_primary_color">@color/primary_text_default_material_dark</item>
         <item name="buddy_secondary_color">@color/secondary_text_default_material_dark</item>
 
-        <item name="header_head_color">#80333333</item>
-        <item name="header_back_color">#99444444</item>
+        <item name="header_head_color">@android:color/transparent</item>
+        <item name="header_back_color">@android:color/transparent</item>
         <item name="header_font_color">#A0FFFFFF</item>
-        <item name="header_line_color">#90444444</item>
+        <item name="header_line_color">@android:color/transparent</item>
 
         <item name="chat_date_color">#FFDADADA</item>
         <item name="chat_time_color">#CCDADADA</item>
@@ -175,7 +176,7 @@
         <item name="chat_placeholder_tint_inc">#60616161</item>
         <item name="chat_placeholder_tint_out">#60616161</item>
 
-        <item name="profile_panel_background">#EE151515</item>
+        <item name="profile_panel_background">#151515</item>
         <item name="separator_navbar">#44000000</item>
         <item name="button_navbar_text">@drawable/navbar_button_text</item>
         <item name="button_navbar_background">@drawable/button_navbar</item>
@@ -196,6 +197,12 @@
         <item name="positive_dialog_button_color">@color/accent_color</item>
         <item name="negative_dialog_button_color">#dddddd</item>
         <item name="neutral_dialog_button_color">#b6b6b6</item>
+    </style>
+
+    <style name="Theme.Mandarin.Black" parent="Theme.Mandarin.Dark">
+        <item name="android:windowBackground">@color/black_back_color</item>
+        <item name="chat_background_doodle">@color/black_back_color</item>
+        <item name="chat_background_gradient">@color/black_back_color</item>
     </style>
 
     <style name="AlertDialogCustomLight" parent="Theme.AppCompat.Light.Dialog.Alert">

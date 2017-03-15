@@ -20,7 +20,9 @@
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.Mandarin.Light"
         android:allowBackup="true">
-        <meta-data android:name="net.hockeyapp.android.appIdentifier" android:value="${HOCKEYAPP_APP_ID}" />
+        <meta-data
+            android:name="net.hockeyapp.android.appIdentifier"
+            android:value="${HOCKEYAPP_APP_ID}" />
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <receiver
             android:name=".core.BootCompletedReceiver"
@@ -199,8 +201,5 @@
             android:authorities="com.tomclaw.mandarin.core.GlobalProvider"
             android:exported="false"
             android:grantUriPermissions="true" />
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="b94d613b9e798ff9e854d315043fd0f9caf32355" />
     </application>
 </manifest>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,8 +29,8 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme(PreferenceHelper.isDarkTheme(this) ?
-                R.style.Theme_Mandarin_Dark : R.style.Theme_Mandarin_Light);
+        int themeRes = PreferenceHelper.getThemeRes(this);
+        setTheme(themeRes);
 
         super.onCreate(savedInstanceState);
 

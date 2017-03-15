@@ -6,13 +6,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by Solkin on 10.11.2014.
  */
-public class ContactBadge extends ImageView implements LazyImageView {
+public class ContactBadge extends AppCompatImageView implements LazyImageView {
 
     private int cachedPlaceholderRes;
     private Bitmap cachedPlaceholder;

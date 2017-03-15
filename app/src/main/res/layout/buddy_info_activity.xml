@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,9 +20,9 @@
             android:background="?attr/info_block_background_color">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -31,22 +31,22 @@
                     <include layout="@layout/info_header" />
 
                     <ViewSwitcher
+                        android:id="@+id/button_switcher"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="22dp"
                         android:layout_alignParentBottom="true"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:id="@+id/button_switcher"
+                        android:layout_alignParentRight="true"
                         android:inAnimation="@android:anim/fade_in"
-                        android:outAnimation="@android:anim/fade_out">
+                        android:outAnimation="@android:anim/fade_out"
+                        android:paddingBottom="22dp">
 
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/add_buddy_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="18dp"
                             android:layout_marginBottom="22dp"
+                            android:layout_marginRight="18dp"
                             android:src="@drawable/ic_add_contact"
                             app:fabSize="normal" />
 
@@ -54,8 +54,8 @@
                             android:id="@+id/open_dialog_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="18dp"
                             android:layout_marginBottom="22dp"
+                            android:layout_marginRight="18dp"
                             android:src="@drawable/ic_chat"
                             app:fabSize="normal" />
                     </ViewSwitcher>
@@ -66,15 +66,15 @@
                 <include layout="@layout/info_block" />
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ProgressBar
+                        android:id="@+id/progress_bar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/progress_bar"
                         android:padding="20dp" />
                 </LinearLayout>
             </LinearLayout>

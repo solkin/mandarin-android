@@ -2,23 +2,18 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "2.0"
+        versionName "1.9.5"
         resConfigs "ru", "en", "zh"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }
     buildTypes {
-        debug {
-            shrinkResources false
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
         release {
             shrinkResources true
             minifyEnabled true
@@ -31,10 +26,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':smileys')
-    compile 'com.android.support:support-v4:25.1.1'
-    compile 'com.android.support:recyclerview-v7:25.1.1'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:design:25.2.0'
     compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'com.github.machinarius:preferencefragment:0.1.1'

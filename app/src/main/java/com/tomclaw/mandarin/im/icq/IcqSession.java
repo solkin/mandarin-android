@@ -136,11 +136,12 @@ public class IcqSession {
     public static final int EXTERNAL_UNKNOWN = 0;
     public static final int EXTERNAL_SESSION_OK = 200;
     public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
-    private static final int EXTERNAL_FETCH_OK = 200;
+    public static final int EXTERNAL_FETCH_OK = 200;
+    public static final int EXTERNAL_FORBIDDEN = 403;
 
     private static final int TIMEOUT_SOCKET_ADDITION = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int TIMEOUT_CONNECTION = (int) TimeUnit.MINUTES.toMillis(2);
-    private static final int TIMEOUT_SESSION = (int) TimeUnit.DAYS.toMillis(1);
+    private static final int TIMEOUT_SESSION = (int) TimeUnit.DAYS.toMillis(14);
 
     private IcqAccountRoot icqAccountRoot;
 
@@ -312,10 +313,8 @@ public class IcqSession {
 
     public int renewToken() {
         try {
-            HttpParamsBuilder builder = new HttpParamsBuilder();
-            builder.appendParam(TOKEN_A, icqAccountRoot.getTokenA());
-            builder.appendParam(SESSION_KEY, icqAccountRoot.getSessionKey());
-            builder.appendParam(RENEW_TOKEN, "1");
+            HttpParamsBuilder builder = new HttpParamsBuilder()
+                    .appendParam(RENEW_TOKEN, "true");
 
             String url = signRequest(HttpUtil.GET, RENEW_TOKEN_URL, false, builder);
 
@@ -341,6 +340,9 @@ public class IcqSession {
                     // Update renew token result in database.
                     icqAccountRoot.setRenewTokenResult(login, tokenA, expiresIn);
                     break;
+                }
+                case EXTERNAL_FORBIDDEN: {
+                    return EXTERNAL_UNKNOWN;
                 }
                 default: {
                     return EXTERNAL_UNKNOWN;
@@ -420,6 +422,7 @@ public class IcqSession {
                 } finally {
                     fetchEventConnection.disconnect();
                 }
+                Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             } catch (Throwable ex) {
                 Logger.log("fetch events exception: " + ex.getMessage());
                 try {
@@ -607,8 +610,9 @@ public class IcqSession {
                 .appendParam(WimConstants.TS, String.valueOf(icqAccountRoot.getHostTime()));
         builder.sortParams();
         String params = builder.build();
-        String hash = method.concat(WimConstants.AMP).concat(StringUtil.urlEncode(url))
-                .concat(WimConstants.AMP).concat(StringUtil.urlEncode(params));
+        String hash = method.concat(WimConstants.AMP)
+                .concat(StringUtil.urlEncode(url)).concat(WimConstants.AMP)
+                .concat(StringUtil.urlEncode(params));
         return url.concat(WimConstants.QUE).concat(params).concat(WimConstants.AMP)
                 .concat(WimConstants.SIG_SHA256).concat(EQUAL)
                 .concat(StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));

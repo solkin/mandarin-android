@@ -191,10 +191,10 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected String getUrl(String name, long size) throws Throwable {
-        HttpParamsBuilder builder = new HttpParamsBuilder();
-        builder.appendParam("client", CLIENT_NAME);
-        builder.appendParam("filename", name);
-        builder.appendParam("size", String.valueOf(size));
+        HttpParamsBuilder builder = new HttpParamsBuilder()
+                .appendParam("client", CLIENT_NAME)
+                .appendParam("filename", name)
+                .appendParam("size", String.valueOf(size));
 
         String url = getAccountRoot().getSession().signRequest(HttpUtil.GET, INIT_URL, builder);
 

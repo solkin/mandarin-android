@@ -14,10 +14,12 @@
             android:summary="@string/pref_summary_music_auto_status"
             android:title="@string/pref_title_music_auto_status"
             android:defaultValue="@bool/pref_music_auto_status_default" />
-        <CheckBoxPreference
-            android:key="@string/pref_dark_theme"
-            android:title="@string/pref_title_dark_theme"
-            android:defaultValue="@bool/pref_dark_theme_default" />
+        <ListPreference
+            android:key="@string/pref_theme"
+            android:title="@string/pref_title_theme"
+            android:defaultValue="@string/pref_theme_default"
+            android:entries="@array/pref_theme_strings"
+            android:entryValues="@array/pref_theme_values" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_buddy_list_title"

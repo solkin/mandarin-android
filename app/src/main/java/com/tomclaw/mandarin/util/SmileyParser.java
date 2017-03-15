@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Spannable;
@@ -23,62 +24,56 @@ import java.util.regex.Pattern;
  * to graphical ones.
  */
 public class SmileyParser {
-    // Singleton stuff
-    private static SmileyParser sInstance = null;
+
+    @SuppressLint("StaticFieldLeak")
+    private static SmileyParser instance = null;
 
     public static SmileyParser getInstance() {
-        return sInstance;
+        return instance;
     }
 
     public static void init(Context context) {
-        // GH - added a null check so instances will get reused
-        if (sInstance == null) {
-            sInstance = new SmileyParser(context);
+        if (instance == null) {
+            instance = new SmileyParser(context);
         }
     }
 
-    public static void destroyInstance() {
-        if (sInstance != null) {
-            sInstance = null;
-        }
-    }
+    private static final int DEFAULT_SMILEY_TEXTS = R.array.default_smiley_texts;
+    private static final int DEFAULT_SMILEY_IMAGES = R.array.default_smileys_images;
 
-    private final Context mContext;
-    private final String[] mSmileyTexts;
-    private final TypedArray mSmileyDrawables;
-    private final Pattern mPattern;
-    private final HashMap<String, Integer> mSmileyToRes;
-    private final SparseArray<String> mResToSmileys;
+    private final Context context;
+    private final String[] smileyTexts;
+    private final TypedArray smileyDrawables;
+    private final Pattern pattern;
+    private final HashMap<String, Integer> smileyToRes;
+    private final SparseArray<String> resToSmileys;
 
     private SmileyParser(Context context) {
-        mContext = context;
-        mSmileyTexts = mContext.getResources().getStringArray(DEFAULT_SMILEY_TEXTS);
-        mSmileyDrawables = mContext.getResources().obtainTypedArray(DEFAULT_SMILEY_IMAGES);
-        mSmileyToRes = new HashMap<>();
-        mResToSmileys = new SparseArray<>();
+        this.context = context;
+        smileyTexts = this.context.getResources().getStringArray(DEFAULT_SMILEY_TEXTS);
+        smileyDrawables = this.context.getResources().obtainTypedArray(DEFAULT_SMILEY_IMAGES);
+        smileyToRes = new HashMap<>();
+        resToSmileys = new SparseArray<>();
         buildSmileys();
-        mPattern = buildPattern();
+        pattern = buildPattern();
     }
-
-    public static final int DEFAULT_SMILEY_TEXTS = R.array.default_smiley_texts;
-    public static final int DEFAULT_SMILEY_IMAGES = R.array.default_smileys_images;
 
     /**
      * Builds the hashtable we use for mapping the string version
      * of a smiley (e.g. ":-)") to a resource ID for the icon version.
      */
     private void buildSmileys() {
-        if (mSmileyDrawables.length() != mSmileyTexts.length) {
+        if (smileyDrawables.length() != smileyTexts.length) {
             // Throw an exception if someone updated DEFAULT_SMILEY_RES_IDS
             // and failed to update arrays.xml
             throw new IllegalStateException("Smiley resource ID/text mismatch");
         }
 
-        for (int i = 0; i < mSmileyTexts.length; i++) {
-            int resourceId = mSmileyDrawables.getResourceId(i, 0);
-            mSmileyToRes.put(mSmileyTexts[i], resourceId);
-            if (TextUtils.isEmpty(mResToSmileys.get(resourceId))) {
-                mResToSmileys.put(resourceId, mSmileyTexts[i]);
+        for (int i = 0; i < smileyTexts.length; i++) {
+            int resourceId = smileyDrawables.getResourceId(i, 0);
+            smileyToRes.put(smileyTexts[i], resourceId);
+            if (TextUtils.isEmpty(resToSmileys.get(resourceId))) {
+                resToSmileys.put(resourceId, smileyTexts[i]);
             }
         }
     }
@@ -89,12 +84,12 @@ public class SmileyParser {
     private Pattern buildPattern() {
         // Set the StringBuilder capacity with the assumption that the average
         // smiley is 3 characters long.
-        StringBuilder patternString = new StringBuilder(mSmileyTexts.length * 3);
+        StringBuilder patternString = new StringBuilder(smileyTexts.length * 3);
 
         // Build a regex that looks like (:-)|:-(|...), but escaping the smileys
         // properly so they will be interpreted literally by the regex matcher.
         patternString.append('(');
-        for (String s : mSmileyTexts) {
+        for (String s : smileyTexts) {
             patternString.append(Pattern.quote(s));
             patternString.append('|');
         }
@@ -129,10 +124,10 @@ public class SmileyParser {
         for (ImageSpan span : spans) {
             text.removeSpan(span);
         }
-        Matcher matcher = mPattern.matcher(text);
+        Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
-            int resId = mSmileyToRes.get(matcher.group());
-            text.setSpan(new ImageSpan(mContext, resId),
+            int resId = smileyToRes.get(matcher.group());
+            text.setSpan(new ImageSpan(context, resId),
                     matcher.start(), matcher.end(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
@@ -140,14 +135,14 @@ public class SmileyParser {
     }
 
     public int getSmileysCount() {
-        return mResToSmileys.size();
+        return resToSmileys.size();
     }
 
     public int getSmiley(int index) {
-        return mResToSmileys.keyAt(index);
+        return resToSmileys.keyAt(index);
     }
 
     public String getSmileyText(int index) {
-        return mResToSmileys.valueAt(index);
+        return resToSmileys.valueAt(index);
     }
 }

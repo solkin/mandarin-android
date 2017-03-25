@@ -378,4 +378,7 @@
     <string name="export_history_text">此对话框中的聊天记录将保存到此设备上的文本文档，以便您可以将其用于某些用途。 继续？</string>
     <string name="export_history_failed">历史导出操作失败</string>
     <string name="extory_exported">历史已成功出口到:\n</string>
+    <string name="tab_dialogs">聊天</string>
+    <string name="tab_roster">联系</string>
+    <string name="tab_profiles">帐户</string>
 </resources>

@@ -24,6 +24,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -36,6 +38,7 @@ import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
+import com.tomclaw.mandarin.util.ColorHelper;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -54,6 +57,7 @@ public class MainActivity extends ChiefActivity {
 
     private RosterDialogsAdapter dialogsAdapter;
     private Toolbar toolbar;
+    private AHBottomNavigation bottomNavigation;
     private ViewFlipper viewFlipper;
 
     private AccountsDrawerLayout drawerLayout;
@@ -86,20 +90,19 @@ public class MainActivity extends ChiefActivity {
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
-        FloatingActionButton actionButton = (FloatingActionButton) findViewById(R.id.fab);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RosterActivity.class);
-                startActivity(intent);
-            }
-        });
+        bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) actionButton.getLayoutParams();
-            p.setMargins(0, 0, 0, 0); // get rid of margins since shadow area is now the margin
-            actionButton.setLayoutParams(p);
-        }
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem(R.string.tab_dialogs, R.drawable.ic_dialogs, R.color.primary_color);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem(R.string.tab_roster, R.drawable.ic_roster, R.color.primary_color);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem(R.string.tab_profiles, R.drawable.ic_profiles, R.color.primary_color);
+
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+        bottomNavigation.addItem(item3);
+
+        bottomNavigation.setDefaultBackgroundColor(ColorHelper.getAttributedColor(this, R.attr.bottom_bar_background));
+        bottomNavigation.setAccentColor(getResources().getColor(R.color.accent_color));
+        bottomNavigation.setForceTint(true);
 
         viewFlipper = (ViewFlipper) findViewById(R.id.roster_view_flipper);
 

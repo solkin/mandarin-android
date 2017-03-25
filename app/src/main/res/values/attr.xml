@@ -48,6 +48,8 @@
     <attr name="buddy_primary_color" format="color|reference" />
     <attr name="buddy_secondary_color" format="color|reference" />
 
+    <attr name="bottom_bar_background" format="color|reference" />
+
     <declare-styleable name="PreviewImageView">
         <attr name="preview_placeholder_tint" format="color|reference" />
     </declare-styleable>

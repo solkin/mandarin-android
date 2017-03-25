@@ -129,6 +129,8 @@
         <item name="positive_dialog_button_color">@color/accent_color</item>
         <item name="negative_dialog_button_color">#727272</item>
         <item name="neutral_dialog_button_color">#222222</item>
+
+        <item name="bottom_bar_background">#ffffff</item>
     </style>
 
     <style name="Theme.Mandarin.Dark" parent="Theme.AppCompat.NoActionBar">
@@ -197,6 +199,8 @@
         <item name="positive_dialog_button_color">@color/accent_color</item>
         <item name="negative_dialog_button_color">#dddddd</item>
         <item name="neutral_dialog_button_color">#b6b6b6</item>
+
+        <item name="bottom_bar_background">#222222</item>
     </style>
 
     <style name="Theme.Mandarin.Black" parent="Theme.Mandarin.Dark">

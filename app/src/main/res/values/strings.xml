@@ -329,7 +329,7 @@
         для доступа к Вашей новой или существующей учётной записи.
     </string>
     <string name="got_it">Понятно</string>
-    <string name="sms_code_header">Вы получитье СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код
+    <string name="sms_code_header">Вы получите СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код
         ниже.
     </string>
     <string name="resend_code_time">Переотправить код (%s)</string>
@@ -412,7 +412,7 @@
     <string name="buddy_unignore">Не игнорировать</string>
     <string name="account_instance">Закрыть сессии</string>
     <string name="export_history">Экспорт истории</string>
-    <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её на каких-то своих целях. Продолжаем?</string>
+    <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её в каких-то своих целях. Продолжаем?</string>
     <string name="export_history_failed">Не удалось экспортировать историю</string>
     <string name="extory_exported">История успешно экспортирована в:\n</string>
 </resources>

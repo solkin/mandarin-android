@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,10 +14,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 
 import java.io.BufferedInputStream;
@@ -254,5 +261,13 @@ public class BitmapHelper {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+
+    public static Drawable tintDrawable(@NonNull Resources resources, @DrawableRes int drawableRes, @ColorRes int colorRes) {
+        @ColorInt int color = resources.getColor(colorRes);
+        Drawable drawable = resources.getDrawable(drawableRes);
+        Drawable wrapped = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(wrapped, color);
+        return wrapped;
     }
 }

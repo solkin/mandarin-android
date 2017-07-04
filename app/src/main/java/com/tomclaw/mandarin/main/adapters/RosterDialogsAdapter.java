@@ -5,11 +5,10 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -30,7 +29,6 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
-import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.util.Calendar;
@@ -44,14 +42,8 @@ import java.util.Calendar;
 public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAdapter.DialogViewHolder> implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /**
-     * Adapter ID
-     */
     private static final int ADAPTER_DIALOGS_ID = -2;
 
-    /**
-     * Variables
-     */
     private Context context;
     private LayoutInflater inflater;
     private RosterAdapterCallback adapterCallback;
@@ -59,10 +51,8 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     private BuddyCursor buddyCursor;
 
-    private final SelectionHelper<Integer> selectionHelper = new SelectionHelper<>();
-
-    private SelectionModeListener selectionModeListener;
     private ClickListener clickListener;
+    private LongClickListener longClickListener;
 
     public RosterDialogsAdapter(Activity context, LoaderManager loaderManager) {
         super(null);
@@ -121,9 +111,8 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     @Override
     public void onBindViewHolderCursor(DialogViewHolder holder, Cursor cursor) {
-        holder.bind(selectionHelper, buddyCursor, timeHelper);
-        holder.bindClickListeners(clickListener, selectionModeListener, selectionHelper,
-                buddyCursor.getBuddyDbId());
+        holder.bind(buddyCursor, timeHelper);
+        holder.bindClickListeners(clickListener, longClickListener, buddyCursor.getBuddyDbId());
     }
 
     @Override
@@ -144,16 +133,16 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         return cursor.getBuddyDbId();
     }
 
-    public void setAdapterCallback(RosterAdapterCallback adapterCallback) {
+    public void setAdapterCallback(@NonNull RosterAdapterCallback adapterCallback) {
         this.adapterCallback = adapterCallback;
     }
 
-    public void setSelectionModeListener(SelectionModeListener selectionModeListener) {
-        this.selectionModeListener = selectionModeListener;
+    public void setClickListener(@NonNull ClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
-    public void setClickListener(ClickListener clickListener) {
-        this.clickListener = clickListener;
+    public void setLongClickListener(@NonNull LongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
     }
 
     public interface RosterAdapterCallback {
@@ -165,16 +154,12 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         void onRosterUpdate();
     }
 
-    public interface SelectionModeListener {
-        void onItemStateChanged(int buddyDbId);
-
-        void onNothingSelected();
-
-        void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper);
-    }
-
     public interface ClickListener {
         void onItemClicked(int buddyDbId);
+    }
+
+    public interface LongClickListener {
+        void onItemLongClicked(int buddyDbId);
     }
 
     static class DialogViewHolder extends RecyclerView.ViewHolder {
@@ -199,19 +184,8 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
         }
 
-        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
+        void bind(@NonNull BuddyCursor buddyCursor, @NonNull TimeHelper timeHelper) {
             Context context = itemView.getContext();
-            // Selection indicator.
-            int[] attrs = new int[]{R.attr.selectableItemBackground};
-            TypedArray ta = context.obtainStyledAttributes(attrs);
-            Drawable drawableFromTheme = ta.getDrawable(0);
-            if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {
-                int backColor = R.color.orange_normal;
-                itemView.setBackgroundColor(itemView.getResources().getColor(backColor));
-            } else {
-                itemView.setBackgroundDrawable(drawableFromTheme);
-            }
-            ta.recycle();
             // Status image.
             String accountType = buddyCursor.getBuddyAccountType();
             int statusIndex = buddyCursor.getBuddyStatus();
@@ -290,29 +264,19 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             });
         }
 
-        void bindClickListeners(final ClickListener clickListener,
-                                final SelectionModeListener selectionModeListener,
-                                final SelectionHelper<Integer> selectionHelper,
+        void bindClickListeners(final @NonNull ClickListener clickListener,
+                                final @NonNull LongClickListener longClickListener,
                                 final int buddyDbId) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (selectionHelper.isSelectionMode()) {
-                        selectionHelper.toggleChecked(buddyDbId);
-                        selectionModeListener.onItemStateChanged(buddyDbId);
-                        // Check for this was last selected item.
-                        if (selectionHelper.isEmptySelection()) {
-                            selectionModeListener.onNothingSelected();
-                        }
-                    } else {
-                        clickListener.onItemClicked(buddyDbId);
-                    }
+                    clickListener.onItemClicked(buddyDbId);
                 }
             });
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    selectionModeListener.onLongClicked(buddyDbId, selectionHelper);
+                    longClickListener.onItemLongClicked(buddyDbId);
                     return true;
                 }
             });

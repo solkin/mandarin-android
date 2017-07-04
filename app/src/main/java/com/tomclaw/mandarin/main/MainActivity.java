@@ -2,46 +2,37 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.flipboard.bottomsheet.BottomSheetLayout;
+import com.flipboard.bottomsheet.commons.MenuSheetView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
-import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
-import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.ColorHelper;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.SelectionHelper;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
@@ -49,7 +40,6 @@ import net.hockeyapp.android.utils.Util;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.Collection;
 
 import static com.tomclaw.mandarin.im.AccountRoot.AUTH_LOST;
 
@@ -59,10 +49,7 @@ public class MainActivity extends ChiefActivity {
     private Toolbar toolbar;
     private AHBottomNavigation bottomNavigation;
     private ViewFlipper viewFlipper;
-
-    private AccountsDrawerLayout drawerLayout;
-    private MultiChoiceActionCallback actionCallback;
-    private ActionMode actionMode;
+    private BottomSheetLayout bottomSheet;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,14 +68,11 @@ public class MainActivity extends ChiefActivity {
 
         setContentView(R.layout.main_activity);
 
+        bottomSheet = (BottomSheetLayout) findViewById(R.id.bottom_sheet);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.dialogs);
         setSupportActionBar(toolbar);
-
-        drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.init(this, toolbar);
-        drawerLayout.setTitle(getString(R.string.dialogs));
-        drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
 
@@ -111,22 +95,17 @@ public class MainActivity extends ChiefActivity {
         dialogsAdapter.setAdapterCallback(new RosterDialogsAdapter.RosterAdapterCallback() {
             @Override
             public void onRosterLoadingStarted() {
-                // Disable placeholder when loading started.
                 showRoster();
             }
 
             @Override
             public void onRosterEmpty() {
-                // Show empty view only for really empty list.
                 showEmpty();
             }
 
             @Override
             public void onRosterUpdate() {
                 showRoster();
-                if (actionCallback != null) {
-                    actionCallback.updateMenu(actionMode, actionMode.getMenu());
-                }
             }
 
             private void showRoster() {
@@ -146,35 +125,6 @@ public class MainActivity extends ChiefActivity {
         dialogsList.setLayoutManager(new LinearLayoutManager(this));
         dialogsList.setItemAnimator(new DefaultItemAnimator());
         dialogsList.setAdapter(dialogsAdapter);
-        dialogsAdapter.setSelectionModeListener(new RosterDialogsAdapter.SelectionModeListener() {
-
-            @Override
-            public void onItemStateChanged(int buddyDbId) {
-                // Strange case, but let's check it to be sure.
-                if (actionCallback != null && actionMode != null) {
-                    actionCallback.onItemCheckedStateChanged(actionMode);
-                    dialogsAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onNothingSelected() {
-                // Strange case, but let's check it to be sure.
-                if (actionMode != null) {
-                    actionMode.finish();
-                }
-            }
-
-            @Override
-            public void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper) {
-                if (selectionHelper.setSelectionMode(true)) {
-                    actionCallback = new MultiChoiceActionCallback(selectionHelper);
-                    actionMode = toolbar.startActionMode(actionCallback);
-                    selectionHelper.setChecked(buddyDbId);
-                    onItemStateChanged(buddyDbId);
-                }
-            }
-        });
         dialogsAdapter.setClickListener(new RosterDialogsAdapter.ClickListener() {
             @Override
             public void onItemClicked(int buddyDbId) {
@@ -183,6 +133,25 @@ public class MainActivity extends ChiefActivity {
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
                 startActivity(intent);
+            }
+        });
+        dialogsAdapter.setLongClickListener(new RosterDialogsAdapter.LongClickListener() {
+            @Override
+            public void onItemLongClicked(int buddyDbId) {
+                Logger.log("Open context menu for buddy (db id): " + buddyDbId);
+                MenuSheetView menuSheetView = new MenuSheetView(MainActivity.this,
+                        MenuSheetView.MenuType.LIST, null, new MenuSheetView.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                                if (bottomSheet.isSheetShowing()) {
+                                    bottomSheet.dismissSheet();
+                                }
+                                return true;
+                            }
+                        });
+                menuSheetView.inflateMenu(R.menu.chat_list_unread_edit_menu);
+                bottomSheet.showWithSheetView(menuSheetView);
             }
         });
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
@@ -237,27 +206,13 @@ public class MainActivity extends ChiefActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        int menuResource;
-        // Checking for drawer is initialized, opened and show such menu.
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            menuResource = R.menu.accounts_list_menu;
-        } else {
-            menuResource = R.menu.main_activity_menu;
-        }
-        getMenuInflater().inflate(menuResource, menu);
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerLayout.onToggleOptionsItemSelected(item)) {
-            return true;
-        }
         switch (item.getItemId()) {
-            case R.id.accounts: {
-                drawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            }
             case R.id.settings: {
                 openSettings();
                 return true;
@@ -274,33 +229,8 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            // Close drawer if opened.
-            drawerLayout.closeDrawers();
-        } else {
-            // Finish otherwise.
-            finish();
-        }
-    }
-
-    @Override
     public void setTitle(CharSequence title) {
-        drawerLayout.setTitle(title.toString());
         toolbar.setTitle(title);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerLayout.syncToggleState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerLayout.onToggleConfigurationChanged(newConfig);
     }
 
     public void onCoreServiceIntent(Intent intent) {
@@ -312,95 +242,6 @@ public class MainActivity extends ChiefActivity {
 
     private void openSettings() {
         startActivity(new Intent(this, SettingsActivity.class));
-    }
-
-    private class MultiChoiceActionCallback implements ActionMode.Callback {
-
-        private SelectionHelper<Integer> selectionHelper;
-
-        MultiChoiceActionCallback(SelectionHelper<Integer> selectionHelper) {
-            this.selectionHelper = selectionHelper;
-        }
-
-        void onItemCheckedStateChanged(ActionMode mode) {
-            mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
-            updateMenu(mode, mode.getMenu());
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            updateMenu(mode, menu);
-            return true;
-        }
-
-        private void updateMenu(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // Assumes that you have menu resources
-            menu.clear();
-            // Checking for unread dialogs.
-            int menuRes = R.menu.chat_list_edit_menu;
-            Collection<Integer> selectedIds = selectionHelper.getSelectedIds();
-            dialogsAdapter.getBuddyCursor().moveToFirst();
-            BuddyCursor cursor = dialogsAdapter.getBuddyCursor();
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                for (int selectedId : selectedIds) {
-                    if (selectedId == cursor.getBuddyDbId() &&
-                            cursor.getBuddyUnreadCount() > 0) {
-                        menuRes = R.menu.chat_list_unread_edit_menu;
-                        break;
-                    }
-                }
-            }
-            inflater.inflate(menuRes, menu);
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;  // Return false if nothing is done.
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.select_all_chats_menu: {
-                    for (int c = 0; c < dialogsAdapter.getItemCount(); c++) {
-                        int buddyDbId = dialogsAdapter.getBuddyDbId(c);
-                        selectionHelper.setChecked(buddyDbId);
-                    }
-                    onItemCheckedStateChanged(mode);
-                    dialogsAdapter.notifyDataSetChanged();
-                    return false;
-                }
-                case R.id.mark_as_read_chat_menu: {
-                    try {
-                        QueryHelper.readAllMessages(getContentResolver(), selectionHelper.getSelectedIds());
-                    } catch (Exception ignored) {
-                        // Nothing to do in this case.
-                    }
-                    break;
-                }
-                case R.id.close_chat_menu: {
-                    try {
-                        QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);
-                    } catch (Exception ignored) {
-                        // Nothing to do in this case.
-                    }
-                    break;
-                }
-                default: {
-                    return false;
-                }
-            }
-            mode.finish();
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            selectionHelper.setSelectionMode(false);
-            dialogsAdapter.notifyDataSetChanged();
-        }
     }
 
     private class BuddyInfoAccountCallback implements AccountProviderTask.AccountProviderCallback {

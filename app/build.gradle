@@ -36,5 +36,7 @@ dependencies {
     compile 'net.hockeyapp.android:HockeySDK:4.0.2'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.aurelhubert:ahbottomnavigation:2.0.3'
+    compile 'com.aurelhubert:ahbottomnavigation:2.0.6'
+    compile 'com.flipboard:bottomsheet-core:1.5.3'
+    compile 'com.flipboard:bottomsheet-commons:1.5.3'
 }

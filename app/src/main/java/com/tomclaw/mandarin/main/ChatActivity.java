@@ -60,6 +60,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.BuddyObserver;
+import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
@@ -81,6 +82,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -912,13 +914,13 @@ public class ChatActivity extends ChiefActivity {
     private static class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final Buddy buddy;
-        private String message;
+        private String text;
         private final MessageCallback callback;
 
-        public SendMessageTask(ChiefActivity activity, Buddy buddy, String message, MessageCallback callback) {
+        public SendMessageTask(ChiefActivity activity, Buddy buddy, String text, MessageCallback callback) {
             super(activity);
             this.buddy = buddy;
-            this.message = message;
+            this.text = text;
             this.callback = callback;
         }
 
@@ -927,8 +929,20 @@ public class ChatActivity extends ChiefActivity {
             ChiefActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
-                String cookie = String.valueOf(System.currentTimeMillis());
-//                QueryHelper.insertMessage(contentResolver, buddyDbId,
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                String cookie = StringUtil.generateRandomString(32);
+                int messageType = GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING;
+                long messageTime = System.currentTimeMillis();
+                int accountDbId = buddy.getAccountDbId();
+                String buddyId = buddy.getBuddyId();
+                long prevMsgId = GlobalProvider.HISTORY_MESSAGE_ID_REQUESTED;
+                long msgId = Long.MAX_VALUE;
+
+                MessageData messageData = new MessageData(accountDbId, buddyId, prevMsgId,
+                        msgId, cookie, messageType, messageTime, text);
+                QueryHelper.insertMessage(databaseLayer, messageData);
+                RequestHelper.requestMessage(contentResolver, accountDbId, buddyId, cookie, text);
+//                QueryHelper.insertMessage(contentResolver, buddy.getAccountDbId(), buddy.getBuddyId(),
 //                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
                 // Sending protocol message request.
 //                RequestHelper.requestMessage(contentResolver, buddy, cookie, message);

@@ -16,6 +16,8 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.MessageData;
+import com.tomclaw.mandarin.im.SentMessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.GsonSingleton;
@@ -31,6 +33,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ID;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_COOKIE;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -234,7 +241,7 @@ public class QueryHelper {
      * @param context     - context for account root
      * @param accountRoot - account root to be inserted into database
      * @return account db id.
-     * @throws AccountNotFoundException
+     * @throws AccountNotFoundException, AccountAlreadyExistsException
      */
     public static int insertAccount(Context context, DatabaseLayer databaseLayer, AccountRoot accountRoot)
             throws AccountNotFoundException, AccountAlreadyExistsException {
@@ -438,64 +445,79 @@ public class QueryHelper {
 //        }
 //    }
 
-//    public static void insertMessage(ContentResolver contentResolver, int accountDbId,
-//                                     String buddyId, int messageType, String cookie,
-//                                     long messageTime, String messageText)
-//            throws BuddyNotFoundException {
-//        QueryBuilder queryBuilder = new QueryBuilder();
-//        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-//                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-//                .descending(GlobalProvider.ROSTER_BUDDY_LAST_MESSAGE_TIME);
-//        // Obtain account db id.
-//        Cursor cursor = null;
-//        try {
-//            cursor = queryBuilder.query(contentResolver, Settings.BUDDY_RESOLVER_URI);
-//            // Cursor may have more than only one entry.
-//            if (cursor.moveToFirst()) {
-//                // Insert message only for buddy with latest message time.
-//                int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
-//                // Plain message query.
-//                insertTextMessage(contentResolver, accountDbId, buddyDbId,
-//                        messageType, cookie, messageTime, messageText);
-//            } else {
-//                throw new BuddyNotFoundException();
-//            }
-//        } finally {
-//            if (cursor != null) {
-//                // Closing cursor.
-//                cursor.close();
-//            }
-//        }
-//    }
+    public static QueryBuilder messageQueryBuilder(MessageData message) {
+        return new QueryBuilder()
+                .columnEquals(HISTORY_BUDDY_ACCOUNT_DB_ID, message.getBuddyAccountDbId()).and()
+                .columnEquals(HISTORY_BUDDY_ID, message.getBuddyId()).and()
+                .columnEquals(HISTORY_MESSAGE_ID, message.getMessageId());
+    }
 
-    /**
-     * Will append some more cookie to message.
-     *
-     * @param databaseLayer   - data layer
-     * @param cookie          - cookie of message to be updated
-     * @param cookiesToAdd    - appending cookies
-     */
-    public static void addMessageCookie(DatabaseLayer databaseLayer, String cookie, String... cookiesToAdd) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+    public static QueryBuilder sentMessageQueryBuilder(SentMessageData data) {
+        return new QueryBuilder()
+                .columnEquals(HISTORY_MESSAGE_COOKIE, data.getCookie());
+    }
+
+    public static void insertOrUpdateMessage(DatabaseLayer databaseLayer, MessageData message) {
+        boolean isUpdate = isMessageExist(databaseLayer, message);
+        Logger.log("insertTextMessage: " + message.getMessageId() + " will be "
+                + (isUpdate ? "updated" : "inserted"));
+        if (isUpdate) {
+            updateMessage(databaseLayer, message);
+        } else {
+            insertMessage(databaseLayer, message);
+        }
+    }
+
+    public static boolean isMessageExist(DatabaseLayer databaseLayer, MessageData message) {
         Cursor cursor = null;
         try {
-            cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
-            if (cursor != null && cursor.moveToFirst()) {
-                String cookies = cursor.getString(cursor.getColumnIndex(GlobalProvider.HISTORY_MESSAGE_COOKIE));
-                for (String cookieAdd : cookiesToAdd) {
-                    cookies += " " + cookieAdd;
-                }
-                // Plain message modify by cookies.
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookies);
-                queryBuilder.update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
-            }
+            cursor = messageQueryBuilder(message)
+                    .query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
+            return cursor.getCount() > 0;
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
+    }
+
+    // TODO: add content support
+    public static void insertMessage(DatabaseLayer databaseLayer, MessageData message) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, message.getBuddyAccountDbId());
+        contentValues.put(GlobalProvider.HISTORY_BUDDY_ID, message.getBuddyId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, message.getMessagePrevId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, message.getMessageId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, message.getMessageType());
+        if (message.getCookie() == null) {
+            contentValues.putNull(GlobalProvider.HISTORY_MESSAGE_COOKIE);
+        } else {
+            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, message.getCookie());
+        }
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, message.getMessageTime());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message.getMessageText());
+        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
+        databaseLayer.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
+    }
+
+    // TODO: add content support
+    private static void updateMessage(DatabaseLayer databaseLayer, MessageData message) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, message.getMessagePrevId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, message.getMessageTime());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message.getMessageText());
+        messageQueryBuilder(message)
+                .update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
+    }
+
+    public static void updateSentMessage(DatabaseLayer databaseLayer, SentMessageData data) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, data.getMessageId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, data.getMessagePrevId());
+        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, data.getMessageTime());
+
+        sentMessageQueryBuilder(data)
+                .update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
     private static int modifyFile(DatabaseLayer databaseLayer, ContentValues contentValues, int messageType, String cookie) {

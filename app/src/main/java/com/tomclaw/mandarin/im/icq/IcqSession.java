@@ -14,10 +14,12 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyData;
+import com.tomclaw.mandarin.im.SentMessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.tasks.ProcessDialogStateTask;
 import com.tomclaw.mandarin.im.tasks.UpdateRosterTask;
+import com.tomclaw.mandarin.im.tasks.UpdateSentMessagesTask;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
@@ -64,11 +66,14 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.GROUPS_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_DLG_STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_MSG_ID;
+import static com.tomclaw.mandarin.im.icq.WimConstants.HIST_PREV_MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.HOST_TIME;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_FIELD;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ID_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IMF;
 import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.IM_STATES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INCLUDE_PRESENCE_FIELDS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.INVISIBLE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.LANGUAGE;
@@ -91,6 +96,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RENEW_TOKEN_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.R_PARAM;
+import static com.tomclaw.mandarin.im.icq.WimConstants.SEND_REQ_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_ENDED;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_KEY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.SESSION_SECRET;
@@ -516,23 +522,24 @@ public class IcqSession {
                 }
                 break;
             case IM_STATE:
-//                try {
-//                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
-//                    for (int c = 0; c < imStatesArray.length(); c++) {
-//                        JSONObject imState = imStatesArray.getJSONObject(c);
-//                        String state = imState.getString(STATE);
-//                        String msgId = imState.getString(MSG_ID);
-//                        String sendReqId = imState.optString(SEND_REQ_ID);
-//                        for (int i = 0; i < IM_STATES.length; i++) {
-//                            if (state.equals(IM_STATES[i])) {
-//                                // TODO: something to do maybe?
-//                                break;
-//                            }
-//                        }
-//                    }
-//                } catch (JSONException ex) {
-//                    Logger.log("error while processing im state", ex);
-//                }
+                try {
+                    JSONArray imStatesArray = eventData.getJSONArray(IM_STATES_ARRAY);
+                    ArrayList<SentMessageData> messagesData = new ArrayList<>();
+                    for (int c = 0; c < imStatesArray.length(); c++) {
+                        JSONObject imState = imStatesArray.getJSONObject(c);
+                        String sendReqId = imState.optString(SEND_REQ_ID);
+                        long msgId = imState.getLong(HIST_MSG_ID);
+                        long prevMsgId = imState.getLong(HIST_PREV_MSG_ID);
+                        long ts = TimeUnit.SECONDS.toMillis(imState.getLong(TS));
+                        messagesData.add(new SentMessageData(sendReqId, msgId, prevMsgId, ts));
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList(UpdateSentMessagesTask.KEY_MESSAGES_DATA, messagesData);
+                    contentResolver.call(Settings.HISTORY_RESOLVER_URI,
+                            UpdateSentMessagesTask.class.getName(), null, bundle);
+                } catch (JSONException ex) {
+                    Logger.log("error while processing im state", ex);
+                }
                 break;
             case PRESENCE:
                 try {

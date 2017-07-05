@@ -3,7 +3,6 @@ package com.tomclaw.mandarin.im;
 /**
  * Created by ivsolkin on 26.11.16.
  */
-
 public class MessageData {
 
     private int buddyAccountDbId;

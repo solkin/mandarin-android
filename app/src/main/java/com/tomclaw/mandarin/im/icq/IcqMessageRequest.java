@@ -43,18 +43,10 @@ public class IcqMessageRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
-        DatabaseLayer databaseLayer = getDatabaseLayer();
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {
-            String requestId = responseObject.getString(REQUEST_ID);
-            JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-            String state = dataObject.getString(STATE);
-            String msgId = dataObject.getString(MSG_ID);
-            // This will mark message with server-side msgId
-            // to provide message stated in fetch events.
-            QueryHelper.addMessageCookie(databaseLayer, requestId, msgId);
             return REQUEST_DELETE;
         } else if (statusCode >= 460 && statusCode <= 606) {
             // Target error. Mark message as error and delete request from pending operations.

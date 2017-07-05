@@ -24,6 +24,7 @@ import java.util.List;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ID;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
+import static com.tomclaw.mandarin.core.QueryHelper.insertOrUpdateMessage;
 
 /**
  * Created by ivsolkin on 26.11.16.
@@ -60,66 +61,6 @@ public class HistoryMergeTask extends DatabaseTask {
         }
         Logger.log("messages processing time: " + timer.stop()
                 + " (" + messages.size() + " messages)");
-    }
-
-    private QueryBuilder messageQueryBuilder(MessageData message) {
-        return new QueryBuilder()
-                .columnEquals(HISTORY_BUDDY_ACCOUNT_DB_ID, message.getBuddyAccountDbId()).and()
-                .columnEquals(HISTORY_BUDDY_ID, message.getBuddyId()).and()
-                .columnEquals(HISTORY_MESSAGE_ID, message.getMessageId());
-    }
-
-    private void insertOrUpdateMessage(DatabaseLayer databaseLayer, MessageData message) {
-        boolean isUpdate = isMessageExist(databaseLayer, message);
-        Logger.log("insertTextMessage: " + message.getMessageId() + " will be "
-                + (isUpdate ? "updated" : "inserted"));
-        if (isUpdate) {
-            updateMessage(databaseLayer, message);
-        } else {
-            insertMessage(databaseLayer, message);
-        }
-    }
-
-    private boolean isMessageExist(DatabaseLayer databaseLayer, MessageData message) {
-        Cursor cursor = null;
-        try {
-            cursor = messageQueryBuilder(message)
-                    .query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
-            return cursor.getCount() > 0;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    // TODO: add content support
-    private void insertMessage(DatabaseLayer databaseLayer, MessageData message) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, message.getBuddyAccountDbId());
-        contentValues.put(GlobalProvider.HISTORY_BUDDY_ID, message.getBuddyId());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, message.getMessagePrevId());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_ID, message.getMessageId());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TYPE, message.getMessageType());
-        if (message.getCookie() == null) {
-            contentValues.putNull(GlobalProvider.HISTORY_MESSAGE_COOKIE);
-        } else {
-            contentValues.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, message.getCookie());
-        }
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, message.getMessageTime());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message.getMessageText());
-        contentValues.put(GlobalProvider.HISTORY_CONTENT_TYPE, GlobalProvider.HISTORY_CONTENT_TYPE_TEXT);
-        databaseLayer.insert(Settings.HISTORY_RESOLVER_URI, contentValues);
-    }
-
-    // TODO: add content support
-    private void updateMessage(DatabaseLayer databaseLayer, MessageData message) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_PREV_ID, message.getMessagePrevId());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TIME, message.getMessageTime());
-        contentValues.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message.getMessageText());
-        messageQueryBuilder(message)
-                .update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
     @Override

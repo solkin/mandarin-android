@@ -14,6 +14,9 @@ import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
 
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomText;
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -54,22 +57,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             for (int a = 0; a < 3 + random.nextInt(5); a++) {
                 IcqAccountRoot accountRoot = new IcqAccountRoot();
                 accountRoot.setUserId(String.valueOf(random.nextInt(999999999)));
-                accountRoot.setUserPassword(generateRandomWord(random));
-                accountRoot.setUserNick(generateRandomWord(random));
+                accountRoot.setUserPassword(generateRandomWord());
+                accountRoot.setUserNick(generateRandomWord());
                 cv0.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
                 cv0.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
                 cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
                 cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
                 cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
-                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(1 + random.nextInt(2)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(4 + random.nextInt(6)));
                 cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
                 cv0.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
                 for (int i = 1; i <= 4 + random.nextInt(3); i++) {
                     int groupId = (random.nextInt(10) == 1) ? GlobalProvider.GROUP_ID_RECYCLE : i;
                     String groupName = groupId == GlobalProvider.GROUP_ID_RECYCLE ?
-                            context.getString(R.string.recycle) : generateRandomWord(random);
+                            context.getString(R.string.recycle) : generateRandomWord();
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
                     cv1.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
@@ -77,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 15 + random.nextInt(15); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
-                        String nick = generateRandomWord(random);
+                        String nick = generateRandomWord();
                         String buddyId = String.valueOf(random.nextInt(999999999));
                         boolean isDialog = (random.nextInt(10) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
@@ -87,8 +90,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, generateRandomText(1 + random.nextInt(2)));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(4 + random.nextInt(6)));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
@@ -107,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
-                                String message = generateRandomText(random);
+                                String message = generateRandomText();
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
@@ -131,40 +134,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             PreferenceHelper.setShowStartHelper(context, false);
         } catch (Throwable ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static String generateRandomText(Random r) {
-        int wordCount = 10 + r.nextInt(13);
-        return generateRandomText(r, wordCount);
-    }
-
-    public static String generateRandomText(Random r, int wordCount) {
-
-        StringBuilder sb = new StringBuilder(wordCount);
-        for (int i = 0; i < wordCount; i++) { // For each letter in the word
-            sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
-        }
-        return sb.toString();
-    }
-
-    private static String generateRandomWord(Random r) {
-        return generateRandomWord(r, true);
-    }
-
-    private static String generateRandomWord(Random r, boolean capitalize) {
-        int wordLength = 4 + r.nextInt(6);
-        // Initialize a Random Number Generator with SysTime as the seed
-        StringBuilder sb = new StringBuilder(wordLength);
-        for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
-            sb.append(tmp); // Add it to the String
-        }
-        String word = sb.toString();
-        if (capitalize) {
-            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
-        } else {
-            return word;
         }
     }
 

@@ -630,6 +630,16 @@ public class QueryHelper {
     }
 
     public static long getLastIncomingMessageId(DatabaseLayer databaseLayer, Buddy buddy) {
+        try {
+            MessageData messageData = getLastIncomingMessage(databaseLayer, buddy);
+            return messageData.getMessageId();
+        } catch (MessageNotFoundException e) {
+            return HISTORY_MESSAGE_ID_START;
+        }
+    }
+
+    public static MessageData getLastIncomingMessage(DatabaseLayer databaseLayer, Buddy buddy)
+            throws MessageNotFoundException {
         int accountDbId = buddy.getAccountDbId();
         String buddyId = buddy.getBuddyId();
         MessageCursor cursor = null;
@@ -640,9 +650,7 @@ public class QueryHelper {
                     .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
                     .descending(GlobalProvider.HISTORY_MESSAGE_ID)
                     .limit(1));
-            return cursor.getMessageId();
-        } catch (MessageNotFoundException e) {
-            return HISTORY_MESSAGE_ID_START;
+            return cursor.toMessageData();
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -891,6 +899,13 @@ public class QueryHelper {
         modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
+    public static void modifyBuddyNotifiedMessageId(DatabaseLayer databaseLayer, Buddy buddy,
+                                                    long notifiedMsgId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_NOTIFIED_MSG_ID, notifiedMsgId);
+        modifyBuddy(databaseLayer, buddy, contentValues);
+    }
+
     public static void modifyBuddyTyping(DatabaseLayer databaseLayer, int accountDbId, String buddyId,
                                          boolean isTyping) throws BuddyNotFoundException {
         ContentValues contentValues = new ContentValues();
@@ -1101,13 +1116,35 @@ public class QueryHelper {
         queryBuilder.delete(databaseLayer, Settings.BUDDY_RESOLVER_URI);
     }
 
+    public static Collection<Buddy> getBuddiesWithUnread(DatabaseLayer databaseLayer)
+            throws BuddyNotFoundException {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnNotEquals(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, 0);
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = new BuddyCursor(queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI));
+            if (buddyCursor.moveToFirst()) {
+                Set<Buddy> buddies = new HashSet<>();
+                do {
+                    Buddy buddy = buddyCursor.toBuddy();
+                    buddies.add(buddy);
+                } while (buddyCursor.moveToNext());
+                return buddies;
+            }
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
+        }
+        return Collections.emptySet();
+    }
+
     public static Collection<Buddy> getBuddies(DatabaseLayer databaseLayer, int accountDbId,
                                                String buddyId, Map<String, Object> criteria)
             throws BuddyNotFoundException {
         QueryBuilder queryBuilder = new QueryBuilder();
-        // Obtain account db id.
-        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
-                .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
+        queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
+                .columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
         // Appending criteria values.
         for (String key : criteria.keySet()) {
             queryBuilder.and().columnEquals(key, criteria.get(key));
@@ -1115,15 +1152,12 @@ public class QueryHelper {
         BuddyCursor buddyCursor = null;
         try {
             buddyCursor = new BuddyCursor(queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI));
-            // Cursor may have no more than only one entry. But lets check.
             if (buddyCursor.moveToFirst()) {
                 Set<Buddy> buddies = new HashSet<>();
                 do {
                     Buddy buddy = buddyCursor.toBuddy();
                     buddies.add(buddy);
                 } while (buddyCursor.moveToNext());
-                // Closing cursor.
-                buddyCursor.close();
                 return new ArrayList<>(buddies);
             }
         } finally {

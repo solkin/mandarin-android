@@ -28,6 +28,7 @@ public class CoreService extends Service {
     private RequestDispatcher downloadDispatcher;
     private RequestDispatcher uploadDispatcher;
     private AccountsDispatcher accountsDispatcher;
+    private UnreadDispatcher unreadDispatcher;
 
     public static final String ACTION_CORE_SERVICE = "core_service";
     public static final String EXTRA_STAFF_PARAM = "staff";
@@ -126,6 +127,7 @@ public class CoreService extends Service {
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);
         uploadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_UPLOAD);
         accountsDispatcher = new AccountsDispatcher(this, sessionHolder);
+        unreadDispatcher = new UnreadDispatcher(this);
         Logger.log("CoreService serviceInit");
         // Loading all data for this application session.
         sessionHolder.load();
@@ -133,6 +135,7 @@ public class CoreService extends Service {
         downloadDispatcher.startObservation();
         uploadDispatcher.startObservation();
         accountsDispatcher.startObservation();
+        unreadDispatcher.startObservation();
         // Register broadcast receivers.
         MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
         registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());

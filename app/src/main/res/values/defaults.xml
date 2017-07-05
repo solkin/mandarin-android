@@ -13,7 +13,7 @@
     <bool name="pref_chat_show_keyboard_default">false</bool>
     <bool name="pref_send_by_enter_default">false</bool>
     <bool name="pref_music_auto_status_default">false</bool>
-    <string name="pref_theme_default">@string/theme_light</string>
+    <string name="pref_theme_default" translatable="false">@string/theme_light</string>
     <bool name="pref_ignore_unknown_default">false</bool>
     <string name="pref_roster_mode_default" translatable="false">@string/roster_mode_alphabet</string>
     <string name="pref_files_auto_receive_default" translatable="false">@string/auto_receive_mobile_less_size</string>

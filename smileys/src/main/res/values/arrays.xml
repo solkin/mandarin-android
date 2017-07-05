@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string-array name="default_smiley_texts">
+    <string-array name="default_smiley_texts" translatable="false">
         <item>:-)</item>
         <item>:)</item>
         <item>=)</item>

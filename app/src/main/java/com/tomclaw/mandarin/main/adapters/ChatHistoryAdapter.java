@@ -265,6 +265,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         String messageDateText = timeHelper.getFormattedDate(messageTime);
         // Showing or hiding date.
         // Go to previous message and comparing dates.
+        boolean isFirst = messageCursor.isFirst();
         boolean isMoved = messageCursor.moveToNext();
         boolean dateVisible = true;
         if (isMoved) {
@@ -282,6 +283,11 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
             Logger.log("Hole between " + upperMessageId + " and " + messageId);
             if (historyIntegrityListener != null) {
                 historyIntegrityListener.onHole(buddy, upperMessageId, messageId);
+            }
+        }
+        if (isFirst) {
+            if (historyIntegrityListener != null) {
+                historyIntegrityListener.onHistoryUpdated(buddy);
             }
         }
         // Creating chat history item to bind the view.
@@ -311,5 +317,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
     public interface HistoryIntegrityListener {
 
         void onHole(Buddy buddy, long fromMessageId, long tillMessageId);
+
+        void onHistoryUpdated(Buddy buddy);
     }
 }

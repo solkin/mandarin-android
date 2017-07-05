@@ -197,10 +197,10 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, historyBlockRequest);
     }
 
-    public static void requestSetDialogState(ContentResolver contentResolver, int accountDbId,
+    public static void requestSetDialogState(DatabaseLayer databaseLayer, int accountDbId,
                                              String buddyId, long messageId) {
         SetDialogStateRequest setDialogStateRequest = new SetDialogStateRequest(buddyId, messageId);
-        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setDialogStateRequest);
+        insertRequest(databaseLayer, Request.REQUEST_TYPE_SHORT, accountDbId, setDialogStateRequest);
     }
 
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,
@@ -238,6 +238,11 @@ public class RequestHelper {
     private static void insertRequest(ContentResolver contentResolver, int type, int accountDbId,
                                       Request request) {
         insertRequest(contentResolver, type, true, accountDbId, null, null, request);
+    }
+
+    private static void insertRequest(DatabaseLayer databaseLayer, int type, int accountDbId,
+                                      Request request) {
+        insertRequest(databaseLayer, type, true, accountDbId, null, null, request);
     }
 
     private static void insertRequest(ContentResolver contentResolver, int type, int accountDbId,

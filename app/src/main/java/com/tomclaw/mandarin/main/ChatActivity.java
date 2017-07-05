@@ -62,6 +62,7 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.BuddyObserver;
 import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.tasks.UpdateLastReadTask;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
@@ -942,10 +943,6 @@ public class ChatActivity extends ChiefActivity {
                         msgId, cookie, messageType, messageTime, text);
                 QueryHelper.insertMessage(databaseLayer, messageData);
                 RequestHelper.requestMessage(contentResolver, accountDbId, buddyId, cookie, text);
-//                QueryHelper.insertMessage(contentResolver, buddy.getAccountDbId(), buddy.getBuddyId(),
-//                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie, message);
-                // Sending protocol message request.
-//                RequestHelper.requestMessage(contentResolver, buddy, cookie, message);
             }
         }
 
@@ -1266,6 +1263,16 @@ public class ChatActivity extends ChiefActivity {
             RequestHelper.requestHistoryBlock(contentResolver,
                     accountDbId, buddyId, fromMessageId, tillMessageId, patchVersion, count);
             QueryHelper.markMessageRequested(databaseLayer, buddy, tillMessageId);
+        }
+
+        @Override
+        public void onHistoryUpdated(Buddy buddy) {
+            Logger.log("chat local history updated");
+            ContentResolver contentResolver = getContentResolver();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(UpdateLastReadTask.KEY_BUDDY, buddy);
+            contentResolver.call(Settings.BUDDY_RESOLVER_URI,
+                    UpdateLastReadTask.class.getName(), null, bundle);
         }
     }
 

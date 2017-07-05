@@ -153,6 +153,10 @@ public class MessageCursor implements Closeable {
         return cursor.moveToNext();
     }
 
+    public boolean isFirst() {
+        return cursor.isFirst();
+    }
+
     public boolean moveToPosition(int position) {
         return cursor.moveToPosition(position);
     }

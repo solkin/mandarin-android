@@ -131,6 +131,7 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_CONTENT_STATE_RUNNING = 4;
     public static final int HISTORY_CONTENT_STATE_FAILED = 5;
 
+    public static final int HISTORY_MESSAGE_ID_START = 0;
     public static final int HISTORY_MESSAGE_ID_INVALID = -1;
     public static final int HISTORY_MESSAGE_ID_REQUESTED = -2;
 

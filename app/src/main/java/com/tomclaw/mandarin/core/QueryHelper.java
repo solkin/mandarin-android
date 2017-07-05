@@ -16,6 +16,7 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.MessageCursor;
 import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.im.SentMessageData;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -38,6 +39,7 @@ import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ID;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_COOKIE;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID_START;
 
 /**
  * Created with IntelliJ IDEA.
@@ -627,11 +629,44 @@ public class QueryHelper {
                 .update(databaseLayer, contentValues, Settings.HISTORY_RESOLVER_URI);
     }
 
+    public static long getLastIncomingMessageId(DatabaseLayer databaseLayer, Buddy buddy) {
+        int accountDbId = buddy.getAccountDbId();
+        String buddyId = buddy.getBuddyId();
+        MessageCursor cursor = null;
+        try {
+            cursor = getMessageCursor(databaseLayer, new QueryBuilder()
+                    .columnEquals(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId).and()
+                    .columnEquals(GlobalProvider.HISTORY_BUDDY_ID, buddyId).and()
+                    .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING)
+                    .descending(GlobalProvider.HISTORY_MESSAGE_ID)
+                    .limit(1));
+            return cursor.getMessageId();
+        } catch (MessageNotFoundException e) {
+            return HISTORY_MESSAGE_ID_START;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     public static boolean isIncomingMessagesPresent(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds).and()
                 .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING);
         Cursor cursor = queryBuilder.query(databaseLayer, Settings.HISTORY_RESOLVER_URI);
         return cursor.getCount() > 0;
+    }
+
+    private static MessageCursor getMessageCursor(DatabaseLayer databaseLayer, QueryBuilder queryBuilder)
+            throws MessageNotFoundException {
+        Cursor cursor = databaseLayer.query(Settings.HISTORY_RESOLVER_URI, queryBuilder);
+        MessageCursor messageCursor = new MessageCursor(cursor);
+        if (messageCursor.moveToFirst()) {
+            return messageCursor;
+        } else {
+            messageCursor.close();
+        }
+        throw new MessageNotFoundException();
     }
 
 //    /**
@@ -845,6 +880,14 @@ public class QueryHelper {
         contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_DELIVERED, theirsLastDelivered);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_THEIRS_LAST_READ, theirsLastRead);
         contentValues.put(GlobalProvider.ROSTER_BUDDY_PATCH_VERSION, patchVersion);
+        modifyBuddy(databaseLayer, buddy, contentValues);
+    }
+
+    public static void modifyBuddyYoursReadState(DatabaseLayer databaseLayer, Buddy buddy,
+                                                 long unreadCnt, long yoursLastRead) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, unreadCnt);
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_YOURS_LAST_READ, yoursLastRead);
         modifyBuddy(databaseLayer, buddy, contentValues);
     }
 
@@ -1162,6 +1205,20 @@ public class QueryHelper {
             }
         }
         return null;
+    }
+
+    public static long getBuddyYoursLastRead(DatabaseLayer databaseLayer, Buddy buddy) {
+        BuddyCursor buddyCursor = null;
+        try {
+            buddyCursor = getBuddyCursor(databaseLayer, buddy);
+            return buddyCursor.getYoursLastRead();
+        } catch (BuddyNotFoundException ignored) {
+        } finally {
+            if (buddyCursor != null) {
+                buddyCursor.close();
+            }
+        }
+        return 0;
     }
 
     @Deprecated

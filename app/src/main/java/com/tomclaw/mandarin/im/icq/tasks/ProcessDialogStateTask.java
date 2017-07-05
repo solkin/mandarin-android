@@ -125,13 +125,17 @@ public class ProcessDialogStateTask extends DatabaseTask {
         try {
             buddyCursor = QueryHelper.getBuddyCursor(databaseLayer, buddy);
             long localYoursLastRead = buddyCursor.getYoursLastRead();
-            yoursLastRead = Math.max(yoursLastRead, localYoursLastRead);
+            long localUnreadCnt = buddyCursor.getUnreadCount();
+            if (localYoursLastRead > yoursLastRead) {
+                yoursLastRead = localYoursLastRead;
+                unreadCnt = localUnreadCnt;
+            }
             delUpTo = Math.max(delUpTo, buddyCursor.getDelUpTo());
             String localPatchVersion = buddyCursor.getPatchVersion();
             if (!TextUtils.equals(patchVersion, localPatchVersion)) {
                 // TODO: now we must invalidate all history?!
             }
-            if (delUpTo != localYoursLastRead) {
+            if (delUpTo != localYoursLastRead) { // TODO: why compare with localYoursLastRead?
                 QueryHelper.removeMessagesUpTo(databaseLayer, buddy, histDlgState.getDelUpTo());
                 QueryHelper.markMessageRequested(databaseLayer, buddy, histDlgState.getDelUpTo());
             }

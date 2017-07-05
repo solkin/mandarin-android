@@ -1,7 +1,5 @@
 package com.tomclaw.mandarin.im.tasks;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
+import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
@@ -22,6 +20,9 @@ import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.NotificationData;
+import com.tomclaw.mandarin.util.NotificationLine;
+import com.tomclaw.mandarin.util.Notifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,8 +33,6 @@ import java.util.List;
  * Created by solkin on 05.07.17.
  */
 public class UpdateNotificationTask extends DatabaseTask {
-
-    private static final int NOTIFICATION_ID = 0x01;
 
     private volatile long notificationCancelTime = 0;
 
@@ -47,9 +46,10 @@ public class UpdateNotificationTask extends DatabaseTask {
         if (buddies.isEmpty()) {
             onNotificationCancel();
         } else {
+            int requestCode = 1;
             int summaryUnreadCount = 0;
             boolean notify = false;
-            List<Notification> notifications = new ArrayList<>();
+            List<NotificationLine> lines = new ArrayList<>();
             for (Buddy buddy : buddies) {
                 BuddyCursor buddyCursor = null;
                 try {
@@ -59,22 +59,19 @@ public class UpdateNotificationTask extends DatabaseTask {
                     long messageId = messageData.getMessageId();
                     int unreadCnt = buddyCursor.getUnreadCount();
                     String title = buddyCursor.getBuddyNick();
-                    String content = messageData.getMessageText();
+                    String text = messageData.getMessageText();
                     summaryUnreadCount += unreadCnt;
-                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, 1,
+                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, requestCode++,
                             new Intent(context, ChatActivity.class)
                                     .putExtra(Buddy.KEY_STRUCT, buddy)
                                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                             PendingIntent.FLAG_CANCEL_CURRENT);
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(context)
-                                    .setSmallIcon(R.drawable.ic_notification)
-                                    .setContentTitle(title)
-                                    .setContentText(content)
-                                    .setGroup("GROUP_1")
-                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
-                                    .setContentIntent(replyNowIntent);
-                    notifications.add(builder.build());
+                    NotificationCompat.Action replyNowAction = new NotificationCompat.Action.Builder(
+                            R.drawable.ic_reply, context.getString(R.string.reply_now), replyNowIntent)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+                    lines.add(new NotificationLine(title, text, null,
+                            Collections.singletonList(replyNowAction)));
                     if (notifiedMessageId < messageId) {
                         notify = true;
                         QueryHelper.modifyBuddyNotifiedMessageId(databaseLayer, buddy, messageId);
@@ -90,26 +87,26 @@ public class UpdateNotificationTask extends DatabaseTask {
                 Logger.log("Wzh-wzh!");
             }
             String title = context.getResources().getQuantityString(R.plurals.count_new_messages, summaryUnreadCount, summaryUnreadCount);
-            String content = "";
-            PendingIntent openChatsIntent = PendingIntent.getActivity(context, 3,
+            String text = "";
+            for (NotificationLine line : lines) {
+                if (text.length() > 0) {
+                    text += ", ";
+                }
+                text += line.getTitle();
+            }
+            PendingIntent openChatsIntent = PendingIntent.getActivity(context, requestCode,
                     new Intent(context, MainActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     PendingIntent.FLAG_CANCEL_CURRENT);
-            NotificationCompat.Builder groupBuilder =
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.ic_notification)
-                            .setContentTitle(title)
-                            .setContentText(content)
-                            .setGroupSummary(true)
-                            .setGroup("GROUP_1")
-                            .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
-                            .setContentIntent(openChatsIntent);
-            NotificationManagerCompat manager = NotificationManagerCompat.from(context);
-            manager.notify(NOTIFICATION_ID, groupBuilder.build());
-            int c = NOTIFICATION_ID;
-            for (Notification notification : notifications) {
-                manager.notify(++c, notification);
-            }
+            NotificationCompat.Action chatsAction = new NotificationCompat.Action.Builder(
+                    R.drawable.ic_chat, context.getString(R.string.dialogs), openChatsIntent)
+                    .setAllowGeneratedReplies(true)
+                    .build();
+            Notifier notifier = new Notifier();
+            boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
+            NotificationData data = new NotificationData(!privateNotifications, title, text, null,
+                    lines, Collections.singletonList(chatsAction));
+            notifier.showNotification(context, data);
         }
     }
 

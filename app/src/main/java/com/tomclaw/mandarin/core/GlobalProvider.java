@@ -67,7 +67,7 @@ public class GlobalProvider extends ContentProvider {
     public static final int GROUP_ID_RECYCLE = -1;
 
     public static final String ROSTER_BUDDY_ACCOUNT_DB_ID = "account_db_id";
-    public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_id";
+    public static final String ROSTER_BUDDY_ACCOUNT_TYPE = "account_type";
     public static final String ROSTER_BUDDY_ID = "buddy_id";
     public static final String ROSTER_BUDDY_NICK = "buddy_nick";
     public static final String ROSTER_BUDDY_STATUS = "buddy_status";
@@ -99,8 +99,8 @@ public class GlobalProvider extends ContentProvider {
     public static final int ROSTER_BUDDY_OPERATION_RENAME = 2;
     public static final int ROSTER_BUDDY_OPERATION_REMOVE = 3;
 
-    public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "account_db_id";
-    public static final String HISTORY_BUDDY_ID = "buddy_id";
+    public static final String HISTORY_BUDDY_ACCOUNT_DB_ID = "message_account_db_id";
+    public static final String HISTORY_BUDDY_ID = "message_buddy_id";
     public static final String HISTORY_MESSAGE_PREV_ID = "message_prev_id";
     public static final String HISTORY_MESSAGE_ID = "message_id";
     public static final String HISTORY_MESSAGE_COOKIE = "message_cookie";
@@ -159,7 +159,7 @@ public class GlobalProvider extends ContentProvider {
 
     protected static final String DB_CREATE_BUDDY_TABLE_SCRIPT = "create table " + ROSTER_BUDDY_TABLE + "("
             + ROW_AUTO_ID + " integer primary key autoincrement, "
-            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " int, "
+            + ROSTER_BUDDY_ACCOUNT_DB_ID + " int, " + ROSTER_BUDDY_ACCOUNT_TYPE + " text, "
             + ROSTER_BUDDY_ID + " text, " + ROSTER_BUDDY_NICK + " text, "
             + ROSTER_BUDDY_STATUS + " int, " + ROSTER_BUDDY_STATUS_TITLE + " text, "
             + ROSTER_BUDDY_STATUS_MESSAGE + " text, " + ROSTER_BUDDY_GROUP_ID + " int, "

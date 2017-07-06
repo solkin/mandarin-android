@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -12,6 +13,11 @@ import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Random;
 
 import static com.tomclaw.mandarin.util.StringUtil.generateRandomText;
@@ -26,6 +32,7 @@ import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private final Context context;
+    private final boolean isExportDb = false;
 
     public DatabaseHelper(Context context) {
         super(context, Settings.DB_NAME, null, Settings.DB_VERSION);
@@ -134,6 +141,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             PreferenceHelper.setShowStartHelper(context, false);
         } catch (Throwable ex) {
             ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (isExportDb) {
+            exportDb(db);
+        }
+    }
+
+    private void exportDb(SQLiteDatabase db) {
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        FileChannel source;
+        FileChannel destination;
+        String currentDBPath = db.getPath();
+        String backupDBPath = Settings.DB_NAME + ".db";
+        File currentDB = new File(currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

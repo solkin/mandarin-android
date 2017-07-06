@@ -23,7 +23,7 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 0x05;
     private static final String GROUP_KEY = "group_key";
 
-    public void showNotification(Context context, NotificationData data) {
+    public static void showNotification(Context context, NotificationData data) {
         @DrawableRes int smallImage = R.drawable.ic_notification;
         @ColorInt int color = context.getResources().getColor(R.color.accent_color);
         if (data.isMultiline()) {
@@ -35,7 +35,12 @@ public class Notifier {
         }
     }
 
-    private void showSingleNotification(Context context, int notificationId, boolean isExtended,
+    public static void hideNotification(Context context) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(NOTIFICATION_ID);
+    }
+
+    private static void showSingleNotification(Context context, int notificationId, boolean isExtended,
                                         @NonNull String title, @NonNull String text,
                                         @ColorInt int color, @DrawableRes int smallImage, @Nullable Bitmap image,
                                         List<NotificationCompat.Action> actions) {
@@ -62,7 +67,7 @@ public class Notifier {
         notificationManager.notify(notificationId, notification.build());
     }
 
-    private void showMultiNotification(Context context, int notificationId, boolean isExtended,
+    private static void showMultiNotification(Context context, int notificationId, boolean isExtended,
                                        @NonNull String title, @NonNull String text,
                                        @NonNull List<NotificationLine> lines, @ColorInt int color,
                                        @DrawableRes int smallImage,

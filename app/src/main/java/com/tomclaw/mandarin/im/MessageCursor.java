@@ -13,25 +13,24 @@ import java.io.Closeable;
 public class MessageCursor implements Closeable {
 
     private Cursor cursor;
-    private boolean isColumnsRead;
 
-    private static int COLUMN_ROW_AUTO_ID;
-    private static int COLUMN_BUDDY_ACCOUNT_DB_ID;
-    private static int COLUMN_BUDDY_ID;
-    private static int COLUMN_MESSAGE_PREV_ID;
-    private static int COLUMN_MESSAGE_ID;
-    private static int COLUMN_MESSAGE_COOKIE;
-    private static int COLUMN_MESSAGE_TYPE;
-    private static int COLUMN_MESSAGE_TIME;
-    private static int COLUMN_MESSAGE_TEXT;
-    private static int COLUMN_CONTENT_TYPE;
-    private static int COLUMN_CONTENT_SIZE;
-    private static int COLUMN_CONTENT_STATE;
-    private static int COLUMN_CONTENT_PROGRESS;
-    private static int COLUMN_CONTENT_URI;
-    private static int COLUMN_CONTENT_NAME;
-    private static int COLUMN_PREVIEW_HASH;
-    private static int COLUMN_CONTENT_TAG;
+    private int COLUMN_ROW_AUTO_ID;
+    private int COLUMN_BUDDY_ACCOUNT_DB_ID;
+    private int COLUMN_BUDDY_ID;
+    private int COLUMN_MESSAGE_PREV_ID;
+    private int COLUMN_MESSAGE_ID;
+    private int COLUMN_MESSAGE_COOKIE;
+    private int COLUMN_MESSAGE_TYPE;
+    private int COLUMN_MESSAGE_TIME;
+    private int COLUMN_MESSAGE_TEXT;
+    private int COLUMN_CONTENT_TYPE;
+    private int COLUMN_CONTENT_SIZE;
+    private int COLUMN_CONTENT_STATE;
+    private int COLUMN_CONTENT_PROGRESS;
+    private int COLUMN_CONTENT_URI;
+    private int COLUMN_CONTENT_NAME;
+    private int COLUMN_PREVIEW_HASH;
+    private int COLUMN_CONTENT_TAG;
 
     public MessageCursor() {
     }
@@ -45,13 +44,8 @@ public class MessageCursor implements Closeable {
         readColumns();
     }
 
-    public void invalidateColumns() {
-        isColumnsRead = false;
-        readColumns();
-    }
-
     private void readColumns() {
-        if (!isColumnsRead && cursor != null) {
+        if (cursor != null) {
             COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             COLUMN_BUDDY_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
             COLUMN_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.HISTORY_BUDDY_ID);
@@ -69,7 +63,6 @@ public class MessageCursor implements Closeable {
             COLUMN_CONTENT_NAME = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_NAME);
             COLUMN_PREVIEW_HASH = cursor.getColumnIndex(GlobalProvider.HISTORY_PREVIEW_HASH);
             COLUMN_CONTENT_TAG = cursor.getColumnIndex(GlobalProvider.HISTORY_CONTENT_TAG);
-            isColumnsRead = true;
         }
     }
 

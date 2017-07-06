@@ -13,36 +13,32 @@ import java.io.Closeable;
 public class BuddyCursor implements Closeable {
 
     private Cursor cursor;
-    private boolean isColumnsRead;
 
-    /**
-     * Columns
-     */
-    private static int COLUMN_ROW_AUTO_ID;
-    private static int COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID;
-    private static int COLUMN_ROSTER_BUDDY_ID;
-    private static int COLUMN_ROSTER_BUDDY_NICK;
-    private static int COLUMN_ROSTER_BUDDY_GROUP;
-    private static int COLUMN_ROSTER_BUDDY_GROUP_ID;
-    private static int COLUMN_ROSTER_BUDDY_DIALOG;
-    private static int COLUMN_ROSTER_BUDDY_STATUS;
-    private static int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
-    private static int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
-    private static int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
-    private static int COLUMN_ROSTER_BUDDY_ALPHABET_INDEX;
-    private static int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
-    private static int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
-    private static int COLUMN_ROSTER_BUDDY_DRAFT;
-    private static int COLUMN_ROSTER_BUDDY_LAST_SEEN;
-    private static int COLUMN_ROSTER_BUDDY_LAST_TYPING;
-    private static int COLUMN_ROSTER_BUDDY_OPERATION;
-    private static int COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID;
-    private static int COLUMN_ROSTER_BUDDY_YOURS_LAST_READ;
-    private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED;
-    private static int COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ;
-    private static int COLUMN_ROSTER_BUDDY_DEL_UP_TO;
-    private static int COLUMN_ROSTER_BUDDY_PATCH_VERSION;
-    private static int COLUMN_ROSTER_BUDDY_NOTIFIED_MSG_ID;
+    private int COLUMN_ROW_AUTO_ID;
+    private int COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID;
+    private int COLUMN_ROSTER_BUDDY_ID;
+    private int COLUMN_ROSTER_BUDDY_NICK;
+    private int COLUMN_ROSTER_BUDDY_GROUP;
+    private int COLUMN_ROSTER_BUDDY_GROUP_ID;
+    private int COLUMN_ROSTER_BUDDY_DIALOG;
+    private int COLUMN_ROSTER_BUDDY_STATUS;
+    private int COLUMN_ROSTER_BUDDY_STATUS_TITLE;
+    private int COLUMN_ROSTER_BUDDY_STATUS_MESSAGE;
+    private int COLUMN_ROSTER_BUDDY_ACCOUNT_TYPE;
+    private int COLUMN_ROSTER_BUDDY_ALPHABET_INDEX;
+    private int COLUMN_ROSTER_BUDDY_UNREAD_COUNT;
+    private int COLUMN_ROSTER_BUDDY_AVATAR_HASH;
+    private int COLUMN_ROSTER_BUDDY_DRAFT;
+    private int COLUMN_ROSTER_BUDDY_LAST_SEEN;
+    private int COLUMN_ROSTER_BUDDY_LAST_TYPING;
+    private int COLUMN_ROSTER_BUDDY_OPERATION;
+    private int COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID;
+    private int COLUMN_ROSTER_BUDDY_YOURS_LAST_READ;
+    private int COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED;
+    private int COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ;
+    private int COLUMN_ROSTER_BUDDY_DEL_UP_TO;
+    private int COLUMN_ROSTER_BUDDY_PATCH_VERSION;
+    private int COLUMN_ROSTER_BUDDY_NOTIFIED_MSG_ID;
 
     public BuddyCursor() {
     }
@@ -56,13 +52,8 @@ public class BuddyCursor implements Closeable {
         readColumns();
     }
 
-    public void invalidateColumns() {
-        isColumnsRead = false;
-        readColumns();
-    }
-
     private void readColumns() {
-        if (!isColumnsRead && cursor != null) {
+        if (cursor != null) {
             COLUMN_ROW_AUTO_ID = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
             COLUMN_ROSTER_BUDDY_ACCOUNT_DB_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID);
             COLUMN_ROSTER_BUDDY_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID);
@@ -88,7 +79,6 @@ public class BuddyCursor implements Closeable {
             COLUMN_ROSTER_BUDDY_DEL_UP_TO = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_DEL_UP_TO);
             COLUMN_ROSTER_BUDDY_PATCH_VERSION = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_PATCH_VERSION);
             COLUMN_ROSTER_BUDDY_NOTIFIED_MSG_ID = cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_NOTIFIED_MSG_ID);
-            isColumnsRead = true;
         }
     }
 
@@ -177,23 +167,23 @@ public class BuddyCursor implements Closeable {
     }
 
     public long getLastMessageId() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_LAST_MESSAGE_ID);
     }
 
     public long getYoursLastRead() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_YOURS_LAST_READ);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_YOURS_LAST_READ);
     }
 
     public long getTheirsLastDelivered() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_THEIRS_LAST_DELIVERED);
     }
 
     public long getTheirsLastRead() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_THEIRS_LAST_READ);
     }
 
     public long getDelUpTo() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_DEL_UP_TO);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_DEL_UP_TO);
     }
 
     public String getPatchVersion() {
@@ -201,7 +191,7 @@ public class BuddyCursor implements Closeable {
     }
 
     public long getNotifiedMessageId() {
-        return cursor.getInt(COLUMN_ROSTER_BUDDY_NOTIFIED_MSG_ID);
+        return cursor.getLong(COLUMN_ROSTER_BUDDY_NOTIFIED_MSG_ID);
     }
 
     public boolean moveToFirst() {

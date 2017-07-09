@@ -14,6 +14,7 @@ import java.util.List;
 public class NotificationData {
 
     private final boolean isExtended;
+    private final boolean isAlert;
     private final @NonNull String title;
     private final @NonNull String text;
     private final @Nullable Bitmap image;
@@ -21,11 +22,13 @@ public class NotificationData {
     private final @Nullable PendingIntent contentAction;
     private final @NonNull List<NotificationCompat.Action> actions;
 
-    public NotificationData(boolean isExtended, @NonNull String title, @NonNull String text,
-                            @Nullable Bitmap image, @NonNull List<NotificationLine> lines,
+    public NotificationData(boolean isExtended, boolean isAlert, @NonNull String title,
+                            @NonNull String text, @Nullable Bitmap image,
+                            @NonNull List<NotificationLine> lines,
                             @Nullable PendingIntent contentAction,
                             @NonNull List<NotificationCompat.Action> actions) {
         this.isExtended = isExtended;
+        this.isAlert = isAlert;
         this.title = title;
         this.text = text;
         this.image = image;
@@ -36,6 +39,10 @@ public class NotificationData {
 
     public boolean isExtended() {
         return isExtended;
+    }
+
+    public boolean isAlert() {
+        return isAlert;
     }
 
     @NonNull

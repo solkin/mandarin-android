@@ -153,23 +153,15 @@ public class UpdateNotificationTask extends DatabaseTask {
                     contentAction = line.getContentAction();
                     actions = line.getActions();
                 }
-                NotificationData data = new NotificationData(!privateNotifications, title, text,
-                        image, lines, contentAction, actions);
+                boolean isAlert = false;
                 if (notify && isNotificationCompleted()) {
                     // Wzh-wzh!
                     onNotificationShown();
+                    isAlert = true;
                     Logger.log("update notifications: wzh-wzh!");
-//                    if (PreferenceHelper.isSound(context)) {
-//                        notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
-//                    }
-//                    if (PreferenceHelper.isVibrate(context)) {
-//                        notificationBuilder.setVibrate(new long[]{0, 750});
-//                    }
-//                    if (PreferenceHelper.isLights(context)) {
-//                        notificationBuilder.setLights(Settings.LED_COLOR_RGB,
-//                                Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
-//                    }
                 }
+                NotificationData data = new NotificationData(!privateNotifications, isAlert,
+                        title, text, image, lines, contentAction, actions);
                 Notifier.showNotification(context, data);
             } else {
                 onNotificationCancel();

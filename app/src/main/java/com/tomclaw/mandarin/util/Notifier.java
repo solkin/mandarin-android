@@ -13,6 +13,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.mandarin.core.Settings;
 
 import java.util.List;
 
@@ -28,11 +30,11 @@ public class Notifier {
         @DrawableRes int smallImage = R.drawable.ic_notification;
         @ColorInt int color = context.getResources().getColor(R.color.accent_color);
         if (data.isMultiline()) {
-            showMultiNotification(context, NOTIFICATION_ID, data.isExtended(), data.getTitle(),
+            showMultiNotification(context, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), data.getLines(), color, smallImage, data.getContentAction(),
                     data.getActions());
         } else {
-            showSingleNotification(context, NOTIFICATION_ID, data.isExtended(), data.getTitle(),
+            showSingleNotification(context, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), color, smallImage, data.getImage(), data.getContentAction(),
                     data.getActions());
         }
@@ -44,7 +46,7 @@ public class Notifier {
     }
 
     private static void showSingleNotification(Context context, int notificationId, boolean isExtended,
-                                               @NonNull String title, @NonNull String text,
+                                               boolean isAlert, @NonNull String title, @NonNull String text,
                                                @ColorInt int color, @DrawableRes int smallImage, @Nullable Bitmap image,
                                                @Nullable PendingIntent contentAction,
                                                @NonNull List<NotificationCompat.Action> actions) {
@@ -71,11 +73,15 @@ public class Notifier {
             notification.addAction(action);
         }
 
+        if (isAlert) {
+            setNotificationAlert(context, notification);
+        }
+
         notificationManager.notify(notificationId, notification.build());
     }
 
     private static void showMultiNotification(Context context, int notificationId, boolean isExtended,
-                                              @NonNull String title, @NonNull String text,
+                                              boolean isAlert, @NonNull String title, @NonNull String text,
                                               @NonNull List<NotificationLine> lines, @ColorInt int color,
                                               @DrawableRes int smallImage,
                                               @Nullable PendingIntent contentAction,
@@ -89,6 +95,10 @@ public class Notifier {
                     .setSmallIcon(smallImage)
                     .setGroupSummary(true)
                     .setContentIntent(contentAction);
+
+            if (isAlert) {
+                setNotificationAlert(context, group);
+            }
 
             notificationManager.notify(notificationId, group.build());
 
@@ -132,7 +142,24 @@ public class Notifier {
                 notification.addAction(action);
             }
 
+            if (isAlert) {
+                setNotificationAlert(context, notification);
+            }
+
             notificationManager.notify(notificationId, notification.build());
+        }
+    }
+
+    private static void setNotificationAlert(Context context, NotificationCompat.Builder notification) {
+        if (PreferenceHelper.isSound(context)) {
+            notification.setSound(PreferenceHelper.getNotificationUri(context));
+        }
+        if (PreferenceHelper.isVibrate(context)) {
+            notification.setVibrate(new long[]{0, 750});
+        }
+        if (PreferenceHelper.isLights(context)) {
+            notification.setLights(Settings.LED_COLOR_RGB,
+                    Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
         }
     }
 

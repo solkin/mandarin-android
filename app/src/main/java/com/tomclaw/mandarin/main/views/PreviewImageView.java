@@ -3,15 +3,15 @@ package com.tomclaw.mandarin.main.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.tomclaw.mandarin.R;
 
 /**
  * Created by Solkin on 18.10.2014.
  */
-public class PreviewImageView extends ImageView implements LazyImageView {
+public class PreviewImageView extends AppCompatImageView implements LazyImageView {
 
     private int placeholderTintColor;
 

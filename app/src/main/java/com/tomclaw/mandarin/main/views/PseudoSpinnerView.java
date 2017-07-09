@@ -3,16 +3,16 @@ package com.tomclaw.mandarin.main.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 
 /**
  * Created by solkin on 29.05.15.
  */
-public class PseudoSpinnerView extends TextView {
+public class PseudoSpinnerView extends AppCompatTextView {
 
     public PseudoSpinnerView(Context context, AttributeSet attrs) {
         super(context, attrs);

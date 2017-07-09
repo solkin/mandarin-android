@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.Mac;
@@ -211,5 +212,14 @@ public class StringUtil {
             sb.append(tmp); // Add it to the String
         }
         return sb.toString();
+    }
+
+    public static String format(String source, Map<String, String> patterns) {
+        String result = source;
+        for (String key : patterns.keySet()) {
+            String value = patterns.get(key);
+            result = result.replace('{' + key + '}', value);
+        }
+        return result;
     }
 }

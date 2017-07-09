@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
+import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
@@ -25,39 +26,55 @@ import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.NotificationData;
 import com.tomclaw.mandarin.util.NotificationLine;
 import com.tomclaw.mandarin.util.Notifier;
+import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by solkin on 05.07.17.
  */
 public class UpdateNotificationTask extends DatabaseTask {
 
+    private static final String QUERY_TEMPLATE = "SELECT * " +
+            "FROM {chat_history} " +
+            "INNER JOIN {roster_buddy} ON {chat_history}.{message_buddy_id}={roster_buddy}.{buddy_id} " +
+            "AND {chat_history}.{message_account_db_id}={roster_buddy}.{account_db_id} " +
+            "WHERE {message_buddy_id} IN " +
+            "    (SELECT {buddy_id} " +
+            "     FROM {roster_buddy} " +
+            "     WHERE {buddy_unread_count}>0) " +
+            "  AND {message_type}={type_incoming} " +
+            "GROUP BY {message_buddy_id};";
+
     private volatile long notificationCancelTime = 0;
+    private final String query;
 
     public UpdateNotificationTask(Context context, SQLiteDatabase sqLiteDatabase, Bundle bundle) {
         super(context, sqLiteDatabase, bundle);
+        Map<String, String> patterns = new HashMap<>();
+        patterns.put("chat_history", GlobalProvider.CHAT_HISTORY_TABLE);
+        patterns.put("roster_buddy", GlobalProvider.ROSTER_BUDDY_TABLE);
+        patterns.put("message_buddy_id", GlobalProvider.HISTORY_BUDDY_ID);
+        patterns.put("buddy_id", GlobalProvider.ROSTER_BUDDY_ID);
+        patterns.put("message_account_db_id", GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID);
+        patterns.put("account_db_id", GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID);
+        patterns.put("buddy_unread_count", GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
+        patterns.put("message_type", GlobalProvider.HISTORY_MESSAGE_TYPE);
+        patterns.put("type_incoming", String.valueOf(GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING));
+        query = StringUtil.format(QUERY_TEMPLATE, patterns);
     }
 
     @Override
     protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
-        String sql = "SELECT *\n" +
-                "FROM chat_history\n" +
-                "INNER JOIN roster_buddy ON chat_history.message_buddy_id=roster_buddy.buddy_id\n" +
-                "AND chat_history.message_account_db_id=roster_buddy.account_db_id\n" +
-                "WHERE buddy_id IN\n" +
-                "    (SELECT buddy_id\n" +
-                "     FROM roster_buddy\n" +
-                "     WHERE buddy_unread_count>0)\n" +
-                "  AND message_type=1\n" +
-                "GROUP BY buddy_id;";
         Cursor cursor = null;
         try {
-            Logger.log("notification task: sql");
+            Logger.log("notification task: start");
             long time = System.currentTimeMillis();
-            cursor = getDatabase().rawQuery(sql, null);
+            cursor = getDatabase().rawQuery(query, null);
             Logger.log("update notifications query took " + (System.currentTimeMillis() - time) + " ms.");
             if (cursor.moveToFirst()) {
                 BuddyCursor buddyCursor = new BuddyCursor(cursor);

@@ -44,3 +44,6 @@ captures/
 
 # Keystore files
 *.jks
+
+# macOS-specific files
+Icon?

@@ -3,13 +3,19 @@ package com.tomclaw.mandarin.core;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.v4.app.RemoteInput;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.im.Buddy;
+import com.tomclaw.mandarin.im.tasks.UpdateLastReadTask;
+import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.List;
@@ -40,6 +46,8 @@ public class CoreService extends Service {
     public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
     public static final String EXTRA_ON_CONNECTED_EVENT = "on_connected";
     public static final String EXTRA_READ_MESSAGES = "read_messages";
+    public static final String EXTRA_REPLY_ON_MESSAGE = "reply_on_message";
+    public static final String KEY_REPLY_ON_MESSAGE = "key_reply_on_message";
 
     public static final int RESTART_TIMEOUT = 5000;
     public static final int MAINTENANCE_TIMEOUT = 60000;
@@ -188,6 +196,22 @@ public class CoreService extends Service {
             downloadDispatcher.notifyQueue();
             uploadDispatcher.notifyQueue();
         }
+        // Read messages event maybe?
+        boolean readMessagesEvent = intent.getBooleanExtra(EXTRA_READ_MESSAGES, false);
+        if (readMessagesEvent) {
+            Buddy buddy = intent.getParcelableExtra(Buddy.KEY_STRUCT);
+            readMessages(buddy);
+        }
+        // Reply on message event maybe?
+        boolean replyEvent = intent.getBooleanExtra(EXTRA_REPLY_ON_MESSAGE, false);
+        if (replyEvent) {
+            Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+            if (remoteInput != null) {
+                final Buddy buddy = intent.getParcelableExtra(Buddy.KEY_STRUCT);
+                String text = remoteInput.getCharSequence(KEY_REPLY_ON_MESSAGE, "").toString().trim();
+                sendMessage(buddy, text);
+            }
+        }
         // Or maybe this is after-boot event?
         boolean bootEvent = intent.getBooleanExtra(BootCompletedReceiver.EXTRA_BOOT_EVENT, false);
         // Checking for this is boot event and no any active account.
@@ -283,5 +307,31 @@ public class CoreService extends Service {
         intent.putExtra(EXTRA_STAFF_PARAM, true);
         intent.putExtra(EXTRA_STATE_PARAM, serviceState);
         sendBroadcast(intent);
+    }
+
+    private void readMessages(Buddy buddy) {
+        ContentResolver contentResolver = getContentResolver();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(UpdateLastReadTask.KEY_BUDDY, buddy);
+        contentResolver.call(Settings.BUDDY_RESOLVER_URI,
+                UpdateLastReadTask.class.getName(), null, bundle);
+    }
+
+    private void sendMessage(final Buddy buddy, String text) {
+        if (!TextUtils.isEmpty(text)) {
+            ChatActivity.MessageCallback callback = new ChatActivity.MessageCallback() {
+
+                @Override
+                public void onSuccess() {
+                    readMessages(buddy);
+                }
+
+                @Override
+                public void onFailed() {
+                }
+            };
+            TaskExecutor.getInstance().execute(
+                    new ChatActivity.SendMessageTask(this, buddy, text, callback));
+        }
     }
 }

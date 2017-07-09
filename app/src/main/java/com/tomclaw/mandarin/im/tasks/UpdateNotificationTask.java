@@ -7,8 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
@@ -98,8 +100,12 @@ public class UpdateNotificationTask extends DatabaseTask {
                     PendingIntent openChatIntent = createOpenChatIntent(context, buddy, requestCode++);
                     PendingIntent replyIntent = createReplyIntent(context, buddy, requestCode++);
                     PendingIntent readIntent = createReadIntent(context, buddy, requestCode++);
+                    RemoteInput remoteInput = new RemoteInput.Builder(CoreService.KEY_REPLY_ON_MESSAGE)
+                            .setLabel(context.getString(R.string.enter_your_message))
+                            .build();
                     NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
                             R.drawable.ic_reply, context.getString(R.string.reply_now), replyIntent)
+                            .addRemoteInput(remoteInput)
                             .setAllowGeneratedReplies(true)
                             .build();
                     NotificationCompat.Action readAction = new NotificationCompat.Action.Builder(
@@ -240,11 +246,19 @@ public class UpdateNotificationTask extends DatabaseTask {
     }
 
     private static PendingIntent createReplyIntent(Context context, Buddy buddy, int requestCode) {
-        // Для Android<M отдаётся Intent, аналогичный createOpenChatIntent.
-        return PendingIntent.getActivity(context, requestCode,
-                new Intent(context, ChatActivity.class)
-                        .putExtra(Buddy.KEY_STRUCT, buddy)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return PendingIntent.getService(context, requestCode,
+                    new Intent(context, CoreService.class)
+                            .putExtra(CoreService.EXTRA_REPLY_ON_MESSAGE, true)
+                            .putExtra(Buddy.KEY_STRUCT, buddy)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        } else {
+            return PendingIntent.getActivity(context, requestCode,
+                    new Intent(context, ChatActivity.class)
+                            .putExtra(Buddy.KEY_STRUCT, buddy)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        }
     }
 }

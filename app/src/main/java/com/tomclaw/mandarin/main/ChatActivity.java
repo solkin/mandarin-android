@@ -912,14 +912,14 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private static class SendMessageTask extends WeakObjectTask<ChiefActivity> {
+    public static class SendMessageTask extends WeakObjectTask<Context> {
 
         private final Buddy buddy;
         private String text;
         private final MessageCallback callback;
 
-        public SendMessageTask(ChiefActivity activity, Buddy buddy, String text, MessageCallback callback) {
-            super(activity);
+        public SendMessageTask(Context context, Buddy buddy, String text, MessageCallback callback) {
+            super(context);
             this.buddy = buddy;
             this.text = text;
             this.callback = callback;
@@ -927,9 +927,9 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void executeBackground() throws Throwable {
-            ChiefActivity activity = getWeakObject();
-            if (activity != null) {
-                ContentResolver contentResolver = activity.getContentResolver();
+            Context context = getWeakObject();
+            if (context != null) {
+                ContentResolver contentResolver = context.getContentResolver();
                 DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                 String cookie = StringUtil.generateRandomString(32);
                 int messageType = GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING;
@@ -953,10 +953,9 @@ public class ChatActivity extends ChiefActivity {
 
         @Override
         public void onFailMain() {
-            ChiefActivity activity = getWeakObject();
-            if (activity != null) {
-                // Show error.
-                Toast.makeText(activity, R.string.error_sending_message, Toast.LENGTH_LONG).show();
+            Context context = getWeakObject();
+            if (context != null) {
+                Toast.makeText(context, R.string.error_sending_message, Toast.LENGTH_LONG).show();
             }
             callback.onFailed();
         }
@@ -1157,7 +1156,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    public abstract class MessageCallback {
+    public abstract static class MessageCallback {
 
         public abstract void onSuccess();
 

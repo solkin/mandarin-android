@@ -13,6 +13,8 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,8 +30,14 @@ public class UpdateLastReadTask extends DatabaseTask {
 
     @Override
     protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
-        Buddy buddy = bundle.getParcelable(KEY_BUDDY);
-        if (buddy != null) {
+        Collection<Buddy> buddies;
+        Buddy bundleBuddy = bundle.getParcelable(KEY_BUDDY);
+        if (bundleBuddy != null) {
+            buddies = Collections.singleton(bundleBuddy);
+        } else {
+            buddies = QueryHelper.getBuddiesWithUnread(databaseLayer);
+        }
+        for (Buddy buddy : buddies) {
             int accountDbId = buddy.getAccountDbId();
             String buddyId = buddy.getBuddyId();
             long lastIncoming = QueryHelper.getLastIncomingMessageId(databaseLayer, buddy);

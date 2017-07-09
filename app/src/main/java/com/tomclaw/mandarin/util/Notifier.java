@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.util;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -21,17 +22,19 @@ import java.util.List;
 public class Notifier {
 
     private static final int NOTIFICATION_ID = 0x05;
-    private static final String GROUP_KEY = "group_key";
+    private static final String GROUP_KEY = "mandarin_notification";
 
     public static void showNotification(Context context, NotificationData data) {
         @DrawableRes int smallImage = R.drawable.ic_notification;
         @ColorInt int color = context.getResources().getColor(R.color.accent_color);
         if (data.isMultiline()) {
             showMultiNotification(context, NOTIFICATION_ID, data.isExtended(), data.getTitle(),
-                    data.getText(), data.getLines(), color, smallImage, data.getActions());
+                    data.getText(), data.getLines(), color, smallImage, data.getContentAction(),
+                    data.getActions());
         } else {
             showSingleNotification(context, NOTIFICATION_ID, data.isExtended(), data.getTitle(),
-                    data.getText(), color, smallImage, data.getImage(), data.getActions());
+                    data.getText(), color, smallImage, data.getImage(), data.getContentAction(),
+                    data.getActions());
         }
     }
 
@@ -41,9 +44,10 @@ public class Notifier {
     }
 
     private static void showSingleNotification(Context context, int notificationId, boolean isExtended,
-                                        @NonNull String title, @NonNull String text,
-                                        @ColorInt int color, @DrawableRes int smallImage, @Nullable Bitmap image,
-                                        List<NotificationCompat.Action> actions) {
+                                               @NonNull String title, @NonNull String text,
+                                               @ColorInt int color, @DrawableRes int smallImage, @Nullable Bitmap image,
+                                               @Nullable PendingIntent contentAction,
+                                               @NonNull List<NotificationCompat.Action> actions) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
@@ -53,6 +57,9 @@ public class Notifier {
                 .setSmallIcon(smallImage)
                 .setLargeIcon(image)
                 .setShowWhen(true);
+        if (contentAction != null) {
+            notification.setContentIntent(contentAction);
+        }
         if (isExtended) {
             NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
                     .setBigContentTitle(title)
@@ -68,36 +75,38 @@ public class Notifier {
     }
 
     private static void showMultiNotification(Context context, int notificationId, boolean isExtended,
-                                       @NonNull String title, @NonNull String text,
-                                       @NonNull List<NotificationLine> lines, @ColorInt int color,
-                                       @DrawableRes int smallImage,
-                                       List<NotificationCompat.Action> actions) {
+                                              @NonNull String title, @NonNull String text,
+                                              @NonNull List<NotificationLine> lines, @ColorInt int color,
+                                              @DrawableRes int smallImage,
+                                              @Nullable PendingIntent contentAction,
+                                              @NonNull List<NotificationCompat.Action> actions) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isExtended) {
+        if (isExtended && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             NotificationCompat.Builder group = new NotificationCompat.Builder(context)
                     .setGroup(GROUP_KEY)
                     .setColor(color)
                     .setSmallIcon(smallImage)
-                    .setGroupSummary(true);
+                    .setGroupSummary(true)
+                    .setContentIntent(contentAction);
 
             notificationManager.notify(notificationId, group.build());
 
             int index = notificationId;
             for (NotificationLine line : lines) {
+                NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
+                        .setBigContentTitle(line.getTitle())
+                        .bigText(line.getText());
                 NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+                        .setStyle(style)
                         .setContentTitle(line.getTitle())
                         .setContentText(line.getText())
                         .setColor(color)
                         .setSmallIcon(smallImage)
                         .setLargeIcon(line.getImage())
                         .setGroup(GROUP_KEY);
-                if (isExtended) {
-                    NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
-                            .setBigContentTitle(line.getTitle())
-                            .bigText(line.getText());
-
-                    notification.setStyle(style);
+                if (contentAction != null) {
+                    notification.setContentIntent(line.getContentAction());
                 }
                 for (NotificationCompat.Action action : line.getActions()) {
                     notification.addAction(action);
@@ -109,7 +118,8 @@ public class Notifier {
                     .setContentTitle(title)
                     .setContentText(text)
                     .setColor(color)
-                    .setSmallIcon(smallImage);
+                    .setSmallIcon(smallImage)
+                    .setContentIntent(contentAction);
             if (isExtended) {
                 NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
                 style.setBigContentTitle(title);

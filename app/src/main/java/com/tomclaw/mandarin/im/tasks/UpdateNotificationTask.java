@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -29,6 +31,7 @@ import com.tomclaw.mandarin.util.Notifier;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -92,41 +95,66 @@ public class UpdateNotificationTask extends DatabaseTask {
                     long messageId = messageData.getMessageId();
                     String text = messageData.getMessageText();
                     summaryUnreadCount += unreadCnt;
-                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, requestCode++,
-                            new Intent(context, ChatActivity.class)
-                                    .putExtra(Buddy.KEY_STRUCT, buddy)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    NotificationCompat.Action replyNowAction = new NotificationCompat.Action.Builder(
-                            R.drawable.ic_reply, context.getString(R.string.reply_now), replyNowIntent)
+                    PendingIntent openChatIntent = createOpenChatIntent(context, buddy, requestCode++);
+                    PendingIntent replyIntent = createReplyIntent(context, buddy, requestCode++);
+                    PendingIntent readIntent = createReadIntent(context, buddy, requestCode++);
+                    NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
+                            R.drawable.ic_reply, context.getString(R.string.reply_now), replyIntent)
                             .setAllowGeneratedReplies(true)
                             .build();
-                    lines.add(new NotificationLine(title, text, null,
-                            Collections.singletonList(replyNowAction)));
+                    NotificationCompat.Action readAction = new NotificationCompat.Action.Builder(
+                            R.drawable.ic_action_read, context.getString(R.string.mark_as_read), readIntent)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+                    lines.add(new NotificationLine(title, text, null, openChatIntent,
+                            Arrays.asList(replyAction, readAction)));
                     if (notifiedMessageId < messageId) {
                         notify = true;
                         QueryHelper.modifyBuddyNotifiedMessageId(databaseLayer, buddy, messageId);
                     }
                 } while (cursor.moveToNext());
-                String title = context.getResources().getQuantityString(R.plurals.count_new_messages, summaryUnreadCount, summaryUnreadCount);
-                String text = "";
-                for (NotificationLine line : lines) {
-                    if (text.length() > 0) {
-                        text += ", ";
-                    }
-                    text += line.getTitle();
-                }
-                PendingIntent openChatsIntent = PendingIntent.getActivity(context, requestCode,
-                        new Intent(context, MainActivity.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                        PendingIntent.FLAG_CANCEL_CURRENT);
-                NotificationCompat.Action chatsAction = new NotificationCompat.Action.Builder(
-                        R.drawable.ic_chat, context.getString(R.string.dialogs), openChatsIntent)
-                        .setAllowGeneratedReplies(true)
-                        .build();
+
                 boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
-                NotificationData data = new NotificationData(!privateNotifications, title, text, null,
-                        lines, Collections.singletonList(chatsAction));
+
+                PendingIntent contentAction;
+                List<NotificationCompat.Action> actions;
+
+                String title;
+                String text;
+                Bitmap image;
+                if (lines.size() > 1 || privateNotifications) {
+                    PendingIntent openChatsIntent = createOpenChatsIntent(context, requestCode++);
+                    PendingIntent readAllIntent = createReadAllIntent(context, requestCode);
+                    NotificationCompat.Action chatsAction = new NotificationCompat.Action.Builder(
+                            R.drawable.ic_chat, context.getString(R.string.dialogs), openChatsIntent)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+                    NotificationCompat.Action readAllAction = new NotificationCompat.Action.Builder(
+                            R.drawable.ic_action_read, context.getString(R.string.mark_as_read_all), readAllIntent)
+                            .setAllowGeneratedReplies(true)
+                            .build();
+
+                    title = context.getResources().getQuantityString(R.plurals.count_new_messages, summaryUnreadCount, summaryUnreadCount);
+                    text = "";
+                    for (NotificationLine line : lines) {
+                        if (text.length() > 0) {
+                            text += ", ";
+                        }
+                        text += line.getTitle();
+                    }
+                    image = null;
+                    contentAction = openChatsIntent;
+                    actions = Arrays.asList(chatsAction, readAllAction);
+                } else {
+                    NotificationLine line = lines.remove(0);
+                    title = line.getTitle();
+                    text = line.getText();
+                    image = line.getImage();
+                    contentAction = line.getContentAction();
+                    actions = line.getActions();
+                }
+                NotificationData data = new NotificationData(!privateNotifications, title, text,
+                        image, lines, contentAction, actions);
                 if (notify && isNotificationCompleted()) {
                     // Wzh-wzh!
                     onNotificationShown();
@@ -185,5 +213,46 @@ public class UpdateNotificationTask extends DatabaseTask {
 
     private long getNotificationRemain() {
         return notificationCancelTime - System.currentTimeMillis();
+    }
+
+    private static PendingIntent createOpenChatsIntent(Context context, int requestCode) {
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReadAllIntent(Context context, int requestCode) {
+        return PendingIntent.getService(context, requestCode,
+                new Intent(context, CoreService.class)
+                        .putExtra(CoreService.EXTRA_READ_MESSAGES, true)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReadIntent(Context context, Buddy buddy, int requestCode) {
+        return PendingIntent.getService(context, requestCode,
+                new Intent(context, CoreService.class)
+                        .putExtra(CoreService.EXTRA_READ_MESSAGES, true)
+                        .putExtra(Buddy.KEY_STRUCT, buddy)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createOpenChatIntent(Context context, Buddy buddy, int requestCode) {
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, ChatActivity.class)
+                        .putExtra(Buddy.KEY_STRUCT, buddy)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReplyIntent(Context context, Buddy buddy, int requestCode) {
+        // Для Android<M отдаётся Intent, аналогичный createOpenChatIntent.
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, ChatActivity.class)
+                        .putExtra(Buddy.KEY_STRUCT, buddy)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }

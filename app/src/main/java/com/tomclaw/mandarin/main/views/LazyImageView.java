@@ -8,17 +8,17 @@ import android.graphics.Bitmap;
  */
 public interface LazyImageView {
 
-    public void setPlaceholder(int resource);
+    void setPlaceholder(int resource);
 
-    public void setBitmap(Bitmap bitmap);
+    void setBitmap(Bitmap bitmap);
 
-    public int getWidth();
+    int getWidth();
 
-    public int getHeight();
+    int getHeight();
 
-    public String getHash();
+    String getHash();
 
-    public void setHash(String hash);
+    void setHash(String hash);
 
-    public Context getContext();
+    Context getContext();
 }

@@ -979,7 +979,7 @@ public class ChatActivity extends ChiefActivity {
                 ContentResolver contentResolver = context.getContentResolver();
                 int counter = 0;
                 for (PhotoEntry photoEntry : selectedPhotos) {
-                    String cookie = System.currentTimeMillis() + "/" + counter + ":" + photoEntry.hash;
+                    String cookie = System.currentTimeMillis() + "/" + counter + ":" + ""/*photoEntry.hash*/;
                     File file = new File(photoEntry.path);
                     if (file.exists() && file.length() > 0) {
                         Uri uri = Uri.fromFile(file);
@@ -987,7 +987,7 @@ public class ChatActivity extends ChiefActivity {
                         // Checking file type, size and other required information.
                         long size = uriFile.getSize();
                         int contentType = uriFile.getContentType();
-                        String hash = photoEntry.hash;
+                        String hash = "";//photoEntry.hash;
                         String tag = cookie + ":" + uriFile.getPath();
                         // Create outgoing file messages.
 //                        QueryHelper.insertOutgoingFileMessage(contentResolver, buddyDbId, cookie, uriFile.getUri(),

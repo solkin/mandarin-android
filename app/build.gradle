@@ -36,4 +36,5 @@ dependencies {
     compile 'net.hockeyapp.android:HockeySDK:4.0.2'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
 }

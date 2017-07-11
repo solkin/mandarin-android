@@ -22,8 +22,11 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
@@ -34,6 +37,9 @@ import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
 
+import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
+import static com.tomclaw.mandarin.core.GlideProvider.retriever;
+
 /**
  * Created by Solkin on 05.12.2014.
  */
@@ -41,13 +47,22 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     public static final String EXTRA_PICTURE_URI = "picture_uri";
     public static final String EXTRA_PICTURE_NAME = "picture_name";
-    public static final String EXTRA_PREVIEW_HASH = "thumbnail_hash";
     public static final String EXTRA_SELECTED_COUNT = "sending_count";
     public static final String EXTRA_PHOTO_ENTRY = "photo_entry";
 
     public static final String SELECTED_PHOTO_ENTRY = "selected_image_id";
 
     public static final int ANIMATION_DURATION = 250;
+
+    public static final RequestOptions PREVIEW_OPTIONS = centerInsideTransform()
+            .placeholder(R.drawable.ic_gallery)
+            .error(R.drawable.ic_gallery)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .priority(Priority.IMMEDIATE)
+            .override(256)
+            .encodeQuality(40)
+            .dontAnimate()
+            .downsample(DownsampleStrategy.CENTER_INSIDE);
 
     private View progressView;
 
@@ -62,7 +77,6 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     private Uri uri;
     private String name;
-    private String previewHash;
     private int selectedCount;
     private PhotoEntry photoEntry;
     private boolean hasPreview = false;
@@ -83,7 +97,6 @@ public class PhotoViewerActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         String uriString = extras.getString(EXTRA_PICTURE_URI);
         name = extras.getString(EXTRA_PICTURE_NAME);
-        previewHash = extras.getString(EXTRA_PREVIEW_HASH);
         selectedCount = extras.getInt(EXTRA_SELECTED_COUNT, -1);
         photoEntry = (PhotoEntry) extras.getSerializable(EXTRA_PHOTO_ENTRY);
         // Check the parameters are correct.
@@ -153,14 +166,12 @@ public class PhotoViewerActivity extends AppCompatActivity {
             }
         });
 
-        // Checking for preview hash is not empty and show it in a block way.
-        if (!TextUtils.isEmpty(previewHash)) {
-            // Preview hash seems to be in a heap cache.
-            setBitmap(BitmapCache.getInstance().getBitmapSync(previewHash,
-                    BitmapCache.BITMAP_SIZE_ORIGINAL, BitmapCache.BITMAP_SIZE_ORIGINAL, true, false));
-        }
+        retriever().get(this)
+                .asBitmap()
+                .load(photoEntry.path)
+                .apply(PREVIEW_OPTIONS)
+                .into(imageView);
 
-        // Sampling and showing picture.
         samplePicture();
     }
 
@@ -236,7 +247,6 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     protected void setDrawable(Drawable drawable) {
-        // Set up specified drawable.
         if (drawable != null) {
             hasPreview = true;
         }
@@ -299,7 +309,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
                     decoded = true;
                 }
                 if (!decoded) {
-                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
+                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1280, 1280);
                     if (bitmap != null) {
                         drawable = new BitmapDrawable(activity.getResources(), bitmap);
                     }

@@ -1237,7 +1237,6 @@ public class ChatActivity extends ChiefActivity {
                 Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
                 startActivity(intent);
             } else {
                 Intent intent = new Intent();

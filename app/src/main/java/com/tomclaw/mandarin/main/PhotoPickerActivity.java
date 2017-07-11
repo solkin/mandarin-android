@@ -142,6 +142,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         return;
                     }
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
+
+                    retriever().get(PhotoPickerActivity.this)
+                            .load(photoEntity.path)
+                            .apply(PhotoViewerActivity.PREVIEW_OPTIONS)
+                            .preload();
+
                     File photoFile = new File(photoEntity.path);
                     Uri uri = Uri.fromFile(photoFile);
                     int selectedCount = selectedPhotos.size();

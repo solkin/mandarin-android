@@ -25,13 +25,17 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.RosterAlphabetAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterGroupAdapter;
 import com.tomclaw.mandarin.main.adapters.RosterStatusAdapter;
@@ -58,9 +62,12 @@ public class RosterActivity extends ChiefActivity {
 
     private static final String ROSTER_FILTER_PREFERENCE = "roster_filter";
     private SearchView.OnQueryTextListener onQueryTextListener;
+    private RosterStickyAdapter generalAdapter;
+    private DatabaseLayer databaseLayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseLayer = ContentResolverLayer.from(getContentResolver());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.roster_activity);
@@ -86,7 +93,6 @@ public class RosterActivity extends ChiefActivity {
 
         // Sticky list.
         StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
-        final RosterStickyAdapter generalAdapter;
         // Checking for adapter mode.
         String rosterMode = PreferenceHelper.getRosterMode(this);
         if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
@@ -102,15 +108,15 @@ public class RosterActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
+                StrictBuddy buddy = generalAdapter.getBuddy(position);
+                Logger.log("Opening dialog with buddy: " + buddy.toString());
                 try {
                     // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+                    QueryHelper.modifyDialog(databaseLayer, buddy, true);
                     // Open chat dialog for this buddy.
                     Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                            .putExtra(Buddy.KEY_STRUCT, buddy);
                     startActivity(intent);
                     finish();
                 } catch (Exception e) {
@@ -196,11 +202,12 @@ public class RosterActivity extends ChiefActivity {
 
     private class MultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
 
-        private SelectionHelper<Integer> selectionHelper;
+        private SelectionHelper<StrictBuddy> selectionHelper;
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            selectionHelper.onStateChanged((int) id, checked);
+            StrictBuddy buddy = generalAdapter.getBuddy(position);
+            selectionHelper.onStateChanged(buddy, checked);
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
             updateMenu(mode, mode.getMenu());
         }
@@ -232,17 +239,17 @@ public class RosterActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.buddy_info_menu: {
-                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
-                    TaskExecutor.getInstance().execute(new BuddyInfoTask(RosterActivity.this, buddyDbId));
+                    Buddy buddy = selectionHelper.getSelected().iterator().next();
+                    TaskExecutor.getInstance().execute(new BuddyInfoTask(RosterActivity.this, buddy));
                     break;
                 }
                 case R.id.rename_buddy_menu: {
-                    int buddyDbId = selectionHelper.getSelectedIds().iterator().next();
-                    renameSelectedBuddy(buddyDbId);
+                    Buddy buddy = selectionHelper.getSelected().iterator().next();
+                    renameSelectedBuddy(buddy);
                     break;
                 }
                 case R.id.remove_buddy_menu: {
-                    removeSelectedBuddies(selectionHelper.getSelectedIds());
+                    removeSelectedBuddies(selectionHelper.getSelected());
                     break;
                 }
             }
@@ -255,14 +262,15 @@ public class RosterActivity extends ChiefActivity {
             selectionHelper.clearSelection();
         }
 
-        private void renameSelectedBuddy(final int buddyDbId) {
+        private void renameSelectedBuddy(final Buddy buddy) {
             BuddyCursor buddyCursor = null;
             try {
-                buddyCursor = QueryHelper.getBuddyCursor(getContentResolver(), buddyDbId);
-                final int accountDbId = buddyCursor.getBuddyAccountDbId();
+                buddyCursor = QueryHelper.getBuddyCursor(databaseLayer,
+                        buddy.getAccountDbId(), buddy.getBuddyId());
+                final int accountDbId = buddyCursor.getAccountDbId();
                 final String buddyId = buddyCursor.getBuddyId();
                 final String buddyPreviousNick = buddyCursor.getBuddyNick();
-                final boolean isPersistent = (buddyCursor.getBuddyGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
+                final boolean isPersistent = (buddyCursor.getGroupId() != GlobalProvider.GROUP_ID_RECYCLE);
 
                 View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
 
@@ -279,7 +287,7 @@ public class RosterActivity extends ChiefActivity {
                                 String buddySatisfiedNick = buddyNameText.getText().toString();
                                 // Renaming only if buddy nicks are different.
                                 if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
-                                    QueryHelper.modifyBuddyNick(getContentResolver(), buddyDbId,
+                                    QueryHelper.modifyBuddyNick(databaseLayer, buddy,
                                             buddySatisfiedNick, isPersistent);
                                     if (isPersistent) {
                                         RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
@@ -300,8 +308,8 @@ public class RosterActivity extends ChiefActivity {
             }
         }
 
-        private void removeSelectedBuddies(Collection<Integer> buddyDbIds) {
-            final Collection<Integer> selectedBuddies = new ArrayList<>(buddyDbIds);
+        private void removeSelectedBuddies(Collection<StrictBuddy> buddyDbIds) {
+            final Collection<StrictBuddy> selectedBuddies = new ArrayList<>(buddyDbIds);
             boolean isMultiple = buddyDbIds.size() > 1;
             String message;
             if (isMultiple) {

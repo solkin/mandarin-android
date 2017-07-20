@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.im.icq.BuddyRemoveRequest;
 import com.tomclaw.mandarin.im.icq.BuddyRenameRequest;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
 import com.tomclaw.mandarin.im.icq.EndSessionRequest;
+import com.tomclaw.mandarin.im.icq.HistoryBlockRequest;
 import com.tomclaw.mandarin.im.icq.IcqFileDownloadRequest;
 import com.tomclaw.mandarin.im.icq.IcqFileUploadRequest;
 import com.tomclaw.mandarin.im.icq.IcqMessageRequest;
@@ -24,6 +25,7 @@ import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.im.icq.IcqTypingRequest;
 import com.tomclaw.mandarin.im.icq.LargeAvatarRequest;
 import com.tomclaw.mandarin.im.icq.SearchAvatarRequest;
+import com.tomclaw.mandarin.im.icq.SetDialogStateRequest;
 import com.tomclaw.mandarin.im.icq.SetMoodRequest;
 import com.tomclaw.mandarin.im.icq.SetPermitDenyRequest;
 import com.tomclaw.mandarin.im.icq.SetStateRequest;
@@ -43,25 +45,8 @@ import java.util.List;
  */
 public class RequestHelper {
 
-    public static void requestMessage(ContentResolver contentResolver, int buddyDbId, String cookie, String message) {
-        // Obtain account db id.
-        // TODO: out this method.
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Cursor may have more than only one entry.
-            // TODO: check for at least one buddy present.
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                requestMessage(contentResolver, accountDbId, buddyId, cookie, message);
-            }
-            cursor.close();
-        }
-    }
-
-    public static void requestMessage(ContentResolver contentResolver, int accountDbId, String buddyId,
+    public static void requestMessage(ContentResolver contentResolver,
+                                      int accountDbId, String buddyId,
                                       String cookie, String message) {
         IcqMessageRequest messageRequest = new IcqMessageRequest(buddyId, message, cookie);
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, messageRequest);
@@ -79,12 +64,12 @@ public class RequestHelper {
 
     public static void requestBuddyAvatar(ContentResolver contentResolver, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(ContentResolverLayer.getInstance(contentResolver), accountDbId, buddyId, url);
+        requestBuddyAvatar(ContentResolverLayer.from(contentResolver), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(SQLiteDatabase sqLiteDatabase, int accountDbId,
                                           String buddyId, String url) {
-        requestBuddyAvatar(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), accountDbId, buddyId, url);
+        requestBuddyAvatar(SQLiteDatabaseLayer.from(sqLiteDatabase), accountDbId, buddyId, url);
     }
 
     public static void requestBuddyAvatar(DatabaseLayer databaseLayer, int accountDbId,
@@ -94,38 +79,20 @@ public class RequestHelper {
                 url, buddyAvatarRequest);
     }
 
-    public static void requestFileSend(ContentResolver contentResolver, int buddyDbId,
+    public static void requestFileSend(ContentResolver contentResolver,
+                                       int accountDbId, String buddyId,
                                        String cookie, String tag, UriFile uriFile) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, tag, uploadRequest);
-            }
-            cursor.close();
-        }
+        RangedUploadRequest uploadRequest = new IcqFileUploadRequest(uriFile, buddyId, cookie);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_UPLOAD, accountDbId, tag, uploadRequest);
     }
 
-    public static void requestFileReceive(ContentResolver contentResolver, int buddyDbId,
-                                          String cookie, long time, String fileId, String fileUrl,
+    public static void requestFileReceive(ContentResolver contentResolver,
+                                          int accountDbId, String buddyId, String cookie,
+                                          long time, String fileId, String fileUrl,
                                           String originalMessage, String tag) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
-                        buddyId, cookie, time, fileId, fileUrl, originalMessage, tag);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, tag, downloadRequest);
-            }
-            cursor.close();
-        }
+        RangedDownloadRequest downloadRequest = new IcqFileDownloadRequest(
+                buddyId, cookie, time, fileId, fileUrl, originalMessage, tag);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_DOWNLOAD, accountDbId, tag, downloadRequest);
     }
 
     public static void requestAccountAvatar(ContentResolver contentResolver, int accountDbId, String url) {
@@ -167,20 +134,10 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, setMoodRequest);
     }
 
-    public static void requestTyping(ContentResolver contentResolver, int buddyDbId, boolean isTyping) {
-        Cursor cursor = contentResolver.query(Settings.BUDDY_RESOLVER_URI, null,
-                GlobalProvider.ROW_AUTO_ID + "='" + buddyDbId + "'", null, null);
-        // Oh, cursor may be null sometimes.
-        if (cursor != null) {
-            // Cursor may have more than only one entry.
-            if (cursor.moveToFirst()) {
-                int accountDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID));
-                String buddyId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ROSTER_BUDDY_ID));
-                IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, typingRequest);
-            }
-            cursor.close();
-        }
+    public static void requestTyping(ContentResolver contentResolver,
+                                     int accountDbId, String buddyId, boolean isTyping) {
+        IcqTypingRequest typingRequest = new IcqTypingRequest(buddyId, isTyping);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, typingRequest);
     }
 
     public static void requestAdd(ContentResolver contentResolver, int accountDbId, String buddyId,
@@ -236,6 +193,21 @@ public class RequestHelper {
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, uploadAvatarRequest);
     }
 
+    public static void requestHistoryBlock(ContentResolver contentResolver,
+                                           int accountDbId, String buddyId,
+                                           long fromMessageId, long tillMessageId,
+                                           String patchVersion, int count) {
+        HistoryBlockRequest historyBlockRequest = new HistoryBlockRequest(
+                buddyId, fromMessageId, tillMessageId, patchVersion, count);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, accountDbId, historyBlockRequest);
+    }
+
+    public static void requestSetDialogState(DatabaseLayer databaseLayer, int accountDbId,
+                                             String buddyId, long messageId) {
+        SetDialogStateRequest setDialogStateRequest = new SetDialogStateRequest(buddyId, messageId);
+        insertRequest(databaseLayer, Request.REQUEST_TYPE_SHORT, accountDbId, setDialogStateRequest);
+    }
+
     public static void updateUserInfo(ContentResolver contentResolver, int accountDbId, String friendlyName,
                                       String firstName, String lastName, int gender, long birthDate,
                                       String city, String webSite,
@@ -273,6 +245,11 @@ public class RequestHelper {
         insertRequest(contentResolver, type, true, accountDbId, null, null, request);
     }
 
+    private static void insertRequest(DatabaseLayer databaseLayer, int type, int accountDbId,
+                                      Request request) {
+        insertRequest(databaseLayer, type, true, accountDbId, null, null, request);
+    }
+
     private static void insertRequest(ContentResolver contentResolver, int type, int accountDbId,
                                       String tag, Request request) {
         insertRequest(contentResolver, type, true, accountDbId, tag, null, request);
@@ -280,13 +257,13 @@ public class RequestHelper {
 
     private static void insertRequest(ContentResolver contentResolver, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(ContentResolverLayer.getInstance(contentResolver), type,
+        insertRequest(ContentResolverLayer.from(contentResolver), type,
                 isPersistent, accountDbId, tag, appSession, request);
     }
 
     private static void insertRequest(SQLiteDatabase sqLiteDatabase, int type, boolean isPersistent,
                                       int accountDbId, String tag, String appSession, Request request) {
-        insertRequest(SQLiteDatabaseLayer.getInstance(sqLiteDatabase), type,
+        insertRequest(SQLiteDatabaseLayer.from(sqLiteDatabase), type,
                 isPersistent, accountDbId, tag, appSession, request);
     }
 

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
@@ -275,7 +277,8 @@ public abstract class AccountRoot implements Unobfuscatable {
     public void updateAccount() {
         // Update database info.
         try {
-            QueryHelper.updateAccount(context, this);
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(context.getContentResolver());
+            QueryHelper.updateAccount(context, databaseLayer, this);
         } catch (AccountNotFoundException ignored) {
             // Impossible case.
         }

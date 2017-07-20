@@ -27,16 +27,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingLeft="5dp"
-            android:paddingRight="0dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="0dp">
+            android:paddingRight="0dp">
 
             <RelativeLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/out_bubble_back"
-                android:layout_gravity="end">
+                android:layout_gravity="right">
 
                 <com.tomclaw.mandarin.main.views.BubbleImageView
                     android:id="@+id/out_preview_image"
@@ -94,4 +92,6 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <include layout="@layout/chat_item_addon" />
 </LinearLayout>

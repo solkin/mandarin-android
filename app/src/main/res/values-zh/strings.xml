@@ -187,7 +187,7 @@
     <string name="pref_title_chat_show_keyboard">显示键盘</string>
     <string name="pref_title_send_by_enter">用回车键发送</string>
     <string name="pref_summary_send_by_enter">当我按下键盘的回车键时就发送消息</string>
-    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
+    <string name="music_status_pattern">%1$s - %2$s</string>
     <string name="pref_title_music_auto_status">现在播放的状态</string>
     <string name="pref_summary_music_auto_status">当我用系统播放器播放音乐时，自动将我的状态设置成 \"音乐\" 并附上歌曲名字</string>
     <string name="update_after_track_switch">状态会在音乐切换后更新</string>
@@ -210,8 +210,8 @@
     <string name="remove_selected_messages">被选中的消息会被永久删除。继续吗？</string>
     <string name="no_incoming_selected">没有来信被选择</string>
     <string name="yesterday">昨天</string>
-    <string name="last_seen_date" formatted="false">上次在线在 %1$s 于 %2$s</string>
-    <string name="last_seen_time" formatted="false">上次在线于 %s</string>
+    <string name="last_seen_date">上次在线在 %1$s 于 %2$s</string>
+    <string name="last_seen_time">上次在线于 %s</string>
     <string name="typing">正在输入…</string>
     <string name="unknown_buddy">未知的伙伴</string>
     <string name="pref_title_theme">设计主题</string>

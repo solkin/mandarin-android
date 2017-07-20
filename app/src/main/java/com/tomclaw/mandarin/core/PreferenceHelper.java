@@ -18,10 +18,6 @@ import com.tomclaw.mandarin.R;
  */
 public class PreferenceHelper {
 
-    public static boolean isCollapseMessages(Context context) {
-        return getBooleanPreference(context, R.string.pref_collapse_messages, R.bool.pref_collapse_messages_default);
-    }
-
     public static boolean isShowKeyboard(Context context) {
         return getBooleanPreference(context, R.string.pref_chat_show_keyboard, R.bool.pref_chat_show_keyboard_default);
     }

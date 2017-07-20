@@ -82,6 +82,7 @@ public class WimConstants {
     public static final String BUDDY_ICON = "buddyIcon";
     public static final String BIG_BUDDY_ICON = "bigBuddyIcon";
     public static final String LAST_SEEN = "lastseen";
+    public static final String HIST_DLG_STATE = "histDlgState";
     public static final String IM = "im";
     public static final String MESSAGE = "message";
     public static final String MSG_ID = "msgId";
@@ -111,6 +112,8 @@ public class WimConstants {
     public static final String SMS_CODE = "sms_code";
     public static final String CREATE_ACCOUNT = "create_account";
     public static final String SIG_SHA256 = "sig_sha256";
+    public static final String HIST_MSG_ID = "histMsgId";
+    public static final String HIST_PREV_MSG_ID = "beforeHistMsgId";
     public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",

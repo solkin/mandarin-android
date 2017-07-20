@@ -29,17 +29,24 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.main.views.LazyImageView;
-import com.tomclaw.mandarin.main.views.ThumbnailView;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+
+import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
+import static com.bumptech.glide.request.RequestOptions.noTransformation;
+import static com.tomclaw.mandarin.core.GlideProvider.retriever;
 
 /**
  * Created by Solkin on 04.11.2014.
@@ -60,6 +67,13 @@ public class PhotoPickerActivity extends AppCompatActivity {
             MediaStore.Images.Media.ORIENTATION
     };
 
+    private static final RequestOptions thumbnailOptions = centerCropTransform()
+            .placeholder(R.drawable.ic_gallery)
+            .error(R.drawable.ic_gallery)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .priority(Priority.HIGH)
+            .downsample(DownsampleStrategy.CENTER_INSIDE);
+
     private ArrayList<AlbumEntry> albums;
     private View doneButton;
     private TextView doneButtonTextView;
@@ -67,7 +81,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     private GridView mediaGrid;
     private AlbumEntry selectedAlbum = null;
     private int itemWidth, itemHeight;
-    private HashMap<Integer, PhotoEntry> selectedPhotos = new HashMap<>();
+    private Map<Integer, PhotoEntry> selectedPhotos = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +142,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         return;
                     }
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
+
+                    retriever().get(PhotoPickerActivity.this)
+                            .load(photoEntity.path)
+                            .apply(PhotoViewerActivity.PREVIEW_OPTIONS)
+                            .preload();
+
                     File photoFile = new File(photoEntity.path);
                     Uri uri = Uri.fromFile(photoFile);
                     int selectedCount = selectedPhotos.size();
@@ -137,7 +157,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
                     intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
                     intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
-                    intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, photoEntity.hash);
                     intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
                     intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
                     startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
@@ -360,12 +379,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
             view.setLayoutParams(params);
 
             AlbumEntry albumEntry = getItem(position);
-            ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
+            ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
             showThumbnail(imageView, albumEntry.coverPhoto);
             TextView textView = (TextView) view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
             textView = (TextView) view.findViewById(R.id.album_count);
-            textView.setText("" + albumEntry.photos.size());
+            textView.setText(String.valueOf(albumEntry.photos.size()));
             return view;
         }
     }
@@ -407,9 +426,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         PhotoEntry photoEntry = getItem((Integer) ((View) v.getParent()).getTag());
-                        if (selectedPhotos.containsKey(photoEntry.imageId)) {
-                            selectedPhotos.remove(photoEntry.imageId);
-                        } else {
+                        if (selectedPhotos.remove(photoEntry.imageId) == null) {
                             selectedPhotos.put(photoEntry.imageId, photoEntry);
                         }
                         updateSelectedPhoto((View) v.getParent(), photoEntry);
@@ -422,7 +439,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
             params.height = itemHeight;
             view.setLayoutParams(params);
             PhotoEntry photoEntry = selectedAlbum.photos.get(position);
-            ThumbnailView imageView = (ThumbnailView) view.findViewById(R.id.media_photo_image);
+            ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
             updateSelectedPhoto(view, photoEntry);
@@ -435,11 +452,19 @@ public class PhotoPickerActivity extends AppCompatActivity {
         }
     }
 
-    private void showThumbnail(LazyImageView imageView, PhotoEntry photoEntry) {
+    private void showThumbnail(ImageView imageView, PhotoEntry photoEntry) {
         if (photoEntry != null && photoEntry.path != null && photoEntry.imageId != 0) {
-            BitmapCache.getInstance().getThumbnailAsync(imageView, photoEntry.hash, photoEntry.imageId, R.drawable.ic_gallery);
+            retriever().get(this)
+                    .asBitmap()
+                    .load(photoEntry.path)
+                    .apply(thumbnailOptions)
+                    .into(imageView);
         } else {
-            imageView.setPlaceholder(R.drawable.ic_gallery);
+            retriever().get(this)
+                    .asDrawable()
+                    .load(R.drawable.ic_gallery)
+                    .apply(noTransformation())
+                    .into(imageView);
         }
     }
 

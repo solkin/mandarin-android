@@ -25,6 +25,8 @@ import android.widget.ViewSwitcher;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PleaseWaitTask;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -472,7 +474,9 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 bitmapCache.saveBitmapSync(virtualHash, avatar);
                 bitmapCache.saveBitmapSync(avatarHash, avatar);
                 // Update profile.
-                QueryHelper.updateAccountAvatar(activity.getContentResolver(), accountDbId, virtualHash);
+                ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                QueryHelper.updateAccountAvatar(databaseLayer, accountDbId, virtualHash);
             }
         }
 

@@ -19,7 +19,7 @@ public class SQLiteDatabaseLayer implements DatabaseLayer {
         static SQLiteDatabaseLayer instance = new SQLiteDatabaseLayer();
     }
 
-    public static SQLiteDatabaseLayer getInstance(SQLiteDatabase sqLiteDatabase) {
+    public static SQLiteDatabaseLayer from(SQLiteDatabase sqLiteDatabase) {
         Holder.instance.sqLiteDatabase = sqLiteDatabase;
         return Holder.instance;
     }

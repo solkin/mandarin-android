@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.Random;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -35,6 +37,12 @@ public class StringUtil {
     private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
     private static final String MAPPING_CP1252 = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+
+    private static Random random;
+
+    static {
+        random = new Random(System.currentTimeMillis());
+    }
 
     public static int getAlphabetIndex(String name) {
         for (int c = 0; c < name.length(); c++) {
@@ -149,5 +157,69 @@ public class StringUtil {
         String escaped = escapeSqlWithQuotes(value);
         escaped = escaped.substring(1, escaped.length() - 1);
         return escaped;
+    }
+
+    public static String generateRandomText() {
+        int wordCount = 10 + random.nextInt(13);
+        return generateRandomText(wordCount);
+    }
+
+    public static String generateRandomText(int wordCount) {
+        StringBuilder sb = new StringBuilder(wordCount);
+        for (int i = 0; i < wordCount; i++) { // For each letter in the word
+            sb.append(generateRandomWord(i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
+        }
+        return sb.toString();
+    }
+
+    public static String generateRandomWord() {
+        return generateRandomWord(true);
+    }
+
+    public static String generateRandomWord(boolean capitalize) {
+        int wordLength = 4 + random.nextInt(6);
+        // Initialize a Random Number Generator with SysTime as the seed
+        StringBuilder sb = new StringBuilder(wordLength);
+        for (int i = 0; i < wordLength; i++) { // For each letter in the word
+            char tmp = (char) ('a' + random.nextInt('z' - 'a')); // Generate a letter between a and z
+            sb.append(tmp); // Add it to the String
+        }
+        String word = sb.toString();
+        if (capitalize) {
+            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
+        } else {
+            return word;
+        }
+    }
+
+    public static String generateRandomString() {
+        return generateRandomString(16);
+    }
+
+    public static String generateRandomString(int length) {
+        return generateRandomString(random, length, length);
+    }
+
+    public static String generateRandomString(Random r, int minChars, int maxChars) {
+        int wordLength = minChars;
+        int delta = maxChars - minChars;
+        if (delta > 0) {
+            wordLength += r.nextInt(delta);
+        }
+        StringBuilder sb = new StringBuilder(wordLength);
+        for (int i = 0; i < wordLength; i++) { // For each letter in the word
+            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
+            sb.append(tmp); // Add it to the String
+        }
+        return sb.toString();
+    }
+
+    public static String format(String source, Map<String, String> patterns) {
+        String result = source;
+        for (String key : patterns.keySet()) {
+            String value = patterns.get(key);
+            result = result.replace('{' + key + '}', value);
+        }
+        return result;
     }
 }

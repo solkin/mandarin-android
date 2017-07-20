@@ -5,31 +5,32 @@
     android:layout_height="100dp"
     android:layout_gravity="top">
 
-    <com.tomclaw.mandarin.main.views.ThumbnailView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/media_photo_image"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/thumbnail_back" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/thumbnail_back"
+        android:scaleType="center" />
 
     <FrameLayout
-        android:layout_height="fill_parent"
-        android:layout_width="fill_parent"
-        android:id="@+id/photo_frame" />
+        android:id="@+id/photo_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
+        android:id="@+id/photo_check_frame"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:layout_gravity="right"
-        android:id="@+id/photo_check_frame">
+        android:layout_gravity="right">
 
         <ImageView
-            android:layout_height="30dp"
-            android:layout_width="30dp"
             android:id="@+id/photo_check"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="right"
+            android:layout_marginRight="2dp"
             android:layout_marginTop="2dp"
-            android:scaleType="center"
-            android:layout_marginRight="2dp" />
+            android:scaleType="center" />
 
     </FrameLayout>
 

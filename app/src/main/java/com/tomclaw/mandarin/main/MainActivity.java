@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -25,12 +26,15 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
@@ -47,6 +51,7 @@ import net.hockeyapp.android.utils.Util;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static com.tomclaw.mandarin.im.AccountRoot.AUTH_LOST;
 
@@ -146,7 +151,7 @@ public class MainActivity extends ChiefActivity {
         dialogsAdapter.setSelectionModeListener(new RosterDialogsAdapter.SelectionModeListener() {
 
             @Override
-            public void onItemStateChanged(int buddyDbId) {
+            public void onItemStateChanged(StrictBuddy buddy) {
                 // Strange case, but let's check it to be sure.
                 if (actionCallback != null && actionMode != null) {
                     actionCallback.onItemCheckedStateChanged(actionMode);
@@ -163,22 +168,22 @@ public class MainActivity extends ChiefActivity {
             }
 
             @Override
-            public void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper) {
+            public void onLongClicked(StrictBuddy buddy, SelectionHelper<StrictBuddy> selectionHelper) {
                 if (selectionHelper.setSelectionMode(true)) {
                     actionCallback = new MultiChoiceActionCallback(selectionHelper);
                     actionMode = toolbar.startActionMode(actionCallback);
-                    selectionHelper.setChecked(buddyDbId);
-                    onItemStateChanged(buddyDbId);
+                    selectionHelper.setChecked(buddy);
+                    onItemStateChanged(buddy);
                 }
             }
         });
         dialogsAdapter.setClickListener(new RosterDialogsAdapter.ClickListener() {
             @Override
-            public void onItemClicked(int buddyDbId) {
-                Logger.log("Check out dialog with buddy (db id): " + buddyDbId);
+            public void onItemClicked(StrictBuddy buddy) {
+                Logger.log("Check out dialog with: " + buddy.toString());
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId);
+                        .putExtra(Buddy.KEY_STRUCT, buddy);
                 startActivity(intent);
             }
         });
@@ -313,9 +318,9 @@ public class MainActivity extends ChiefActivity {
 
     private class MultiChoiceActionCallback implements ActionMode.Callback {
 
-        private SelectionHelper<Integer> selectionHelper;
+        private SelectionHelper<StrictBuddy> selectionHelper;
 
-        MultiChoiceActionCallback(SelectionHelper<Integer> selectionHelper) {
+        MultiChoiceActionCallback(SelectionHelper<StrictBuddy> selectionHelper) {
             this.selectionHelper = selectionHelper;
         }
 
@@ -337,13 +342,13 @@ public class MainActivity extends ChiefActivity {
             menu.clear();
             // Checking for unread dialogs.
             int menuRes = R.menu.chat_list_edit_menu;
-            Collection<Integer> selectedIds = selectionHelper.getSelectedIds();
+            Collection<StrictBuddy> buddies = selectionHelper.getSelected();
             dialogsAdapter.getBuddyCursor().moveToFirst();
             BuddyCursor cursor = dialogsAdapter.getBuddyCursor();
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                for (int selectedId : selectedIds) {
-                    if (selectedId == cursor.getBuddyDbId() &&
-                            cursor.getBuddyUnreadCount() > 0) {
+                for (Buddy buddy : buddies) {
+                    if (buddy.equals(cursor.toBuddy()) &&
+                            cursor.getUnreadCount() > 0) {
                         menuRes = R.menu.chat_list_unread_edit_menu;
                         break;
                     }
@@ -362,24 +367,19 @@ public class MainActivity extends ChiefActivity {
             switch (item.getItemId()) {
                 case R.id.select_all_chats_menu: {
                     for (int c = 0; c < dialogsAdapter.getItemCount(); c++) {
-                        int buddyDbId = dialogsAdapter.getBuddyDbId(c);
-                        selectionHelper.setChecked(buddyDbId);
+                        StrictBuddy buddy = dialogsAdapter.getBuddy(c);
+                        selectionHelper.setChecked(buddy);
                     }
                     onItemCheckedStateChanged(mode);
                     dialogsAdapter.notifyDataSetChanged();
                     return false;
                 }
-                case R.id.mark_as_read_chat_menu: {
-                    try {
-                        QueryHelper.readAllMessages(getContentResolver(), selectionHelper.getSelectedIds());
-                    } catch (Exception ignored) {
-                        // Nothing to do in this case.
-                    }
-                    break;
-                }
                 case R.id.close_chat_menu: {
                     try {
-                        QueryHelper.modifyDialogs(getContentResolver(), selectionHelper.getSelectedIds(), false);
+                        ContentResolver contentResolver = getContentResolver();
+                        DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
+                        Collection<Buddy> selectedBuddies = Collections.<Buddy>unmodifiableCollection(selectionHelper.getSelected());
+                        QueryHelper.modifyDialogs(databaseLayer, selectedBuddies, false);
                     } catch (Exception ignored) {
                         // Nothing to do in this case.
                     }

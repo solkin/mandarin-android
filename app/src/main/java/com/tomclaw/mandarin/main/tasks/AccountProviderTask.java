@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.tasks;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -9,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.WeakObjectTask;
@@ -33,9 +36,11 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
     public void executeBackground() throws Throwable {
         Activity context = getWeakObject();
         if (context != null) {
+            ContentResolver contentResolver = context.getContentResolver();
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
             Cursor cursor = null;
             try {
-                cursor = QueryHelper.getActiveAccounts(context.getContentResolver());
+                cursor = QueryHelper.getActiveAccounts(databaseLayer);
                 if (cursor == null || cursor.getCount() == 0 || !cursor.moveToFirst()) {
                     isShowDialog = false;
                 } else if (cursor.getCount() == 1) {

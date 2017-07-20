@@ -3,7 +3,6 @@
     <string name="pref_chat_settings" translatable="false">pref_chat_settings</string>
     <string name="pref_buddy_list_settings" translatable="false">pref_buddy_list_settings</string>
     <string name="pref_show_temp" translatable="false">pref_show_temp</string>
-    <string name="pref_collapse_messages" translatable="false">pref_collapse_messages</string>
     <string name="pref_notification_settings" translatable="false">pref_notification_settings</string>
     <string name="pref_notification_sound" translatable="false">pref_notification_sound</string>
     <string name="pref_sound" translatable="false">pref_sound</string>

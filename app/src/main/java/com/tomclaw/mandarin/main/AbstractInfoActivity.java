@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
@@ -499,9 +501,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             AbstractInfoActivity activity = getWeakObject();
             if (activity != null) {
                 ContentResolver contentResolver = activity.getContentResolver();
+                DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
                 int accountDbId = activity.getAccountDbId();
                 String buddyId = activity.getBuddyId();
-                boolean accountActive = QueryHelper.isAccountActive(contentResolver, accountDbId);
+                boolean accountActive = QueryHelper.isAccountActive(databaseLayer, accountDbId);
                 if (accountActive) {
                     // Sending protocol buddy info request.
                     RequestHelper.requestBuddyInfo(contentResolver, appSession, accountDbId, buddyId);

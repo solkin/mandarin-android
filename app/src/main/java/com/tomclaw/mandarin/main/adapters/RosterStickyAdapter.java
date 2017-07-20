@@ -21,12 +21,16 @@ import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.Logger;
@@ -115,12 +119,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Status image.
-        String accountType = buddyCursor.getBuddyAccountType();
-        int statusIndex = buddyCursor.getBuddyStatus();
+        String accountType = buddyCursor.getAccountType();
+        int statusIndex = buddyCursor.getStatus();
         int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
         // Status text.
-        String statusTitle = buddyCursor.getBuddyStatusTitle();
-        String statusMessage = buddyCursor.getBuddyStatusMessage();
+        String statusTitle = buddyCursor.getStatusTitle();
+        String statusMessage = buddyCursor.getStatusMessage();
         if (statusIndex == StatusUtil.STATUS_OFFLINE
                 || TextUtils.equals(statusTitle, statusMessage)) {
             // Buddy status is offline now or status message is only status title.
@@ -130,7 +134,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         SpannableString statusString = new SpannableString(statusTitle + " " + statusMessage);
         statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, statusTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         // Unread count.
-        int unreadCount = buddyCursor.getBuddyUnreadCount();
+        int unreadCount = buddyCursor.getUnreadCount();
         // Applying values.
         ((TextView) view.findViewById(R.id.buddy_nick)).setText(buddyCursor.getBuddyNick());
         ((ImageView) view.findViewById(R.id.buddy_status)).setImageResource(statusImageResource);
@@ -142,16 +146,16 @@ public abstract class RosterStickyAdapter extends CursorAdapter
             view.findViewById(R.id.counter_layout).setVisibility(View.GONE);
         }
         // Draft message.
-        String buddyDraft = buddyCursor.getBuddyDraft();
+        String buddyDraft = buddyCursor.getDraft();
         view.findViewById(R.id.draft_indicator).setVisibility(
                 TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
-        final String avatarHash = buddyCursor.getBuddyAvatarHash();
+        final String avatarHash = buddyCursor.getAvatarHash();
         ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
         // On-avatar click listener.
-        final int buddyDbId = buddyCursor.getBuddyDbId();
-        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddyDbId);
+        final Buddy buddy = buddyCursor.toBuddy();
+        final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddy);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,12 +195,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
         return buddyCursor;
     }
 
-    public int getBuddyDbId(int position) {
+    public StrictBuddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyDbId();
+        return cursor.toBuddy();
     }
 
     public void setRosterFilter(int filter) {
@@ -232,11 +236,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
 
         @Override
         public Cursor runQuery(CharSequence constraint) {
+            DatabaseLayer databaseLayer = ContentResolverLayer.from(context.getContentResolver());
             String searchField = constraint.toString().toUpperCase();
             QueryBuilder queryBuilder = getDefaultQueryBuilder();
             queryBuilder.and().startComplexExpression().like(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, searchField)
                     .or().like(GlobalProvider.ROSTER_BUDDY_ID, constraint).finishComplexExpression();
-            return queryBuilder.query(context.getContentResolver(), Settings.BUDDY_RESOLVER_URI);
+            return queryBuilder.query(databaseLayer, Settings.BUDDY_RESOLVER_URI);
         }
     }
 }

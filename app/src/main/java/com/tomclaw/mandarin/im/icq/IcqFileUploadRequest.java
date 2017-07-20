@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapFile;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.NotifiableUploadRequest;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -15,6 +16,7 @@ import com.tomclaw.mandarin.core.UriFile;
 import com.tomclaw.mandarin.core.VirtualFile;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
+import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
@@ -57,11 +59,11 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
         // Show chat activity with concrete buddy.
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
-                    getAccountRoot().getAccountDbId(), buddyId);
+            int accountDbId = getAccountRoot().getAccountDbId();
+            Buddy buddy = new Buddy(accountDbId, buddyId);
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, ChatActivity.class)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                            .putExtra(Buddy.KEY_STRUCT, buddy)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     PendingIntent.FLAG_CANCEL_CURRENT);
         } catch (Throwable ignored) {
@@ -76,12 +78,13 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected String getDescription() {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         String buddyNick = "";
         Context context = getAccountRoot().getContext();
         try {
-            int buddyDbId = QueryHelper.getBuddyDbId(context.getContentResolver(),
+            int buddyDbId = QueryHelper.getBuddyDbId(databaseLayer,
                     getAccountRoot().getAccountDbId(), buddyId);
-            buddyNick = QueryHelper.getBuddyNick(context.getContentResolver(), buddyDbId);
+            buddyNick = QueryHelper.getBuddyNick(databaseLayer, buddyDbId);
         } catch (Throwable ignored) {
         }
         if (TextUtils.isEmpty(buddyNick)) {
@@ -92,9 +95,10 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected void onStartedDelegate() throws Throwable {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         Logger.log("onStarted");
         try {
-            int contentState = QueryHelper.getFileState(getAccountRoot().getContentResolver(),
+            int contentState = QueryHelper.getFileState(databaseLayer,
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
             if (contentState == GlobalProvider.HISTORY_CONTENT_STATE_INTERRUPT ||
                     contentState == GlobalProvider.HISTORY_CONTENT_STATE_STOPPED) {
@@ -104,12 +108,12 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
             // Message may be already deleted. So, delete this task too.
             throw new UnknownResponseException();
         }
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+        QueryHelper.updateFileState(databaseLayer,
                 GlobalProvider.HISTORY_CONTENT_STATE_RUNNING, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
         // Try to compress outgoing file.
         try {
             virtualFile = BitmapFile.create(getAccountRoot().getContext(), uriFile);
-            QueryHelper.updateFileSize(getAccountRoot().getContentResolver(), virtualFile.getSize(),
+            QueryHelper.updateFileSize(databaseLayer, virtualFile.getSize(),
                     GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
         } catch (Throwable ignored) {
             virtualFile = uriFile;
@@ -118,6 +122,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected void onSuccessDelegate(String response) throws Throwable {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         JSONObject rootObject = new JSONObject(response);
         int status = rootObject.getInt("status");
         switch (status) {
@@ -132,7 +137,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
                 Logger.log("onSuccess: " + staticUrl);
                 String text = fileName + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                         + "\n" + staticUrl;
-                QueryHelper.updateFileStateAndText(getAccountRoot().getContentResolver(),
+                QueryHelper.updateFileStateAndText(databaseLayer,
                         GlobalProvider.HISTORY_CONTENT_STATE_STABLE, text,
                         GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
                 RequestHelper.requestMessage(getAccountRoot().getContentResolver(),
@@ -148,15 +153,17 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
     @Override
     protected void onFailDelegate() {
         Logger.log("onFail");
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateFileState(databaseLayer,
                 GlobalProvider.HISTORY_CONTENT_STATE_FAILED,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 
     @Override
     protected void onCancelDelegate() {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
         // Update message to be in waiting state.
-        QueryHelper.updateFileState(getAccountRoot().getContentResolver(),
+        QueryHelper.updateFileState(databaseLayer,
                 GlobalProvider.HISTORY_CONTENT_STATE_STOPPED, GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 
@@ -167,7 +174,8 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
     @Override
     protected void onProgressUpdated(int progress) {
-        QueryHelper.updateFileProgress(getAccountRoot().getContentResolver(), progress,
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        QueryHelper.updateFileProgress(databaseLayer, progress,
                 GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING, cookie);
     }
 

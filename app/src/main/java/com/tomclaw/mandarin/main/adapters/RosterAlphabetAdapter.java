@@ -33,7 +33,7 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         ((TextView) convertView.findViewById(R.id.header_text)).setText(String.valueOf(
-                Character.toUpperCase((char) cursor.getBuddyAlphabetIndex())));
+                Character.toUpperCase((char) cursor.getAlphabetIndex())));
         return convertView;
     }
 
@@ -43,7 +43,7 @@ public class RosterAlphabetAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyAlphabetIndex();
+        return cursor.getAlphabetIndex();
     }
 
     @Override

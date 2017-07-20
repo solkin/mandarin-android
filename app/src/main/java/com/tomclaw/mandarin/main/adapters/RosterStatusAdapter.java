@@ -33,7 +33,7 @@ public class RosterStatusAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        boolean isOnline = cursor.getBuddyStatus() != StatusUtil.STATUS_OFFLINE;
+        boolean isOnline = cursor.getStatus() != StatusUtil.STATUS_OFFLINE;
         String headerText = getContext().getString(isOnline ? R.string.status_online : R.string.status_offline);
         ((TextView) convertView.findViewById(R.id.header_text)).setText(headerText.toUpperCase());
         return convertView;
@@ -45,7 +45,7 @@ public class RosterStatusAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyStatus() != StatusUtil.STATUS_OFFLINE ? 1 : 0;
+        return cursor.getStatus() != StatusUtil.STATUS_OFFLINE ? 1 : 0;
     }
 
     @Override

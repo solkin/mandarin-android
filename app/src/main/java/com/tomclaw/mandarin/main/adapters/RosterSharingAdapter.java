@@ -35,7 +35,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         }
         TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
         int headerTitle;
-        boolean dialogOpened = cursor.getBuddyDialog();
+        boolean dialogOpened = cursor.getDialog();
         if (dialogOpened) {
             headerTitle = R.string.dialogs;
         } else {
@@ -51,7 +51,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        boolean dialogOpened = cursor.getBuddyDialog();
+        boolean dialogOpened = cursor.getDialog();
         return dialogOpened ? GROUP_DIALOGS : GROUP_CONTACTS;
     }
 

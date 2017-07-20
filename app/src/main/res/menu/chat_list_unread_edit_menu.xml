@@ -8,11 +8,6 @@
         app:showAsAction="ifRoom"
         android:title="@string/select_all" />
     <item
-        android:id="@+id/mark_as_read_chat_menu"
-        android:icon="@drawable/ic_action_read"
-        app:showAsAction="always"
-        android:title="@string/mark_as_read" />
-    <item
         android:id="@+id/close_chat_menu"
         android:icon="@drawable/ic_close_dialog"
         app:showAsAction="always"

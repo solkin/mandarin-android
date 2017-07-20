@@ -1,9 +1,13 @@
-package com.tomclaw.mandarin.core;
+package com.tomclaw.mandarin.im;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
 
-import com.tomclaw.mandarin.im.BuddyCursor;
+import com.tomclaw.mandarin.core.ContentResolverLayer;
+import com.tomclaw.mandarin.core.DatabaseLayer;
+import com.tomclaw.mandarin.core.MainExecutor;
+import com.tomclaw.mandarin.core.QueryHelper;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.util.Logger;
 
 /**
@@ -11,14 +15,16 @@ import com.tomclaw.mandarin.util.Logger;
  */
 public abstract class BuddyObserver extends ContentObserver {
 
-    private ContentResolver contentResolver;
-    private int buddyDbId;
+    private final ContentResolver contentResolver;
+    private final DatabaseLayer databaseLayer;
+    private final Buddy buddy;
 
-    public BuddyObserver(ContentResolver contentResolver, int buddyDbId) {
+    public BuddyObserver(ContentResolver contentResolver, Buddy buddy) {
         super(null);
 
         this.contentResolver = contentResolver;
-        this.buddyDbId = buddyDbId;
+        this.databaseLayer = ContentResolverLayer.from(contentResolver);
+        this.buddy = buddy;
 
         observe();
     }
@@ -38,7 +44,8 @@ public abstract class BuddyObserver extends ContentObserver {
             public void run() {
                 BuddyCursor buddyCursor = null;
                 try {
-                    buddyCursor = QueryHelper.getBuddyCursor(contentResolver, buddyDbId);
+                    buddyCursor = QueryHelper.getBuddyCursor(databaseLayer,
+                            buddy.getAccountDbId(), buddy.getBuddyId());
                     onBuddyInfoChanged(buddyCursor);
                 } catch (Throwable ignored) {
                     // Sadly.

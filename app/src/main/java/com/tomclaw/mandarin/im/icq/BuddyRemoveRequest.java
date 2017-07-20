@@ -1,8 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
@@ -29,30 +30,23 @@ public class BuddyRemoveRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
+        DatabaseLayer databaseLayer = getDatabaseLayer();
+        int accountDbId = getAccountRoot().getAccountDbId();
         JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
         int statusCode = responseObject.getInt(STATUS_CODE);
-        // Searching for local buddy db id.
-        int buddyDbId;
-        try {
-            buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
-                    getAccountRoot().getAccountDbId(), groupName, buddyId);
-        } catch (BuddyNotFoundException ignored) {
-            // Wha-a-a-at?! No buddy found. Maybe, it was deleted or never exists?
-            // Heh, delete request.
-            return REQUEST_DELETE;
-        }
+        StrictBuddy strictBuddy = new StrictBuddy(accountDbId, groupName, buddyId);
         // Check for server reply.
         if (statusCode == WIM_OK) {
             // Buddy will be removed later when it became outdated in roster.
             return REQUEST_DELETE;
         } else if (statusCode == 601) {
             // Buddy not found in roster.
-            QueryHelper.removeBuddy(getAccountRoot().getContentResolver(), buddyDbId);
+            QueryHelper.removeBuddy(databaseLayer, strictBuddy);
             return REQUEST_DELETE;
         } else if (statusCode == 460 || statusCode == 462) {
             // No luck :( Return buddy.
-            QueryHelper.modifyOperation(getAccountRoot().getContentResolver(),
-                    buddyDbId, GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
+            QueryHelper.modifyOperation(databaseLayer, strictBuddy,
+                    GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
             return REQUEST_DELETE;
         }
         // Maybe incorrect aim sid or other strange error we've not recognized.

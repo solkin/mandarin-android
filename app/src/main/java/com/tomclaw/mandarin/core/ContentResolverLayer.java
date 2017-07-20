@@ -19,7 +19,7 @@ public class ContentResolverLayer implements DatabaseLayer {
         static ContentResolverLayer instance = new ContentResolverLayer();
     }
 
-    public static ContentResolverLayer getInstance(ContentResolver contentResolver) {
+    public static ContentResolverLayer from(ContentResolver contentResolver) {
         Holder.instance.contentResolver = contentResolver;
         return Holder.instance;
     }
@@ -34,16 +34,16 @@ public class ContentResolverLayer implements DatabaseLayer {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, QueryBuilder queryBuilder) {
-        return queryBuilder.update(contentResolver, contentValues, uri);
+        return contentResolver.update(uri, contentValues, queryBuilder.getSelect(), null);
     }
 
     @Override
     public Cursor query(Uri uri, QueryBuilder queryBuilder) {
-        return queryBuilder.query(contentResolver, uri);
+        return contentResolver.query(uri, null, queryBuilder.getSelect(), null, queryBuilder.getSort());
     }
 
     @Override
     public int delete(Uri uri, QueryBuilder queryBuilder) {
-        return queryBuilder.delete(contentResolver, uri);
+        return contentResolver.delete(uri, queryBuilder.getSelect(), null);
     }
 }

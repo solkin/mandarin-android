@@ -1,14 +1,13 @@
 package com.tomclaw.mandarin.core;
 
-import android.os.Build;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.core.exceptions.ServerInternalException;
 import com.tomclaw.mandarin.core.exceptions.UnauthorizedException;
 import com.tomclaw.mandarin.core.exceptions.UnknownResponseException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.AlterableBody;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.VariableBuffer;
 
@@ -58,7 +57,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(url)
                     .addHeader("Connection", "Keep-Alive")
-                    .addHeader("User-Agent", getUserAgent())
+                    .addHeader("User-Agent", HttpUtil.getUserAgent())
                     .addHeader("Accept-Ranges", "bytes")
                     .post(body)
                     .build();
@@ -178,10 +177,6 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             onPending();
             return REQUEST_PENDING;
         }
-    }
-
-    private String getUserAgent() {
-        return "Mandarin/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + ")";
     }
 
     private void checkInterrupted() throws InterruptedException {

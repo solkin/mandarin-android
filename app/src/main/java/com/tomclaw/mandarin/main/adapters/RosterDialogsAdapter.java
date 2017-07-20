@@ -28,6 +28,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
+import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -59,7 +60,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
     private BuddyCursor buddyCursor;
 
-    private final SelectionHelper<Integer> selectionHelper = new SelectionHelper<>();
+    private final SelectionHelper<StrictBuddy> selectionHelper = new SelectionHelper<>();
 
     private SelectionModeListener selectionModeListener;
     private ClickListener clickListener;
@@ -123,7 +124,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     public void onBindViewHolderCursor(DialogViewHolder holder, Cursor cursor) {
         holder.bind(selectionHelper, buddyCursor, timeHelper);
         holder.bindClickListeners(clickListener, selectionModeListener, selectionHelper,
-                buddyCursor.getBuddyDbId());
+                buddyCursor.toBuddy());
     }
 
     @Override
@@ -136,12 +137,12 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         return buddyCursor;
     }
 
-    public int getBuddyDbId(int position) {
+    public StrictBuddy getBuddy(int position) {
         BuddyCursor cursor = getBuddyCursor();
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return cursor.getBuddyDbId();
+        return cursor.toBuddy();
     }
 
     public void setAdapterCallback(RosterAdapterCallback adapterCallback) {
@@ -166,15 +167,15 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
     }
 
     public interface SelectionModeListener {
-        void onItemStateChanged(int buddyDbId);
+        void onItemStateChanged(StrictBuddy buddy);
 
         void onNothingSelected();
 
-        void onLongClicked(int buddyDbId, SelectionHelper<Integer> selectionHelper);
+        void onLongClicked(StrictBuddy buddy, SelectionHelper<StrictBuddy> selectionHelper);
     }
 
     public interface ClickListener {
-        void onItemClicked(int buddyDbId);
+        void onItemClicked(StrictBuddy buddy);
     }
 
     static class DialogViewHolder extends RecyclerView.ViewHolder {
@@ -199,13 +200,13 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
         }
 
-        void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
+        void bind(SelectionHelper<StrictBuddy> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
             Context context = itemView.getContext();
             // Selection indicator.
             int[] attrs = new int[]{R.attr.selectableItemBackground};
             TypedArray ta = context.obtainStyledAttributes(attrs);
             Drawable drawableFromTheme = ta.getDrawable(0);
-            if (selectionHelper.isChecked(buddyCursor.getBuddyDbId())) {
+            if (selectionHelper.isChecked(buddyCursor.toBuddy())) {
                 int backColor = R.color.orange_normal;
                 itemView.setBackgroundColor(itemView.getResources().getColor(backColor));
             } else {
@@ -213,12 +214,12 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
             }
             ta.recycle();
             // Status image.
-            String accountType = buddyCursor.getBuddyAccountType();
-            int statusIndex = buddyCursor.getBuddyStatus();
+            String accountType = buddyCursor.getAccountType();
+            int statusIndex = buddyCursor.getStatus();
             int statusImageResource = StatusUtil.getStatusDrawable(accountType, statusIndex);
             // Status text.
-            String statusTitle = buddyCursor.getBuddyStatusTitle();
-            String statusMessage = buddyCursor.getBuddyStatusMessage();
+            String statusTitle = buddyCursor.getStatusTitle();
+            String statusMessage = buddyCursor.getStatusMessage();
             if (statusIndex == StatusUtil.STATUS_OFFLINE
                     || TextUtils.equals(statusTitle, statusMessage)) {
                 // Buddy status is offline now or status message is only status title.
@@ -226,14 +227,14 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 statusMessage = "";
             }
             SpannableString statusString;
-            long lastTyping = buddyCursor.getBuddyLastTyping();
+            long lastTyping = buddyCursor.getLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                 String typingText = itemView.getContext().getString(R.string.typing);
                 statusString = new SpannableString(typingText);
                 statusString.setSpan(new StyleSpan(Typeface.BOLD), 0, typingText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                long lastSeen = buddyCursor.getBuddyLastSeen();
+                long lastSeen = buddyCursor.getLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
                     String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
@@ -262,7 +263,7 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 }
             }
             // Unread count.
-            int unreadCount = buddyCursor.getBuddyUnreadCount();
+            int unreadCount = buddyCursor.getUnreadCount();
             // Applying values.
             buddyNick.setText(buddyCursor.getBuddyNick());
             buddyStatus.setImageResource(statusImageResource);
@@ -274,14 +275,14 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
                 counterLayout.setVisibility(View.GONE);
             }
             // Draft message.
-            String buddyDraft = buddyCursor.getBuddyDraft();
+            String buddyDraft = buddyCursor.getDraft();
             draftIndicator.setVisibility(TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
             // Avatar.
-            final String avatarHash = buddyCursor.getBuddyAvatarHash();
+            final String avatarHash = buddyCursor.getAvatarHash();
             BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
             // On-avatar click listener.
-            final int buddyDbId = buddyCursor.getBuddyDbId();
-            final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddyDbId);
+            final StrictBuddy buddy = buddyCursor.toBuddy();
+            final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddy);
             contactBadge.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -292,27 +293,27 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
 
         void bindClickListeners(final ClickListener clickListener,
                                 final SelectionModeListener selectionModeListener,
-                                final SelectionHelper<Integer> selectionHelper,
-                                final int buddyDbId) {
+                                final SelectionHelper<StrictBuddy> selectionHelper,
+                                final StrictBuddy buddy) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (selectionHelper.isSelectionMode()) {
-                        selectionHelper.toggleChecked(buddyDbId);
-                        selectionModeListener.onItemStateChanged(buddyDbId);
+                        selectionHelper.toggleChecked(buddy);
+                        selectionModeListener.onItemStateChanged(buddy);
                         // Check for this was last selected item.
                         if (selectionHelper.isEmptySelection()) {
                             selectionModeListener.onNothingSelected();
                         }
                     } else {
-                        clickListener.onItemClicked(buddyDbId);
+                        clickListener.onItemClicked(buddy);
                     }
                 }
             });
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    selectionModeListener.onLongClicked(buddyDbId, selectionHelper);
+                    selectionModeListener.onLongClicked(buddy, selectionHelper);
                     return true;
                 }
             });

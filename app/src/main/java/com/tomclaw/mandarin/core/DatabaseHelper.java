@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
@@ -12,7 +13,15 @@ import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Random;
+
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomText;
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +32,7 @@ import java.util.Random;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private final Context context;
+    private final boolean isExportDb = false;
 
     public DatabaseHelper(Context context) {
         super(context, Settings.DB_NAME, null, Settings.DB_VERSION);
@@ -54,22 +64,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             for (int a = 0; a < 3 + random.nextInt(5); a++) {
                 IcqAccountRoot accountRoot = new IcqAccountRoot();
                 accountRoot.setUserId(String.valueOf(random.nextInt(999999999)));
-                accountRoot.setUserPassword(generateRandomWord(random));
-                accountRoot.setUserNick(generateRandomWord(random));
+                accountRoot.setUserPassword(generateRandomWord());
+                accountRoot.setUserNick(generateRandomWord());
                 cv0.put(GlobalProvider.ACCOUNT_TYPE, accountRoot.getAccountType());
                 cv0.put(GlobalProvider.ACCOUNT_NAME, accountRoot.getUserNick());
                 cv0.put(GlobalProvider.ACCOUNT_USER_ID, accountRoot.getUserId());
                 cv0.put(GlobalProvider.ACCOUNT_USER_PASSWORD, accountRoot.getUserPassword());
                 cv0.put(GlobalProvider.ACCOUNT_STATUS, accountRoot.getStatusIndex());
-                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
-                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_TITLE, generateRandomText(1 + random.nextInt(2)));
+                cv0.put(GlobalProvider.ACCOUNT_STATUS_MESSAGE, generateRandomText(4 + random.nextInt(6)));
                 cv0.put(GlobalProvider.ACCOUNT_CONNECTING, accountRoot.isConnecting() ? 1 : 0);
                 cv0.put(GlobalProvider.ACCOUNT_BUNDLE, GsonSingleton.getInstance().toJson(accountRoot));
                 long accountDbId = db.insert(GlobalProvider.ACCOUNTS_TABLE, null, cv0);
                 for (int i = 1; i <= 4 + random.nextInt(3); i++) {
                     int groupId = (random.nextInt(10) == 1) ? GlobalProvider.GROUP_ID_RECYCLE : i;
                     String groupName = groupId == GlobalProvider.GROUP_ID_RECYCLE ?
-                            context.getString(R.string.recycle) : generateRandomWord(random);
+                            context.getString(R.string.recycle) : generateRandomWord();
                     cv1.put(GlobalProvider.ROSTER_GROUP_ACCOUNT_DB_ID, accountDbId);
                     cv1.put(GlobalProvider.ROSTER_GROUP_NAME, groupName);
                     cv1.put(GlobalProvider.ROSTER_GROUP_ID, groupId);
@@ -77,17 +87,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     db.insert(GlobalProvider.ROSTER_GROUP_TABLE, null, cv1);
                     for (int c = 1; c <= 15 + random.nextInt(15); c++) {
                         int status = statuses[random.nextInt(statuses.length)];
-                        String nick = generateRandomWord(random);
+                        String nick = generateRandomWord();
+                        String buddyId = String.valueOf(random.nextInt(999999999));
                         boolean isDialog = (random.nextInt(10) == 1);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ACCOUNT_TYPE, accountRoot.getAccountType());
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, random.nextInt(999999999));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ID, buddyId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_NICK, nick);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP, groupName);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_GROUP_ID, groupId);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS, status);
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, generateRandomText(random, 1 + random.nextInt(2)));
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(random, 4 + random.nextInt(6)));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_TITLE, generateRandomText(1 + random.nextInt(2)));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(4 + random.nextInt(6)));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
                         cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
@@ -101,17 +112,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 boolean isRead = (messageType != 1);
                                 unreadCount += isRead ? 0 : 1;
                                 cv3.put(GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID, accountDbId);
-                                cv3.put(GlobalProvider.HISTORY_BUDDY_DB_ID, String.valueOf(id));
+                                cv3.put(GlobalProvider.HISTORY_BUDDY_ID, String.valueOf(buddyId));
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_COOKIE, String.valueOf(random.nextLong()));
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_STATE, 4);
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TIME, System.currentTimeMillis() + j -
                                         24 * 60 * 60 * 1000 - 10);
-                                cv3.put(GlobalProvider.HISTORY_MESSAGE_READ, isRead ? 1 : 0);
-                                cv3.put(GlobalProvider.HISTORY_NOTICE_SHOWN, 1);
-                                String message = generateRandomText(random);
+                                String message = generateRandomText();
                                 cv3.put(GlobalProvider.HISTORY_MESSAGE_TEXT, message);
-                                cv3.put(GlobalProvider.HISTORY_SEARCH_FIELD, message.toUpperCase());
                                 db.insert(GlobalProvider.CHAT_HISTORY_TABLE, null, cv3);
                             }
                         }
@@ -125,8 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String query = "UPDATE " + GlobalProvider.ROSTER_BUDDY_TABLE + " SET "
                     + GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT + "="
                     + "(" + "SELECT COUNT(*) FROM " + GlobalProvider.CHAT_HISTORY_TABLE
-                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_MESSAGE_READ + "=0"
-                    + " AND " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_DB_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROW_AUTO_ID + ");";
+                    + " WHERE " + GlobalProvider.CHAT_HISTORY_TABLE + "." + GlobalProvider.HISTORY_BUDDY_ID + "=" + GlobalProvider.ROSTER_BUDDY_TABLE + "." + GlobalProvider.ROSTER_BUDDY_ID + ");";
             Logger.log("query: " + query);
             db.execSQL(query);
 
@@ -138,37 +144,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static String generateRandomText(Random r) {
-        int wordCount = 10 + r.nextInt(13);
-        return generateRandomText(r, wordCount);
-    }
-
-    public static String generateRandomText(Random r, int wordCount) {
-
-        StringBuilder sb = new StringBuilder(wordCount);
-        for (int i = 0; i < wordCount; i++) { // For each letter in the word
-            sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (isExportDb) {
+            exportDb(db);
         }
-        return sb.toString();
     }
 
-    private static String generateRandomWord(Random r) {
-        return generateRandomWord(r, true);
-    }
-
-    private static String generateRandomWord(Random r, boolean capitalize) {
-        int wordLength = 4 + r.nextInt(6);
-        // Initialize a Random Number Generator with SysTime as the seed
-        StringBuilder sb = new StringBuilder(wordLength);
-        for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
-            sb.append(tmp); // Add it to the String
-        }
-        String word = sb.toString();
-        if (capitalize) {
-            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
-        } else {
-            return word;
+    private void exportDb(SQLiteDatabase db) {
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        FileChannel source;
+        FileChannel destination;
+        String currentDBPath = db.getPath();
+        String backupDBPath = Settings.DB_NAME + ".db";
+        File currentDB = new File(currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,8 +1,6 @@
 package com.tomclaw.mandarin.main.views.history;
 
 import android.content.res.Resources;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
@@ -10,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.util.SelectionHelper;
@@ -27,6 +25,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
     private TextView messageDate;
     private ImageView deliveryState;
     private TextView timeView;
+    private View addonView;
+    private TextView fromIdView;
+    private TextView tillIdView;
 
     private ChatHistoryItem historyItem;
     private ChatHistoryAdapter.SelectionModeListener selectionModeListener;
@@ -38,6 +39,9 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         this.itemView = itemView;
         dateLayout = itemView.findViewById(getDateLayoutViewId());
         messageDate = (TextView) itemView.findViewById(getDateTextViewId());
+        addonView = itemView.findViewById(R.id.addon_layout);
+        fromIdView = (TextView) itemView.findViewById(R.id.from_message_id);
+        tillIdView = (TextView) itemView.findViewById(R.id.till_message_id);
         if (hasDeliveryState()) {
             deliveryState = (ImageView) itemView.findViewById(R.id.message_delivery);
         }
@@ -78,38 +82,46 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
             // Update visibility.
             dateLayout.setVisibility(View.GONE);
         }
+        if (Settings.HISTORY_DEBUG) {
+            addonView.setVisibility(View.VISIBLE);
+            fromIdView.setText(String.valueOf(historyItem.getMessagePrevId()));
+            tillIdView.setText(String.valueOf(historyItem.getMessageId()));
+        } else {
+            addonView.setVisibility(View.GONE);
+        }
         if (hasDeliveryState()) {
-            Drawable drawable;
-            boolean animated = false;
-            switch (historyItem.getMessageState()) {
-                case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
-                    drawable = getResources().getDrawable(R.drawable.ic_error);
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
-                case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
-                    drawable = getResources().getDrawable(R.drawable.sending_anim);
-                    animated = true;
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
-                    drawable = getResources().getDrawable(R.drawable.ic_sent);
-                    break;
-                case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
-                    drawable = getResources().getDrawable(R.drawable.ic_delivered);
-                    break;
-                default:
-                    drawable = null;
-            }
-            if (drawable == null || historyItem.getContentState() != GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
-                deliveryState.setVisibility(View.INVISIBLE);
-            } else {
-                deliveryState.setVisibility(View.VISIBLE);
-                deliveryState.setImageDrawable(drawable);
-                if (animated) {
-                    AnimationDrawable animatedState = ((AnimationDrawable) drawable);
-                    animatedState.stop();
-                    animatedState.start();
-                }
-            }
+            // TODO: Implement delivery and read history based on message id.
+//            Drawable drawable;
+//            boolean animated = false;
+//            switch (historyItem.getMessageState()) {
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_ERROR:
+//                    drawable = getResources().getDrawable(R.drawable.ic_error);
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED:
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_SENDING:
+//                    drawable = getResources().getDrawable(R.drawable.sending_anim);
+//                    animated = true;
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_SENT:
+//                    drawable = getResources().getDrawable(R.drawable.ic_sent);
+//                    break;
+//                case GlobalProvider.HISTORY_MESSAGE_STATE_DELIVERED:
+//                    drawable = getResources().getDrawable(R.drawable.ic_delivered);
+//                    break;
+//                default:
+//                    drawable = null;
+//            }
+//            if (drawable == null || historyItem.getContentState() != GlobalProvider.HISTORY_CONTENT_STATE_STABLE) {
+//                deliveryState.setVisibility(View.INVISIBLE);
+//            } else {
+//                deliveryState.setVisibility(View.VISIBLE);
+//                deliveryState.setImageDrawable(drawable);
+//                if (animated) {
+//                    AnimationDrawable animatedState = ((AnimationDrawable) drawable);
+//                    animatedState.stop();
+//                    animatedState.start();
+//                }
+//            }
         }
         timeView.setText(historyItem.getMessageTimeText());
         bindClickListeners();

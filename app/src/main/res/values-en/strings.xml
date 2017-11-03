@@ -276,7 +276,7 @@
     <string name="gender_any">No matter</string>
     <string name="gender_not_selected">Not selected</string>
     <string name="buddy_info_search">Search criteria</string>
-    <string name="keyword_search">ID or name</string>
+    <string name="keyword_search">Email or UIN</string>
     <string name="age_and_gender_search">Age &amp; gender</string>
     <string name="buddy_online_search">Is online</string>
     <string name="search_button">Search</string>

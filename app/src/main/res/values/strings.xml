@@ -280,7 +280,7 @@
     <string name="gender_any">Любой</string>
     <string name="gender_not_selected">Не выбран</string>
     <string name="buddy_info_search">Анкетные данные</string>
-    <string name="keyword_search">ID, имя или фамилия</string>
+    <string name="keyword_search">Email или UIN</string>
     <string name="age_and_gender_search">Возраст и пол</string>
     <string name="buddy_online_search">Сейчас онлайн</string>
     <string name="search_button">Поиск</string>

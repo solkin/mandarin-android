@@ -255,7 +255,7 @@
     <string name="gender_any">不限</string>
     <string name="gender_not_selected">未选择</string>
     <string name="buddy_info_search">搜索条件</string>
-    <string name="keyword_search">ID 或名字</string>
+    <string name="keyword_search">Email/UIN</string>
     <string name="age_and_gender_search">年龄 &amp; 性别</string>
     <string name="buddy_online_search">在线</string>
     <string name="search_button">搜索</string>

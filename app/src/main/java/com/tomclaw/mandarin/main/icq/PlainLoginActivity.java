@@ -171,6 +171,7 @@ public class PlainLoginActivity extends ChiefActivity {
             final ProgressDialog progressDialog = ProgressDialog.show(this, null,
                     getString(R.string.checking_credentials));
             progressDialog.show();
+            accountRoot.setContext(this);
             accountRoot.setUserId(userId);
             accountRoot.setUserNick(userId);
             accountRoot.setUserPassword(userPassword);

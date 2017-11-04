@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
+import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
 /**
@@ -138,6 +139,7 @@ public abstract class AccountRoot implements Unobfuscatable {
      * @param statusMessage - status description.
      */
     public void setStatus(int statusIndex, String statusTitle, String statusMessage) {
+        Logger.log("set account status: " + statusIndex + ", connecting: " + isConnecting());
         if (getStatusIndex() != statusIndex
                 || !TextUtils.equals(getStatusTitle(), statusTitle)
                 || !TextUtils.equals(getStatusMessage(), statusMessage)) {
@@ -260,6 +262,7 @@ public abstract class AccountRoot implements Unobfuscatable {
      */
     protected void updateAccountState(int statusIndex, String statusTitle, String statusMessage,
                                       boolean isConnecting) {
+        Logger.log("update account state: " + statusIndex + ", connecting: " + isConnecting);
         // Setup local variables.
         this.statusIndex = statusIndex;
         this.statusTitle = statusTitle;

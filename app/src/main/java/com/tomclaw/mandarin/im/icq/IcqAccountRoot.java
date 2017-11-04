@@ -61,6 +61,9 @@ public class IcqAccountRoot extends AccountRoot {
 
             public void run() {
                 do {
+                    if (isOnline()) {
+                        return;
+                    }
                     Logger.log("login: " + "start");
                     while (!checkSessionReady()) {
                         Logger.log("login: " + "session not ready");

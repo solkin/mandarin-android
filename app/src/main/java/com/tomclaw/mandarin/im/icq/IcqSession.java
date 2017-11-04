@@ -1,7 +1,9 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.BuildConfig;
@@ -133,7 +135,7 @@ public class IcqSession {
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
     private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";
-    private static final String DEVICE_ID_VALUE = "mandarin_device_id";
+    private static String DEVICE_ID_VALUE;
 
     public static final int INTERNAL_ERROR = 1000;
     public static final int EXTERNAL_LOGIN_OK = 200;
@@ -237,7 +239,7 @@ public class IcqSession {
                     .appendParam(BUILD_NUMBER, BUILD_NUMBER_VALUE)
                     .appendParam(CLIENT_NAME, CLIENT_NAME_VALUE)
                     .appendParam(CLIENT_VERSION, CLIENT_VERSION_VALUE)
-                    .appendParam(DEVICE_ID, DEVICE_ID_VALUE)
+                    .appendParam(DEVICE_ID, getDeviceId())
                     .appendParam(EVENTS, EVENTS_VALUE)
                     .appendParam(FORMAT, WimConstants.FORMAT_JSON)
                     .appendParam(IMF, "plain")
@@ -373,6 +375,9 @@ public class IcqSession {
         Logger.log("start events fetching");
         do {
             try {
+                if (!icqAccountRoot.checkSessionReady()) {
+                    continue;
+                }
                 String fetchUrl = getFetchUrl();
                 URL url = new URL(fetchUrl);
                 Logger.log("fetch url = " + fetchUrl);
@@ -633,5 +638,23 @@ public class IcqSession {
     @SuppressWarnings("WeakerAccess")
     public void obtainCabbageClient() {
         cabbageSession.obtainClient();
+    }
+
+    private String getDeviceId() {
+        if (DEVICE_ID_VALUE == null) {
+            initDeviceId();
+        }
+        return DEVICE_ID_VALUE;
+    }
+
+    @SuppressLint("HardwareIds")
+    private void initDeviceId() {
+        try {
+            DEVICE_ID_VALUE = Secure.getString(
+                    icqAccountRoot.getContentResolver(),
+                    Secure.ANDROID_ID);
+        } catch (Throwable ex) {
+            DEVICE_ID_VALUE = "mandarin_device_id";
+        }
     }
 }

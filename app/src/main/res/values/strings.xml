@@ -62,13 +62,13 @@
         cannot be undone. Continue?
     </string>
     <string name="do_not_remove">No</string>
-    <string name="please_wait">Please wait a while...</string>
+    <string name="please_wait">Please wait a while…</string>
     <string name="error_clearing_history">Sorry, there was a problem clearing your history</string>
     <string name="error_sending_message">Failed to send message!</string>
     <string name="filter_show_all_buddies">All buddies</string>
     <string name="filter_show_online_only">Online only</string>
-    <string name="account_connecting">Connecting. Please wait a while...</string>
-    <string name="account_shutdowning">Disconnecting. Please wait a while...</string>
+    <string name="account_connecting">Connecting. Please wait a while…</string>
+    <string name="account_shutdowning">Disconnecting. Please wait a while…</string>
 
     <plurals name="count_new_messages">
         <item quantity="one">%d new message</item>

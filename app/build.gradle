@@ -25,7 +25,7 @@ android {
         density {
             enable false
             reset()
-            include "nodpi", "mdpi", "hdpi", "xhdpi", "xxxhdpi"
+            include "nodpi", "hdpi", "xhdpi", "xxxhdpi"
         }
     }
     buildTypes {

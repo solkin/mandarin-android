@@ -19,8 +19,14 @@ android {
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
         versionName "1.9.7"
         resConfigs "ru", "en", "be", "uk", "kk"
-        resConfigs "nodpi", "mdpi", "hdpi", "xhdpi", "xxxhdpi"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
+    }
+    splits {
+        density {
+            enable true
+            reset()
+            include "nodpi", "mdpi", "hdpi", "xhdpi", "xxxhdpi"
+        }
     }
     buildTypes {
         release {

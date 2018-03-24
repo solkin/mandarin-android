@@ -48,7 +48,7 @@ public class CountryCodeActivity extends AppCompatActivity {
 
         setContentView(R.layout.country_code_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize action bar.
@@ -58,7 +58,7 @@ public class CountryCodeActivity extends AppCompatActivity {
         bar.setHomeButtonEnabled(true);
 
         countryCodeAdapter = new CountryCodeAdapter(this, CountriesProvider.getInstance().getCountries(this));
-        StickyListHeadersListView listView = (StickyListHeadersListView) findViewById(R.id.countries_list_view);
+        StickyListHeadersListView listView = findViewById(R.id.countries_list_view);
         listView.setAdapter(countryCodeAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,7 +121,7 @@ public class CountryCodeActivity extends AppCompatActivity {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.roster_sticky_header, parent, false);
             }
-            TextView textView = (TextView) convertView.findViewById(R.id.header_text);
+            TextView textView = convertView.findViewById(R.id.header_text);
             textView.setText(Character.toString((char) getItem(position).alphabetIndex));
             return convertView;
         }
@@ -151,8 +151,8 @@ public class CountryCodeActivity extends AppCompatActivity {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.country_item, parent, false);
             }
-            TextView textView = (TextView) convertView.findViewById(R.id.settings_row_text);
-            TextView detailTextView = (TextView) convertView.findViewById(R.id.settings_row_text_detail);
+            TextView textView = convertView.findViewById(R.id.settings_row_text);
+            TextView detailTextView = convertView.findViewById(R.id.settings_row_text_detail);
 
             Country c = getItem(position);
             textView.setText(c.name);
@@ -183,7 +183,7 @@ public class CountryCodeActivity extends AppCompatActivity {
         }
 
         private List<Country> getFilteredResults(CharSequence constraint) {
-            List<Country> filtered = new ArrayList<Country>();
+            List<Country> filtered = new ArrayList<>();
             for (Country country : originalCountries) {
                 if (country.contains(constraint)) {
                     filtered.add(country);

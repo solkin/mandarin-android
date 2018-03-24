@@ -27,9 +27,9 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
 
     @Override
     public void bindView(View view, Context context, ShortBuddyInfo info) {
-        TextView buddyNick = (TextView) view.findViewById(R.id.buddy_nick);
-        TextView buddyShortInfo = (TextView) view.findViewById(R.id.buddy_short_info);
-        TextView onlineIndicator = (TextView) view.findViewById(R.id.online_indicator);
+        TextView buddyNick = view.findViewById(R.id.buddy_nick);
+        TextView buddyShortInfo = view.findViewById(R.id.buddy_short_info);
+        TextView onlineIndicator = view.findViewById(R.id.online_indicator);
         // Buddy friendly name - first and last names or nick name.
         String friendly = "";
         if (StringUtil.isEmptyOrWhitespace(info.getFirstName()) && StringUtil.isEmptyOrWhitespace(info.getLastName())) {
@@ -73,7 +73,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         onlineIndicator.setText(info.isOnline() ? R.string.status_online : R.string.status_offline);
         onlineIndicator.setBackgroundResource(info.isOnline() ? R.drawable.green_indicator : R.drawable.red_indicator);
         // Avatar.
-        ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.buddy_image);
+        ContactBadge contactBadge = view.findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, info.getAvatarHash(), R.drawable.def_avatar_x48, false);
     }
 }

@@ -231,7 +231,7 @@
     <string name="yesterday">вчера</string>
     <string name="last_seen_date" formatted="false">Был(а) %1$s в %2$s</string>
     <string name="last_seen_time" formatted="false">Был(а) в %s</string>
-    <string name="typing">набирает сообщение…</string>
+    <string name="typing">печатает…</string>
     <string name="unknown_buddy">Без имени</string>
     <string name="pref_title_theme">Тема оформления</string>
     <string name="light">Светлая</string>

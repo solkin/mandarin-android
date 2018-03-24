@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "1.9.6"
+        versionName "1.9.7"
         resConfigs "ru", "en", "zh"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }
@@ -29,14 +29,14 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':smileys')
-    compile 'com.android.support:support-v4:25.4.0'
-    compile 'com.android.support:recyclerview-v7:25.4.0'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:support-v4:27.1.0'
+    compile 'com.android.support:recyclerview-v7:27.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.0'
+    compile 'com.android.support:design:27.1.0'
     compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'com.github.machinarius:preferencefragment:0.1.1'
     compile 'net.hockeyapp.android:HockeySDK:4.0.2'
-    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.squareup.okhttp3:okhttp:3.9.0'
 }

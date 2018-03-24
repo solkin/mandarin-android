@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -113,8 +114,9 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         }
     }
 
+    @NonNull
     @Override
-    public DialogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DialogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.buddy_item, parent, false);
         return new DialogViewHolder(view);
     }
@@ -190,13 +192,13 @@ public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAda
         DialogViewHolder(View itemView) {
             super(itemView);
 
-            buddyNick = ((TextView) itemView.findViewById(R.id.buddy_nick));
-            buddyStatus = ((ImageView) itemView.findViewById(R.id.buddy_status));
-            buddyStatusMessage = ((TextView) itemView.findViewById(R.id.buddy_status_message));
-            counterText = ((TextView) itemView.findViewById(R.id.counter_text));
+            buddyNick = itemView.findViewById(R.id.buddy_nick);
+            buddyStatus = itemView.findViewById(R.id.buddy_status);
+            buddyStatusMessage = itemView.findViewById(R.id.buddy_status_message);
+            counterText = itemView.findViewById(R.id.counter_text);
             counterLayout = itemView.findViewById(R.id.counter_layout);
             draftIndicator = itemView.findViewById(R.id.draft_indicator);
-            contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
+            contactBadge = itemView.findViewById(R.id.buddy_badge);
         }
 
         void bind(SelectionHelper<Integer> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {

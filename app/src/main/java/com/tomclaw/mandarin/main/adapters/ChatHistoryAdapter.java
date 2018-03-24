@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,9 +161,10 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         close();
     }
 
+    @NonNull
     @Override
     @SuppressWarnings("unchecked")
-    public BaseHistoryView onCreateViewHolder(ViewGroup viewGroup, int messageType) {
+    public BaseHistoryView onCreateViewHolder(@NonNull ViewGroup viewGroup, int messageType) {
         try {
             // Inflate view by type.
             View view = inflater.inflate(ITEM_LAYOUTS[messageType], viewGroup, false);
@@ -324,7 +326,7 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
 
     public interface ContentMessageClickListener {
 
-        public void onClicked(ChatHistoryItem historyItem);
+        void onClicked(ChatHistoryItem historyItem);
     }
 
     public interface SelectionModeListener {
@@ -335,7 +337,4 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         void onLongClicked(ChatHistoryItem historyItem, SelectionHelper<Long> selectionHelper);
     }
 
-    public interface AdapterListener {
-        void onPreviewClicked(String filePath, String previewHash);
-    }
 }

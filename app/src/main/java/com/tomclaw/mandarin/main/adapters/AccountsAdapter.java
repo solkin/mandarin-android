@@ -278,6 +278,6 @@ public class AccountsAdapter extends CursorAdapter implements
             Online
         }
 
-        public void onAccountsStateChanged(AccountsState state);
+        void onAccountsStateChanged(AccountsState state);
     }
 }

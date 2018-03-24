@@ -87,7 +87,7 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
     protected abstract int getItemLayout();
 
-    public View newView(int position, ViewGroup viewGroup) {
+    private View newView(int position, ViewGroup viewGroup) {
         int layoutRes;
         if (getItemViewType(position) == TYPE_NORMAL) {
             layoutRes = getItemLayout();
@@ -131,6 +131,6 @@ public abstract class EndlessListAdapter<T> extends BaseAdapter {
     }
 
     public interface EndlessAdapterListener {
-        public void onLoadMoreItems(int offset);
+        void onLoadMoreItems(int offset);
     }
 }

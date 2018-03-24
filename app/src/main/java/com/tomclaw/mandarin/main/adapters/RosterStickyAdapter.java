@@ -147,7 +147,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
                 TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
         final String avatarHash = buddyCursor.getBuddyAvatarHash();
-        ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.buddy_badge);
+        ContactBadge contactBadge = view.findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
         // On-avatar click listener.
         final int buddyDbId = buddyCursor.getBuddyDbId();

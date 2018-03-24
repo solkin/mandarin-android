@@ -92,7 +92,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         // Initialize info activity layout.
         setContentView(getLayout());
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Preparing for action bar.
@@ -104,7 +104,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         }
 
         // Buddy avatar.
-        ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+        ContactImage contactBadge = findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, false);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +237,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     }
 
     private void hideProgressBar() {
-        ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.content_view_switcher);
+        ViewSwitcher viewSwitcher = findViewById(R.id.content_view_switcher);
         if (viewSwitcher.getDisplayedChild() == 0) {
             viewSwitcher.setDisplayedChild(1);
         }
@@ -268,7 +268,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 // Checking for avatar hash is new and cool.
                 if (!TextUtils.isEmpty(requestAvatarHash) && !TextUtils.equals(requestAvatarHash, avatarHash)) {
                     avatarHash = requestAvatarHash;
-                    ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+                    ContactImage contactBadgeUpdate = findViewById(R.id.buddy_image_update);
                     Animation fadeIn = new AlphaAnimation(0, 1);
                     fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
                     fadeIn.setDuration(750);
@@ -364,7 +364,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         manualAvatar = bitmap;
         manualAvatarVirtualHash = hash;
         // Show new avatar with animation.
-        ContactImage contactBadgeManual = (ContactImage) findViewById(R.id.buddy_image_manual);
+        ContactImage contactBadgeManual = findViewById(R.id.buddy_image_manual);
         Animation fadeIn = new AlphaAnimation(0, 1);
         fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
         fadeIn.setDuration(750);
@@ -375,7 +375,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+                ContactImage contactBadgeUpdate = findViewById(R.id.buddy_image_update);
                 // Duplicate avatar for layer below.
                 contactBadgeUpdate.setBitmap(manualAvatar);
             }

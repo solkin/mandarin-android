@@ -72,10 +72,10 @@ public class RosterActivity extends ChiefActivity {
 
         setContentView(R.layout.roster_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton actionButton = findViewById(R.id.fab);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +92,7 @@ public class RosterActivity extends ChiefActivity {
         }
 
         // Sticky list.
-        StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.roster_list_view);
+        StickyListHeadersListView generalList = findViewById(R.id.roster_list_view);
         // Checking for adapter mode.
         String rosterMode = PreferenceHelper.getRosterMode(this);
         if (TextUtils.equals(rosterMode, getString(R.string.roster_mode_groups))) {
@@ -274,7 +274,7 @@ public class RosterActivity extends ChiefActivity {
 
                 View view = getLayoutInflater().inflate(R.layout.buddy_rename_dialog, null);
 
-                final EditText buddyNameText = (EditText) view.findViewById(R.id.buddy_name_edit);
+                final EditText buddyNameText = view.findViewById(R.id.buddy_name_edit);
                 buddyNameText.setText(buddyPreviousNick);
                 buddyNameText.setSelection(buddyNameText.length());
 

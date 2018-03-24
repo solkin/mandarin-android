@@ -92,7 +92,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         setContentView(R.layout.photo_picker_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Preparing for action bar.
@@ -104,7 +104,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         albums = loadGalleryPhotosAlbums();
 
-        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        Button cancelButton = findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,11 +120,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
         });
 
         cancelButton.setText(getString(R.string.cancel).toUpperCase());
-        doneButtonTextView = (TextView) doneButton.findViewById(R.id.done_button_text);
+        doneButtonTextView = doneButton.findViewById(R.id.done_button_text);
         doneButtonTextView.setText(getString(R.string.send).toUpperCase());
-        doneButtonBadgeTextView = (TextView) doneButton.findViewById(R.id.done_button_badge);
+        doneButtonBadgeTextView = doneButton.findViewById(R.id.done_button_badge);
 
-        mediaGrid = (GridView) findViewById(R.id.media_grid);
+        mediaGrid = findViewById(R.id.media_grid);
         mediaGrid.setAdapter(new AlbumsAdapter(this, albums));
         mediaGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -379,11 +379,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
             view.setLayoutParams(params);
 
             AlbumEntry albumEntry = getItem(position);
-            ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
+            ImageView imageView = view.findViewById(R.id.media_photo_image);
             showThumbnail(imageView, albumEntry.coverPhoto);
-            TextView textView = (TextView) view.findViewById(R.id.album_name);
+            TextView textView = view.findViewById(R.id.album_name);
             textView.setText(albumEntry.bucketName);
-            textView = (TextView) view.findViewById(R.id.album_count);
+            textView = view.findViewById(R.id.album_count);
             textView.setText(String.valueOf(albumEntry.photos.size()));
             return view;
         }
@@ -439,14 +439,14 @@ public class PhotoPickerActivity extends AppCompatActivity {
             params.height = itemHeight;
             view.setLayoutParams(params);
             PhotoEntry photoEntry = selectedAlbum.photos.get(position);
-            ImageView imageView = (ImageView) view.findViewById(R.id.media_photo_image);
+            ImageView imageView = view.findViewById(R.id.media_photo_image);
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
             updateSelectedPhoto(view, photoEntry);
             boolean showing = false;
             View frameView = view.findViewById(R.id.photo_frame);
             frameView.setVisibility(showing ? View.GONE : View.VISIBLE);
-            ImageView checkImageView = (ImageView) view.findViewById(R.id.photo_check);
+            ImageView checkImageView = view.findViewById(R.id.photo_check);
             checkImageView.setVisibility(showing ? View.GONE : View.VISIBLE);
             return view;
         }
@@ -470,7 +470,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private void updateSelectedPhoto(View view, PhotoEntry photoEntry) {
         View frameView = view.findViewById(R.id.photo_frame);
-        ImageView checkImageView = (ImageView) view.findViewById(R.id.photo_check);
+        ImageView checkImageView = view.findViewById(R.id.photo_check);
         if (selectedPhotos.containsKey(photoEntry.imageId)) {
             frameView.setBackgroundResource(R.drawable.photo_border);
             checkImageView.setImageResource(R.drawable.selectphoto_small_active);

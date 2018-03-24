@@ -82,16 +82,16 @@ public class MainActivity extends ChiefActivity {
 
         setContentView(R.layout.main_activity);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.dialogs);
         setSupportActionBar(toolbar);
 
-        drawerLayout = (AccountsDrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.init(this, toolbar);
         drawerLayout.setTitle(getString(R.string.dialogs));
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
-        FloatingActionButton actionButton = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton actionButton = findViewById(R.id.fab);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +106,7 @@ public class MainActivity extends ChiefActivity {
             actionButton.setLayoutParams(p);
         }
 
-        viewFlipper = (ViewFlipper) findViewById(R.id.roster_view_flipper);
+        viewFlipper = findViewById(R.id.roster_view_flipper);
 
         // Dialogs list.
         dialogsAdapter = new RosterDialogsAdapter(this, getLoaderManager());
@@ -143,7 +143,7 @@ public class MainActivity extends ChiefActivity {
                 }
             }
         });
-        RecyclerView dialogsList = (RecyclerView) findViewById(R.id.chats_list_view);
+        RecyclerView dialogsList = findViewById(R.id.chats_list_view);
         dialogsList.setHasFixedSize(true);
         dialogsList.setLayoutManager(new LinearLayoutManager(this));
         dialogsList.setItemAnimator(new DefaultItemAnimator());

@@ -25,8 +25,8 @@ public class RangePickerDialog extends AlertDialog {
 
         View view = LayoutInflater.from(context).inflate(R.layout.range_picker_dialog, null);
 
-        pickerMin = (NumberPicker) view.findViewById(R.id.range_min);
-        pickerMax = (NumberPicker) view.findViewById(R.id.range_max);
+        pickerMin = view.findViewById(R.id.range_min);
+        pickerMax = view.findViewById(R.id.range_max);
 
         pickerMin.setMinValue(min);
         pickerMin.setMaxValue(max);
@@ -95,8 +95,8 @@ public class RangePickerDialog extends AlertDialog {
 
     public interface RangePickerListener {
 
-        public void onRangePicked(int min, int max);
+        void onRangePicked(int min, int max);
 
-        public void onRangeAny();
+        void onRangeAny();
     }
 }

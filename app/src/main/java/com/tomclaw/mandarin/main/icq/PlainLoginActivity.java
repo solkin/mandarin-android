@@ -23,7 +23,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;

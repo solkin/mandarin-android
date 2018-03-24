@@ -95,13 +95,13 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         // Initialize info activity layout.
         setContentView(getLayout());
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView buddyIdView = (TextView) findViewById(R.id.buddy_id);
+        TextView buddyIdView = findViewById(R.id.buddy_id);
         buddyIdView.setText(getBuddyId());
 
-        buddyNickView = (TextView) findViewById(R.id.buddy_nick);
+        buddyNickView = findViewById(R.id.buddy_nick);
         updateBuddyNick();
 
         if (!TextUtils.isEmpty(getAccountType()) && buddyStatusTitle != null) {
@@ -132,7 +132,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         }
 
         // Buddy avatar.
-        ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+        ContactImage contactBadge = findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), getDefaultAvatar(), false);
         contactBadge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,11 +310,11 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                                 // Prepare buddy info item.
                                 View buddyInfoItem = findViewById(keyInt);
                                 if (buddyInfoItem != null) {
-                                    TextView titleView = (TextView) buddyInfoItem.findViewById(R.id.info_title);
+                                    TextView titleView = buddyInfoItem.findViewById(R.id.info_title);
                                     if (titleView != null) {
                                         titleView.setText(title);
                                     }
-                                    TextView valueView = (TextView) buddyInfoItem.findViewById(R.id.info_value);
+                                    TextView valueView = buddyInfoItem.findViewById(R.id.info_value);
                                     if (valueView != null) {
                                         valueView.setText(value);
                                     }
@@ -357,7 +357,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             return;
         }
         avatarHash = hash;
-        ContactImage contactBadgeUpdate = (ContactImage) findViewById(R.id.buddy_image_update);
+        ContactImage contactBadgeUpdate = findViewById(R.id.buddy_image_update);
         if (animation) {
             Animation fadeIn = new AlphaAnimation(0, 1);
             fadeIn.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -369,7 +369,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    ContactImage contactBadge = (ContactImage) findViewById(R.id.buddy_image);
+                    ContactImage contactBadge = findViewById(R.id.buddy_image);
                     contactBadge.clearAnimation();
                     BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, getDefaultAvatar(), true);
                 }

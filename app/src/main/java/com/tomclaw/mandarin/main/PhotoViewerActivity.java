@@ -76,7 +76,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         setContentView(R.layout.photo_viewer_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Extract picture path we must show.
@@ -105,7 +105,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         pickerButtons = findViewById(R.id.picker_buttons);
 
-        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        Button cancelButton = findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,9 +121,9 @@ public class PhotoViewerActivity extends AppCompatActivity {
         });
 
         cancelButton.setText(getString(R.string.cancel).toUpperCase());
-        doneButtonTextView = (TextView) doneButton.findViewById(R.id.done_button_text);
+        doneButtonTextView = doneButton.findViewById(R.id.done_button_text);
         doneButtonTextView.setText(getString(R.string.send).toUpperCase());
-        doneButtonBadgeTextView = (TextView) doneButton.findViewById(R.id.done_button_badge);
+        doneButtonBadgeTextView = doneButton.findViewById(R.id.done_button_badge);
 
         // Check for no selection here and...
         if (selectedCount == -1) {
@@ -136,7 +136,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         progressView = findViewById(R.id.progress_view);
 
-        imageView = (TouchImageView) findViewById(R.id.touch_image_view);
+        imageView = findViewById(R.id.touch_image_view);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

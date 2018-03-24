@@ -44,7 +44,7 @@ public class SearchActivity extends ChiefActivity {
 
         setContentView(R.layout.search_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -54,13 +54,13 @@ public class SearchActivity extends ChiefActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.search_gender_spinner_item,
                 getResources().getStringArray(R.array.gender_search_spinner_strings));
         adapter.setDropDownViewResource(R.layout.search_gender_spinner_dropdown_item);
-        genderSpinner = (Spinner) findViewById(R.id.gender_selector);
+        genderSpinner = findViewById(R.id.gender_selector);
         genderSpinner.setAdapter(adapter);
 
-        keywordEdit = (TextView) findViewById(R.id.keyword_edit);
-        cityEdit = (TextView) findViewById(R.id.city_edit);
-        agePickerView = (AgePickerView) findViewById(R.id.age_range);
-        onlineBox = (CheckBox) findViewById(R.id.online_check);
+        keywordEdit = findViewById(R.id.keyword_edit);
+        cityEdit = findViewById(R.id.city_edit);
+        agePickerView = findViewById(R.id.age_range);
+        onlineBox = findViewById(R.id.online_check);
     }
 
     @Override

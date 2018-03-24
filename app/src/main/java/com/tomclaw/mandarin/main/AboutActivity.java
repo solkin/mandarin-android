@@ -35,10 +35,10 @@ public class AboutActivity extends AppCompatActivity {
 
         setContentView(R.layout.about_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView appVersionView = (TextView) findViewById(R.id.app_version);
+        TextView appVersionView = findViewById(R.id.app_version);
         PackageManager manager = getPackageManager();
         try {
             PackageInfo info = manager.getPackageInfo(getPackageName(), 0);

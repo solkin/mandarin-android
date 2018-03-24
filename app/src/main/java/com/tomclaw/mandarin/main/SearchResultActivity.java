@@ -48,7 +48,7 @@ public class SearchResultActivity extends ChiefActivity {
 
         setContentView(R.layout.search_result_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -60,7 +60,7 @@ public class SearchResultActivity extends ChiefActivity {
             return;
         }
 
-        emptyViewSwitcher = (ViewSwitcher) findViewById(android.R.id.empty);
+        emptyViewSwitcher = findViewById(android.R.id.empty);
 
         searchAdapter = new SearchResultAdapter(this, new EndlessListAdapter.EndlessAdapterListener() {
             @Override
@@ -68,7 +68,7 @@ public class SearchResultActivity extends ChiefActivity {
                 requestItems(offset);
             }
         });
-        ListView searchResultList = (ListView) findViewById(R.id.search_result_list);
+        ListView searchResultList = findViewById(R.id.search_result_list);
         searchResultList.setEmptyView(emptyViewSwitcher);
         searchResultList.setAdapter(searchAdapter);
         requestItems(0);
@@ -131,7 +131,7 @@ public class SearchResultActivity extends ChiefActivity {
         String avatarHash = intent.getStringExtra(SearchAvatarRequest.BUDDY_AVATAR_HASH);
         // Checking for request is the same.
         if (requestAccountDbId == accountDbId && requestSearchOptions != null &&
-                ((Object) requestSearchOptions).equals(builder)) {
+                requestSearchOptions.equals(builder)) {
             int total = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_TOTAL, 0);
             int offset = intent.getIntExtra(BuddySearchRequest.SEARCH_RESULT_OFFSET, 0);
             Bundle bundle = intent.getBundleExtra(BuddySearchRequest.SEARCH_RESULT_BUNDLE);

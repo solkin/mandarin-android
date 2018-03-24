@@ -79,7 +79,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setTitle(R.string.buddy_info);
         }
-        buttonSwitcher = (ViewSwitcher) findViewById(R.id.button_switcher);
+        buttonSwitcher = findViewById(R.id.button_switcher);
         View addBuddyButton = findViewById(R.id.add_buddy_button);
         View openDialogButton = findViewById(R.id.open_dialog_button);
 

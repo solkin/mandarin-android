@@ -41,11 +41,11 @@ public class SharingActivity extends ChiefActivity {
 
         setContentView(R.layout.sharing_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Sticky list.
-        StickyListHeadersListView generalList = (StickyListHeadersListView) findViewById(R.id.sharing_list_view);
+        StickyListHeadersListView generalList = findViewById(R.id.sharing_list_view);
         generalAdapter = new RosterSharingAdapter(this,
                 getLoaderManager());
         // Accepting adapter.

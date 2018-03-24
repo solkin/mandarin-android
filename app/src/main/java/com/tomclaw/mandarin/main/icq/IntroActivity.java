@@ -33,7 +33,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         // Initialize add account activity.
         setContentView(R.layout.icq_intro);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().hide();

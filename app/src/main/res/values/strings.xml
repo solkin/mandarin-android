@@ -235,7 +235,7 @@
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
-    <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
+    <string name="pref_summary_ignore_unknown">Receive messages only from countries in my buddylist
     </string>
     <string name="pref_title_ignore_unknown">Ignore strangers</string>
 

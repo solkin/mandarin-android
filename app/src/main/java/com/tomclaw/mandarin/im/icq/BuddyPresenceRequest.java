@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
@@ -68,7 +69,7 @@ public class BuddyPresenceRequest extends WimRequest {
                 String buddyId = buddy.getString(WimConstants.AIM_ID);
                 if (profile != null) {
                     ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
-                    String state = buddy.getString(WimConstants.STATE);
+                    String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
                     String buddyIcon = buddy.optString(WimConstants.BUDDY_ICON);
                     String bigBuddyIcon = buddy.optString(WimConstants.BIG_BUDDY_ICON);
                     if (!TextUtils.isEmpty(bigBuddyIcon)) {

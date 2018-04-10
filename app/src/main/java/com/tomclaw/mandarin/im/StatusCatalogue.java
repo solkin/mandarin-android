@@ -22,10 +22,10 @@ public abstract class StatusCatalogue {
     protected int musicStatus;
 
     public StatusCatalogue() {
-        indexMap = new HashMap<String, Integer>();
-        statusList = new ArrayList<Status>();
-        connectStatuses = new ArrayList<Integer>();
-        setupStatuses = new ArrayList<Integer>();
+        indexMap = new HashMap<>();
+        statusList = new ArrayList<>();
+        connectStatuses = new ArrayList<>();
+        setupStatuses = new ArrayList<>();
         musicStatus = STATUS_INDEX_INVALID;
     }
 

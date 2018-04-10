@@ -14,7 +14,7 @@ public class StatusUtil {
 
     public static int STATUS_OFFLINE = 0x00;
 
-    private static Map<String, StatusCatalogue> catalogues = new HashMap<String, StatusCatalogue>();
+    private static Map<String, StatusCatalogue> catalogues = new HashMap<>();
 
     public static void include(String accountType, StatusCatalogue statusCatalogue) {
         // Checking for no such status catalogue included yet.

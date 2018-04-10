@@ -111,6 +111,7 @@ public class WimConstants {
     public static final String SMS_CODE = "sms_code";
     public static final String CREATE_ACCOUNT = "create_account";
     public static final String SIG_SHA256 = "sig_sha256";
+    public static final String FALLBACK_STATE = "online";
     public static final String[] IM_STATES = new String[]{
             "unknown",
             "failed",

@@ -66,6 +66,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EVENT_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EXPIRES_IN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FETCH_BASE_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
@@ -480,7 +481,7 @@ public class IcqSession {
                             if (TextUtils.isEmpty(buddyNick)) {
                                 buddyNick = buddyObject.optString(DISPLAY_ID, buddyId);
                             }
-                            String buddyStatus = buddyObject.getString(STATE);
+                            String buddyStatus = buddyObject.optString(STATE, FALLBACK_STATE);
                             String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
@@ -511,7 +512,7 @@ public class IcqSession {
             case IM:
             case OFFLINE_IM:  // TODO: offlineIM is differ!
                 try {
-                    String messageText = eventData.getString(MESSAGE);
+                    String messageText = eventData.optString(MESSAGE);
                     String cookie = eventData.optString(MSG_ID);
                     if (TextUtils.isEmpty(cookie)) {
                         cookie = String.valueOf(System.currentTimeMillis());
@@ -530,7 +531,7 @@ public class IcqSession {
                     if (sourceObject != null) {
                         buddyId = sourceObject.getString(AIM_ID);
                         buddyNick = sourceObject.optString(FRIENDLY);
-                        String buddyStatus = sourceObject.optString(STATE);
+                        String buddyStatus = sourceObject.optString(STATE, FALLBACK_STATE);
                         String buddyType = sourceObject.optString(USER_TYPE);
                         buddyIcon = sourceObject.optString(BUDDY_ICON);
                         String bigBuddyIcon = sourceObject.optString(WimConstants.BIG_BUDDY_ICON);
@@ -614,7 +615,7 @@ public class IcqSession {
                 try {
                     String buddyId = eventData.getString(AIM_ID);
 
-                    String buddyStatus = eventData.getString(STATE);
+                    String buddyStatus = eventData.optString(STATE, FALLBACK_STATE);
                     String moodIcon = eventData.optString(MOOD_ICON);
                     String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
                     String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));

@@ -49,20 +49,7 @@ public class SetStateRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK) {
             isRequestOk = true;
-            JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-            JSONObject myInfoObject = dataObject.getJSONObject(MY_INFO);
-            String state = myInfoObject.getString(STATE);
-            try {
-                int statusIndexApplied = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
-                // Check for status setup was fully correct and state successfully applied.
-                if (statusIndexApplied == statusIndex) {
-                    isSetStateSuccess = true;
-                } else {
-                    intent.putExtra(STATE_APPLIED, statusIndexApplied);
-                }
-            } catch (StatusNotFoundException ignored) {
-                // No such state? Hm... Really strange default state.
-            }
+            isSetStateSuccess = true;
         }
         intent.putExtra(SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or other strange error we've not recognized.

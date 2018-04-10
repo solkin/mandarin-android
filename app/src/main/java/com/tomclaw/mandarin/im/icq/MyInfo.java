@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -16,7 +18,7 @@ public class MyInfo implements Unobfuscatable {
     private String aimId;
     private String displayId;
     private String friendly;
-    private String state;
+    private String state = FALLBACK_STATE;
     private int invisible = 0;
     private String moodIcon;
     private String moodTitle;

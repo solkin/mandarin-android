@@ -15,9 +15,10 @@ import java.util.List;
 /**
  * Created by Solkin on 10.07.2014.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class EndlessListAdapter<T> extends BaseAdapter {
 
-    private final List<T> tList = new ArrayList<T>();
+    private final List<T> tList = new ArrayList<>();
     private boolean isMoreItemsAvailable = false;
     private EndlessAdapterListener listener;
 

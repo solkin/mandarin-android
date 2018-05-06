@@ -42,8 +42,9 @@ import java.util.Calendar;
  * Date: 4/28/13
  * Time: 9:54 PM
  */
-public class RosterDialogsAdapter extends CursorRecyclerAdapter<RosterDialogsAdapter.DialogViewHolder> implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class RosterDialogsAdapter
+        extends CursorRecyclerAdapter<RosterDialogsAdapter.DialogViewHolder>
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Adapter ID

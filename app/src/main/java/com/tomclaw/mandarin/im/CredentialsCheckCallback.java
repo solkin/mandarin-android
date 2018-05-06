@@ -8,4 +8,5 @@ public abstract class CredentialsCheckCallback {
     public abstract void onPassed();
 
     public abstract void onFailed();
+
 }

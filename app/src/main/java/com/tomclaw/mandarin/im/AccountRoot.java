@@ -18,6 +18,7 @@ import com.tomclaw.mandarin.util.Unobfuscatable;
  * Date: 3/28/13
  * Time: 1:54 AM
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class AccountRoot implements Unobfuscatable {
 
     public static final String AUTH_LOST = "auth_lost";

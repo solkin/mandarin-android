@@ -16,11 +16,11 @@
         android:required="false" />
     <application
         android:name=".main.Mandarin"
-        android:label="@string/app_name"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.Mandarin.Light"
-        android:allowBackup="true">
+        android:theme="@style/Theme.Mandarin.Light">
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"
             android:value="${HOCKEYAPP_APP_ID}" />
@@ -40,10 +40,10 @@
 
         <activity
             android:name=".main.MainActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize">
+            android:windowActionBarOverlay="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -56,109 +56,109 @@
         </activity>
         <activity
             android:name=".main.RosterActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/select_buddy"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.SearchActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/search_buddy"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.SearchResultActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/search_result"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.AccountInfoActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".main.BuddyInfoActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.icq.IcqEditUserInfoActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".main.icq.IntroActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.icq.PlainLoginActivity"
-            android:theme="@style/Theme.Mandarin.Intro"
-            android:label="@string/plain_login"
-            android:windowActionBarOverlay="true"
             android:configChanges="orientation|screenSize"
+            android:label="@string/plain_login"
+            android:theme="@style/Theme.Mandarin.Intro"
+            android:windowActionBarOverlay="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
         <activity
             android:name=".main.icq.PhoneLoginActivity"
-            android:theme="@style/Theme.Mandarin.Intro"
-            android:label="@string/app_name"
-            android:windowActionBarOverlay="true"
             android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Mandarin.Intro"
+            android:windowActionBarOverlay="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
         <activity
             android:name=".main.icq.SmsCodeActivity"
-            android:theme="@style/Theme.Mandarin.Intro"
-            android:label="@string/app_name"
-            android:windowActionBarOverlay="true"
             android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Mandarin.Intro"
+            android:windowActionBarOverlay="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
         <activity
             android:name=".main.icq.CountryCodeActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/select_country"
-            android:windowActionBarOverlay="true"
-            android:configChanges="orientation|screenSize" />
+            android:windowActionBarOverlay="true" />
         <activity
             android:name=".main.ChatActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".main.SettingsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/settings"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".main.AboutActivity"
-            android:label="@string/info"
-            android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait" />
+            android:label="@string/info"
+            android:screenOrientation="portrait"
+            android:windowActionBarOverlay="true"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".main.PhotoPickerActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/gallery"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".main.PhotoViewerActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/gallery"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".main.DocumentPickerActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/select_file"
             android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".main.SharingActivity"
-            android:label="@string/select_buddy"
             android:excludeFromRecents="true"
+            android:label="@string/select_buddy"
             android:launchMode="singleInstance">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />

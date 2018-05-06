@@ -37,6 +37,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 /**
  * Created by solkin on 04.08.14.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class RosterStickyAdapter extends CursorAdapter
         implements LoaderManager.LoaderCallbacks<Cursor>, StickyListHeadersAdapter {
 

@@ -4,13 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.SparseArray;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
@@ -28,9 +25,6 @@ import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.StringUtil;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -234,9 +228,9 @@ public class QueryHelper {
     /**
      * Insert account into database and update it's account db id and context.
      *
-     * @param context     - context for account root
+     * @param context       - context for account root
      * @param databaseLayer - database layer to be used
-     * @param accountRoot - account root to be inserted into database
+     * @param accountRoot   - account root to be inserted into database
      * @return account db id.
      * @throws AccountNotFoundException, AccountAlreadyExistsException
      */

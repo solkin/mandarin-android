@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -7,8 +7,8 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.core.ContentResolverLayer;
-import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.CoreService;
+import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.util.Unobfuscatable;

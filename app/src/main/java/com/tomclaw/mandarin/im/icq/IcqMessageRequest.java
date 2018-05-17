@@ -1,18 +1,13 @@
 package com.tomclaw.mandarin.im.icq;
 
-import com.tomclaw.mandarin.core.DatabaseLayer;
-import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.REQUEST_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 
 /**

@@ -30,7 +30,6 @@ import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.exceptions.AccountAlreadyExistsException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;

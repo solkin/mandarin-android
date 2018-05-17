@@ -1,29 +1,22 @@
 package com.tomclaw.mandarin.im.tasks;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
-import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.MessageData;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.Timer;
 
 import java.util.Collections;
 import java.util.List;
 
-import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ACCOUNT_DB_ID;
-import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_BUDDY_ID;
-import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_MESSAGE_ID;
 import static com.tomclaw.mandarin.core.QueryHelper.insertOrUpdateMessage;
 
 /**

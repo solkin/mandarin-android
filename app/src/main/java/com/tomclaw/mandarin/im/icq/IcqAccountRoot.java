@@ -452,7 +452,7 @@ public class IcqAccountRoot extends AccountRoot {
         Locale locale = Locale.getDefault();
         String lang = locale.getLanguage();
         String country = locale.getCountry();
-        if(TextUtils.isEmpty(lang) || TextUtils.isEmpty(country)) {
+        if (TextUtils.isEmpty(lang) || TextUtils.isEmpty(country)) {
             return "en-US";
         }
         return lang + '-' + country;

@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;

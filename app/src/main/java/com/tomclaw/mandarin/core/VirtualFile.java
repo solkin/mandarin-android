@@ -13,9 +13,6 @@ import java.io.InputStream;
  */
 public abstract class VirtualFile implements Unobfuscatable {
 
-    public VirtualFile() {
-    }
-
     public abstract String getMimeType();
 
     public abstract long getSize();

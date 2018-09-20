@@ -29,9 +29,6 @@ public class UriFile extends VirtualFile {
     private long size;
     private String name;
 
-    public UriFile() {
-    }
-
     private UriFile(String uri, String mimeType, long size, String name) {
         this.uri = uri;
         this.mimeType = mimeType;

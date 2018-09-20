@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
  * Date: 6/19/13
  * Time: 10:43 AM
  */
+@SuppressWarnings("WeakerAccess")
 public class WimConstants {
 
     public static final String TOKEN_A = "a";

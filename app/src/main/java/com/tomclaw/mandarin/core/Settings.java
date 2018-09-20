@@ -8,6 +8,7 @@ import android.net.Uri;
  * Date: 4/14/13
  * Time: 9:30 PM
  */
+@SuppressWarnings("WeakerAccess")
 public class Settings {
 
     public static final int LED_COLOR_RGB = 0xffff6600;

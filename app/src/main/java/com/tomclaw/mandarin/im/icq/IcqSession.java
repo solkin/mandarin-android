@@ -551,6 +551,15 @@ public class IcqSession {
                     }
                     statusTitle = getStatusTitle(null, statusIndex);
 
+                    boolean isMessageExist = QueryHelper.checkMessageExist(
+                            icqAccountRoot.getContentResolver(),
+                            GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                            cookie
+                    );
+                    if (isMessageExist) {
+                        break;
+                    }
+
                     boolean isProcessed = false;
                     do {
                         try {
@@ -562,17 +571,30 @@ public class IcqSession {
                                 int buddyDbId = QueryHelper.getBuddyDbId(icqAccountRoot.getContentResolver(),
                                         icqAccountRoot.getAccountDbId(), buddyId);
                                 String tag = cookie + ":" + url;
-                                RequestHelper.requestFileReceive(icqAccountRoot.getContentResolver(),
-                                        buddyDbId, cookie, messageTime * 1000, fileId, url, messageText, tag);
+                                RequestHelper.requestFileReceive(
+                                        icqAccountRoot.getContentResolver(),
+                                        buddyDbId,
+                                        cookie,
+                                        TimeUnit.SECONDS.toMillis(messageTime),
+                                        fileId,
+                                        url,
+                                        messageText,
+                                        tag
+                                );
                                 isProcessed = true;
                             }
                             if (!isProcessed) {
-                                QueryHelper.insertMessage(icqAccountRoot.getContentResolver(),
+                                QueryHelper.insertMessage(
+                                        icqAccountRoot.getContentResolver(),
                                         PreferenceHelper.isCollapseMessages(icqAccountRoot.getContext()),
-                                        icqAccountRoot.getAccountDbId(), buddyId,
+                                        icqAccountRoot.getAccountDbId(),
+                                        buddyId,
                                         GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                                        GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED, cookie,
-                                        messageTime * 1000, messageText);
+                                        GlobalProvider.HISTORY_MESSAGE_STATE_UNDETERMINED,
+                                        cookie,
+                                        TimeUnit.SECONDS.toMillis(messageTime),
+                                        messageText
+                                );
                             }
                             isProcessed = true;
                         } catch (BuddyNotFoundException ignored) {

@@ -19,6 +19,7 @@ import java.util.List;
  * Time: 2:10 AM
  * Store opened accounts and sessions
  */
+@SuppressWarnings("WeakerAccess")
 public class SessionHolder {
 
     private final List<AccountRoot> accountRootList;

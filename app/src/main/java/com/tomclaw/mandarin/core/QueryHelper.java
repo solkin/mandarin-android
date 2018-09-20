@@ -391,9 +391,10 @@ public class QueryHelper {
                 messageType, GlobalProvider.HISTORY_MESSAGE_STATE_SENDING, cookie, 0, messageText);
     }
 
-    public static void insertTextMessage(ContentResolver contentResolver, boolean isCollapseMessages,
-                                         int accountDbId, int buddyDbId, int messageType, int messageState, String cookie,
-                                         long messageTime, String messageText) {
+    public static void insertTextMessage(ContentResolver contentResolver,
+                                         boolean isCollapseMessages, int accountDbId,
+                                         int buddyDbId, int messageType, int messageState,
+                                         String cookie, long messageTime, String messageText) {
         Logger.log("insertTextMessage: type: " + messageType + " message = " + messageText);
         // Checking for time specified.
         if (messageTime == 0) {
@@ -530,8 +531,8 @@ public class QueryHelper {
             // Insert message only for buddy with latest message time.
             int buddyDbId = cursor.getInt(cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID));
             // Plain message query.
-            insertTextMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId, messageType, messageState,
-                    cookie, messageTime, messageText);
+            insertTextMessage(contentResolver, isCollapseMessages, accountDbId, buddyDbId,
+                    messageType, messageState, cookie, messageTime, messageText);
             // Closing cursor.
             cursor.close();
         } else {
@@ -675,6 +676,25 @@ public class QueryHelper {
             }
         }
         throw new MessageNotFoundException();
+    }
+
+    public static boolean checkMessageExist(ContentResolver contentResolver, int messageType,
+                                            String cookie) {
+        QueryBuilder queryBuilder = new QueryBuilder()
+                .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
+                .and()
+                .like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                return true;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return false;
     }
 
     public static void readAllMessages(ContentResolver contentResolver) {

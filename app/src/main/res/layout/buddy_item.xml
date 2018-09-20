@@ -42,7 +42,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:textColor="?attr/buddy_primary_color"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="Sample name" />
 
@@ -57,7 +57,7 @@
                 android:includeFontPadding="false"
                 android:paddingTop="4dp"
                 android:textColor="?attr/buddy_secondary_color"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 tools:targetApi="jelly_bean"
                 tools:text="Sample status" />
 

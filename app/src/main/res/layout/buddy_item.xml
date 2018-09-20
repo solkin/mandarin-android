@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
     android:orientation="horizontal"
-    android:padding="3dp">
+    android:paddingLeft="6dp"
+    android:paddingTop="3dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -15,9 +18,10 @@
 
         <com.tomclaw.mandarin.main.views.ContactBadge
             android:id="@+id/buddy_badge"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_gravity="center_horizontal|top" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            tools:src="@mipmap/ic_launcher_round" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,20 +29,22 @@
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
             android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
             android:paddingEnd="0dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="0dp"
-            android:paddingStart="10dp">
+            android:paddingRight="0dp">
 
             <com.tomclaw.mandarin.main.views.TightTextView
                 android:id="@+id/buddy_nick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
+                android:includeFontPadding="false"
                 android:singleLine="true"
                 android:textColor="?attr/buddy_primary_color"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Sample name" />
 
             <com.tomclaw.mandarin.main.views.ScrollingTextView
                 android:id="@+id/buddy_status_message"
@@ -48,9 +54,12 @@
                 android:ellipsize="marquee"
                 android:fadingEdge="horizontal"
                 android:fontFamily="sans-serif-light"
+                android:includeFontPadding="false"
+                android:paddingTop="4dp"
                 android:textColor="?attr/buddy_secondary_color"
-                android:textSize="15sp"
-                tools:targetApi="jelly_bean" />
+                android:textSize="14sp"
+                tools:targetApi="jelly_bean"
+                tools:text="Sample status" />
 
         </LinearLayout>
 
@@ -71,10 +80,10 @@
             android:background="@drawable/draft_indicator"
             android:gravity="center"
             android:minWidth="25dp"
-            android:paddingBottom="4dp"
             android:paddingLeft="6dp"
-            android:paddingRight="6dp"
             android:paddingTop="4dp"
+            android:paddingRight="6dp"
+            android:paddingBottom="4dp"
             android:text="@string/draft_indicator_text"
             android:textColor="#ffffff"
             android:textStyle="italic"
@@ -112,10 +121,7 @@
         android:clickable="false"
         android:contentDescription="@string/buddy_status"
         android:focusable="false"
-        android:paddingEnd="8dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="8dp"
-        android:paddingStart="6dp"
+        android:padding="2dp"
         android:src="@drawable/status_icq_online" />
 
 </LinearLayout>

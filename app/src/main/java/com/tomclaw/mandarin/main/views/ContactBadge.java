@@ -47,7 +47,7 @@ public class ContactBadge extends AppCompatImageView implements LazyImageView {
 
     private Drawable getRoundedDrawable(Bitmap bitmap) {
         RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-        drawable.setCornerRadius(bitmap.getWidth() / 10);
+        drawable.setCornerRadius(bitmap.getWidth() / 2);
         return drawable;
     }
 }

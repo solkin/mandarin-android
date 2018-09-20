@@ -28,12 +28,11 @@ import java.io.InputStream;
  */
 public class BitmapHelper {
 
-    private static final long KB_IN_BYTES = 1024;
-
+    private static final int KB_IN_BYTES = 1024;
     /**
      * Buffer is large enough to rewind past any EXIF headers.
      */
-    private static final int THUMBNAIL_BUFFER_SIZE = (int) (128 * KB_IN_BYTES);
+    private static final int THUMBNAIL_BUFFER_SIZE = 128 * KB_IN_BYTES;
 
     public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri, int reqWidth, int reqHeight) {
         Bitmap bitmap;
@@ -149,7 +148,7 @@ public class BitmapHelper {
         return inSampleSize;
     }
 
-    public static int getOrientation(Context context, Uri uri) {
+    private static int getOrientation(Context context, Uri uri) {
         final String scheme = uri.getScheme();
         final String authority = uri.getAuthority();
         int rotation = 0;
@@ -209,7 +208,7 @@ public class BitmapHelper {
         }
     }
 
-    public static String getMediaPath(Context context, Uri uri) {
+    private static String getMediaPath(Context context, Uri uri) {
         String path = null;
         try (Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {

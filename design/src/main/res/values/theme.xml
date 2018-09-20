@@ -41,7 +41,7 @@
     <color name="white_pressed">#cecece</color>
     <color name="resend_code_disabled">#bababa</color>
     <color name="resend_code_enabled">@color/orange_normal</color>
-    <color name="light_back_color">#f0f0f0</color>
+    <color name="light_back_color">#f1f2f3</color>
     <color name="dark_back_color">#FF101010</color>
     <color name="black_back_color">#000000</color>
     <color name="check_selected_color">@color/orange_normal</color>

@@ -18,7 +18,7 @@ public class GsonSingleton {
 
     private Gson gson;
 
-    public GsonSingleton() {
+    private GsonSingleton() {
         gson = new Gson();
     }
 

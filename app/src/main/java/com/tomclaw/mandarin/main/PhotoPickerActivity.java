@@ -35,6 +35,7 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
+import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.Logger;
@@ -46,7 +47,6 @@ import java.util.Map;
 
 import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 import static com.bumptech.glide.request.RequestOptions.noTransformation;
-import static com.tomclaw.mandarin.core.GlideProvider.retriever;
 
 /**
  * Created by Solkin on 04.11.2014.
@@ -143,7 +143,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     }
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
 
-                    retriever().get(PhotoPickerActivity.this)
+                    GlideApp.with(PhotoPickerActivity.this)
                             .load(photoEntity.path)
                             .apply(PhotoViewerActivity.PREVIEW_OPTIONS)
                             .preload();
@@ -454,13 +454,13 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private void showThumbnail(ImageView imageView, PhotoEntry photoEntry) {
         if (photoEntry != null && photoEntry.path != null && photoEntry.imageId != 0) {
-            retriever().get(this)
+            GlideApp.with(this)
                     .asBitmap()
                     .load(photoEntry.path)
                     .apply(thumbnailOptions)
                     .into(imageView);
         } else {
-            retriever().get(this)
+            GlideApp.with(this)
                     .asDrawable()
                     .load(R.drawable.ic_gallery)
                     .apply(noTransformation())

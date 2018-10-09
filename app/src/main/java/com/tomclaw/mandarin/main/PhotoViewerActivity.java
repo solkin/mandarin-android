@@ -27,6 +27,7 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
@@ -38,7 +39,6 @@ import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
 
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
-import static com.tomclaw.mandarin.core.GlideProvider.retriever;
 
 /**
  * Created by Solkin on 05.12.2014.
@@ -166,7 +166,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
             }
         });
 
-        retriever().get(this)
+        GlideApp.with(this)
                 .asBitmap()
                 .load(photoEntry.path)
                 .apply(PREVIEW_OPTIONS)

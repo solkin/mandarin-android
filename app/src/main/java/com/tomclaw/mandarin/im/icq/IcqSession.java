@@ -371,7 +371,7 @@ public class IcqSession {
     public boolean startEventsFetching() {
         cabbageSession.obtainToken();
         cabbageSession.obtainClient();
-        cabbageSession.refreshClient();
+//        cabbageSession.refreshClient();
         Logger.log("start events fetching");
         do {
             try {

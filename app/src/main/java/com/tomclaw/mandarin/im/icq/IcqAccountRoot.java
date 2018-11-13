@@ -10,6 +10,12 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * Created with IntelliJ IDEA.
  * User: anton
@@ -31,6 +37,8 @@ public class IcqAccountRoot extends AccountRoot {
     private MyInfo myInfo;
     private WellKnownUrls wellKnownUrls;
 
+    private transient Executor loginExecutor = Executors.newSingleThreadExecutor();
+
     public IcqAccountRoot() {
         icqSession = new IcqSession(this);
     }
@@ -42,12 +50,11 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void connect() {
         Logger.log("icq connection attempt");
-        // TODO: Such thread working model must be rewritten.
-        Thread connectThread = new Thread() {
+        Runnable loginRunnable = new Runnable() {
 
             private void sleep() {
                 try {
-                    sleep(5000);
+                    Thread.sleep(SECONDS.toMillis(5));
                 } catch (InterruptedException ignored) {
                     // No need to check.
                 }
@@ -149,7 +156,7 @@ public class IcqAccountRoot extends AccountRoot {
                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
             }
         };
-        connectThread.start();
+        loginExecutor.execute(loginRunnable);
     }
 
     @Override
@@ -163,12 +170,11 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void checkCredentials(final CredentialsCheckCallback callback) {
-        // TODO: Such thread working model must be rewritten.
-        Thread credentialsCheckThread = new Thread() {
+        Runnable credentialsCheckRunnable = new Runnable() {
 
             private void sleep() {
                 try {
-                    sleep(5000);
+                    Thread.sleep(SECONDS.toMillis(5));
                 } catch (InterruptedException ignored) {
                     // No need to check.
                 }
@@ -192,7 +198,7 @@ public class IcqAccountRoot extends AccountRoot {
                 callback.onPassed();
             }
         };
-        credentialsCheckThread.start();
+        loginExecutor.execute(credentialsCheckRunnable);
     }
 
     public void updateStatus() {

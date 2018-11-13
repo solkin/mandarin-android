@@ -1133,7 +1133,7 @@ public class ChatActivity extends ChiefActivity {
         public void onSuccessMain() {
             Context context = getWeakObject();
             if (context != null) {
-                String text = context.getString(R.string.extory_exported);
+                String text = context.getString(R.string.history_exported);
                 Spannable s = new SpannableString(text + infoExportPath);
                 s.setSpan(new TypefaceSpan("monospace"), text.length(), s.length(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

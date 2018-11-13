@@ -387,6 +387,10 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public String getFetchBaseUrl() {
+        if (fetchBaseUrl.startsWith("http://")) {
+            // Force replace http scheme with https for API 28
+            fetchBaseUrl = "https://" + fetchBaseUrl.substring(7);
+        }
         return fetchBaseUrl;
     }
 

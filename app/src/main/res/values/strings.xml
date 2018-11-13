@@ -313,7 +313,7 @@
     <string name="upload_failed">File sending failed</string>
     <string name="file_for">for %s</string>
     <string name="default_locale">US</string>
-    <string name="privacy_policy">By continuing, you accept the <a href="http://www.icq.com/legal/privacypolicy/en">
+    <string name="privacy_policy">By continuing, you accept the <a href="https://www.icq.com/legal/privacypolicy/en">
         Privacy Policy</a>.
     </string>
     <string name="select_country">Select country</string>
@@ -409,5 +409,7 @@
     <string name="export_history">Export history</string>
     <string name="export_history_text">Chat history from this dialog will be saved to a text document on this device so that you can use it for some of your purposes. Continue?</string>
     <string name="export_history_failed">History export operation failed</string>
-    <string name="extory_exported">History has been successfully exported to:\n</string>
+    <string name="history_exported">History has been successfully exported to:\n</string>
+    <string name="incoming_messages">Incoming messages</string>
+    <string name="file_sharing">File sharing</string>
 </resources>

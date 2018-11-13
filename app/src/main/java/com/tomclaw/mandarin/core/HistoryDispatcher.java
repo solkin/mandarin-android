@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -37,7 +38,7 @@ public class HistoryDispatcher {
 
     private static final long HISTORY_DISPATCH_DELAY = 750;
 
-    public static String EXTRA_READ_MESSAGES = "read_messages";
+    static String EXTRA_READ_MESSAGES = "read_messages";
 
     private Context context;
     private NotificationManager notificationManager;
@@ -46,22 +47,36 @@ public class HistoryDispatcher {
     private volatile long notificationCancelTime = 0;
 
     private static final int NOTIFICATION_ID = 0x01;
+    private static final String NOTIFICATION_CHANNEL_ID = "messages";
 
     private final int largeIconSize;
     private final int previewSize;
 
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
     private boolean privateNotifications, settingsChanged;
 
     public HistoryDispatcher(Context context) {
         // Variables.
         this.context = context;
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        initChannel();
         contentResolver = context.getContentResolver();
         // Creating observers.
         historyObserver = new HistoryObserver();
         largeIconSize = BitmapCache.convertDpToPixel(64, context);
         previewSize = BitmapCache.BITMAP_SIZE_ORIGINAL;
+    }
+
+    private void initChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = context.getString(R.string.incoming_messages);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID, channelName, importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
+            notificationChannel.enableVibration(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     public void startObservation() {
@@ -78,7 +93,7 @@ public class HistoryDispatcher {
         // Observing notification preferences to immediately update current notification.
         privateNotifications = PreferenceHelper.isPrivateNotifications(context);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if (TextUtils.equals(key, context.getString(R.string.pref_private_notifications))) {
@@ -255,7 +270,7 @@ public class HistoryDispatcher {
                         }
                     }
                     // Notification prepare.
-                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                             .setContentTitle(title)
                             .setContentText(content)
                             .setSmallIcon(R.drawable.ic_notification)

@@ -318,7 +318,7 @@
     <string name="upload_failed">Отправка файла не удалась</string>
     <string name="file_for">для %s</string>
     <string name="default_locale">RU</string>
-    <string name="privacy_policy">Продолжая, Вы принимаете <a href="http://www.icq.com/legal/privacypolicy/ru">Политику
+    <string name="privacy_policy">Продолжая, Вы принимаете <a href="https://www.icq.com/legal/privacypolicy/ru">Политику
         Конфиденциальности</a>.
     </string>
     <string name="select_country">Выберите страну</string>
@@ -415,5 +415,7 @@
     <string name="export_history">Экспорт истории</string>
     <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её в каких-то своих целях. Продолжаем?</string>
     <string name="export_history_failed">Не удалось экспортировать историю</string>
-    <string name="extory_exported">История успешно экспортирована в:\n</string>
+    <string name="history_exported">История успешно экспортирована в:\n</string>
+    <string name="incoming_messages">Входящие сообщения</string>
+    <string name="file_sharing">Обмен файлами</string>
 </resources>

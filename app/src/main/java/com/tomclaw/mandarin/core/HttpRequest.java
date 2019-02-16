@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.tomclaw.mandarin.util.HttpUtil.httpToHttps;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -27,7 +29,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
         HttpURLConnection urlConnection = null;
         try {
             boolean isGetRequest = getHttpRequestType().equals(HttpUtil.GET);
-            url = new URL(isUrlWithParameters() ? getUrlWithParameters() : getUrl());
+            url = new URL(httpToHttps(isUrlWithParameters() ? getUrlWithParameters() : getUrl()));
             urlConnection = (HttpURLConnection) url.openConnection();
             // Executing request.
             InputStream in = isGetRequest ?

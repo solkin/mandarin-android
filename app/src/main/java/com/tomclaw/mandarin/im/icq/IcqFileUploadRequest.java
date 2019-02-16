@@ -35,7 +35,7 @@ import java.net.URL;
 public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot> {
 
     private static final String CLIENT_NAME = "ICQ";
-    private static final String INIT_URL = "http://files.icq.com/files/init";
+    private static final String INIT_URL = "https://files.icq.com/files/init";
 
     private String buddyId;
     private String cookie;
@@ -215,7 +215,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
 
                 builder.reset();
                 return getAccountRoot().getSession().signRequest(
-                        HttpUtil.POST, "http://".concat(host).concat(body), builder);
+                        HttpUtil.POST, "https://".concat(host).concat(body), builder);
             }
             default: {
                 identifyErrorResponse(status);

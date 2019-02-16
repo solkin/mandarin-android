@@ -78,7 +78,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     public String getUrl() throws Throwable {
         DatabaseLayer databaseLayer = getDatabaseLayer();
 
-        String fileInfoUrl = "http://files.icq.net/get/" + fileId + "?json=1&meta=1";
+        String fileInfoUrl = "https://files.icq.net/get/" + fileId + "?json=1&meta=1";
         HttpURLConnection connection = (HttpURLConnection) new URL(fileInfoUrl).openConnection();
         String response = HttpUtil.streamToString(HttpUtil.executeGet(connection));
 

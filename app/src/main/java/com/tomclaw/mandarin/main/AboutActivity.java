@@ -23,8 +23,8 @@ public class AboutActivity extends AppCompatActivity {
 
     private static final String MARKET_DETAILS_URI = "market://details?id=";
     private static final String MARKET_DEVELOPER_URI = "market://search?q=";
-    private static final String GOOGLE_PLAY_DETAILS_URI = "http://play.google.com/store/apps/details?id=";
-    private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/search?q=";
+    private static final String GOOGLE_PLAY_DETAILS_URI = "https://play.google.com/store/apps/details?id=";
+    private static final String GOOGLE_PLAY_DEVELOPER_URI = "https://play.google.com/store/apps/search?q=";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

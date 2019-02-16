@@ -9,14 +9,14 @@ android {
             if (project.hasProperty("keyPassword")) keyPassword project.keyPassword
         }
     }
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
-        versionName "1.9.7"
+        versionName "2.0"
         resConfigs "ru", "en", "be", "uk", "kk"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }
@@ -37,10 +37,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
     implementation project(':smileys')
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'
     implementation 'com.github.machinarius:preferencefragment:0.1.1'

@@ -6,7 +6,7 @@ package com.tomclaw.mandarin.util;
 public class VariableBuffer {
 
     private static final int DEFAULT_BUFFER_SIZE = 128 * 1024;
-    private static final int MAXIMUM_BUFFER_SIZE = 1 * 1024 * 1024;
+    private static final int MAXIMUM_BUFFER_SIZE = 1024 * 1024;
 
     private byte[] buffer;
 
@@ -28,7 +28,7 @@ public class VariableBuffer {
         executeTime = System.currentTimeMillis() - executeStart;
         executeStart = 0;
         if (executeTime > 0) {
-            float bytesPerSecond = 1000 * read / executeTime;
+            float bytesPerSecond = 1000f * read / executeTime;
             if (averageSpeed > 0) {
                 averageSpeed = (averageSpeed + bytesPerSecond) / 2;
             } else {

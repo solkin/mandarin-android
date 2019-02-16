@@ -142,4 +142,11 @@ public class HttpUtil {
     public static String getUserAgent() {
         return "Mandarin/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + ")";
     }
+
+    public static String httpToHttps(String url) {
+        if (url.startsWith("http://")) {
+            return "https://" + url.substring("http://".length());
+        }
+        return url;
+    }
 }

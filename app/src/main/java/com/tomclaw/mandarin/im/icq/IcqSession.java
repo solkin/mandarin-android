@@ -119,6 +119,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
 import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
+import static com.tomclaw.mandarin.util.HttpUtil.httpToHttps;
 
 /**
  * Created with IntelliJ IDEA.
@@ -446,12 +447,12 @@ public class IcqSession {
     }
 
     public String getFetchUrl() {
-        return new StringBuilder()
+        return httpToHttps(new StringBuilder()
                 .append(icqAccountRoot.getFetchBaseUrl())
                 .append(AMP).append(FORMAT).append(EQUAL).append(WimConstants.FORMAT_JSON)
                 .append(AMP).append(TIMEOUT).append(EQUAL).append(TIMEOUT_CONNECTION)
                 .append(AMP).append(R_PARAM).append(EQUAL).append(System.currentTimeMillis())
-                .append(AMP).append(PEEK).append(EQUAL).append(0).toString();
+                .append(AMP).append(PEEK).append(EQUAL).append(0).toString());
     }
 
     private void processEvent(String eventType, JSONObject eventData) {

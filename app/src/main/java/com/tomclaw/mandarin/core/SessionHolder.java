@@ -95,24 +95,6 @@ public class SessionHolder {
         }
     }
 
-    public void setAutoStatus(String statusMessage) {
-        for (AccountRoot accountRoot : accountRootList) {
-            try {
-                int musicStatusIndex = StatusUtil.getMusicStatus(accountRoot.getAccountType());
-                String statusTitle = StatusUtil.getStatusTitle(accountRoot.getAccountType(), musicStatusIndex);
-                accountRoot.setAutoStatus(musicStatusIndex, statusTitle, statusMessage);
-            } catch (StatusNotFoundException ignored) {
-                // Hm. This account doesn't support music status. Sadly :'(
-            }
-        }
-    }
-
-    public void resetAutoStatus() {
-        for (AccountRoot accountRoot : accountRootList) {
-            accountRoot.resetAutoStatus();
-        }
-    }
-
     /**
      * Connect all offline accounts with default online status.
      */

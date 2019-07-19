@@ -13,20 +13,16 @@ import java.util.Map;
  */
 public abstract class StatusCatalogue {
 
-    private static final int STATUS_INDEX_INVALID = -1;
-
     protected Map<String, Integer> indexMap;
     protected List<Status> statusList;
     protected List<Integer> connectStatuses;
     protected List<Integer> setupStatuses;
-    protected int musicStatus;
 
     public StatusCatalogue() {
-        indexMap = new HashMap<String, Integer>();
-        statusList = new ArrayList<Status>();
-        connectStatuses = new ArrayList<Integer>();
-        setupStatuses = new ArrayList<Integer>();
-        musicStatus = STATUS_INDEX_INVALID;
+        indexMap = new HashMap<>();
+        statusList = new ArrayList<>();
+        connectStatuses = new ArrayList<>();
+        setupStatuses = new ArrayList<>();
     }
 
     public int getStatusIndex(String statusValue) throws StatusNotFoundException {
@@ -49,10 +45,4 @@ public abstract class StatusCatalogue {
         return setupStatuses;
     }
 
-    public int getMusicStatus() throws StatusNotFoundException {
-        if (musicStatus == STATUS_INDEX_INVALID) {
-            throw new StatusNotFoundException();
-        }
-        return musicStatus;
-    }
 }

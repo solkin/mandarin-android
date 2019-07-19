@@ -255,10 +255,6 @@ public class IcqAccountRoot extends AccountRoot {
         return R.array.status_setup_icq;
     }
 
-    public static int getStatusMusicResource() {
-        return R.integer.music_status;
-    }
-
     public void setClientLoginResult(String login, String tokenA, String sessionKey,
                                      long expiresIn, long hostTime) {
         // Setup local variables.

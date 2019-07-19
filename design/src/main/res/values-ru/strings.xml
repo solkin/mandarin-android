@@ -8,7 +8,6 @@
     <string name="range_to">до</string>
     <string name="age_format">%1$d - %2$s</string>
     <plurals name="buddy_years">
-        <item quantity="zero">%d лет</item>
         <item quantity="one">%d год</item>
         <item quantity="few">%d года</item>
         <item quantity="many">%d лет</item>

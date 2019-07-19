@@ -39,10 +39,6 @@
     <string name="pref_title_chat_show_keyboard">Show keyboard</string>
     <string name="pref_title_send_by_enter">Use Enter to send</string>
     <string name="pref_summary_send_by_enter">Send message when I press Enter on my keyboard</string>
-    <string name="pref_title_music_auto_status">Now playing status</string>
-    <string name="pref_summary_music_auto_status">Automatically set my status to \"Music\" with currently playing track
-        name in description when I play music in system player
-    </string>
     <string name="pref_title_lights">LED</string>
     <string name="pref_summary_lights">Blink LED if a message was received while the screen is locked</string>
     <string name="pref_title_quite_chat">Quite chat</string>

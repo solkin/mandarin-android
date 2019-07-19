@@ -12,11 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BootCompletedReceiver;
-import com.tomclaw.mandarin.core.MusicStateReceiver;
 import com.tomclaw.preferences.PreferenceHelper;
 
 /**
@@ -72,16 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             Context context = SettingsActivity.this;
             // Checking for preference changed.
-            if (TextUtils.equals(key, getString(R.string.pref_music_auto_status))) {
-                // If music is already active and setting is became on, we must notify user.
-                if (MusicStateReceiver.isMusicActive(context)) {
-                    if (PreferenceHelper.isMusicAutoStatus(context)) {
-                        Toast.makeText(context, R.string.update_after_track_switch, Toast.LENGTH_SHORT).show();
-                    } else {
-                        MusicStateReceiver.sendEventToService(context);
-                    }
-                }
-            } else if (TextUtils.equals(key, getString(R.string.pref_theme))) {
+            if (TextUtils.equals(key, getString(R.string.pref_theme))) {
                 Intent intent = getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
                 overridePendingTransition(0, 0);

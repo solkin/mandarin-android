@@ -177,8 +177,6 @@
     <string name="connecting">Подключение…</string>
     <string name="invalid_credentials">Извините, Вы ввели неверный логин или пароль. Попробуйте ещё разок.</string>
     <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
-    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
-    <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
     <string name="draft_indicator_text">Черновик</string>
 
     <string name="accounts_connect">Подключиться</string>

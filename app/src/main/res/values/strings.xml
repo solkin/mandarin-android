@@ -176,8 +176,6 @@
     <string name="connecting">Connecting…</string>
     <string name="invalid_credentials">Sorry, your password or ID is invalid. Please review them again.</string>
     <string name="checking_credentials">Connecting, please wait a while…</string>
-    <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
-    <string name="update_after_track_switch">Status will be updated after track switch</string>
     <string name="draft_indicator_text">Draft</string>
 
     <string name="accounts_connect">Connect</string>

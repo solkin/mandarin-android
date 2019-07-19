@@ -146,8 +146,6 @@ public class CoreService extends Service {
         accountsDispatcher.startObservation();
         unreadDispatcher.startObservation();
         // Register broadcast receivers.
-        MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
-        registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
         ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
         // Service is now ready.
@@ -176,18 +174,6 @@ public class CoreService extends Service {
     }
 
     private void onIntentReceived(Intent intent) {
-        // Parse music event info.
-        boolean musicEvent = intent.getBooleanExtra(MusicStateReceiver.EXTRA_MUSIC_EVENT, false);
-        // Checking for this is music event and we must process fresh data or
-        // music is not longer playing and we must reset auto status.
-        if (musicEvent || !MusicStateReceiver.isMusicActive(this)) {
-            String statusMessage = intent.getStringExtra(MusicStateReceiver.EXTRA_MUSIC_STATUS_MESSAGE);
-            if (!TextUtils.isEmpty(statusMessage)) {
-                sessionHolder.setAutoStatus(statusMessage);
-            } else {
-                sessionHolder.resetAutoStatus();
-            }
-        }
         // Maybe, this is network availability event?
         boolean networkEvent = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_NETWORK_EVENT, false);
         boolean isConnected = intent.getBooleanExtra(ConnectivityReceiver.EXTRA_CONNECTIVITY_STATUS, false);

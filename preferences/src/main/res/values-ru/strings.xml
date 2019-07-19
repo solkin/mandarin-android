@@ -39,10 +39,6 @@
     <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
     <string name="pref_title_send_by_enter">Отправка по Enter</string>
     <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
-    <string name="pref_title_music_auto_status">Музыкальный статус</string>
-    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
-        при включении музыки в системном плеере
-    </string>
     <string name="pref_title_lights">Светодиод</string>
     <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
     <string name="pref_title_quite_chat">Бесшумный чат</string>

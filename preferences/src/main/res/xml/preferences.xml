@@ -8,11 +8,6 @@
             android:key="@string/pref_autorun"
             android:summary="@string/pref_summary_autorun"
             android:title="@string/pref_title_autorun" />
-        <CheckBoxPreference
-            android:defaultValue="@bool/pref_music_auto_status_default"
-            android:key="@string/pref_music_auto_status"
-            android:summary="@string/pref_summary_music_auto_status"
-            android:title="@string/pref_title_music_auto_status" />
         <ListPreference
             android:defaultValue="@string/pref_theme_default"
             android:entries="@array/pref_theme_strings"

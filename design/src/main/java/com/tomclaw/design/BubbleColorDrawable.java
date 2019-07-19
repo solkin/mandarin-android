@@ -10,18 +10,16 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-import com.tomclaw.design.Corner;
-
 /**
  * Created by solkin on 13.07.15.
  */
 public class BubbleColorDrawable extends Drawable {
 
-    public static int OFFSET;
-    public static int BUBBLE_RADIUS;
+    private static int OFFSET;
+    private static int BUBBLE_RADIUS;
     private final int color;
     private final Corner corner;
-    Paint whitePaint;
+    private Paint whitePaint;
 
     public BubbleColorDrawable(Context context, int color, Corner corner) {
         this.color = color;

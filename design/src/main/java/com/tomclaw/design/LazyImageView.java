@@ -21,4 +21,5 @@ public interface LazyImageView {
     void setHash(String hash);
 
     Context getContext();
+
 }

@@ -16,7 +16,7 @@ import android.graphics.drawable.Drawable;
 
 public class BubbleBitmapDrawable extends Drawable {
 
-    public static int HORIZONTAL_OFFSET;
+    private static int HORIZONTAL_OFFSET;
 
     private static int BUBBLE_RADIUS;
 

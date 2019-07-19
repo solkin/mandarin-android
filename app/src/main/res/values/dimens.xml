@@ -9,6 +9,5 @@
     <dimen name="file_min_width">172dp</dimen>
     <dimen name="preview_bitmap">256px</dimen>
     <dimen name="buddy_info_avatar_height">216dp</dimen>
-    <dimen name="toolbar_shadow_size">3dp</dimen>
     <dimen name="dialog_padding">24dp</dimen>
 </resources>

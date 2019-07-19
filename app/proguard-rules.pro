@@ -37,9 +37,14 @@
 }
 
 # Ugly workaround for 4.2.2 and Support library
--keep class !android.support.v7.internal.view.menu.* implements android.support.v4.internal.view.SupportMenu, android.support.v7.** {*;}
+-keep class !android.support.v7.internal.view.menu.* implements android.support.v4.internal.view.SupportMenu
 -keep interface android.support.v7.** { *; }
 -dontwarn android.support.v7.**
+
+# Allow obfuscation of android.support.v7.internal.view.menu.**
+# to avoid problem on Samsung 4.2.2 devices with appcompat v21
+# see https://code.google.com/p/android/issues/detail?id=78377
+-keep class !android.support.v7.internal.view.menu.**, android.support.** {*;}
 
 # Support design
 -dontwarn android.support.design.**

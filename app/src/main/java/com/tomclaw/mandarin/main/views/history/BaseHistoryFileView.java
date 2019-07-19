@@ -6,8 +6,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
-import com.tomclaw.helpers.FileHelper;
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Files;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 
 /**
@@ -46,7 +46,7 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
     protected void afterStates(ChatHistoryItem historyItem) {
         super.afterStates(historyItem);
         name.setText(historyItem.getContentName());
-        size.setText(StringUtil.formatBytes(getResources(), historyItem.getContentSize()));
+        size.setText(Strings.formatBytes(getResources(), historyItem.getContentSize()));
         progress.setProgress(Math.max(historyItem.getContentProgress(), 5));
         bubbleBack.setBackgroundDrawable(getBubbleBackground());
     }
@@ -56,8 +56,8 @@ public abstract class BaseHistoryFileView extends BaseHistoryContentView {
     protected abstract int getIconRunning();
 
     protected int getIconStable() {
-        return FileHelper.getMimeTypeResPicture(
-                FileHelper.getMimeType(getHistoryItem().getContentName()));
+        return Files.getMimeTypeResPicture(
+                Files.getMimeType(getHistoryItem().getContentName()));
     }
 
     @Override

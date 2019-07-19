@@ -13,7 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -54,7 +54,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             case R.id.buddy_info_share:
                 return true;
             case R.id.buddy_info_copy:
-                StringUtil.copyStringToClipboard(this, getShareString(), R.string.buddy_info_copied);
+                Strings.copyStringToClipboard(this, getShareString(), R.string.buddy_info_copied);
                 return true;
             case R.id.buddy_ignore:
                 boolean updatedIgnored = !isIgnored();

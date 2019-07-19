@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapFile;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -135,7 +135,7 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
                 String mime = dataObject.getString("mime");
                 String staticUrl = dataObject.getString("static_url");
                 Logger.log("onSuccess: " + staticUrl);
-                String text = fileName + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
+                String text = fileName + " (" + Strings.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                         + "\n" + staticUrl;
                 QueryHelper.updateFileStateAndText(databaseLayer,
                         GlobalProvider.HISTORY_CONTENT_STATE_STABLE, text,

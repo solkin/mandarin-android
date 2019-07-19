@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 
 /**
@@ -26,7 +26,7 @@ public class QueryBuilder {
     }
 
     private QueryBuilder expression(String column, String action, Object object) {
-        select.append(StringUtil.escapeSql(column)).append(action).append(StringUtil.escapeSqlWithQuotes(object.toString()));
+        select.append(Strings.escapeSql(column)).append(action).append(Strings.escapeSqlWithQuotes(object.toString()));
         return this;
     }
 
@@ -55,14 +55,14 @@ public class QueryBuilder {
     }
 
     public QueryBuilder like(String column, Object object) {
-        select.append(StringUtil.escapeSql(column)).append(" LIKE ")
-                .append("'%").append(StringUtil.escapeSql(object.toString())).append("%'");
+        select.append(Strings.escapeSql(column)).append(" LIKE ")
+                .append("'%").append(Strings.escapeSql(object.toString())).append("%'");
         return this;
     }
 
     public QueryBuilder likeIgnoreCase(String column, Object object) {
-        select.append("UPPER(").append(StringUtil.escapeSql(column)).append(")").append(" LIKE ").append("'%")
-                .append(StringUtil.escapeSql(object.toString())).append("%'");
+        select.append("UPPER(").append(Strings.escapeSql(column)).append(")").append(" LIKE ").append("'%")
+                .append(Strings.escapeSql(object.toString())).append("%'");
         return this;
     }
 
@@ -81,7 +81,7 @@ public class QueryBuilder {
     }
 
     private QueryBuilder sortOrder(String column, String order) {
-        sortOrderRaw(StringUtil.escapeSql(column), order);
+        sortOrderRaw(Strings.escapeSql(column), order);
         return this;
     }
 

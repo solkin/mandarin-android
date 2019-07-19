@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 
@@ -107,10 +107,10 @@ public class UpdateInfoRequest extends WimRequest {
     }
 
     private String getFieldValue(String field, String value) throws UnsupportedEncodingException {
-        return field + "=" + StringUtil.urlEncode(value);
+        return field + "=" + Strings.urlEncode(value);
     }
 
     private String getPairValue(String field, String key, String value) throws UnsupportedEncodingException {
-        return field + "=[{" + key + "=" + StringUtil.urlEncode(value) + "}]";
+        return field + "=[{" + key + "=" + Strings.urlEncode(value) + "}]";
     }
 }

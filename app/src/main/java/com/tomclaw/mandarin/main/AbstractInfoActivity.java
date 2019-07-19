@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tomclaw.helpers.AppsMenuHelper;
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -125,7 +125,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             statusContent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StringUtil.copyStringToClipboard(AbstractInfoActivity.this, statusString.toString(), R.string.status_copied);
+                    Strings.copyStringToClipboard(AbstractInfoActivity.this, statusString.toString(), R.string.status_copied);
                 }
             });
 
@@ -189,8 +189,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         if (TextUtils.isEmpty(nick) || TextUtils.equals(nick, buddyId)) {
             nick = getBuddyNick();
             if (TextUtils.isEmpty(nick)) {
-                nick = StringUtil.appendIfNotEmpty(nick, getFirstName(), "");
-                nick = StringUtil.appendIfNotEmpty(nick, getLastName(), " ");
+                nick = Strings.appendIfNotEmpty(nick, getFirstName(), "");
+                nick = Strings.appendIfNotEmpty(nick, getLastName(), " ");
             }
         }
         buddyNickView.setText(nick);
@@ -302,7 +302,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                     setInfoBlocksVisibility(View.VISIBLE);
                     // Iterate by info keys.
                     for (String key : bundle.keySet()) {
-                        if (StringUtil.isNumeric(key)) {
+                        if (Strings.isNumeric(key)) {
                             int keyInt = Integer.valueOf(key);
                             String[] extra = intent.getStringArrayExtra(key);
                             // Strange, but... Let's check extra is not empty.
@@ -467,8 +467,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     protected String getShareString() {
         String shareString = "";
         // Checking and attaching first and last name.
-        shareString = StringUtil.appendIfNotEmpty(shareString, getFirstName(), "");
-        shareString = StringUtil.appendIfNotEmpty(shareString, getLastName(), " ");
+        shareString = Strings.appendIfNotEmpty(shareString, getFirstName(), "");
+        shareString = Strings.appendIfNotEmpty(shareString, getLastName(), " ");
         // Strong checking for buddy nick.
         if (!(TextUtils.isEmpty(getBuddyNick()) || TextUtils.equals(getBuddyNick(), getBuddyId())) &&
                 !TextUtils.equals(shareString, getBuddyNick())) {
@@ -476,10 +476,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
             if (!TextUtils.isEmpty(shareString)) {
                 buddyNick = "(" + buddyNick + ")";
             }
-            shareString = StringUtil.appendIfNotEmpty(shareString, buddyNick, " ");
+            shareString = Strings.appendIfNotEmpty(shareString, buddyNick, " ");
         }
         // Appending user id.
-        shareString = StringUtil.appendIfNotEmpty(shareString, getBuddyId(), " - ");
+        shareString = Strings.appendIfNotEmpty(shareString, getBuddyId(), " - ");
         return shareString;
     }
 

@@ -2,7 +2,7 @@ package com.tomclaw.mandarin.util;
 
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 
 import java.util.Locale;
 
@@ -25,7 +25,7 @@ public class Country implements Comparable<Country> {
         }
         this.code = code;
         this.shortName = shortName;
-        this.alphabetIndex = StringUtil.getAlphabetIndex(this.name);
+        this.alphabetIndex = Strings.getAlphabetIndex(this.name);
     }
 
     public String getName() {

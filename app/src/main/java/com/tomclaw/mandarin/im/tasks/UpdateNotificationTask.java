@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -70,7 +70,7 @@ public class UpdateNotificationTask extends DatabaseTask {
         patterns.put("buddy_unread_count", GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT);
         patterns.put("message_type", GlobalProvider.HISTORY_MESSAGE_TYPE);
         patterns.put("type_incoming", String.valueOf(GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING));
-        query = StringUtil.format(QUERY_TEMPLATE, patterns);
+        query = Strings.format(QUERY_TEMPLATE, patterns);
     }
 
     @Override

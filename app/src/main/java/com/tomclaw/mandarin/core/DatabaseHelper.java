@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
-import static com.tomclaw.helpers.StringUtil.generateRandomText;
-import static com.tomclaw.helpers.StringUtil.generateRandomWord;
+import static com.tomclaw.helpers.Strings.generateRandomText;
+import static com.tomclaw.helpers.Strings.generateRandomWord;
 
 /**
  * Created with IntelliJ IDEA.
@@ -102,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cv2.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, generateRandomText(4 + random.nextInt(6)));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_DIALOG, isDialog);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, System.currentTimeMillis());
-                        cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(nick));
+                        cv2.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, Strings.getAlphabetIndex(nick));
                         cv2.put(GlobalProvider.ROSTER_BUDDY_UNREAD_COUNT, 0);
                         cv2.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, nick.toUpperCase());
                         long id = db.insert(GlobalProvider.ROSTER_BUDDY_TABLE, null, cv2);

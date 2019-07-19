@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.util;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 
 /**
  * Created by Solkin on 08.11.2014.
@@ -43,7 +43,7 @@ public class VariableBuffer {
                 size = MAXIMUM_BUFFER_SIZE;
             }
             bufferSize = size;
-            Logger.log("speed: " + StringUtil.formatSpeed(averageSpeed) + ", bufferSize: " + bufferSize);
+            Logger.log("speed: " + Strings.formatSpeed(averageSpeed) + ", bufferSize: " + bufferSize);
         }
     }
 

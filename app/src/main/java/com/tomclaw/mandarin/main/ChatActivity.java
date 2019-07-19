@@ -44,8 +44,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tomclaw.filepicker.DocumentPickerActivity;
-import com.tomclaw.helpers.FileHelper;
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Files;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -856,7 +856,7 @@ public class ChatActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    StringUtil.copyStringToClipboard(ChatActivity.this, getSelectedMessages());
+                    Strings.copyStringToClipboard(ChatActivity.this, getSelectedMessages());
                     break;
                 case R.id.message_share:
                     startActivity(createShareIntent());
@@ -1035,7 +1035,7 @@ public class ChatActivity extends ChiefActivity {
             if (context != null) {
                 ContentResolver contentResolver = context.getContentResolver();
                 DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
-                String cookie = StringUtil.generateRandomString(32);
+                String cookie = Strings.generateRandomString(32);
                 int messageType = GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING;
                 long messageTime = System.currentTimeMillis();
                 int accountDbId = buddy.getAccountDbId();
@@ -1337,7 +1337,7 @@ public class ChatActivity extends ChiefActivity {
         }
 
         private void viewContent(String contentName, String contentUri, String previewHash) {
-            if (FileHelper.getMimeType(contentName).startsWith("image")) {
+            if (Files.getMimeType(contentName).startsWith("image")) {
                 Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
                 intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
@@ -1345,7 +1345,7 @@ public class ChatActivity extends ChiefActivity {
             } else {
                 Intent intent = new Intent();
                 intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+                intent.setDataAndType(Uri.parse(contentUri), Files.getMimeType(contentName));
                 startActivity(intent);
             }
         }

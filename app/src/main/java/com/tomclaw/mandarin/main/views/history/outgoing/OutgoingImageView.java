@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.main.views.history.outgoing;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 
@@ -20,7 +20,7 @@ public class OutgoingImageView extends OutgoingPreviewView {
 
     @Override
     protected void beforeStates(ChatHistoryItem historyItem) {
-        isAnimated = TextUtils.equals(FileHelper.getFileExtensionFromPath(
+        isAnimated = TextUtils.equals(Files.getFileExtensionFromPath(
                 historyItem.getContentName()).toLowerCase(), "gif");
     }
 

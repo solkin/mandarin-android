@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.util;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
             }
             builder.append(pair.first)
                     .append(EQUAL)
-                    .append(StringUtil.urlEncode(pair.second));
+                    .append(Strings.urlEncode(pair.second));
         }
         return builder.toString();
     }

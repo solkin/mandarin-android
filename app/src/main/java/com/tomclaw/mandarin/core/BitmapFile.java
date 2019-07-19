@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
@@ -61,7 +61,7 @@ public class BitmapFile extends VirtualFile {
     public static BitmapFile create(Context context, UriFile file)
             throws UnsupportedFileTypeException, ImageCompressionDesireLackException {
         // Check for this is image and not GIF.
-        String extension = FileHelper.getFileExtensionFromPath(file.getName());
+        String extension = Files.getFileExtensionFromPath(file.getName());
         if (file.getMimeType().startsWith("image") &&
                 !TextUtils.equals(extension.toLowerCase(), "gif")) {
             // Check for preferences of image compression.
@@ -93,7 +93,7 @@ public class BitmapFile extends VirtualFile {
     public static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
         try {
             File file = File.createTempFile("MND_",
-                    "." + FileHelper.getFileExtensionFromPath(fileName));
+                    "." + Files.getFileExtensionFromPath(fileName));
             OutputStream os = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
             os.flush();

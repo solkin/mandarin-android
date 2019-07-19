@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -51,7 +51,7 @@ public class UserInfoRequest extends WimRequest {
 
     @Override
     protected JSONObject parseResponse(String responseString) throws JSONException {
-        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
+        return super.parseResponse(Strings.fixCyrillicSymbols(responseString));
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
 
@@ -89,7 +89,7 @@ public class IcqSearchOptionsBuilder extends SearchOptionsBuilder {
             if (match.length() > 0) {
                 match.append(',');
             }
-            match.append(optionName).append('=').append(StringUtil.urlEncode(optionValue));
+            match.append(optionName).append('=').append(Strings.urlEncode(optionValue));
             return true;
         } catch (UnsupportedEncodingException ignored) {
             // Nothing to be done in this case. Really sorry.

@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
  * Date: 13.10.13
  * Time: 20:09
  */
-public class StringUtil {
+public class Strings {
 
     public static final int DEFAULT_ALPHABET_INDEX = '?';
 
@@ -113,8 +113,8 @@ public class StringUtil {
     }
 
     public static String appendIfNotEmpty(String where, String what, String divider) {
-        if (!StringUtil.isEmptyOrWhitespace(what)) {
-            if (!StringUtil.isEmptyOrWhitespace(where)) {
+        if (!Strings.isEmptyOrWhitespace(what)) {
+            if (!Strings.isEmptyOrWhitespace(where)) {
                 where += divider;
             }
             where += what;

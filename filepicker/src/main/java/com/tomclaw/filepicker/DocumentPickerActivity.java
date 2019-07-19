@@ -37,9 +37,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.tomclaw.helpers.FileHelper.getMimeType;
-import static com.tomclaw.helpers.FileHelper.getMimeTypeResPicture;
-import static com.tomclaw.helpers.StringUtil.formatBytes;
+import static com.tomclaw.helpers.Files.getMimeType;
+import static com.tomclaw.helpers.Files.getMimeTypeResPicture;
+import static com.tomclaw.helpers.Strings.formatBytes;
 
 /**
  * File picker activity

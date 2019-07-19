@@ -10,7 +10,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
-import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
@@ -122,7 +122,7 @@ public class UriFile extends VirtualFile {
                     String mimeType;
                     int mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE);
                     if (mimeTypeColumn == -1) {
-                        mimeType = FileHelper.getMimeType(name);
+                        mimeType = Files.getMimeType(name);
                     } else {
                         mimeType = cursor.getString(mimeTypeColumn);
                     }
@@ -135,7 +135,7 @@ public class UriFile extends VirtualFile {
             }
         } else if (TextUtils.equals(uriScheme, ContentResolver.SCHEME_FILE)) {
             File file = new File(uri.getPath());
-            return new UriFile(uri.toString(), FileHelper.getMimeType(file.getName()), file.length(), file.getName());
+            return new UriFile(uri.toString(), Files.getMimeType(file.getName()), file.length(), file.getName());
         }
         throw new FileNotFoundException();
     }

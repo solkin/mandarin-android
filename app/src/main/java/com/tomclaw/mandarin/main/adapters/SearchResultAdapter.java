@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
@@ -32,19 +32,19 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
         TextView onlineIndicator = view.findViewById(R.id.online_indicator);
         // Buddy friendly name - first and last names or nick name.
         String friendly = "";
-        if (StringUtil.isEmptyOrWhitespace(info.getFirstName()) && StringUtil.isEmptyOrWhitespace(info.getLastName())) {
-            if (StringUtil.isEmptyOrWhitespace(info.getBuddyNick())) {
+        if (Strings.isEmptyOrWhitespace(info.getFirstName()) && Strings.isEmptyOrWhitespace(info.getLastName())) {
+            if (Strings.isEmptyOrWhitespace(info.getBuddyNick())) {
                 friendly = info.getBuddyId();
             } else {
                 friendly = info.getBuddyNick();
             }
         } else {
-            friendly = StringUtil.appendIfNotEmpty(friendly, info.getFirstName(), "");
-            friendly = StringUtil.appendIfNotEmpty(friendly, info.getLastName(), " ");
+            friendly = Strings.appendIfNotEmpty(friendly, info.getFirstName(), "");
+            friendly = Strings.appendIfNotEmpty(friendly, info.getLastName(), " ");
         }
         buddyNick.setText(friendly);
         // Buddy home address.
-        String shortInfo = StringUtil.appendIfNotEmpty("", info.getHomeAddress(), "");
+        String shortInfo = Strings.appendIfNotEmpty("", info.getHomeAddress(), "");
         // Buddy gender. Female, male or nothing.
         String gender;
         switch (info.getGender()) {
@@ -58,7 +58,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
                 gender = "";
                 break;
         }
-        shortInfo = StringUtil.appendIfNotEmpty(shortInfo, gender, ", ");
+        shortInfo = Strings.appendIfNotEmpty(shortInfo, gender, ", ");
         // Buddy years.
         String birthDate = "";
         if (info.getBirthDate() > 0) {
@@ -67,7 +67,7 @@ public class SearchResultAdapter extends EndlessListAdapter<ShortBuddyInfo> {
                 birthDate = context.getResources().getQuantityString(R.plurals.buddy_years, years, years);
             }
         }
-        shortInfo = StringUtil.appendIfNotEmpty(shortInfo, birthDate, ", ");
+        shortInfo = Strings.appendIfNotEmpty(shortInfo, birthDate, ", ");
 
         buddyShortInfo.setText(shortInfo);
         onlineIndicator.setText(info.isOnline() ? R.string.status_online : R.string.status_offline);

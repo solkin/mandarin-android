@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -202,7 +202,7 @@ public class IcqSession {
                         String tokenA = tokenObject.getString(TOKEN_A);
                         Logger.log("token a = " + tokenA);
                         Logger.log("sessionSecret = " + sessionSecret);
-                        String sessionKey = StringUtil.getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
+                        String sessionKey = Strings.getHmacSha256Base64(sessionSecret, icqAccountRoot.getUserPassword());
                         Logger.log("sessionKey = " + sessionKey);
                         // Update client login result in database.
                         icqAccountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
@@ -260,7 +260,7 @@ public class IcqSession {
                     .concat(AMP).concat(URLEncoder.encode(nameValuePairs.build(), HttpUtil.UTF8_ENCODING));
 
             nameValuePairs.appendParam(SIG_SHA256,
-                    StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey()));
+                    Strings.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey()));
             Logger.log(nameValuePairs.build());
             try {
                 // Execute HTTP Post Request
@@ -279,7 +279,7 @@ public class IcqSession {
                         String fetchBaseUrl = dataObject.getString(FETCH_BASE_URL);
                         // Parsing my info and well-known URL's to send requests.
                         MyInfo myInfo = GsonSingleton.getInstance().fromJson(
-                                StringUtil.fixCyrillicSymbols(dataObject.getJSONObject(MY_INFO).toString()), MyInfo.class);
+                                Strings.fixCyrillicSymbols(dataObject.getJSONObject(MY_INFO).toString()), MyInfo.class);
                         WellKnownUrls wellKnownUrls = GsonSingleton.getInstance().fromJson(
                                 dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
                         // Update starts session result in database.
@@ -555,8 +555,8 @@ public class IcqSession {
 
                     String buddyStatus = eventData.getString(STATE);
                     String moodIcon = eventData.optString(MOOD_ICON);
-                    String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
-                    String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
+                    String statusMessage = Strings.unescapeXml(eventData.optString(STATUS_MSG));
+                    String moodTitle = Strings.unescapeXml(eventData.optString(MOOD_TITLE));
 
                     int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
                     String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
@@ -590,7 +590,7 @@ public class IcqSession {
             case MY_INFO:
                 try {
                     MyInfo myInfo = GsonSingleton.getInstance().fromJson(
-                            StringUtil.fixCyrillicSymbols(eventData.toString()), MyInfo.class);
+                            Strings.fixCyrillicSymbols(eventData.toString()), MyInfo.class);
                     icqAccountRoot.setMyInfo(myInfo);
                 } catch (Throwable ex) {
                     Logger.log("error while processing my info", ex);
@@ -623,11 +623,11 @@ public class IcqSession {
         builder.sortParams();
         String params = builder.build();
         String hash = method.concat(WimConstants.AMP)
-                .concat(StringUtil.urlEncode(url)).concat(WimConstants.AMP)
-                .concat(StringUtil.urlEncode(params));
+                .concat(Strings.urlEncode(url)).concat(WimConstants.AMP)
+                .concat(Strings.urlEncode(params));
         return url.concat(WimConstants.QUE).concat(params).concat(WimConstants.AMP)
                 .concat(WimConstants.SIG_SHA256).concat(EQUAL)
-                .concat(StringUtil.urlEncode(StringUtil.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
+                .concat(Strings.urlEncode(Strings.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
     }
 
     @SuppressWarnings("WeakerAccess")

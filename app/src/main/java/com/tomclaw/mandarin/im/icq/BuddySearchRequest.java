@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
@@ -50,7 +50,7 @@ public class BuddySearchRequest extends WimRequest {
 
     @Override
     protected JSONObject parseResponse(String responseString) throws JSONException {
-        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
+        return super.parseResponse(Strings.fixCyrillicSymbols(responseString));
     }
 
     @Override

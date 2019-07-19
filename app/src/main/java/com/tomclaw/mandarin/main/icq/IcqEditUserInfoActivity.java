@@ -7,7 +7,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
@@ -39,7 +39,7 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
         // Iterate by info keys.
         for (String key : bundle.keySet()) {
             // Check for this is field key.
-            if (StringUtil.isNumeric(key)) {
+            if (Strings.isNumeric(key)) {
                 int keyInt = Integer.valueOf(key);
                 if (keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
                         keyInt == R.id.website || keyInt == R.id.about_me || keyInt == R.id.city) {

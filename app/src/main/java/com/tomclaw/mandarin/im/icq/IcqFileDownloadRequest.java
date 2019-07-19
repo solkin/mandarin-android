@@ -10,8 +10,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.FileHelper;
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Files;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -158,14 +158,14 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     private File getUniqueFile(String mimeType, String fileName) {
-        final String base = FileHelper.getFileBaseFromName(fileName);
-        final String extension = FileHelper.getFileExtensionFromPath(fileName);
+        final String base = Files.getFileBaseFromName(fileName);
+        final String extension = Files.getFileExtensionFromPath(fileName);
         File directory = getStoragePublicFolder(mimeType);
         if (directory.exists()) {
             File[] files = directory.listFiles(new FilenameFilter() {
                 public boolean accept(File file, String name) {
-                    return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
-                            FileHelper.getFileExtensionFromPath(name).toLowerCase().equals(extension.toLowerCase());
+                    return Files.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
+                            Files.getFileExtensionFromPath(name).toLowerCase().equals(extension.toLowerCase());
                 }
             });
             if (files.length > 0) {
@@ -327,7 +327,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     private String getUrlMessage() {
-        return storeFile.getName() + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
+        return storeFile.getName() + " (" + Strings.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                 + "\n" + fileUrl;
     }
 }

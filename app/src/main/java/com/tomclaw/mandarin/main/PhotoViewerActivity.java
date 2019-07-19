@@ -27,7 +27,7 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.helpers.AppsMenuHelper;
-import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.mandarin.core.TaskExecutor;
@@ -181,7 +181,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
-        intent.setDataAndType(uri, FileHelper.getMimeType(name));
+        intent.setDataAndType(uri, Files.getMimeType(name));
 
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;
@@ -294,7 +294,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         public PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
             super(object);
             this.hasPreview = hasPreview;
-            this.isGif = TextUtils.equals(FileHelper.getFileExtensionFromPath(name).toLowerCase(), "gif");
+            this.isGif = TextUtils.equals(Files.getFileExtensionFromPath(name).toLowerCase(), "gif");
         }
 
         @Override

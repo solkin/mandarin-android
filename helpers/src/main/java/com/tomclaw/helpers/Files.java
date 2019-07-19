@@ -6,7 +6,7 @@ import android.webkit.MimeTypeMap;
 /**
  * Created by Solkin on 18.10.2014.
  */
-public class FileHelper {
+public class Files {
 
     public static int getMimeTypeResPicture(String mimeType) {
         if (mimeType.startsWith("image")) {

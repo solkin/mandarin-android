@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.Gender;
@@ -48,7 +48,7 @@ public class BuddyPresenceRequest extends WimRequest {
 
     @Override
     protected JSONObject parseResponse(String responseString) throws JSONException {
-        return super.parseResponse(StringUtil.fixCyrillicSymbols(responseString));
+        return super.parseResponse(Strings.fixCyrillicSymbols(responseString));
     }
 
     @Override
@@ -145,7 +145,7 @@ public class BuddyPresenceRequest extends WimRequest {
                 .appendParam("f", WimConstants.FORMAT_JSON)
                 .appendParam("mdir", "1");
         // Checking for keyword is user id and this is first result page.
-        if (StringUtil.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
+        if (Strings.isNumeric(searchOptions.getKeyword()) && skipped == 0 &&
                 !buddyIds.contains(searchOptions.getKeyword())) {
             appendBuddyPair(params, searchOptions.getKeyword());
             isKeywordNumeric = true;

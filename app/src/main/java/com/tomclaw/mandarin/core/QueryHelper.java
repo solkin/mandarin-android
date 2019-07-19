@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.tomclaw.helpers.StringUtil;
+import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -375,7 +375,7 @@ public class QueryHelper {
                                        String buddyNick, boolean isStartOperation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GlobalProvider.ROSTER_BUDDY_NICK, buddyNick);
-        contentValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
+        contentValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, Strings.getAlphabetIndex(buddyNick));
         contentValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         contentValues.put(GlobalProvider.ROSTER_BUDDY_OPERATION, isStartOperation ?
                 GlobalProvider.ROSTER_BUDDY_OPERATION_RENAME : GlobalProvider.ROSTER_BUDDY_OPERATION_NO);
@@ -927,7 +927,7 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, statusMessage);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
-        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, Strings.getAlphabetIndex(buddyNick));
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_AVATAR_HASH, avatarHash);
@@ -973,7 +973,7 @@ public class QueryHelper {
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_STATUS_MESSAGE, statusMessage);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_DIALOG, 0);
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_UPDATE_TIME, updateTime);
-        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, StringUtil.getAlphabetIndex(buddyNick));
+        buddyValues.put(GlobalProvider.ROSTER_BUDDY_ALPHABET_INDEX, Strings.getAlphabetIndex(buddyNick));
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_SEARCH_FIELD, buddyNick.toUpperCase());
         buddyValues.put(GlobalProvider.ROSTER_BUDDY_LAST_SEEN, lastSeen);
         String avatarHash;
@@ -981,7 +981,7 @@ public class QueryHelper {
         // Get buddy priority - from current group, then from non-recycle, then from recycle.
         queryBuilder.columnEquals(GlobalProvider.ROSTER_BUDDY_ACCOUNT_DB_ID, accountDbId)
                 .and().columnEquals(GlobalProvider.ROSTER_BUDDY_ID, buddyId)
-                .sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP + "=" + StringUtil.escapeSqlWithQuotes(groupName) + " THEN 2 ELSE 0 END)", "DESC").andOrder()
+                .sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP + "=" + Strings.escapeSqlWithQuotes(groupName) + " THEN 2 ELSE 0 END)", "DESC").andOrder()
                 .sortOrderRaw("(CASE WHEN " + GlobalProvider.ROSTER_BUDDY_GROUP_ID + "!=" + GlobalProvider.GROUP_ID_RECYCLE + " THEN 1 ELSE 0 END" + ")", "DESC")
                 .limit(1);
         BuddyCursor buddyCursor = null;

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?info_block_background"
+    android:orientation="vertical"
     android:paddingLeft="12dp"
     android:paddingRight="0dp">
 
@@ -12,26 +11,28 @@
         android:id="@+id/info_status_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="56dp"
         android:gravity="center_vertical"
+        android:minHeight="56dp"
         android:visibility="gone">
 
         <ImageView
+            android:id="@+id/status_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/status_icon"
             android:padding="4dp" />
 
         <com.tomclaw.design.TightTextView
+            android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/status_text"
-            android:paddingTop="5dp"
+            android:fontFamily="sans-serif"
             android:paddingLeft="4dp"
+            android:paddingTop="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="5dp"
-            android:textSize="16sp"
             android:textColor="?info_block_text"
-            android:fontFamily="sans-serif" />
+            android:textSize="16sp" />
+
     </LinearLayout>
+
 </LinearLayout>

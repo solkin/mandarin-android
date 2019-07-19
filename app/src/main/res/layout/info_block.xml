@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="8dp">
+        android:layout_height="8dp"
+        android:orientation="vertical">
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="4dp"
             android:background="@drawable/block_info_divider_gradient" />
+
     </LinearLayout>
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/info_base_title"
-        android:text="@string/info_base"
         style="@style/BuddyInfoBlockHeader"
+        android:text="@string/info_base"
         android:visibility="gone" />
 
     <LinearLayout
@@ -29,55 +29,56 @@
 
         <include
             android:id="@+id/friendly_name"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/first_name"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/last_name"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/gender"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/birth_date"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/city"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <include
-        layout="@layout/info_footer"
-        android:id="@+id/info_base_footer" />
+        android:id="@+id/info_base_footer"
+        layout="@layout/info_footer" />
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/info_extended_title"
-        android:text="@string/info_extended"
         style="@style/BuddyInfoBlockHeader"
+        android:text="@string/info_extended"
         android:visibility="gone" />
 
     <LinearLayout
@@ -87,35 +88,38 @@
 
         <include
             android:id="@+id/website"
+            layout="@layout/info_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            layout="@layout/info_item" />
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <include
-        layout="@layout/info_footer"
-        android:id="@+id/info_extended_footer" />
+        android:id="@+id/info_extended_footer"
+        layout="@layout/info_footer" />
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/info_about_me_title"
-        android:text="@string/about_me"
         style="@style/BuddyInfoBlockHeader"
+        android:text="@string/about_me"
         android:visibility="gone" />
 
     <LinearLayout
-        android:orientation="vertical"
-        style="@style/BuddyInfoBlockContent"
         android:id="@+id/about_me"
+        style="@style/BuddyInfoBlockContent"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <com.tomclaw.design.TightTextView
+            android:id="@+id/info_value"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/info_value" />
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <include
-        layout="@layout/info_footer"
-        android:id="@+id/info_about_me_footer" />
+        android:id="@+id/info_about_me_footer"
+        layout="@layout/info_footer" />
+
 </LinearLayout>

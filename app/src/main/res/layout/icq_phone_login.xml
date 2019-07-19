@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/first_screen_bg"
-        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/first_screen_bg" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -19,43 +18,44 @@
         android:background="@android:color/transparent" />
 
     <com.tomclaw.design.TightTextView
-        android:text="@string/enter_phone_number"
         style="@style/IntroHeaderView"
-        android:layout_above="@+id/phone_number_block" />
+        android:layout_above="@+id/phone_number_block"
+        android:text="@string/enter_phone_number" />
 
     <LinearLayout
         android:id="@+id/phone_number_block"
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
+            style="@style/PhoneNumberBlock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/PhoneNumberBlock">
+            android:orientation="horizontal">
 
             <com.tomclaw.design.TightTextView
                 android:id="@+id/country_code_view"
+                style="@style/CountryCodeView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="0dp"
-                android:paddingRight="4dp"
                 android:paddingEnd="4dp"
-                style="@style/CountryCodeView" />
+                android:paddingRight="4dp" />
 
             <EditText
                 android:id="@+id/phone_number_field"
+                style="@style/PhoneNumberView"
                 android:layout_width="wrap_content"
-                android:minWidth="172dp"
-                android:maxWidth="250dp"
                 android:layout_height="wrap_content"
-                android:inputType="phone"
                 android:gravity="start"
                 android:imeOptions="actionNext"
-                style="@style/PhoneNumberView" />
+                android:inputType="phone"
+                android:maxWidth="250dp"
+                android:minWidth="172dp" />
+
         </LinearLayout>
 
         <com.tomclaw.design.TightTextView
@@ -64,19 +64,21 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="8dp" />
+
     </LinearLayout>
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/phone_number_faq_view"
+        style="@style/PrivacyPolicyView"
         android:layout_above="@+id/privacy_policy_view"
-        android:text="@string/phone_number_faq"
         android:paddingBottom="1dp"
-        style="@style/PrivacyPolicyView" />
+        android:text="@string/phone_number_faq" />
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/privacy_policy_view"
+        style="@style/PrivacyPolicyView"
         android:layout_alignParentBottom="true"
-        android:text="@string/privacy_policy"
         android:paddingBottom="12dp"
-        style="@style/PrivacyPolicyView" />
+        android:text="@string/privacy_policy" />
+
 </RelativeLayout>

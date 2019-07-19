@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-    android:gravity="center_vertical">
+    android:paddingBottom="5dp">
 
     <ImageView
+        android:id="@+id/status_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/status_icon"
         android:contentDescription="@string/buddy_status" />
 
     <com.tomclaw.design.TightTextView
+        android:id="@+id/status_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/status_name"
-        android:layout_weight="1"
         android:layout_marginLeft="6dp"
-        android:textSize="17sp"
-        android:fontFamily="sans-serif-light" />
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-light"
+        android:textSize="17sp" />
+
 </LinearLayout>

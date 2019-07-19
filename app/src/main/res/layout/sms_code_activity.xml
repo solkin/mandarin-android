@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/first_screen_bg"
-        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/first_screen_bg" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -19,31 +19,33 @@
         android:background="@android:color/transparent" />
 
     <com.tomclaw.design.TightTextView
+        android:id="@+id/sms_code_header_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sms_code_header_view"
-        android:text="@string/sms_code_header"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:textColor="#ffffff"
         android:layout_above="@+id/sms_code_field"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:fontFamily="sans-serif-light" />
+        android:text="@string/sms_code_header"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
 
     <EditText
         android:id="@+id/sms_code_field"
         style="@style/IntroSmsCodeField"
-        android:hint="- - - -"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:imeOptions="actionDone" />
+        android:layout_centerVertical="true"
+        android:hint="- - - -"
+        android:imeOptions="actionDone"
+        tools:ignore="HardcodedText" />
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/resend_code_view"
+        style="@style/ResendCodeView"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="6dp"
-        style="@style/ResendCodeView"
         android:text="@string/resend_code" />
+
 </RelativeLayout>

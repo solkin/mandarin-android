@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -25,10 +24,10 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <ProgressBar
                     android:layout_width="wrap_content"
@@ -37,27 +36,32 @@
                 <com.tomclaw.design.TightTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/buddy_search_progress"
-                    android:textSize="18sp"
                     android:fontFamily="sans-serif-light"
-                    android:paddingTop="12dp" />
+                    android:paddingTop="12dp"
+                    android:text="@string/buddy_search_progress"
+                    android:textSize="18sp" />
+
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <com.tomclaw.design.TightTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
                     android:text="@string/buddy_search_no_result"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-light" />
+                    android:textSize="18sp" />
+
             </LinearLayout>
+
         </ViewSwitcher>
 
         <include layout="@layout/toolbar_shadow_view" />
+
     </FrameLayout>
+
 </LinearLayout>

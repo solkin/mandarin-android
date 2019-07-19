@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/dialog_padding"
+    android:paddingTop="16dp"
     android:paddingRight="@dimen/dialog_padding">
 
     <com.tomclaw.design.TightTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
         android:text="@string/connect_account_message"
-        android:textSize="16sp"
-        android:paddingBottom="10dp" />
+        android:textSize="16sp" />
 
     <Spinner
+        android:id="@+id/status_spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/status_spinner" />
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

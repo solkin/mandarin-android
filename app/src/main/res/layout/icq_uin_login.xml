@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/first_screen_bg"
-        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/first_screen_bg" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -19,39 +18,41 @@
         android:background="@android:color/transparent" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
         android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:layout_centerVertical="true">
+        android:paddingRight="32dp">
 
         <com.tomclaw.design.TightTextView
-            android:text="@string/fill_the_fields_below"
+            style="@style/IntroHeaderView"
             android:paddingBottom="7dp"
-            style="@style/IntroHeaderView" />
+            android:text="@string/fill_the_fields_below" />
 
         <EditText
             android:id="@+id/user_id_field"
-            android:hint="@string/email_or_uin_hint"
-            android:inputType="textEmailAddress"
+            style="@style/IntroEditField"
             android:layout_marginBottom="16dp"
+            android:hint="@string/email_or_uin_hint"
             android:imeOptions="actionNext"
-            style="@style/IntroEditField" />
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/user_password_field"
+            style="@style/IntroEditField"
             android:hint="@string/password_hint"
-            android:inputType="textPassword"
             android:imeOptions="actionDone"
-            style="@style/IntroEditField" />
+            android:inputType="textPassword" />
+
     </LinearLayout>
 
     <com.tomclaw.design.TightTextView
         android:id="@+id/register_using_phone_view"
+        style="@style/PrivacyPolicyView"
         android:layout_alignParentBottom="true"
-        android:text="@string/register_using_phone"
         android:paddingBottom="12dp"
-        android:textSize="14sp"
-        style="@style/PrivacyPolicyView" />
+        android:text="@string/register_using_phone"
+        android:textSize="14sp" />
+
 </RelativeLayout>

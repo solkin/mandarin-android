@@ -1,14 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
+    android:orientation="horizontal"
     android:padding="3dp">
 
     <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_width="0dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -17,57 +17,61 @@
             android:orientation="vertical">
 
             <com.tomclaw.design.ContactBadge
+                android:id="@+id/buddy_image"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
-                android:id="@+id/buddy_image"
                 android:layout_gravity="center_horizontal|top"
                 android:src="@drawable/def_avatar_x48" />
+
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
+            android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingRight="0dp">
 
             <com.tomclaw.design.TightTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/buddy_nick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
                 android:singleLine="true"
-                android:textStyle="bold"
+                android:textColor="?attr/buddy_primary_color"
                 android:textSize="17sp"
-                android:textColor="?attr/buddy_primary_color" />
+                android:textStyle="bold" />
 
             <com.tomclaw.design.TightTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/buddy_short_info"
-                android:layout_gravity="left|center_vertical"
-                android:singleLine="true"
-                android:lines="1"
-                android:textSize="15sp"
-                android:textColor="?attr/buddy_secondary_color"
-                android:fontFamily="sans-serif-light" />
-
-            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:lines="1"
+                android:singleLine="true"
+                android:textColor="?attr/buddy_secondary_color"
+                android:textSize="15sp" />
+
+            <com.tomclaw.design.TightTextView
                 android:id="@+id/online_indicator"
-                android:text="@string/status_online"
-                android:gravity="center"
-                android:background="@drawable/green_indicator"
-                android:textColor="@android:color/white"
-                android:textSize="13sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
+                android:background="@drawable/green_indicator"
+                android:gravity="center"
                 android:paddingLeft="4dp"
-                android:paddingRight="4dp" />
+                android:paddingTop="2dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="2dp"
+                android:text="@string/status_online"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
         </LinearLayout>
+
     </LinearLayout>
+
 </LinearLayout>

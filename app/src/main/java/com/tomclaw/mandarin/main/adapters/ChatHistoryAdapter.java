@@ -29,7 +29,7 @@ import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.helpers.TimeHelper;
 
 import java.lang.reflect.Constructor;
 

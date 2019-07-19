@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.util;
+package com.tomclaw.helpers;
 
 import java.io.Serializable;
 
@@ -7,8 +7,8 @@ import java.io.Serializable;
  */
 public class NameValuePair implements Serializable {
 
-    private String name = null;
-    private String value = null;
+    private String name;
+    private String value;
 
     public NameValuePair() {
         this(null, null);

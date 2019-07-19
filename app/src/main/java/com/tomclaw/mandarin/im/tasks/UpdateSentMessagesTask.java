@@ -10,7 +10,7 @@ import com.tomclaw.mandarin.core.DatabaseTask;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.SentMessageData;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.Timer;
+import com.tomclaw.helpers.Timer;
 
 import java.util.Collections;
 import java.util.List;

@@ -32,7 +32,7 @@ import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.ContactBadge;
 import com.tomclaw.mandarin.util.SelectionHelper;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.helpers.TimeHelper;
 
 import java.util.Calendar;
 

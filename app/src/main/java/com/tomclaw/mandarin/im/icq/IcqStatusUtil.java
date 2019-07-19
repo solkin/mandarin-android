@@ -4,8 +4,8 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.util.NameValuePair;
-import com.tomclaw.mandarin.util.UrlParser;
+import com.tomclaw.helpers.NameValuePair;
+import com.tomclaw.helpers.UrlParser;
 
 import java.io.DataInputStream;
 import java.io.IOException;

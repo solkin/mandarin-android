@@ -33,7 +33,7 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.helpers.TimeHelper;
 import com.tomclaw.preferences.PreferenceHelper;
 
 import java.lang.ref.WeakReference;

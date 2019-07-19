@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.util;
+package com.tomclaw.helpers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

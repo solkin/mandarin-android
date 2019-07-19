@@ -9,7 +9,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.main.views.ContactBadge;
-import com.tomclaw.mandarin.util.TimeHelper;
+import com.tomclaw.helpers.TimeHelper;
 
 /**
  * Created by Solkin on 09.07.2014.

@@ -21,6 +21,7 @@
         android:textSize="10sp"
         android:typeface="monospace"
         android:visibility="visible"
+        tools:ignore="SmallSp"
         tools:text="6357668774908330024" />
 
     <com.tomclaw.mandarin.main.views.TightTextView
@@ -34,7 +35,8 @@
         android:textColor="#837572"
         android:textSize="12sp"
         android:typeface="monospace"
-        android:visibility="visible" />
+        android:visibility="visible"
+        tools:ignore="HardcodedText" />
 
     <com.tomclaw.mandarin.main.views.TightTextView
         android:id="@+id/till_message_id"
@@ -49,6 +51,7 @@
         android:textSize="10sp"
         android:typeface="monospace"
         android:visibility="visible"
+        tools:ignore="SmallSp"
         tools:text="6357673486487388889" />
-    
+
 </LinearLayout>

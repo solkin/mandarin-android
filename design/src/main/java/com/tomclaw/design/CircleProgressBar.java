@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -26,8 +26,6 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-
-import com.tomclaw.mandarin.R;
 
 /**
  * A subclass of {@link View} class for creating a custom circular progressBar
@@ -205,23 +203,3 @@ public class CircleProgressBar extends View {
         objectAnimator.start();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -54,7 +54,7 @@
                             android:contentDescription="@string/no_dialogs_opened"
                             android:src="@drawable/dialogs_empty_view" />
 
-                        <com.tomclaw.mandarin.main.views.TightTextView
+                        <com.tomclaw.design.TightTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"

@@ -11,7 +11,7 @@ import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
-import com.tomclaw.mandarin.main.views.DatePickerView;
+import com.tomclaw.design.DatePickerView;
 
 /**
  * Icq-specific user info edit activity

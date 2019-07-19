@@ -108,8 +108,6 @@
     <string name="status_message_hint">Изменить подпись статуса…</string>
     <string name="status_message_change_hint">Подпись статуса…</string>
     <string name="click_to_connect_hint">Нажмите здесь для подключения</string>
-    <string name="apply">Применить</string>
-    <string name="not_now">Не сейчас</string>
     <string name="clear">Очистить</string>
 
     <string name="friendly_name">Ник</string>
@@ -228,17 +226,6 @@
     <string name="search_buddy_error">Не удалось найти контакты по запросу. Попробуйте позднее.</string>
     <string name="buddy_search_progress">Поиск контактов…</string>
     <string name="buddy_search_no_result">Нет контактов по Вашему запросу.</string>
-    <string name="select_age">Выберите возраст</string>
-    <string name="range_from">от</string>
-    <string name="range_to">до</string>
-    <string name="age_format">%1$d - %2$s</string>
-    <plurals name="buddy_years">
-        <item quantity="zero">%d лет</item>
-        <item quantity="one">%d год</item>
-        <item quantity="few">%d года</item>
-        <item quantity="many">%d лет</item>
-        <item quantity="other">%d года</item>
-    </plurals>
     <string name="gender_male">Мужской</string>
     <string name="gender_female">Женский</string>
     <string name="gender_any">Любой</string>
@@ -252,7 +239,6 @@
     <string name="open_dialog">Открыть диалог</string>
     <string name="defaultGroupName">Главная</string>
     <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
-    <string name="age_any">Любой</string>
 
     <string name="app_version">Версия %1$s (%2$d)</string>
     <string name="city_search">Город</string>
@@ -325,7 +311,6 @@
     </string>
     <string name="user_info_edit">Редактировать</string>
     <string name="edit_user_info_save">Сохранить</string>
-    <string name="date_not_set">Не установлено</string>
     <string name="avatar_changing_error">Произошла ошибка при установке аватара. Пожалуйста, попробуйте другое
         изображение.
     </string>

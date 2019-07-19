@@ -14,4 +14,5 @@
     <string name="system_root">Системный корень</string>
     <string name="free_of_total">Свободно %1$s из %2$s</string>
     <string name="system_picker">Выбрать в другом приложении</string>
+    <string name="error_title">Ошибка</string>
 </resources>

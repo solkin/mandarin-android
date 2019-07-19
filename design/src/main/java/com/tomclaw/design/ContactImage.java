@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,23 +8,21 @@ import android.util.AttributeSet;
 import com.tomclaw.design.LazyImageView;
 
 /**
- * Created by Solkin on 05.11.2014.
+ * Created by Solkin on 10.11.2014.
  */
-public class ThumbnailView extends AppCompatImageView implements LazyImageView {
+public class ContactImage extends AppCompatImageView implements LazyImageView {
 
-    public ThumbnailView(Context context, AttributeSet attrs) {
+    public ContactImage(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     public void setPlaceholder(int resource) {
-        setScaleType(ScaleType.CENTER);
         setImageResource(resource);
     }
 
     @Override
     public void setBitmap(Bitmap bitmap) {
-        setScaleType(ScaleType.CENTER_CROP);
         setImageBitmap(bitmap);
     }
 

@@ -42,7 +42,7 @@
                 android:paddingRight="14dp"
                 android:paddingBottom="4dp">
 
-                <com.tomclaw.mandarin.main.views.TightTextView
+                <com.tomclaw.design.TightTextView
                     android:id="@+id/out_text"
                     style="@style/Chat.Message" />
 

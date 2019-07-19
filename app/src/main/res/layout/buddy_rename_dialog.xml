@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/dialog_padding"
     android:paddingRight="@dimen/dialog_padding">
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/rename_buddy_description"

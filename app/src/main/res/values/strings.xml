@@ -108,8 +108,6 @@
     <string name="status_message_hint">Change status message…</string>
     <string name="status_message_change_hint">Status message…</string>
     <string name="click_to_connect_hint">Click here to connect</string>
-    <string name="apply">Apply</string>
-    <string name="not_now">Not now</string>
     <string name="clear">Clear</string>
 
     <string name="friendly_name">Nickname</string>
@@ -224,17 +222,6 @@
     <string name="search_buddy_error">Failed to perform search. Please try again later.</string>
     <string name="buddy_search_progress">Search in progress…</string>
     <string name="buddy_search_no_result">No buddies found.</string>
-    <string name="select_age">Age</string>
-    <string name="range_from">from</string>
-    <string name="range_to">to</string>
-    <string name="age_format">%1$d - %2$s</string>
-    <plurals name="buddy_years">
-        <item quantity="zero">%d years</item>
-        <item quantity="one">%d year</item>
-        <item quantity="few">%d years</item>
-        <item quantity="many">%d years</item>
-        <item quantity="other">%d years</item>
-    </plurals>
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_any">No matter</string>
@@ -248,7 +235,6 @@
     <string name="open_dialog">Open dialog</string>
     <string name="defaultGroupName">Main</string>
     <string name="authorizationMsg">Hello! Please add me to your buddylist.</string>
-    <string name="age_any">No matter</string>
 
     <string name="app_version">Version %1$s (%2$d)</string>
     <string name="city_search">City</string>
@@ -320,7 +306,6 @@
     </string>
     <string name="user_info_edit">Edit info</string>
     <string name="edit_user_info_save">Save</string>
-    <string name="date_not_set">Not set</string>
     <string name="avatar_changing_error">An error occurred during the installation of the avatar. Please try another
         image.
     </string>

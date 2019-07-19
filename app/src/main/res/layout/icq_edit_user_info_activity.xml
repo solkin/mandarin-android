@@ -46,20 +46,20 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/buddy_info_avatar_height">
 
-                            <com.tomclaw.mandarin.main.views.ContactImage
+                            <com.tomclaw.design.ContactImage
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/buddy_image"
                                 android:src="@drawable/def_avatar_0"
                                 android:scaleType="centerCrop" />
 
-                            <com.tomclaw.mandarin.main.views.ContactImage
+                            <com.tomclaw.design.ContactImage
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/buddy_image_update"
                                 android:scaleType="centerCrop" />
 
-                            <com.tomclaw.mandarin.main.views.ContactImage
+                            <com.tomclaw.design.ContactImage
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/buddy_image_manual"
@@ -97,7 +97,7 @@
                             android:layout_below="@+id/buddy_image_container"
                             android:weightSum="1">
 
-                            <com.tomclaw.mandarin.main.views.TightTextView
+                            <com.tomclaw.design.TightTextView
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/friendly_name" />
 
@@ -122,7 +122,7 @@
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/first_name" />
 
@@ -142,7 +142,7 @@
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/last_name" />
 
@@ -169,7 +169,7 @@
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/gender" />
 
@@ -191,11 +191,11 @@
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/birth_date" />
 
-                                    <com.tomclaw.mandarin.main.views.DatePickerView
+                                    <com.tomclaw.design.DatePickerView
                                         android:id="@+id/birth_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/city" />
 
@@ -243,7 +243,7 @@
                                     android:paddingRight="0dp"
                                     android:visibility="gone">
 
-                                    <com.tomclaw.mandarin.main.views.TightTextView
+                                    <com.tomclaw.design.TightTextView
                                         style="@style/UserInfoFieldTitle"
                                         android:text="@string/website" />
 
@@ -256,7 +256,7 @@
                                 </LinearLayout>
                             </LinearLayout>
 
-                            <com.tomclaw.mandarin.main.views.TightTextView
+                            <com.tomclaw.design.TightTextView
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/about_me"
                                 android:paddingTop="12dp" />

@@ -18,7 +18,7 @@
         style="@style/ToolbarTheme"
         android:background="@android:color/transparent" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:text="@string/enter_phone_number"
         style="@style/IntroHeaderView"
         android:layout_above="@+id/phone_number_block" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             style="@style/PhoneNumberBlock">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:id="@+id/country_code_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 style="@style/PhoneNumberView" />
         </LinearLayout>
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/country_name_view"
             style="@style/CountryNameView"
             android:layout_width="wrap_content"
@@ -66,14 +66,14 @@
             android:padding="8dp" />
     </LinearLayout>
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/phone_number_faq_view"
         android:layout_above="@+id/privacy_policy_view"
         android:text="@string/phone_number_faq"
         android:paddingBottom="1dp"
         style="@style/PrivacyPolicyView" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/privacy_policy_view"
         android:layout_alignParentBottom="true"
         android:text="@string/privacy_policy"

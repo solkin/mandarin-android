@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -23,8 +23,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.OverScroller;
 import android.widget.Scroller;
-
-import com.tomclaw.mandarin.util.Logger;
 
 public class TouchImageView extends AppCompatImageView {
 
@@ -1274,6 +1272,5 @@ public class TouchImageView extends AppCompatImageView {
     private void printMatrixInfo() {
         float[] n = new float[9];
         matrix.getValues(n);
-        Logger.log("Scale: " + n[Matrix.MSCALE_X] + " TransX: " + n[Matrix.MTRANS_X] + " TransY: " + n[Matrix.MTRANS_Y]);
     }
 }

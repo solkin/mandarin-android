@@ -76,4 +76,5 @@
         <attr name="progressbarColor" format="color" />
         <attr name="progressBarThickness" format="dimension" />
     </declare-styleable>
+
 </resources>

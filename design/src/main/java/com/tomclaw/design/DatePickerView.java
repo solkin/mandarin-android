@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
-
-import com.tomclaw.mandarin.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -52,12 +50,15 @@ public class DatePickerView extends PseudoSpinnerView {
                                 updateText(year, monthOfYear, dayOfMonth);
                             }
                         }, initYear, initMonth, initDay);
-                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel),
+                dialog.setButton(
+                        DialogInterface.BUTTON_NEGATIVE,
+                        getResources().getString(R.string.date_picker_cancel),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                             }
-                        });
+                        }
+                );
                 dialog.show();
             }
         });

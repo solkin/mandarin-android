@@ -34,7 +34,7 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.icq.UserInfoRequest;
-import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.design.ContactImage;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;

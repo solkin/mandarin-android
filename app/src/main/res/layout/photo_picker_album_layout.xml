@@ -19,7 +19,7 @@
         android:background="#7f000000"
         android:orientation="horizontal">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/album_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -32,7 +32,7 @@
             android:textColor="#ffffffff"
             android:textSize="13dp" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/album_count"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

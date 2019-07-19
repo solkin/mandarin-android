@@ -77,7 +77,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
         setDrawerListener(drawerToggle);
 
         // Buttons.
-        final Button connectionButton = (Button) findViewById(R.id.connection_button);
+        final Button connectionButton = findViewById(R.id.connection_button);
         final View.OnClickListener connectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +100,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
                 });
             }
         };
-        Button addAccountButton = (Button) findViewById(R.id.add_account_button);
+        Button addAccountButton = findViewById(R.id.add_account_button);
         addAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,7 +110,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
             }
         });
         // Accounts list.
-        ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
+        ListView accountsList = findViewById(R.id.accounts_list_view);
         // Creating adapter for accounts list.
         accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
         accountsAdapter.setOnAccountClickListener(new AccountsAdapter.OnAccountClickListener() {
@@ -236,7 +236,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
 
     public void showConnectionDialog(final String accountType, final String userId) {
         View connectionView = LayoutInflater.from(activity).inflate(R.layout.connect_dialog, null);
-        final Spinner statusSpinner = (Spinner) connectionView.findViewById(R.id.status_spinner);
+        final Spinner statusSpinner = connectionView.findViewById(R.id.status_spinner);
 
         final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
                 getContext(), accountType, StatusUtil.getConnectStatuses(accountType));
@@ -267,8 +267,8 @@ public class AccountsDrawerLayout extends DrawerLayout {
     public void showChangeStatusDialog(final String accountType, final String userId,
                                        int userStatusIndex, String userStatusTitle, String userStatusMessage) {
         View changeStatusView = LayoutInflater.from(activity).inflate(R.layout.change_status_dialog, null);
-        final Spinner statusSpinner = (Spinner) changeStatusView.findViewById(R.id.status_spinner);
-        final EditText statusMessage = (EditText) changeStatusView.findViewById(R.id.status_message_edit);
+        final Spinner statusSpinner = changeStatusView.findViewById(R.id.status_spinner);
+        final EditText statusMessage = changeStatusView.findViewById(R.id.status_message_edit);
 
         final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
                 getContext(), accountType, StatusUtil.getSetupStatuses(accountType));

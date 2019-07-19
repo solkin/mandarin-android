@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/photo_view_background_color">
 
-    <com.tomclaw.mandarin.main.views.TouchImageView
+    <com.tomclaw.design.TouchImageView
         android:id="@+id/touch_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -23,7 +23,7 @@
         style="@style/ToolbarTheme"
         android:background="@color/photo_view_action_bar_color" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/photo_view_failed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

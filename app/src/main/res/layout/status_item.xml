@@ -14,7 +14,7 @@
         android:id="@+id/status_icon"
         android:contentDescription="@string/buddy_status" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/status_name"

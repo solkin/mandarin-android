@@ -10,14 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/buddy_info_avatar_height">
 
-        <com.tomclaw.mandarin.main.views.ContactImage
+        <com.tomclaw.design.ContactImage
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/buddy_image"
             android:src="@drawable/def_avatar"
             android:scaleType="centerCrop" />
 
-        <com.tomclaw.mandarin.main.views.ContactImage
+        <com.tomclaw.design.ContactImage
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/buddy_image_update"
@@ -33,7 +33,7 @@
         android:paddingRight="0dp"
         android:background="?info_block_background">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/buddy_nick"
@@ -41,7 +41,7 @@
             android:textSize="20sp"
             android:textColor="?info_block_text" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/buddy_id"

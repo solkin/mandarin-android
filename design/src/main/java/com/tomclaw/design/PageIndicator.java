@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.support.v4.view.ViewPager;
 

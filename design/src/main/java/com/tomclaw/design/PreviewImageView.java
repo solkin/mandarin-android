@@ -1,13 +1,10 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-
-import com.tomclaw.design.LazyImageView;
-import com.tomclaw.mandarin.R;
 
 /**
  * Created by Solkin on 18.10.2014.

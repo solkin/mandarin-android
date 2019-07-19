@@ -54,7 +54,7 @@
                     android:src="@drawable/video_play"
                     android:layout_centerInParent="true" />
 
-                <com.tomclaw.mandarin.main.views.CircleProgressBar
+                <com.tomclaw.design.CircleProgressBar
                     android:id="@+id/inc_progress"
                     android:layout_width="56dp"
                     android:layout_height="56dp"

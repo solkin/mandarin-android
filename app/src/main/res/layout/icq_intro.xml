@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/logo" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tiny_icq_client"

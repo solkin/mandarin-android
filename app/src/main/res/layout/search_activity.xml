@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:padding="12dp">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 style="@style/FormHeader"
                 android:text="@string/buddy_info_search" />
 
@@ -47,7 +47,7 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 style="@style/FormHeader"
                 android:layout_marginTop="10dp"
                 android:text="@string/age_and_gender_search"
@@ -59,7 +59,7 @@
                 android:orientation="horizontal"
                 android:visibility="gone">
 
-                <com.tomclaw.mandarin.main.views.AgePickerView
+                <com.tomclaw.design.AgePickerView
                     android:id="@+id/age_range"
                     style="?spinnerStyle"
                     android:layout_width="match_parent"

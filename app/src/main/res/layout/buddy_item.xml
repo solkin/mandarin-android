@@ -13,7 +13,7 @@
         android:layout_width="0dp"
         android:orientation="horizontal">
 
-        <com.tomclaw.mandarin.main.views.ContactBadge
+        <com.tomclaw.design.ContactBadge
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:id="@+id/buddy_badge"
@@ -28,7 +28,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="0dp">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/buddy_nick"
@@ -38,7 +38,7 @@
                 android:textSize="17sp"
                 android:textColor="?attr/buddy_primary_color" />
 
-            <com.tomclaw.mandarin.main.views.ScrollingTextView
+            <com.tomclaw.design.ScrollingTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/buddy_status_message"
@@ -59,7 +59,7 @@
         android:visibility="gone"
         android:id="@+id/draft_indicator">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
@@ -84,7 +84,7 @@
         android:visibility="gone"
         android:id="@+id/counter_layout">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/counter_text"
             android:layout_width="wrap_content"
             android:layout_height="26dp"

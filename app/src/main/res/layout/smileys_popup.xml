@@ -5,13 +5,13 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <com.tomclaw.mandarin.main.views.FixedViewPager
+    <com.tomclaw.design.FixedViewPager
         android:id="@+id/smileys_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <com.tomclaw.mandarin.main.views.CirclePageIndicator
+    <com.tomclaw.design.CirclePageIndicator
         android:id="@+id/circle_pager"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"

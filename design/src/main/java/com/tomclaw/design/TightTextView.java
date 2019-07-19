@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;

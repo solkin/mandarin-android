@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical">
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/buddy_nick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:scaleType="fitCenter"
             android:contentDescription="@string/buddy_status" />
 
-        <com.tomclaw.mandarin.main.views.ScrollingTextView
+        <com.tomclaw.design.ScrollingTextView
             android:id="@+id/buddy_status_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

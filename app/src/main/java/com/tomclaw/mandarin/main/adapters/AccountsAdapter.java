@@ -23,7 +23,7 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.StatusUtil;
-import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.design.ContactImage;
 import com.tomclaw.mandarin.util.Logger;
 
 /**

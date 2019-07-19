@@ -15,7 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/docs_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:textColor="?android:textColorPrimary"
             android:textSize="18sp" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:id="@+id/docs_item_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

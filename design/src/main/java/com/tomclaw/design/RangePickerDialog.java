@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main;
+package com.tomclaw.design;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,11 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import com.tomclaw.mandarin.R;
-
 /**
  * Created by Solkin on 11.07.2014.
  */
+@SuppressWarnings("WeakerAccess")
 public class RangePickerDialog extends AlertDialog {
 
     private NumberPicker pickerMin;

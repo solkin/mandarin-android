@@ -13,7 +13,7 @@
         android:clickable="true"
         android:background="@drawable/user_item_block_selector">
 
-        <com.tomclaw.mandarin.main.views.ContactImage
+        <com.tomclaw.design.ContactImage
             android:contentDescription="@string/account_info"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -27,7 +27,7 @@
             android:orientation="vertical"
             android:layout_gravity="center_vertical">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/user_nick"
@@ -35,7 +35,7 @@
                 android:textSize="16sp"
                 android:textColor="@color/user_item_nick_color" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -66,7 +66,7 @@
             android:src="@drawable/status_icq_online"
             android:contentDescription="@string/buddy_status" />
 
-        <com.tomclaw.mandarin.main.views.ScrollingTextView
+        <com.tomclaw.design.ScrollingTextView
             android:id="@+id/user_status_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

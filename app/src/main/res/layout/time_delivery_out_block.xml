@@ -10,7 +10,7 @@
     android:paddingRight="0dp"
     android:paddingEnd="0dp">
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/out_time"

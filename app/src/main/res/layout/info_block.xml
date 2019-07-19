@@ -16,7 +16,7 @@
             android:background="@drawable/block_info_divider_gradient" />
     </LinearLayout>
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/info_base_title"
         android:text="@string/info_base"
         style="@style/BuddyInfoBlockHeader"
@@ -74,7 +74,7 @@
         layout="@layout/info_footer"
         android:id="@+id/info_base_footer" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/info_extended_title"
         android:text="@string/info_extended"
         style="@style/BuddyInfoBlockHeader"
@@ -97,7 +97,7 @@
         layout="@layout/info_footer"
         android:id="@+id/info_extended_footer" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/info_about_me_title"
         android:text="@string/about_me"
         style="@style/BuddyInfoBlockHeader"
@@ -109,7 +109,7 @@
         android:id="@+id/about_me"
         android:visibility="gone">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/info_value" />

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/logo" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tiny_icq_client"
@@ -68,7 +68,7 @@
                 android:text="@string/all_projects" />
         </LinearLayout>
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="27dp"
@@ -79,7 +79,7 @@
             android:textColor="@color/about_text_color"
             android:fontFamily="sans-serif" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/app_version"
@@ -88,7 +88,7 @@
             android:fontFamily="sans-serif-light"
             android:textColor="@color/about_text_color" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

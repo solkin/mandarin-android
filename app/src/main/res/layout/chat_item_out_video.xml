@@ -55,7 +55,7 @@
                     android:src="@drawable/video_play"
                     android:layout_centerInParent="true" />
 
-                <com.tomclaw.mandarin.main.views.CircleProgressBar
+                <com.tomclaw.design.CircleProgressBar
                     android:id="@+id/out_progress"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
@@ -83,7 +83,7 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/chat_error" />
 
-                    <com.tomclaw.mandarin.main.views.TightTextView
+                    <com.tomclaw.design.TightTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/out_file_error"

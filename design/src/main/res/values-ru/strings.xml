@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apply">Применить</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="age_any">Любой</string>
+    <string name="select_age">Выберите возраст</string>
+    <string name="range_from">от</string>
+    <string name="range_to">до</string>
+    <string name="age_format">%1$d - %2$s</string>
+    <plurals name="buddy_years">
+        <item quantity="zero">%d лет</item>
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="many">%d лет</item>
+        <item quantity="other">%d года</item>
+    </plurals>
+    <string name="date_not_set">Не установлено</string>
+    <string name="date_picker_cancel">Отмена</string>
+</resources>

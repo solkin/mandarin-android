@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.main.views;
+package com.tomclaw.design;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -6,8 +6,6 @@ import android.graphics.PorterDuff;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-
-import com.tomclaw.mandarin.R;
 
 /**
  * Created by solkin on 29.05.15.

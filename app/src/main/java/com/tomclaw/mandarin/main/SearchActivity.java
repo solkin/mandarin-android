@@ -17,7 +17,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
-import com.tomclaw.mandarin.main.views.AgePickerView;
+import com.tomclaw.design.AgePickerView;
 
 /**
  * Created by Igor on 26.06.2014.

@@ -17,7 +17,7 @@
             android:layout_height="fill_parent"
             android:id="@+id/listView" />
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColor="#808080"

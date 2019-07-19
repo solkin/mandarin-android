@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.tomclaw.mandarin.main.views.ContactBadge
+            <com.tomclaw.design.ContactBadge
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:id="@+id/buddy_image"
@@ -33,7 +33,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="0dp">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/buddy_nick"
@@ -43,7 +43,7 @@
                 android:textSize="17sp"
                 android:textColor="?attr/buddy_primary_color" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/buddy_short_info"
@@ -54,7 +54,7 @@
                 android:textColor="?attr/buddy_secondary_color"
                 android:fontFamily="sans-serif-light" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/online_indicator"

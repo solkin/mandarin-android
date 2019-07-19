@@ -32,7 +32,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
-import com.tomclaw.mandarin.main.views.TouchImageView;
+import com.tomclaw.design.TouchImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;

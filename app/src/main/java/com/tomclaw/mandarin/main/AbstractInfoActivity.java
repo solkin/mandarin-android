@@ -37,7 +37,7 @@ import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
-import com.tomclaw.mandarin.main.views.ContactImage;
+import com.tomclaw.design.ContactImage;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 

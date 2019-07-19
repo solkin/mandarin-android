@@ -41,7 +41,7 @@
             android:orientation="horizontal"
             android:layout_gravity="center">
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:id="@+id/done_button_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
@@ -56,7 +56,7 @@
                 android:textStyle="bold"
                 android:layout_marginRight="10dp" />
 
-            <com.tomclaw.mandarin.main.views.TightTextView
+            <com.tomclaw.design.TightTextView
                 android:textSize="14dp"
                 android:textColor="#ffffff"
                 android:gravity="center"

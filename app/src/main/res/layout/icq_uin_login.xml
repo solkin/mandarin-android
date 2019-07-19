@@ -26,7 +26,7 @@
         android:paddingRight="32dp"
         android:layout_centerVertical="true">
 
-        <com.tomclaw.mandarin.main.views.TightTextView
+        <com.tomclaw.design.TightTextView
             android:text="@string/fill_the_fields_below"
             android:paddingBottom="7dp"
             style="@style/IntroHeaderView" />
@@ -47,7 +47,7 @@
             style="@style/IntroEditField" />
     </LinearLayout>
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/register_using_phone_view"
         android:layout_alignParentBottom="true"
         android:text="@string/register_using_phone"

@@ -337,7 +337,7 @@ public class DocumentPickerActivity extends AppCompatActivity {
 
     private void showErrorBox(String error) {
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.app_name))
+                .setTitle(getString(R.string.error_title))
                 .setMessage(error)
                 .setPositiveButton(R.string.got_it, null)
                 .show();

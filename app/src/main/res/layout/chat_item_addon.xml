@@ -8,7 +8,7 @@
     android:orientation="horizontal"
     android:paddingTop="5dp">
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/from_message_id"
         android:layout_width="wrap_content"
         android:layout_height="16dp"
@@ -24,7 +24,7 @@
         tools:ignore="SmallSp"
         tools:text="6357668774908330024" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -38,7 +38,7 @@
         android:visibility="visible"
         tools:ignore="HardcodedText" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/till_message_id"
         android:layout_width="wrap_content"
         android:layout_height="16dp"

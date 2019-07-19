@@ -14,4 +14,5 @@
     <string name="system_root">System Root</string>
     <string name="free_of_total">Free %1$s of %2$s</string>
     <string name="system_picker">Select file in another picker</string>
+    <string name="error_title">Error</string>
 </resources>

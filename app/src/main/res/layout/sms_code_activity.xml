@@ -18,7 +18,7 @@
         style="@style/ToolbarTheme"
         android:background="@android:color/transparent" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/sms_code_header_view"
@@ -39,7 +39,7 @@
         android:layout_centerHorizontal="true"
         android:imeOptions="actionDone" />
 
-    <com.tomclaw.mandarin.main.views.TightTextView
+    <com.tomclaw.design.TightTextView
         android:id="@+id/resend_code_view"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

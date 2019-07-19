@@ -7,7 +7,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
 import com.tomclaw.design.BubbleImageView;
-import com.tomclaw.mandarin.main.views.CircleProgressBar;
+import com.tomclaw.design.CircleProgressBar;
 
 /**
  * Created by Solkin on 30.11.2014.

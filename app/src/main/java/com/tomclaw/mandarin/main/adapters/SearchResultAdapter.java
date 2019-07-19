@@ -8,7 +8,7 @@ import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
-import com.tomclaw.mandarin.main.views.ContactBadge;
+import com.tomclaw.design.ContactBadge;
 import com.tomclaw.helpers.TimeHelper;
 
 /**

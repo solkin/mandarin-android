@@ -30,7 +30,7 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
-import com.tomclaw.mandarin.main.views.ContactBadge;
+import com.tomclaw.design.ContactBadge;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.helpers.TimeHelper;
 

@@ -1,15 +1,10 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,24 +17,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.im.StrictBuddy;
-import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
-import com.tomclaw.mandarin.main.tasks.AccountProviderTask;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
-import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.preferences.PreferenceHelper;
@@ -48,8 +37,6 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.utils.Util;
 
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -188,28 +175,6 @@ public class MainActivity extends ChiefActivity {
             }
         });
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
-
-        checkNfcIntent();
-    }
-
-    private void checkNfcIntent() {
-        Intent intent = getIntent();
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] rawMessages = intent.getParcelableArrayExtra(
-                    NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage message = (NdefMessage) rawMessages[0];
-            for (NdefRecord record : message.getRecords()) {
-                // Check for only Mandarin's mime-type record and media type.
-                if (record.getTnf() == NdefRecord.TNF_MIME_MEDIA &&
-                        Arrays.equals(record.getType(), Settings.MIME_TYPE.getBytes())) {
-                    String json = new String(record.getPayload());
-                    NfcBuddyInfo nfcBuddyInfo = GsonSingleton.getInstance().fromJson(json, NfcBuddyInfo.class);
-                    BuddyInfoAccountCallback callback = new BuddyInfoAccountCallback(this, nfcBuddyInfo);
-                    AccountProviderTask task = new AccountProviderTask(this, callback);
-                    TaskExecutor.getInstance().execute(task);
-                }
-            }
-        }
     }
 
     @Override
@@ -400,36 +365,4 @@ public class MainActivity extends ChiefActivity {
         }
     }
 
-    private class BuddyInfoAccountCallback implements AccountProviderTask.AccountProviderCallback {
-
-        private final NfcBuddyInfo nfcBuddyInfo;
-        private final WeakReference<Context> weakContext;
-
-        private BuddyInfoAccountCallback(Context context, NfcBuddyInfo nfcBuddyInfo) {
-            this.nfcBuddyInfo = nfcBuddyInfo;
-            this.weakContext = new WeakReference<>(context);
-        }
-
-        @Override
-        public void onAccountSelected(int accountDbId) {
-            Logger.log("Account selected: " + accountDbId);
-            Context context = weakContext.get();
-            if (context != null) {
-                context.startActivity(new Intent(context, BuddyInfoActivity.class)
-                        .putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, accountDbId)
-                        .putExtra(BuddyInfoRequest.BUDDY_ID, nfcBuddyInfo.getBuddyId())
-                        .putExtra(BuddyInfoRequest.BUDDY_NICK, nfcBuddyInfo.getBuddyNick())
-                );
-            }
-        }
-
-        @Override
-        public void onNoActiveAccounts() {
-            Logger.log("No active accounts.");
-            Context context = weakContext.get();
-            if (context != null) {
-                Toast.makeText(context, R.string.no_active_accounts, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 }

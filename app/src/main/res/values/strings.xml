@@ -312,7 +312,6 @@
     <string name="reset">Reset</string>
     <string name="buddies">Buddies</string>
     <string name="invalid_file">Sorry, this file (text) cannot be shared</string>
-    <string name="nfc_share">NFC</string>
     <string name="close_without_user_info_save">Quit without saving changes?</string>
 
     <string name="buddy_ignore">Ignore messages</string>

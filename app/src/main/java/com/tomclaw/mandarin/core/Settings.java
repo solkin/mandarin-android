@@ -20,7 +20,6 @@ public class Settings {
     public static boolean FORCE_RESTART = true;
     public static String DEVELOPER_NAME = "TomClaw";
     public static String LOG_TAG = "Mandarin";
-    public static final String MIME_TYPE = "application/com.tomclaw.mandarin";
     public static String DB_NAME = "mandarin_db";
     public static int DB_VERSION = 7;
     public static String GLOBAL_AUTHORITY = "com.tomclaw.mandarin.core.GlobalProvider";

@@ -3,10 +3,6 @@ package com.tomclaw.mandarin.main;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -22,6 +18,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tomclaw.design.ContactImage;
 import com.tomclaw.helpers.AppsMenuHelper;
 import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;
@@ -33,19 +30,17 @@ import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.core.ServiceTask;
-import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
-import com.tomclaw.design.ContactImage;
-import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 
 /**
  * Created by solkin on 12/26/13.
  */
-public abstract class AbstractInfoActivity extends ChiefActivity
-        implements ChiefActivity.CoreServiceListener, NfcAdapter.CreateNdefMessageCallback {
+public abstract class AbstractInfoActivity
+        extends ChiefActivity
+        implements ChiefActivity.CoreServiceListener {
 
     private int accountDbId;
     private String accountType;
@@ -61,8 +56,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     private boolean ignored;
 
     private TextView buddyNickView;
-
-    private NfcAdapter mNfcAdapter;
 
     private boolean isAvatarImmutable = false;
 
@@ -152,28 +145,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 container.startAnimation(resizeAnimation);
             }
         });
-
-        // Check for available NFC Adapter
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter != null) {
-            // Register callback
-            mNfcAdapter.setNdefPushMessageCallback(this, this);
-        }
-    }
-
-    @Override
-    public NdefMessage createNdefMessage(NfcEvent event) {
-        NfcBuddyInfo nfcBuddyInfo = new NfcBuddyInfo(accountType, buddyId, buddyNick, buddyStatus);
-        return new NdefMessage(
-                new NdefRecord[]{
-                        createMime(Settings.MIME_TYPE, GsonSingleton.getInstance().toJson(nfcBuddyInfo)),
-                        NdefRecord.createApplicationRecord(getPackageName())
-                });
-    }
-
-    private NdefRecord createMime(String mimeType, String text) {
-        return new NdefRecord(
-                NdefRecord.TNF_MIME_MEDIA, mimeType.getBytes(), new byte[0], text.getBytes());
     }
 
     protected abstract int getLayout();

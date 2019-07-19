@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/user_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/user_container"
+        android:background="@drawable/user_item_block_selector"
         android:clickable="true"
-        android:background="@drawable/user_item_block_selector">
+        android:orientation="horizontal">
 
         <com.tomclaw.design.ContactImage
-            android:contentDescription="@string/account_info"
+            android:id="@+id/user_badge"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:id="@+id/user_badge"
-            android:src="@drawable/def_avatar_0x48"
-            android:layout_margin="12dp" />
+            android:layout_margin="12dp"
+            android:contentDescription="@string/account_info"
+            android:src="@drawable/def_avatar_0x48" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
             <com.tomclaw.design.TightTextView
+                android:id="@+id/user_nick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/user_nick"
                 android:fontFamily="sans-serif"
-                android:textSize="16sp"
-                android:textColor="@color/user_item_nick_color" />
+                android:textColor="@color/user_item_nick_color"
+                android:textSize="16sp" />
 
             <com.tomclaw.design.TightTextView
+                android:id="@+id/user_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:id="@+id/user_id"
                 android:fontFamily="sans-serif-light"
-                android:textSize="14sp"
-                android:textColor="@color/user_item_id_color" />
+                android:textColor="@color/user_item_id_color"
+                android:textSize="14sp" />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <View
@@ -52,32 +53,33 @@
         android:background="@color/user_item_divider_color" />
 
     <LinearLayout
+        android:id="@+id/status_container"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:orientation="horizontal"
+        android:background="@drawable/user_item_block_selector"
         android:gravity="center_vertical"
-        android:id="@+id/status_container"
-        android:background="@drawable/user_item_block_selector">
+        android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/status_icon"
             android:layout_width="72dp"
             android:layout_height="wrap_content"
-            android:id="@+id/status_icon"
-            android:src="@drawable/status_icq_online"
-            android:contentDescription="@string/buddy_status" />
+            android:contentDescription="@string/buddy_status"
+            android:src="@drawable/status_icq_online" />
 
         <com.tomclaw.design.ScrollingTextView
             android:id="@+id/user_status_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
-            android:fontFamily="sans-serif-light"
-            android:textSize="16sp"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/status_online"
             android:textColor="@color/user_item_status_color"
             android:textColorHint="@color/user_item_status_hint_color"
-            android:text="@string/status_online" />
+            android:textSize="16sp" />
+
     </LinearLayout>
 
     <View
@@ -89,4 +91,5 @@
         android:layout_width="wrap_content"
         android:layout_height="6dp"
         android:background="@drawable/user_item_divider_gradient" />
+
 </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <bool name="default_circle_indicator_centered">true</bool>
     <color name="default_circle_indicator_fill_color">#FFAAAAAA</color>
     <color name="default_circle_indicator_page_color">#FFAAAAAA</color>
@@ -14,6 +15,7 @@
         <!-- Style of the circle indicator. -->
         <attr name="vpiCirclePageIndicatorStyle" format="reference" />
     </declare-styleable>
+
     <declare-styleable name="CirclePageIndicator">
         <!-- Whether or not the indicators should be centered. -->
         <attr name="centered" format="boolean" />
@@ -32,4 +34,5 @@
         <!-- Width of the stroke used to draw the circles. -->
         <attr name="strokeWidth" format="dimension" />
     </declare-styleable>
+
 </resources>

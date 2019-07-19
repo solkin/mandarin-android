@@ -1,103 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:background="?android:attr/activatedBackgroundIndicator"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
     android:paddingLeft="5dp"
     android:paddingTop="5dp"
-    android:paddingRight="5dp"
-    android:descendantFocusability="blocksDescendants">
+    android:paddingRight="5dp">
 
     <include layout="@layout/chat_item_date" />
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingEnd="5dp"
-            android:paddingRight="5dp"
+            android:orientation="vertical"
             android:paddingStart="0dp"
-            android:paddingLeft="0dp">
+            android:paddingLeft="0dp"
+            android:paddingEnd="5dp"
+            android:paddingRight="5dp">
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:id="@+id/inc_bubble_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:orientation="horizontal"
                 android:paddingLeft="14dp"
-                android:paddingRight="6dp"
                 android:paddingTop="3dp"
-                android:paddingBottom="4dp"
-                android:id="@+id/inc_bubble_back"
-                android:layout_gravity="start">
+                android:paddingRight="6dp"
+                android:paddingBottom="4dp">
 
                 <ImageView
                     android:id="@+id/inc_file_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/files_unknown"
                     android:layout_gravity="center_vertical"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp"
                     android:paddingLeft="5dp"
-                    android:paddingRight="10dp" />
+                    android:paddingTop="7dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="7dp"
+                    android:src="@drawable/files_unknown" />
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
 
                     <com.tomclaw.design.TightTextView
                         android:id="@+id/inc_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:minWidth="@dimen/file_min_width"
-                        android:textSize="16sp"
-                        android:paddingBottom="1dp"
                         android:includeFontPadding="false"
                         android:lines="1"
-                        android:singleLine="true" />
+                        android:minWidth="@dimen/file_min_width"
+                        android:paddingBottom="1dp"
+                        android:singleLine="true"
+                        android:textSize="16sp" />
 
                     <com.tomclaw.design.TightTextView
                         android:id="@+id/inc_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
                         android:fontFamily="sans-serif-light"
+                        android:includeFontPadding="false"
                         android:paddingTop="1dp"
-                        android:visibility="gone"
-                        android:includeFontPadding="false" />
+                        android:textSize="14sp"
+                        android:visibility="gone" />
 
                     <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/inc_progress"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
                         android:layout_marginTop="6dp"
-                        android:layout_marginBottom="4dp"
                         android:layout_marginRight="2dp"
-                        custom:rcBackgroundPadding="0dp"
-                        custom:rcRadius="4dp"
-                        custom:rcProgressColor="@color/progress_fore_color"
+                        android:layout_marginBottom="4dp"
                         custom:rcBackgroundColor="@color/progress_background_color"
+                        custom:rcBackgroundPadding="0dp"
+                        custom:rcMax="100"
                         custom:rcProgress="0"
-                        custom:rcMax="100" />
+                        custom:rcProgressColor="@color/progress_fore_color"
+                        custom:rcRadius="4dp" />
+
                 </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
 
         <include layout="@layout/time_inc_block" />
+
     </LinearLayout>
 
     <include layout="@layout/chat_item_addon" />
+
 </LinearLayout>

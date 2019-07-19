@@ -34,9 +34,9 @@
                         android:id="@+id/button_switcher"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
                         android:inAnimation="@android:anim/fade_in"
                         android:outAnimation="@android:anim/fade_out"
                         android:paddingBottom="22dp">
@@ -45,8 +45,8 @@
                             android:id="@+id/add_buddy_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="22dp"
                             android:layout_marginRight="18dp"
+                            android:layout_marginBottom="22dp"
                             android:src="@drawable/ic_add_contact"
                             app:fabSize="normal" />
 
@@ -54,11 +54,13 @@
                             android:id="@+id/open_dialog_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="22dp"
                             android:layout_marginRight="18dp"
+                            android:layout_marginBottom="22dp"
                             android:src="@drawable/ic_chat"
                             app:fabSize="normal" />
+
                     </ViewSwitcher>
+
                 </RelativeLayout>
 
                 <include layout="@layout/info_status" />
@@ -77,9 +79,13 @@
                         android:layout_height="wrap_content"
                         android:padding="20dp" />
                 </LinearLayout>
+
             </LinearLayout>
+
         </ScrollView>
 
         <include layout="@layout/toolbar_shadow_view" />
+
     </FrameLayout>
+
 </LinearLayout>

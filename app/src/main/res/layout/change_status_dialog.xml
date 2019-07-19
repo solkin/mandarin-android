@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/dialog_padding"
+    android:paddingTop="16dp"
     android:paddingRight="@dimen/dialog_padding">
 
     <com.tomclaw.design.TightTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
         android:text="@string/select_status_description"
-        android:textSize="16sp"
-        android:paddingBottom="12dp" />
+        android:textSize="16sp" />
 
     <Spinner
+        android:id="@+id/status_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/status_spinner"
         android:spinnerMode="dialog" />
 
     <EditText
+        android:id="@+id/status_message_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/status_message_change_hint"
         android:fontFamily="sans-serif-light"
-        android:textSize="17sp"
-        android:id="@+id/status_message_edit" />
+        android:hint="@string/status_message_change_hint"
+        android:textSize="17sp" />
 
 </LinearLayout>

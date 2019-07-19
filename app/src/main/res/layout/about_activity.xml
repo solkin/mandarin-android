@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/about_background_color">
+    android:background="@color/about_background_color"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -26,19 +25,20 @@
         <com.tomclaw.design.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:includeFontPadding="false"
+            android:padding="5dp"
             android:text="@string/tiny_icq_client"
             android:textColor="#ffffff"
-            android:textSize="14dp"
-            android:fontFamily="sans-serif-light"
-            android:padding="5dp"
-            android:includeFontPadding="false" />
+            android:textSize="14dp" />
+
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:orientation="vertical"
         android:paddingBottom="28dp">
 
         <LinearLayout
@@ -47,57 +47,60 @@
             android:orientation="vertical">
 
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
                 android:id="@+id/rate_application"
                 style="@style/Button.Orange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginBottom="16dp"
+                android:layout_weight="1"
                 android:text="@string/rate_application" />
 
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
                 android:id="@+id/all_projects"
                 style="@style/Button.White"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_weight="1"
                 android:text="@string/all_projects" />
+
         </LinearLayout>
 
         <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="27dp"
+            android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/tomclaw_software"
-            android:textSize="14sp"
-            android:textStyle="bold"
             android:textColor="@color/about_text_color"
-            android:fontFamily="sans-serif" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <com.tomclaw.design.TightTextView
+            android:id="@+id/app_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/app_version"
-            android:gravity="center"
-            android:textSize="12sp"
             android:fontFamily="sans-serif-light"
-            android:textColor="@color/about_text_color" />
+            android:gravity="center"
+            android:textColor="@color/about_text_color"
+            android:textSize="12sp" />
 
         <com.tomclaw.design.TightTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:text="@string/developer_info"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-light"
             android:textColor="@color/about_subtext_color"
-            android:gravity="center" />
+            android:textSize="12sp" />
+
     </LinearLayout>
+
 </LinearLayout>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme">
 
         <include layout="@layout/chat_toolbar_layout" />
+
     </android.support.v7.widget.Toolbar>
 
     <FrameLayout
@@ -17,91 +17,95 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/chat_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/chat_root">
+            android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/chat_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
-                android:paddingBottom="10dp"
+                android:layout_weight="1"
+                android:choiceMode="multipleChoiceModal"
                 android:clipToPadding="false"
-                android:id="@+id/chat_list"
+                android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
                 android:fastScrollEnabled="false"
-                android:divider="@android:color/transparent"
-                android:transcriptMode="normal"
+                android:paddingBottom="10dp"
                 android:stackFromBottom="true"
-                android:layout_weight="1"
-                android:choiceMode="multipleChoiceModal" />
+                android:transcriptMode="normal" />
 
             <View
-                android:background="?attr/chat_separator"
                 android:layout_width="match_parent"
-                android:layout_height="1px" />
+                android:layout_height="1px"
+                android:background="?attr/chat_separator" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?attr/chat_input_background"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
                 <ImageButton
+                    android:id="@+id/smileys_button"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
-                    android:id="@+id/smileys_button"
                     android:layout_gravity="center_horizontal|bottom"
-                    android:src="@drawable/ic_insert_emoticon"
-                    android:tint="?chat_buttons_tint"
-                    android:scaleType="center"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:padding="9dp" />
+                    android:padding="9dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_insert_emoticon"
+                    android:tint="?chat_buttons_tint" />
 
                 <EditText
+                    android:id="@+id/message_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/message_text"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="@string/enter_your_message"
-                    android:background="@drawable/chat_edit_background"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:inputType="textCapSentences|textMultiLine"
+                    android:background="@drawable/chat_edit_background"
                     android:ems="10"
-                    android:maxLines="4"
-                    android:textSize="17sp"
+                    android:hint="@string/enter_your_message"
                     android:imeOptions="flagNoExtractUi"
-                    android:minHeight="32dp" />
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLines="4"
+                    android:minHeight="32dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="0dp"
+                    android:textSize="17sp" />
 
                 <ImageButton
+                    android:id="@+id/send_button"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
-                    android:id="@+id/send_button"
                     android:layout_gravity="center_horizontal|bottom"
-                    android:src="@drawable/ic_send"
-                    android:tint="?chat_buttons_tint"
-                    android:scaleType="center"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:padding="9dp" />
+                    android:padding="9dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_send"
+                    android:tint="?chat_buttons_tint" />
+
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
                 android:id="@+id/smileys_footer"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/init_keyboard_height"
                 android:background="@android:color/transparent"
+                android:orientation="vertical"
                 android:visibility="gone" />
+
         </LinearLayout>
 
         <include layout="@layout/toolbar_shadow_view" />
+
     </FrameLayout>
+
 </LinearLayout>

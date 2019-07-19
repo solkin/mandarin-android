@@ -9,6 +9,8 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
+import com.tomclaw.design.LazyImageView;
+
 /**
  * Created by Solkin on 10.11.2014.
  */

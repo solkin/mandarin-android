@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created with IntelliJ IDEA.

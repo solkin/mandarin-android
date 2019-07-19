@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
+import com.tomclaw.design.LazyImageView;
 import com.tomclaw.mandarin.R;
 
 /**

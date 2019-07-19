@@ -19,9 +19,9 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.ArrayList;
 import java.util.List;

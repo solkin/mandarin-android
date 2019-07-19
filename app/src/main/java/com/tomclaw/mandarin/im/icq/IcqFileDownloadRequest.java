@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -22,10 +24,8 @@ import com.tomclaw.mandarin.core.exceptions.MessageNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

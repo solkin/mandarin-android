@@ -3,11 +3,11 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

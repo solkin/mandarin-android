@@ -6,9 +6,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
+import com.tomclaw.helpers.FileHelper;
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
-import com.tomclaw.mandarin.util.FileHelper;
-import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created by Solkin on 30.11.2014.

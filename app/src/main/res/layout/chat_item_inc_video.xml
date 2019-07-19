@@ -36,7 +36,7 @@
                 android:id="@+id/inc_bubble_back"
                 android:layout_gravity="start">
 
-                <com.tomclaw.mandarin.main.views.BubbleImageView
+                <com.tomclaw.design.BubbleImageView
                     android:id="@+id/inc_preview_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

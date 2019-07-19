@@ -4,10 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.FileHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.io.File;
 import java.io.FileInputStream;

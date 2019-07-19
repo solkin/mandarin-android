@@ -28,7 +28,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
@@ -45,6 +44,7 @@ import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

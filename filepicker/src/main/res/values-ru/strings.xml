@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="access_error">Ошибка доступа</string>
+    <string name="file_upload_limit">Размер файла должен быть не более %1$s</string>
+    <string name="select_file">Выберите файл</string>
+    <string name="usb_active">USB передача данных активна</string>
+    <string name="not_mounted">Накопитель не подключен</string>
+    <string name="no_files">Здесь пока нет файлов…</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="got_it">Понятно</string>
+    <string name="sd_card">SD карта</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
+    <string name="external_storage">Внешнее хранилище</string>
+    <string name="system_root">Системный корень</string>
+    <string name="free_of_total">Свободно %1$s из %2$s</string>
+    <string name="system_picker">Выбрать в другом приложении</string>
+</resources>

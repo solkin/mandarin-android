@@ -1,1 +1,1 @@
-include ':app', ':smileys'
+include ':app', ':smileys', ':filepicker', ':helpers', ':design', ':preferences'

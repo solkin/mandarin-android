@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
 

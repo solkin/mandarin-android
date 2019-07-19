@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bytes">%d B</string>
+    <string name="kibibytes">%.1f КБ</string>
+    <string name="mibibytes">%.1f МБ</string>
+    <string name="gigibytes">%.1f ГБ</string>
+</resources>

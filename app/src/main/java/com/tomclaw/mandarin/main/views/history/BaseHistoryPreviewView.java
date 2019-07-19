@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.main.ChatHistoryItem;
-import com.tomclaw.mandarin.main.views.BubbleImageView;
+import com.tomclaw.design.BubbleImageView;
 import com.tomclaw.mandarin.main.views.CircleProgressBar;
 
 /**

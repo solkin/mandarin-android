@@ -82,24 +82,8 @@
     <string name="connect_account_title">Connect an account</string>
     <string name="connect_yes">Connect</string>
     <string name="connect_no">Not now</string>
-    <string name="pref_buddy_list_title">Buddylist</string>
-    <string name="pref_summary_show_temp">Show temporary buddies in buddylist</string>
-    <string name="pref_title_show_temp">Temporary buddies</string>
-    <string name="pref_notifications_title">Notifications</string>
-    <string name="pref_title_notification_sound">Notification sound</string>
-    <string name="pref_summary_notification_sound">Play tone signal</string>
-    <string name="pref_title_sound">Sound</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="buddy_status">Status</string>
-    <string name="pref_chat_title">Conversation</string>
-    <string name="pref_title_collapse_messages">Merge messages</string>
-    <string name="pref_summary_collapse_messages">Merge messages together if they were sent less than 2 minutes from
-        each other
-    </string>
-    <string name="pref_base_title">Essentials</string>
-    <string name="pref_title_autorun">Autorun service</string>
-    <string name="pref_summary_autorun">Stay online even after you reboot your phone</string>
 
+    <string name="buddy_status">Status</string>
     <string name="error_show_buddy_info">Failed to show buddy info</string>
     <string name="info_status">Status</string>
     <string name="info_base">Essentials</string>
@@ -184,7 +168,6 @@
     <string name="status_icq_search">Searching</string>
     <string name="status_icq_diary">Diary</string>
     <string name="no_dialogs_opened">No dialogs yet. Open one!</string>
-    <string name="pref_title_chat_background">Background</string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Written by I. V. Solkin. This is not an official ICQ client\nI developed it due to
@@ -195,20 +178,8 @@
     <string name="connecting">Connecting…</string>
     <string name="invalid_credentials">Sorry, your password or ID is invalid. Please review them again.</string>
     <string name="checking_credentials">Connecting, please wait a while…</string>
-    <string name="pref_summary_chat_show_keyboard">Show keyboard when I open a dialog</string>
-    <string name="pref_title_chat_show_keyboard">Show keyboard</string>
-    <string name="pref_title_send_by_enter">Use Enter to send</string>
-    <string name="pref_summary_send_by_enter">Send message when I press Enter on my keyboard</string>
     <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
-    <string name="pref_title_music_auto_status">Now playing status</string>
-    <string name="pref_summary_music_auto_status">Automatically set my status to \"Music\" with currently playing track
-        name in description when I play music in system player
-    </string>
     <string name="update_after_track_switch">Status will be updated after track switch</string>
-    <string name="pref_title_lights">LED</string>
-    <string name="pref_summary_lights">Blink LED if a message was received while the screen is locked</string>
-    <string name="pref_title_quite_chat">Quite chat</string>
-    <string name="pref_summary_quite_chat">Short vibration only for messages, came into an active dialog</string>
     <string name="draft_indicator_text">Draft</string>
 
     <string name="accounts_connect">Connect</string>
@@ -231,13 +202,6 @@
     <string name="last_seen_time" formatted="false">Last seen at %s</string>
     <string name="typing">is typing…</string>
     <string name="unknown_buddy">Unknown buddy</string>
-    <string name="pref_title_theme">Theme</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
-    <string name="black">Black</string>
-    <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
-    </string>
-    <string name="pref_title_ignore_unknown">Ignore strangers</string>
 
     <string name="remove_buddy_short">Delete</string>
     <string name="rename_buddy_short">Rename</string>
@@ -286,11 +250,6 @@
     <string name="authorizationMsg">Hello! Please add me to your buddylist.</string>
     <string name="age_any">No matter</string>
 
-    <string name="group_by_alphabet">Group by name</string>
-    <string name="group_by_groups">Use existing groups</string>
-    <string name="group_by_status">Group by status</string>
-    <string name="pref_title_roster_mode">Buddylist view</string>
-    <string name="pref_summary_roster_mode">Sorting &amp; grouping your buddies</string>
     <string name="app_version">Version %1$s (%2$d)</string>
     <string name="city_search">City</string>
     <string name="mark_as_read">Mark as read</string>
@@ -324,7 +283,6 @@
         your phone number, you will receive an access code via SMS to activate your account. This is the best way to get
         fast, secure and simple access to your new or existing account.
     </string>
-    <string name="got_it">Got it</string>
     <string name="sms_code_header">You will receive an SMS with access code to &lt;b>%1$s&lt;/b>. Enter the code
         below.
     </string>
@@ -352,35 +310,6 @@
     <string name="cancel">Cancel</string>
     <string name="send">Send</string>
 
-    <string name="select_file">Select File</string>
-    <string name="free_of_total">Free %1$s of %2$s</string>
-    <string name="unknown_error">Unknown error</string>
-    <string name="access_error">Access error</string>
-    <string name="no_files">No files yet…</string>
-    <string name="file_upload_limit">File size shouldn\'t be greater than %1$s</string>
-    <string name="not_mounted">Storage not mounted</string>
-    <string name="usb_active">USB transfer active</string>
-    <string name="internal_storage">Internal Storage</string>
-    <string name="external_storage">External Storage</string>
-    <string name="system_root">System Root</string>
-    <string name="sd_card">SD Card</string>
-    <string name="bytes">%d B</string>
-    <string name="kibibytes">%.1f KB</string>
-    <string name="mibibytes">%.1f MB</string>
-    <string name="gigibytes">%.1f GB</string>
-    <string name="system_picker">Select file in another picker</string>
-    <string name="pref_files_title">File sharing</string>
-    <string name="pref_title_files_auto_receive">Receiving files</string>
-    <string name="pref_summary_files_auto_receive">Automatic files receiving options</string>
-    <string name="receive_mobile_and_wi_fi">Always</string>
-    <string name="receive_mobile_less_size">Up to 1 MB always</string>
-    <string name="receive_wi_fi_only">Only on Wi-Fi</string>
-    <string name="receive_manual_only">Never</string>
-    <string name="pref_title_image_compression">Image compression</string>
-    <string name="pref_summary_image_compression">Outgoing images compression quality</string>
-    <string name="image_compression_original">Original</string>
-    <string name="image_compression_medium">Medium quality</string>
-    <string name="image_compression_low_quality">Low quality</string>
     <string name="view_in_external_app">View in another application</string>
     <string name="failed_to_load_photo">Unable to load picture</string>
     <string name="no_video_picker">No special video choosing application</string>
@@ -401,8 +330,6 @@
     <string name="nfc_share">NFC</string>
     <string name="close_without_user_info_save">Quit without saving changes?</string>
 
-    <string name="pref_summary_private_notifications">Do not show contents of incoming messages in notifications</string>
-    <string name="pref_title_private_notifications">Private notifications</string>
     <string name="buddy_ignore">Ignore messages</string>
     <string name="buddy_unignore">Allow messaging</string>
     <string name="account_instance">Close sessions</string>

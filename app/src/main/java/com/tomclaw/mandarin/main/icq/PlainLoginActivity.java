@@ -24,13 +24,13 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.MainExecutor;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.CredentialsCheckCallback;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.ChiefActivity;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created by Solkin on 28.09.2014.

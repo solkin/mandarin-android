@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created by solkin on 01/03/14.

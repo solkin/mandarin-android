@@ -82,24 +82,8 @@
     <string name="connect_account_title">Подключить профиль</string>
     <string name="connect_yes">Подключить</string>
     <string name="connect_no">Не сейчас</string>
-    <string name="pref_buddy_list_title">Список контактов</string>
-    <string name="pref_summary_show_temp">Показывать временных в списке контактов</string>
-    <string name="pref_title_show_temp">Временные контакты</string>
-    <string name="pref_notifications_title">Уведомления</string>
-    <string name="pref_title_notification_sound">Сигнал уведомления</string>
-    <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
-    <string name="pref_title_sound">Звук</string>
-    <string name="pref_title_vibrate">Вибрация</string>
-    <string name="buddy_status">Статус</string>
-    <string name="pref_chat_title">Переписка</string>
-    <string name="pref_title_collapse_messages">Объединение сообщений</string>
-    <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
-        течение двух минут
-    </string>
-    <string name="pref_base_title">Основное</string>
-    <string name="pref_title_autorun">Фоновый автозапуск</string>
-    <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
 
+    <string name="buddy_status">Статус</string>
     <string name="error_show_buddy_info">Ошибка при попытке открыть информацию о контакте</string>
     <string name="info_status">Статус</string>
     <string name="info_base">Основное</string>
@@ -184,7 +168,6 @@
     <string name="status_icq_search">Ищу</string>
     <string name="status_icq_diary">Дневник</string>
     <string name="no_dialogs_opened">Нажмите на кнопку создания диалога внизу, чтобы начать общаться!</string>
-    <string name="pref_title_chat_background">Фоновая заставка</string>
     <string name="app_title">Mandarin IM</string>
     <string name="tomclaw_software">TomClaw Software</string>
     <string name="developer_info">Главный автор и программист - Солкин Игорь Викторович. Приложение не является
@@ -196,20 +179,8 @@
     <string name="connecting">Подключение…</string>
     <string name="invalid_credentials">Извините, Вы ввели неверный логин или пароль. Попробуйте ещё разок.</string>
     <string name="checking_credentials">Пожалуйста, подождите. Идёт подключение…</string>
-    <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
-    <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
-    <string name="pref_title_send_by_enter">Отправка по Enter</string>
-    <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
     <string name="music_status_pattern" formatted="false">%1$s - %2$s</string>
-    <string name="pref_title_music_auto_status">Музыкальный статус</string>
-    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
-        при включении музыки в системном плеере
-    </string>
     <string name="update_after_track_switch">Статус будет обновлён при следующем переключении мелодии</string>
-    <string name="pref_title_lights">Светодиод</string>
-    <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
-    <string name="pref_title_quite_chat">Бесшумный чат</string>
-    <string name="pref_summary_quite_chat">Если сообщение пришло в открытый диалог, оповещать только короткой вибрацией</string>
     <string name="draft_indicator_text">Черновик</string>
 
     <string name="accounts_connect">Подключиться</string>
@@ -234,14 +205,6 @@
     <string name="last_seen_time" formatted="false">Был(а) в %s</string>
     <string name="typing">печатает…</string>
     <string name="unknown_buddy">Без имени</string>
-    <string name="pref_title_theme">Тема оформления</string>
-    <string name="light">Светлая</string>
-    <string name="dark">Тёмная</string>
-    <string name="black">Чёрная</string>
-    <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать
-        сообщения от неизвестных людей.
-    </string>
-    <string name="pref_title_ignore_unknown">Игнорировать неизвестных</string>
 
     <string name="remove_buddy_short">Удалить</string>
     <string name="rename_buddy_short">Переименовать</string>
@@ -291,11 +254,6 @@
     <string name="authorizationMsg">Здравствуйте! Прошу добавить меня в список Ваших контактов.</string>
     <string name="age_any">Любой</string>
 
-    <string name="group_by_alphabet">По алфавиту</string>
-    <string name="group_by_groups">По группам</string>
-    <string name="group_by_status">По статусу</string>
-    <string name="pref_title_roster_mode">Отображение контактов</string>
-    <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
     <string name="app_version">Версия %1$s (%2$d)</string>
     <string name="city_search">Город</string>
     <string name="mark_as_read">Прочитано</string>
@@ -329,7 +287,6 @@
         телефона, Вы получите код доступа по СМС для активации учётной записи. Это простой, безопасный и удобный способ
         для доступа к Вашей новой или существующей учётной записи.
     </string>
-    <string name="got_it">Понятно</string>
     <string name="sms_code_header">Вы получите СМС с кодом подтверждения на &lt;b>%1$s&lt;/b>. Введите полученный код
         ниже.
     </string>
@@ -358,35 +315,6 @@
     <string name="cancel">Отмена</string>
     <string name="send">Отправить</string>
 
-    <string name="select_file">Выберите файл</string>
-    <string name="free_of_total">Свободно %1$s из %2$s</string>
-    <string name="unknown_error">Неизвестная ошибка</string>
-    <string name="access_error">Ошибка доступа</string>
-    <string name="no_files">Здесь пока нет файлов…</string>
-    <string name="file_upload_limit">Размер файла должен быть не более %1$s</string>
-    <string name="not_mounted">Накопитель не подключен</string>
-    <string name="usb_active">USB передача данных активна</string>
-    <string name="internal_storage">Внутреннее хранилище</string>
-    <string name="external_storage">Внешнее хранилище</string>
-    <string name="system_root">Системный корень</string>
-    <string name="sd_card">SD карта</string>
-    <string name="bytes">%d B</string>
-    <string name="kibibytes">%.1f КБ</string>
-    <string name="mibibytes">%.1f МБ</string>
-    <string name="gigibytes">%.1f ГБ</string>
-    <string name="system_picker">Выбрать в другом приложении</string>
-    <string name="pref_files_title">Обмен файлами</string>
-    <string name="pref_title_files_auto_receive">Автополучение файлов</string>
-    <string name="pref_summary_files_auto_receive">Настройка автоматического получения файлов</string>
-    <string name="receive_mobile_and_wi_fi">Всегда</string>
-    <string name="receive_mobile_less_size">До 1 МБ всегда</string>
-    <string name="receive_wi_fi_only">Только на Wi-Fi</string>
-    <string name="receive_manual_only">Никогда</string>
-    <string name="pref_title_image_compression">Сжатие изображений</string>
-    <string name="pref_summary_image_compression">Настройка качества сжатия исходящих изображений</string>
-    <string name="image_compression_original">Без сжатия</string>
-    <string name="image_compression_medium">Среднее качество</string>
-    <string name="image_compression_low_quality">Низкое качество</string>
     <string name="view_in_external_app">Открыть в другом приложении</string>
     <string name="failed_to_load_photo">Не удалось загрузить изображение</string>
     <string name="no_video_picker">Отсутствует специальное приложение для выбора видео</string>
@@ -407,8 +335,6 @@
     <string name="nfc_share">NFC</string>
     <string name="close_without_user_info_save">Выйти без сохранения изменений?</string>
 
-    <string name="pref_summary_private_notifications">Не показывать содержимое входящих сообщений в уведомлениях</string>
-    <string name="pref_title_private_notifications">Приватные уведомления</string>
     <string name="buddy_ignore">Игнорировать</string>
     <string name="buddy_unignore">Не игнорировать</string>
     <string name="account_instance">Закрыть сессии</string>

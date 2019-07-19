@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -23,7 +24,6 @@ import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.QueryBuilder;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

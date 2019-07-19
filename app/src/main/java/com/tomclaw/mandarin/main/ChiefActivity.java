@@ -14,9 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.ServiceInteraction;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.mandarin.core.MusicStateReceiver;
-import com.tomclaw.mandarin.core.PreferenceHelper;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created with IntelliJ IDEA.

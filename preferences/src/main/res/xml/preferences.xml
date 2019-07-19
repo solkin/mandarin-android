@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="@string/pref_base_settings"
+        android:title="@string/pref_base_title">
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_autorun_default"
+            android:key="@string/pref_autorun"
+            android:summary="@string/pref_summary_autorun"
+            android:title="@string/pref_title_autorun" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_music_auto_status_default"
+            android:key="@string/pref_music_auto_status"
+            android:summary="@string/pref_summary_music_auto_status"
+            android:title="@string/pref_title_music_auto_status" />
+        <ListPreference
+            android:defaultValue="@string/pref_theme_default"
+            android:entries="@array/pref_theme_strings"
+            android:entryValues="@array/pref_theme_values"
+            android:key="@string/pref_theme"
+            android:title="@string/pref_title_theme" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/pref_buddy_list_settings"
+        android:title="@string/pref_buddy_list_title">
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_show_temp_default"
+            android:key="@string/pref_show_temp"
+            android:summary="@string/pref_summary_show_temp"
+            android:title="@string/pref_title_show_temp" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_ignore_unknown_default"
+            android:key="@string/pref_ignore_unknown"
+            android:summary="@string/pref_summary_ignore_unknown"
+            android:title="@string/pref_title_ignore_unknown" />
+        <ListPreference
+            android:defaultValue="@string/pref_roster_mode_default"
+            android:entries="@array/pref_roster_mode_strings"
+            android:entryValues="@array/pref_roster_mode_values"
+            android:key="@string/pref_roster_mode"
+            android:summary="@string/pref_summary_roster_mode"
+            android:title="@string/pref_title_roster_mode" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/pref_chat_settings"
+        android:title="@string/pref_chat_title">
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_chat_background_default"
+            android:key="@string/pref_chat_background"
+            android:title="@string/pref_title_chat_background" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_chat_show_keyboard_default"
+            android:key="@string/pref_chat_show_keyboard"
+            android:summary="@string/pref_summary_chat_show_keyboard"
+            android:title="@string/pref_title_chat_show_keyboard" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_send_by_enter_default"
+            android:key="@string/pref_send_by_enter"
+            android:summary="@string/pref_summary_send_by_enter"
+            android:title="@string/pref_title_send_by_enter" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/pref_file_settings"
+        android:title="@string/pref_files_title">
+        <ListPreference
+            android:defaultValue="@string/pref_files_auto_receive_default"
+            android:entries="@array/pref_files_auto_receive_strings"
+            android:entryValues="@array/pref_files_auto_receive_values"
+            android:key="@string/pref_files_auto_receive"
+            android:summary="@string/pref_summary_files_auto_receive"
+            android:title="@string/pref_title_files_auto_receive" />
+        <ListPreference
+            android:defaultValue="@string/pref_image_compression_default"
+            android:entries="@array/pref_image_compression_strings"
+            android:entryValues="@array/pref_image_compression_values"
+            android:key="@string/pref_image_compression"
+            android:summary="@string/pref_summary_image_compression"
+            android:title="@string/pref_title_image_compression" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/pref_notification_settings"
+        android:title="@string/pref_notifications_title">
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_sound_default"
+            android:disableDependentsState="false"
+            android:key="@string/pref_sound"
+            android:title="@string/pref_title_sound" />
+        <RingtonePreference
+            android:defaultValue="@string/pref_notification_sound_default"
+            android:dependency="@string/pref_sound"
+            android:key="@string/pref_notification_sound"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:summary="@string/pref_summary_notification_sound"
+            android:title="@string/pref_title_notification_sound" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_vibrate_default"
+            android:key="@string/pref_vibrate"
+            android:title="@string/pref_title_vibrate" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_lights_default"
+            android:key="@string/pref_lights"
+            android:summary="@string/pref_summary_lights"
+            android:title="@string/pref_title_lights" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_quite_chat_default"
+            android:key="@string/pref_quite_chat"
+            android:summary="@string/pref_summary_quite_chat"
+            android:title="@string/pref_title_quite_chat" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_private_notifications_default"
+            android:key="@string/pref_private_notifications"
+            android:summary="@string/pref_summary_private_notifications"
+            android:title="@string/pref_title_private_notifications" />
+    </PreferenceCategory>
+</PreferenceScreen>

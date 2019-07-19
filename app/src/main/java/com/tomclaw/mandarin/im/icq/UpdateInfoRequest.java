@@ -1,8 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

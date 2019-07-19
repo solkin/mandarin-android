@@ -2,9 +2,9 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.SearchOptionsBuilder;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 

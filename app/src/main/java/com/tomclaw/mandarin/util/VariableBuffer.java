@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.util;
 
+import com.tomclaw.helpers.StringUtil;
+
 /**
  * Created by Solkin on 08.11.2014.
  */

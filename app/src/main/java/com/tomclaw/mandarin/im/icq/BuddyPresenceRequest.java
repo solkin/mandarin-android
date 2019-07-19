@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.im.Gender;
@@ -11,7 +12,6 @@ import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

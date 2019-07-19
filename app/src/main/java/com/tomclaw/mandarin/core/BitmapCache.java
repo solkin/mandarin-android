@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.LruCache;
 
-import com.tomclaw.mandarin.main.views.LazyImageView;
+import com.tomclaw.design.LazyImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 

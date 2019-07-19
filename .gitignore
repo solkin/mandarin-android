@@ -1,4 +1,5 @@
 # IDE folders #
+.idea/
 gen/
 bin/
 out/

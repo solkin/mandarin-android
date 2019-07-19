@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="access_error">Access error</string>
+    <string name="file_upload_limit">File size shouldn\'t be greater than %1$s</string>
+    <string name="select_file">Select File</string>
+    <string name="usb_active">USB transfer active</string>
+    <string name="not_mounted">Storage not mounted</string>
+    <string name="no_files">No files yet…</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="got_it">Got it</string>
+    <string name="sd_card">SD Card</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="external_storage">External Storage</string>
+    <string name="system_root">System Root</string>
+    <string name="free_of_total">Free %1$s of %2$s</string>
+    <string name="system_picker">Select file in another picker</string>
+</resources>

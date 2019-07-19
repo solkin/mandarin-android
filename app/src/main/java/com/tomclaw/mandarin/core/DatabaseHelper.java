@@ -6,12 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,8 +21,8 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
-import static com.tomclaw.mandarin.util.StringUtil.generateRandomText;
-import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
+import static com.tomclaw.helpers.StringUtil.generateRandomText;
+import static com.tomclaw.helpers.StringUtil.generateRandomWord;
 
 /**
  * Created with IntelliJ IDEA.

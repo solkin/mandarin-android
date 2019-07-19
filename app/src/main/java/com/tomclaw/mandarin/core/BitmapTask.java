@@ -3,7 +3,7 @@ package com.tomclaw.mandarin.core;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.main.views.LazyImageView;
+import com.tomclaw.design.LazyImageView;
 
 /**
  * Created with IntelliJ IDEA.

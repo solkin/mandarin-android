@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
+import com.tomclaw.design.LazyImageView;
+
 /**
  * Created by Solkin on 05.11.2014.
  */

@@ -13,6 +13,7 @@ import com.tomclaw.mandarin.core.exceptions.DownloadException;
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.ConnectivityHelper;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created by Solkin on 02.11.2014.

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="group_by_alphabet">По алфавиту</string>
+    <string name="group_by_groups">По группам</string>
+    <string name="group_by_status">По статусу</string>
+
+    <string name="receive_mobile_and_wi_fi">Всегда</string>
+    <string name="receive_mobile_less_size">До 1 МБ всегда</string>
+    <string name="receive_wi_fi_only">Только на Wi-Fi</string>
+    <string name="receive_manual_only">Никогда</string>
+
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="black">Чёрная</string>
+
+    <string name="image_compression_original">Без сжатия</string>
+    <string name="image_compression_medium">Среднее качество</string>
+    <string name="image_compression_low_quality">Низкое качество</string>
+
+    <string name="pref_buddy_list_title">Список контактов</string>
+    <string name="pref_summary_show_temp">Показывать временных в списке контактов</string>
+    <string name="pref_title_show_temp">Временные контакты</string>
+    <string name="pref_notifications_title">Уведомления</string>
+    <string name="pref_title_notification_sound">Сигнал уведомления</string>
+    <string name="pref_summary_notification_sound">Воспроизвести определённый тоновый сигнал о сообщении</string>
+    <string name="pref_title_sound">Звук</string>
+    <string name="pref_title_vibrate">Вибрация</string>
+    <string name="pref_chat_title">Переписка</string>
+    <string name="pref_title_collapse_messages">Объединение сообщений</string>
+    <string name="pref_summary_collapse_messages">Объединять входящие и исходящие сообщения, которые были написаны в
+        течение двух минут
+    </string>
+    <string name="pref_base_title">Основное</string>
+    <string name="pref_title_autorun">Фоновый автозапуск</string>
+    <string name="pref_summary_autorun">Оставаться на связи даже после перезагрузки телефона</string>
+
+    <string name="pref_summary_chat_show_keyboard">При открытии диалога автоматически открывать клавиатуру</string>
+    <string name="pref_title_chat_show_keyboard">Открывать клавиатуру</string>
+    <string name="pref_title_send_by_enter">Отправка по Enter</string>
+    <string name="pref_summary_send_by_enter">Отправлять сообщения по нажатию на Enter на клавиатуре</string>
+    <string name="pref_title_music_auto_status">Музыкальный статус</string>
+    <string name="pref_summary_music_auto_status">Автоматически включать статус \"Музыка\" с описанием текущей мелодии
+        при включении музыки в системном плеере
+    </string>
+    <string name="pref_title_lights">Светодиод</string>
+    <string name="pref_summary_lights">Мерцать светодиодом, если сообщение пришло, пока экран был заблокирован</string>
+    <string name="pref_title_quite_chat">Бесшумный чат</string>
+    <string name="pref_summary_quite_chat">Если сообщение пришло в открытый диалог, оповещать только короткой вибрацией</string>
+
+    <string name="pref_title_theme">Тема оформления</string>
+    <string name="pref_summary_ignore_unknown">Принимать сообщения только от друзей из списка контатов и игнорировать
+        сообщения от неизвестных людей.
+    </string>
+    <string name="pref_title_ignore_unknown">Игнорировать неизвестных</string>
+
+    <string name="pref_title_roster_mode">Отображение контактов</string>
+    <string name="pref_summary_roster_mode">Способ сортировки и группировки списка контактов</string>
+
+    <string name="pref_summary_private_notifications">Не показывать содержимое входящих сообщений в уведомлениях</string>
+    <string name="pref_title_private_notifications">Приватные уведомления</string>
+
+    <string name="pref_files_title">Обмен файлами</string>
+    <string name="pref_title_files_auto_receive">Автополучение файлов</string>
+    <string name="pref_summary_files_auto_receive">Настройка автоматического получения файлов</string>
+    <string name="pref_title_image_compression">Сжатие изображений</string>
+    <string name="pref_summary_image_compression">Настройка качества сжатия исходящих изображений</string>
+
+    <string name="pref_title_chat_background">Фоновая заставка</string>
+
+</resources>

@@ -12,12 +12,12 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
@@ -30,7 +30,7 @@ import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.NotificationData;
 import com.tomclaw.mandarin.util.NotificationLine;
 import com.tomclaw.mandarin.util.Notifier;
-import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

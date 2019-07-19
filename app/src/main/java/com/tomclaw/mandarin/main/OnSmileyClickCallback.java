@@ -6,4 +6,5 @@ package com.tomclaw.mandarin.main;
 public abstract class OnSmileyClickCallback {
 
     public abstract void onSmileyClick(String smileyText);
+
 }

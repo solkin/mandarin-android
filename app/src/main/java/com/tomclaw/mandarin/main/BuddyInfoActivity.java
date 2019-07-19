@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -24,7 +25,6 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Created with IntelliJ IDEA.

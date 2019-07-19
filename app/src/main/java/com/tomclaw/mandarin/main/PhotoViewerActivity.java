@@ -26,17 +26,17 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.tomclaw.helpers.AppsMenuHelper;
+import com.tomclaw.helpers.FileHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.main.views.TouchImageView;
-import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
 

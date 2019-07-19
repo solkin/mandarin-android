@@ -2,6 +2,8 @@ package com.tomclaw.mandarin.util;
 
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.StringUtil;
+
 import java.util.Locale;
 
 /**

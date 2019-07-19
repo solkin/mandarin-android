@@ -3,6 +3,8 @@ package com.tomclaw.mandarin.util;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.tomclaw.helpers.StringUtil;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +51,7 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
      * Builds Url request string from specified parameters.
      *
      * @return String - Url request parameters.
-     * @throws java.io.UnsupportedEncodingException
+     * @throws UnsupportedEncodingException in case of encoding in incorrect
      */
     public String build() throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();

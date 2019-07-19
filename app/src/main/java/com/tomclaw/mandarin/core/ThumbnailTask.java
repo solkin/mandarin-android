@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.main.views.LazyImageView;
+import com.tomclaw.design.LazyImageView;
 
 /**
  * Created by Solkin on 05.11.2014.

@@ -33,12 +33,12 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.tomclaw.helpers.AppsMenuHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlideApp;
-import com.tomclaw.mandarin.core.PreferenceHelper;
-import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.io.File;
 import java.util.ArrayList;

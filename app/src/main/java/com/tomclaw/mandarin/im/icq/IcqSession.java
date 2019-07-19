@@ -6,11 +6,11 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
@@ -26,7 +26,7 @@ import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.StringUtil;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

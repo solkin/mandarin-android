@@ -7,11 +7,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.tomclaw.helpers.StringUtil;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.main.EditUserInfoActivity;
 import com.tomclaw.mandarin.main.views.DatePickerView;
-import com.tomclaw.mandarin.util.StringUtil;
 
 /**
  * Icq-specific user info edit activity

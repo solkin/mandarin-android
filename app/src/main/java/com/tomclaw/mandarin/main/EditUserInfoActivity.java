@@ -358,7 +358,6 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void setManualAvatar(Bitmap bitmap, String hash) {
         // Apply manual avatar and hash.
         manualAvatar = bitmap;

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="group_by_alphabet">Group by name</string>
+    <string name="group_by_groups">Use existing groups</string>
+    <string name="group_by_status">Group by status</string>
+
+    <string name="receive_mobile_and_wi_fi">Always</string>
+    <string name="receive_mobile_less_size">Up to 1 MB always</string>
+    <string name="receive_wi_fi_only">Only on Wi-Fi</string>
+    <string name="receive_manual_only">Never</string>
+
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="black">Black</string>
+
+    <string name="image_compression_original">Original</string>
+    <string name="image_compression_medium">Medium quality</string>
+    <string name="image_compression_low_quality">Low quality</string>
+
+    <string name="pref_buddy_list_title">Buddylist</string>
+    <string name="pref_summary_show_temp">Show temporary buddies in buddylist</string>
+    <string name="pref_title_show_temp">Temporary buddies</string>
+    <string name="pref_notifications_title">Notifications</string>
+    <string name="pref_title_notification_sound">Notification sound</string>
+    <string name="pref_summary_notification_sound">Play tone signal</string>
+    <string name="pref_title_sound">Sound</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_chat_title">Conversation</string>
+    <string name="pref_title_collapse_messages">Merge messages</string>
+    <string name="pref_summary_collapse_messages">Merge messages together if they were sent less than 2 minutes from
+        each other
+    </string>
+    <string name="pref_base_title">Essentials</string>
+    <string name="pref_title_autorun">Autorun service</string>
+    <string name="pref_summary_autorun">Stay online even after you reboot your phone</string>
+
+    <string name="pref_summary_chat_show_keyboard">Show keyboard when I open a dialog</string>
+    <string name="pref_title_chat_show_keyboard">Show keyboard</string>
+    <string name="pref_title_send_by_enter">Use Enter to send</string>
+    <string name="pref_summary_send_by_enter">Send message when I press Enter on my keyboard</string>
+    <string name="pref_title_music_auto_status">Now playing status</string>
+    <string name="pref_summary_music_auto_status">Automatically set my status to \"Music\" with currently playing track
+        name in description when I play music in system player
+    </string>
+    <string name="pref_title_lights">LED</string>
+    <string name="pref_summary_lights">Blink LED if a message was received while the screen is locked</string>
+    <string name="pref_title_quite_chat">Quite chat</string>
+    <string name="pref_summary_quite_chat">Short vibration only for messages, came into an active dialog</string>
+
+    <string name="pref_title_theme">Theme</string>
+    <string name="pref_summary_ignore_unknown">Receive messages only from people in my buddylist
+    </string>
+    <string name="pref_title_ignore_unknown">Ignore strangers</string>
+
+    <string name="pref_title_roster_mode">Buddylist view</string>
+    <string name="pref_summary_roster_mode">Sorting &amp; grouping your buddies</string>
+
+    <string name="pref_summary_private_notifications">Do not show contents of incoming messages in notifications</string>
+    <string name="pref_title_private_notifications">Private notifications</string>
+
+    <string name="pref_files_title">File sharing</string>
+    <string name="pref_title_files_auto_receive">Receiving files</string>
+    <string name="pref_summary_files_auto_receive">Automatic files receiving options</string>
+    <string name="pref_title_image_compression">Image compression</string>
+    <string name="pref_summary_image_compression">Outgoing images compression quality</string>
+
+    <string name="pref_title_chat_background">Background</string>
+
+</resources>

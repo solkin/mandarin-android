@@ -150,12 +150,6 @@
             android:windowActionBarOverlay="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".main.DocumentPickerActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/select_file"
-            android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".main.SharingActivity"
             android:excludeFromRecents="true"
             android:label="@string/select_buddy"

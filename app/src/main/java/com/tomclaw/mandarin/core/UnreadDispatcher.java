@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.tasks.UpdateNotificationTask;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

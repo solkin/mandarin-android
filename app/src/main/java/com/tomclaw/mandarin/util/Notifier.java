@@ -13,8 +13,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
+import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.List;
 

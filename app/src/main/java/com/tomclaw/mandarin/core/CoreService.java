@@ -36,6 +36,8 @@ public class CoreService extends Service {
     private AccountsDispatcher accountsDispatcher;
     private UnreadDispatcher unreadDispatcher;
 
+    private ConnectivityReceiver connectivityReceiver;
+
     public static final String ACTION_CORE_SERVICE = "core_service";
     public static final String EXTRA_STAFF_PARAM = "staff";
     public static final String EXTRA_STATE_PARAM = "state";
@@ -146,7 +148,7 @@ public class CoreService extends Service {
         accountsDispatcher.startObservation();
         unreadDispatcher.startObservation();
         // Register broadcast receivers.
-        ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
+        connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
         // Service is now ready.
         updateState(STATE_UP);
@@ -253,6 +255,7 @@ public class CoreService extends Service {
         updateState(STATE_DOWN);
         // Reset creation time.
         serviceCreateTime = 0;
+        unregisterReceiver(connectivityReceiver);
         super.onDestroy();
     }
 

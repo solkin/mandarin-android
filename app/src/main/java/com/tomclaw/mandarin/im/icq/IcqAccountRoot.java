@@ -32,10 +32,6 @@ public class IcqAccountRoot extends AccountRoot {
     private String fetchBaseUrl;
     private MyInfo myInfo;
     private WellKnownUrls wellKnownUrls;
-    // Cabbage variables.
-    private String authToken;
-    private long clientId;
-    private String appStamp;
 
     public IcqAccountRoot() {
         icqSession = new IcqSession(this);
@@ -322,50 +318,6 @@ public class IcqAccountRoot extends AccountRoot {
             // This will update account state and write account into db.
             updateAccountState(statusIndex, statusTitle, statusMessage, false);
         }
-    }
-
-    public void onCabbageTokenObtained(String authToken) {
-        this.authToken = authToken;
-        // Save account data in database.
-        updateAccount();
-    }
-
-    public void onCabbageClientObtained(long clientId, String appStamp) {
-        this.clientId = clientId;
-        this.appStamp = appStamp;
-        // Save account data in database.
-        updateAccount();
-    }
-
-    public void onCabbageTokenExpired() {
-        authToken = null;
-        clientId = 0;
-        appStamp = null;
-        // Save account data in database.
-        updateAccount();
-        // Obtain auth token and client.
-        icqSession.obtainCabbageToken();
-    }
-
-    public void onCabbageClientExpired() {
-        clientId = 0;
-        appStamp = null;
-        // Save account data in database.
-        updateAccount();
-        // Obtain client id.
-        icqSession.obtainCabbageClient();
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public long getClientId() {
-        return clientId;
-    }
-
-    public String getAppStamp() {
-        return appStamp;
     }
 
     public boolean checkLoginExpired() {

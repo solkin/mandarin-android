@@ -63,12 +63,6 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
             } else {
                 return REQUEST_DELETE;
             }
-        } else if (isClientExpired(statusCode)) {
-            getAccountRoot().onCabbageClientExpired();
-            return REQUEST_SKIP;
-        } else if (isTokenExpired(statusCode)) {
-            getAccountRoot().onCabbageTokenExpired();
-            return REQUEST_SKIP;
         } else {
             return REQUEST_PENDING;
         }
@@ -79,24 +73,21 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
     private RequestBody getBody() {
         JsonObject root = new JsonObject();
         root.addProperty("method", getMethodName());
-        root.addProperty("reqId", createRequestId());
-        root.addProperty("authToken", getAuthToken());
+        root.addProperty("reqId", requestId);
         addProperty(root);
         JsonObject params = new JsonObject();
         appendParams(params);
         root.add("params", params);
+        root.addProperty("aimsid", getAccountRoot().getAimSid());
+        root.addProperty("f", WimConstants.FORMAT_JSON);
         return new UrlEncodedBody(root.toString());
-    }
-
-    protected String getAuthToken() {
-        return getAccountRoot().getAuthToken();
     }
 
     public String createRequestId() {
         return String.valueOf(System.currentTimeMillis());
     }
 
-    protected abstract void addProperty(JsonObject root);
+    protected void addProperty(JsonObject root) {}
 
     protected abstract String getMethodName();
 
@@ -106,11 +97,4 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
         return code / 100 == 200;
     }
 
-    public static boolean isTokenExpired(int code) {
-        return code / 100 == 402;
-    }
-
-    public static boolean isClientExpired(int code) {
-        return code / 100 == 403;
-    }
 }

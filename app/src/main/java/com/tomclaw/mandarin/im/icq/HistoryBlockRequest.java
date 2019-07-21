@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by ivsolkin on 26.11.16.
  */
-public class HistoryBlockRequest extends CabbageTrueRequest {
+public class HistoryBlockRequest extends CabbageRequest {
 
     private final String buddyId;
     private final long fromMessageId;

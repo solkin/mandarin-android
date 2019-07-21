@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Created by ivsolkin on 28.11.16.
  */
-public class SetDialogStateRequest extends CabbageTrueRequest {
+public class SetDialogStateRequest extends CabbageRequest {
 
     private String buddyId;
     private long messageId;

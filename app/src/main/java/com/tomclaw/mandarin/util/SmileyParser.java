@@ -108,6 +108,9 @@ public class SmileyParser {
      * recognized emoticons.
      */
     public CharSequence addSmileySpans(CharSequence text) {
+        if (text == null) {
+            return null;
+        }
         return addSmileySpans(new SpannableStringBuilder(text));
     }
 

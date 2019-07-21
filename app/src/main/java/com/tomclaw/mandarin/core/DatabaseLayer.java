@@ -11,11 +11,11 @@ import com.tomclaw.mandarin.util.QueryBuilder;
  */
 public interface DatabaseLayer {
 
-    public void insert(Uri uri, ContentValues contentValues);
+    void insert(Uri uri, ContentValues contentValues);
 
-    public int update(Uri uri, ContentValues contentValues, QueryBuilder queryBuilder);
+    int update(Uri uri, ContentValues contentValues, QueryBuilder queryBuilder);
 
-    public Cursor query(Uri uri, QueryBuilder queryBuilder);
+    Cursor query(Uri uri, QueryBuilder queryBuilder);
 
-    public int delete(Uri uri, QueryBuilder queryBuilder);
+    int delete(Uri uri, QueryBuilder queryBuilder);
 }

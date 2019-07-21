@@ -153,11 +153,8 @@ public class IcqSession {
 
     private IcqAccountRoot icqAccountRoot;
 
-    private CabbageSession cabbageSession;
-
     public IcqSession(IcqAccountRoot icqAccountRoot) {
         this.icqAccountRoot = icqAccountRoot;
-        cabbageSession = new CabbageSession(icqAccountRoot);
     }
 
     public int clientLogin() {
@@ -370,9 +367,6 @@ public class IcqSession {
      * false if our session is not accepted by the server.
      */
     public boolean startEventsFetching() {
-        cabbageSession.obtainToken();
-        cabbageSession.obtainClient();
-//        cabbageSession.refreshClient();
         Logger.log("start events fetching");
         do {
             try {
@@ -628,17 +622,6 @@ public class IcqSession {
         return url.concat(WimConstants.QUE).concat(params).concat(WimConstants.AMP)
                 .concat(WimConstants.SIG_SHA256).concat(EQUAL)
                 .concat(Strings.urlEncode(Strings.getHmacSha256Base64(hash, icqAccountRoot.getSessionKey())));
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public void obtainCabbageToken() {
-        cabbageSession.obtainToken();
-        cabbageSession.obtainClient();
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public void obtainCabbageClient() {
-        cabbageSession.obtainClient();
     }
 
     private String getDeviceId() {

@@ -256,6 +256,11 @@ public class CoreService extends Service {
         // Reset creation time.
         serviceCreateTime = 0;
         unregisterReceiver(connectivityReceiver);
+        requestDispatcher.stopObservation();
+        downloadDispatcher.stopObservation();
+        uploadDispatcher.stopObservation();
+        accountsDispatcher.stopObservation();
+        unreadDispatcher.stopObservation();
         super.onDestroy();
     }
 

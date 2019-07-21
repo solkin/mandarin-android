@@ -73,6 +73,10 @@ public class RequestDispatcher {
         notifyQueue();
     }
 
+    public void stopObservation() {
+        contentResolver.unregisterContentObserver(requestObserver);
+    }
+
     /**
      * Stops task with specified tag.
      *

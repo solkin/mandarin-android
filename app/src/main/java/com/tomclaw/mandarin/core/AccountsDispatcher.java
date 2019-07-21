@@ -33,6 +33,10 @@ public class AccountsDispatcher {
         accountsObserver.onChange(true);
     }
 
+    public void stopObservation() {
+        contentResolver.unregisterContentObserver(accountsObserver);
+    }
+
     private class AccountsObserver extends ContentObserver {
 
         /**

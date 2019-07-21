@@ -44,6 +44,10 @@ public class UnreadDispatcher {
         observePreferences();
     }
 
+    public void stopObservation() {
+        contentResolver.unregisterContentObserver(unreadObserver);
+    }
+
     private void observePreferences() {
         // Observing notification preferences to immediately update current notification.
         privateNotifications = PreferenceHelper.isPrivateNotifications(context);

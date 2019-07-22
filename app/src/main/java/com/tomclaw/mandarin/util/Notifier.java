@@ -10,6 +10,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
@@ -23,21 +24,26 @@ import java.util.List;
 /**
  * Created by ivsolkin on 06/07/2017.
  */
+@SuppressWarnings("SameParameterValue")
 public class Notifier {
 
     private static final int NOTIFICATION_ID = 0x05;
     private static final String NOTIFICATION_CHANNEL_ID = "messages";
     private static final String GROUP_KEY = "mandarin_notification";
 
+    public static void init(Context context) {
+        prepareChannel(context, NOTIFICATION_CHANNEL_ID, R.string.incoming_messages);
+    }
+
     public static void showNotification(Context context, NotificationData data) {
         @DrawableRes int smallImage = R.drawable.ic_notification;
         @ColorInt int color = context.getResources().getColor(R.color.accent_color);
         if (data.isMultiline()) {
-            showMultiNotification(context, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
+            showMultiNotification(context, NOTIFICATION_CHANNEL_ID, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), data.getLines(), color, smallImage, data.getContentAction(),
                     data.getActions());
         } else {
-            showSingleNotification(context, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
+            showSingleNotification(context, NOTIFICATION_CHANNEL_ID, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), color, smallImage, data.getImage(), data.getContentAction(),
                     data.getActions());
         }
@@ -48,14 +54,14 @@ public class Notifier {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
-    private static void showSingleNotification(Context context, int notificationId, boolean isExtended,
+    private static void showSingleNotification(Context context, String channelId, int notificationId, boolean isExtended,
                                                boolean isAlert, @NonNull String title, @NonNull String text,
                                                @ColorInt int color, @DrawableRes int smallImage, @Nullable Bitmap image,
                                                @Nullable PendingIntent contentAction,
                                                @NonNull List<NotificationCompat.Action> actions) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setColor(color)
@@ -83,7 +89,7 @@ public class Notifier {
         notificationManager.notify(notificationId, notification.build());
     }
 
-    private static void showMultiNotification(Context context, int notificationId, boolean isExtended,
+    private static void showMultiNotification(Context context, String channelId, int notificationId, boolean isExtended,
                                               boolean isAlert, @NonNull String title, @NonNull String text,
                                               @NonNull List<NotificationLine> lines, @ColorInt int color,
                                               @DrawableRes int smallImage,
@@ -92,7 +98,7 @@ public class Notifier {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         if (isExtended && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationCompat.Builder group = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            NotificationCompat.Builder group = new NotificationCompat.Builder(context, channelId)
                     .setGroup(GROUP_KEY)
                     .setColor(color)
                     .setSmallIcon(smallImage)
@@ -110,7 +116,7 @@ public class Notifier {
                 NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
                         .setBigContentTitle(line.getTitle())
                         .bigText(line.getText());
-                NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
                         .setStyle(style)
                         .setContentTitle(line.getTitle())
                         .setContentText(line.getText())
@@ -127,7 +133,7 @@ public class Notifier {
                 notificationManager.notify(++index, notification.build());
             }
         } else {
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
                     .setContentTitle(title)
                     .setContentText(text)
                     .setColor(color)
@@ -153,16 +159,12 @@ public class Notifier {
         }
     }
 
-    public static void init(Context context) {
-        prepareChannel(context, NOTIFICATION_CHANNEL_ID);
-    }
-
-    private static void prepareChannel(Context context, String channelId) {
+    private static void prepareChannel(Context context, String channelId, @StringRes int channelName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
                     channelId,
-                    context.getString(R.string.incoming_messages),
+                    context.getString(channelName),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             notificationChannel.enableLights(true);

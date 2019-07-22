@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * Created by ivsolkin on 06/07/2017.
  */
-
 public class NotificationLine {
 
     private final @NonNull String title;

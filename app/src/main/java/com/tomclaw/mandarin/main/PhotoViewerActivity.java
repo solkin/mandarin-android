@@ -34,8 +34,8 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.design.TouchImageView;
 import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.mandarin.util.GifDrawable;
-import com.tomclaw.mandarin.util.GifFileDecoder;
+import com.tomclaw.helpers.GifDrawable;
+import com.tomclaw.helpers.GifFileDecoder;
 import com.tomclaw.preferences.PreferenceHelper;
 
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;

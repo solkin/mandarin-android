@@ -10,7 +10,7 @@
  * Contributors: Nick Frolov, Aleksandr Shardakov
  */
 
-package com.tomclaw.mandarin.util;
+package com.tomclaw.helpers;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+@SuppressWarnings("WeakerAccess")
 public class GifFileDecoder {
     private static final int MIN_DELAY = 20;
     private static final int ENFORCED_DELAY = 100;
@@ -92,10 +93,10 @@ public class GifFileDecoder {
         reopenStream();
 
         // file header
-        String id = "";
+        StringBuilder id = new StringBuilder();
         for (int i = 0; i < 6; i++)
-            id += (char) read();
-        if (!id.startsWith("GIF"))
+            id.append((char) read());
+        if (!id.toString().startsWith("GIF"))
             throw EX_IFF;
 
         // logical screen size
@@ -141,7 +142,7 @@ public class GifFileDecoder {
     public void stop() {
         try {
             if (in != null) in.close();
-        } catch (IOException ex) {
+        } catch (IOException ignored) {
         }
         in = null;
     }

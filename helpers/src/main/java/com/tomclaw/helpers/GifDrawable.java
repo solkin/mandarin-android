@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.util;
+package com.tomclaw.helpers;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.nio.IntBuffer;
 import java.util.concurrent.Semaphore;
 
+@SuppressWarnings("WeakerAccess")
 public class GifDrawable extends Drawable implements Animatable {
 
     private static final String TAG = "GifImageView";
@@ -33,8 +34,8 @@ public class GifDrawable extends Drawable implements Animatable {
     private final Matrix matrix = new Matrix();
     private final GifFileDecoder decoder;
 
-    public static interface DiagnosticsCallback {
-        public void onDiagnostics(String value);
+    public interface DiagnosticsCallback {
+        void onDiagnostics(String value);
     }
 
     public static DiagnosticsCallback diagnosticsCallback;
@@ -284,9 +285,9 @@ public class GifDrawable extends Drawable implements Animatable {
                     }
                 }
             } catch (IOException ex) {
-                Logger.log("gif drawable warn", ex);
+                Log.d(TAG, "gif drawable warn", ex);
             } catch (InterruptedException ex) {
-                Logger.log("gif drawable err", ex);
+                Log.d(TAG, "gif drawable err", ex);
             } finally {
                 if (DEBUG) Log.d(TAG, "stopping decoder");
                 decoder.stop();

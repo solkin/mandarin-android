@@ -17,6 +17,7 @@ import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.tasks.UpdateLastReadTask;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.Notifier;
 
 import java.util.List;
 import java.util.Random;
@@ -131,6 +132,7 @@ public class CoreService extends Service {
         long time = System.currentTimeMillis();
         Logger.log("CoreService onCreate");
         super.onCreate();
+        Notifier.init(this);
         updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);

@@ -18,6 +18,7 @@ import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.DatabaseLayer;
 import com.tomclaw.mandarin.core.DatabaseTask;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.core.MainExecutor;
 import com.tomclaw.mandarin.core.QueryHelper;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.mandarin.im.Buddy;
@@ -74,7 +75,7 @@ public class UpdateNotificationTask extends DatabaseTask {
     }
 
     @Override
-    protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
+    protected void runInTransaction(final Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
         Cursor cursor = null;
         try {
             Logger.log("notification task: start");
@@ -126,7 +127,7 @@ public class UpdateNotificationTask extends DatabaseTask {
                 List<NotificationCompat.Action> actions;
 
                 String title;
-                String text;
+                StringBuilder text;
                 Bitmap image;
                 if (lines.size() > 1 || privateNotifications) {
                     PendingIntent openChatsIntent = createOpenChatsIntent(context, requestCode++);
@@ -141,12 +142,12 @@ public class UpdateNotificationTask extends DatabaseTask {
                             .build();
 
                     title = context.getResources().getQuantityString(R.plurals.count_new_messages, summaryUnreadCount, summaryUnreadCount);
-                    text = "";
+                    text = new StringBuilder();
                     for (NotificationLine line : lines) {
                         if (text.length() > 0) {
-                            text += ", ";
+                            text.append(", ");
                         }
-                        text += line.getTitle();
+                        text.append(line.getTitle());
                     }
                     image = null;
                     contentAction = openChatsIntent;
@@ -154,7 +155,7 @@ public class UpdateNotificationTask extends DatabaseTask {
                 } else {
                     NotificationLine line = lines.remove(0);
                     title = line.getTitle();
-                    text = line.getText();
+                    text = new StringBuilder(line.getText());
                     image = line.getImage();
                     contentAction = line.getContentAction();
                     actions = line.getActions();
@@ -166,12 +167,22 @@ public class UpdateNotificationTask extends DatabaseTask {
                     isAlert = true;
                     Logger.log("update notifications: wzh-wzh!");
                 }
-                NotificationData data = new NotificationData(!privateNotifications, isAlert,
-                        title, text, image, lines, contentAction, actions);
-                Notifier.showNotification(context, data);
+                final NotificationData data = new NotificationData(!privateNotifications, isAlert,
+                        title, text.toString(), image, lines, contentAction, actions);
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Notifier.showNotification(context, data);
+                    }
+                });
             } else {
                 onNotificationCancel();
-                Notifier.hideNotification(context);
+                MainExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Notifier.hideNotification(context);
+                    }
+                });
             }
         } finally {
             if (cursor != null) {

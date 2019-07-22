@@ -324,4 +324,5 @@
     <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её в каких-то своих целях. Продолжаем?</string>
     <string name="export_history_failed">Не удалось экспортировать историю</string>
     <string name="extory_exported">История успешно экспортирована в:\n</string>
+    <string name="incoming_messages">Входящие сообщения</string>
 </resources>

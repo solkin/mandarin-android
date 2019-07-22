@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.util;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import java.util.List;
 public class Notifier {
 
     private static final int NOTIFICATION_ID = 0x05;
+    private static final String NOTIFICATION_CHANNEL_ID = "messages";
     private static final String GROUP_KEY = "mandarin_notification";
 
     public static void showNotification(Context context, NotificationData data) {
@@ -52,7 +55,7 @@ public class Notifier {
                                                @NonNull List<NotificationCompat.Action> actions) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setColor(color)
@@ -89,7 +92,7 @@ public class Notifier {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         if (isExtended && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationCompat.Builder group = new NotificationCompat.Builder(context)
+            NotificationCompat.Builder group = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                     .setGroup(GROUP_KEY)
                     .setColor(color)
                     .setSmallIcon(smallImage)
@@ -107,7 +110,7 @@ public class Notifier {
                 NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
                         .setBigContentTitle(line.getTitle())
                         .bigText(line.getText());
-                NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+                NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                         .setStyle(style)
                         .setContentTitle(line.getTitle())
                         .setContentText(line.getText())
@@ -124,7 +127,7 @@ public class Notifier {
                 notificationManager.notify(++index, notification.build());
             }
         } else {
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(text)
                     .setColor(color)
@@ -147,6 +150,25 @@ public class Notifier {
             }
 
             notificationManager.notify(notificationId, notification.build());
+        }
+    }
+
+    public static void init(Context context) {
+        prepareChannel(context, NOTIFICATION_CHANNEL_ID);
+    }
+
+    private static void prepareChannel(Context context, String channelId) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channelId,
+                    context.getString(R.string.incoming_messages),
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
+            notificationChannel.enableVibration(false);
+            notificationManager.createNotificationChannel(notificationChannel);
         }
     }
 

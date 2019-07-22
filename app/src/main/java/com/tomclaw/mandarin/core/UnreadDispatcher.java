@@ -28,7 +28,7 @@ public class UnreadDispatcher {
     private ContentObserver unreadObserver;
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
-    private boolean privateNotifications, settingsChanged;
+    private boolean privateNotifications;
 
     public UnreadDispatcher(Context context) {
         this.context = context;
@@ -59,7 +59,6 @@ public class UnreadDispatcher {
                     boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
                     if (UnreadDispatcher.this.privateNotifications != privateNotifications) {
                         UnreadDispatcher.this.privateNotifications = privateNotifications;
-                        settingsChanged = true;
                         unreadObserver.onChange(true);
                     }
                 }

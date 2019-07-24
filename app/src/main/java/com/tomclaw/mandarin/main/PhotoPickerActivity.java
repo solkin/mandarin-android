@@ -48,6 +48,8 @@ import java.util.Map;
 import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 import static com.bumptech.glide.request.RequestOptions.noTransformation;
 
+import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
+
 /**
  * Created by Solkin on 04.11.2014.
  */
@@ -67,10 +69,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
             MediaStore.Images.Media.ORIENTATION
     };
 
-    private static final RequestOptions thumbnailOptions = centerCropTransform()
+    public static final RequestOptions thumbnailOptions = centerInsideTransform()
             .placeholder(R.drawable.ic_gallery)
             .error(R.drawable.ic_gallery)
             .format(DecodeFormat.PREFER_RGB_565)
+            .encodeQuality(40)
             .priority(Priority.HIGH)
             .downsample(DownsampleStrategy.CENTER_INSIDE);
 
@@ -142,11 +145,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         return;
                     }
                     PhotoEntry photoEntity = selectedAlbum.photos.get(i);
-
-                    GlideApp.with(PhotoPickerActivity.this)
-                            .load(photoEntity.path)
-                            .apply(PhotoViewerActivity.PREVIEW_OPTIONS)
-                            .preload();
 
                     File photoFile = new File(photoEntity.path);
                     Uri uri = Uri.fromFile(photoFile);
@@ -458,7 +456,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     .asBitmap()
                     .load(photoEntry.path)
                     .apply(thumbnailOptions)
+                    .centerCrop()
                     .into(imageView);
+            GlideApp.with(PhotoPickerActivity.this)
+                    .load(photoEntry.path)
+                    .apply(PhotoViewerActivity.PREVIEW_OPTIONS.priority(Priority.LOW))
+                    .preload();
         } else {
             GlideApp.with(this)
                     .asDrawable()

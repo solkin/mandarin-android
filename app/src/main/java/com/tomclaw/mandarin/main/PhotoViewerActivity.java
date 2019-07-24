@@ -55,7 +55,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
     public static final int ANIMATION_DURATION = 250;
 
     public static final RequestOptions PREVIEW_OPTIONS = centerInsideTransform()
-            .placeholder(R.drawable.ic_gallery)
+            .placeholder(android.R.color.transparent)
             .error(R.drawable.ic_gallery)
             .format(DecodeFormat.PREFER_RGB_565)
             .priority(Priority.IMMEDIATE)
@@ -169,7 +169,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
         GlideApp.with(this)
                 .asBitmap()
                 .load(photoEntry.path)
-                .apply(PREVIEW_OPTIONS)
+                .thumbnail(GlideApp.with(this).asBitmap().load(photoEntry.path).apply(PREVIEW_OPTIONS))
+                .apply(centerInsideTransform())
                 .into(imageView);
 
         samplePicture();
@@ -189,11 +190,9 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                return true;
-            }
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return false;
     }
@@ -208,8 +207,11 @@ public class PhotoViewerActivity extends AppCompatActivity {
                 new DecelerateInterpolator());
     }
 
-    private void animatePickerButtons(TranslateAnimation translateAnimation, AlphaAnimation alphaAnimation,
-                                      Interpolator interpolator) {
+    private void animatePickerButtons(
+            TranslateAnimation translateAnimation,
+            AlphaAnimation alphaAnimation,
+            Interpolator interpolator
+    ) {
         AnimationSet animationSet = new AnimationSet(true);
         animationSet.addAnimation(translateAnimation);
         animationSet.addAnimation(alphaAnimation);
@@ -227,7 +229,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         } else {
             doneButtonTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             doneButtonBadgeTextView.setVisibility(View.VISIBLE);
-            doneButtonBadgeTextView.setText("" + selectedCount);
+            doneButtonBadgeTextView.setText(String.valueOf(selectedCount));
         }
     }
 
@@ -239,113 +241,114 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     private void samplePicture() {
-        TaskExecutor.getInstance().execute(new PhotoSamplingTask(this, hasPreview));
+        //imageView.setImage(ImageSource.uri(uri));
+        //TaskExecutor.getInstance().execute(new PhotoSamplingTask(this, hasPreview));
     }
 
-    protected void setBitmap(Bitmap bitmap) {
-        setDrawable(new BitmapDrawable(getResources(), bitmap));
-    }
+//    protected void setBitmap(Bitmap bitmap) {
+//        setDrawable(new BitmapDrawable(getResources(), bitmap));
+//    }
+//
+//    protected void setDrawable(Drawable drawable) {
+//        if (drawable != null) {
+//            hasPreview = true;
+//        }
+//        imageView.setImageDrawable(drawable);
+//        startAnimation();
+//    }
 
-    protected void setDrawable(Drawable drawable) {
-        if (drawable != null) {
-            hasPreview = true;
-        }
-        imageView.setImageDrawable(drawable);
-        startAnimation();
-    }
+//    private GifDrawable optAnimationDrawable() {
+//        Drawable drawable = imageView.getDrawable();
+//        // Check for this is animated drawable.
+//        if (drawable instanceof GifDrawable) {
+//            return ((GifDrawable) drawable);
+//        }
+//        return null;
+//    }
 
-    private GifDrawable optAnimationDrawable() {
-        Drawable drawable = imageView.getDrawable();
-        // Check for this is animated drawable.
-        if (drawable != null && drawable instanceof GifDrawable) {
-            return ((GifDrawable) drawable);
-        }
-        return null;
-    }
-
-    private void startAnimation() {
-        GifDrawable animationDrawable = optAnimationDrawable();
-        if (animationDrawable != null && !animationDrawable.isRunning()) {
-            animationDrawable.start();
-        }
-    }
-
-    private void stopAnimation() {
-        GifDrawable animationDrawable = optAnimationDrawable();
-        if (animationDrawable != null) {
-            if (animationDrawable.isRunning()) {
-                animationDrawable.stop();
-            }
-        }
-    }
+//    private void startAnimation() {
+//        GifDrawable animationDrawable = optAnimationDrawable();
+//        if (animationDrawable != null && !animationDrawable.isRunning()) {
+//            animationDrawable.start();
+//        }
+//    }
+//
+//    private void stopAnimation() {
+//        GifDrawable animationDrawable = optAnimationDrawable();
+//        if (animationDrawable != null) {
+//            if (animationDrawable.isRunning()) {
+//                animationDrawable.stop();
+//            }
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopAnimation();
+//        stopAnimation();
     }
 
-    public class PhotoSamplingTask extends WeakObjectTask<PhotoViewerActivity> {
-
-        private boolean isGif;
-        private Drawable drawable;
-        private boolean hasPreview;
-
-        public PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
-            super(object);
-            this.hasPreview = hasPreview;
-            this.isGif = TextUtils.equals(Files.getFileExtensionFromPath(name).toLowerCase(), "gif");
-        }
-
-        @Override
-        public void executeBackground() throws Throwable {
-            PhotoViewerActivity activity = getWeakObject();
-            if (activity != null) {
-                boolean decoded = false;
-                if (isGif) {
-                    GifFileDecoder decoder = new GifFileDecoder(uri, activity.getContentResolver());
-                    decoder.start();
-                    drawable = new GifDrawable(decoder);
-                    decoded = true;
-                }
-                if (!decoded) {
-                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1280, 1280);
-                    if (bitmap != null) {
-                        drawable = new BitmapDrawable(activity.getResources(), bitmap);
-                    }
-                }
-                if (drawable == null && !hasPreview) {
-                    throw new NullPointerException();
-                }
-            }
-        }
-
-        @Override
-        public boolean isPreExecuteRequired() {
-            return true;
-        }
-
-        @Override
-        public void onPreExecuteMain() {
-            if (isGif) {
-                progressView.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
-        public void onSuccessMain() {
-            progressView.setVisibility(View.GONE);
-            PhotoViewerActivity activity = getWeakObject();
-            if (activity != null && drawable != null) {
-                activity.setDrawable(drawable);
-            }
-        }
-
-        @Override
-        public void onFailMain() {
-            progressView.setVisibility(View.GONE);
-            photoViewFailedView.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
-        }
-    }
+//    public class PhotoSamplingTask extends WeakObjectTask<PhotoViewerActivity> {
+//
+//        private boolean isGif;
+//        private Drawable drawable;
+//        private boolean hasPreview;
+//
+//        PhotoSamplingTask(PhotoViewerActivity object, boolean hasPreview) {
+//            super(object);
+//            this.hasPreview = hasPreview;
+//            this.isGif = TextUtils.equals(Files.getFileExtensionFromPath(name).toLowerCase(), "gif");
+//        }
+//
+//        @Override
+//        public void executeBackground() throws Throwable {
+//            PhotoViewerActivity activity = getWeakObject();
+//            if (activity != null) {
+//                boolean decoded = false;
+//                if (isGif) {
+//                    GifFileDecoder decoder = new GifFileDecoder(uri, activity.getContentResolver());
+//                    decoder.start();
+//                    drawable = new GifDrawable(decoder);
+//                    decoded = true;
+//                }
+//                if (!decoded) {
+//                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1280, 1280);
+//                    if (bitmap != null) {
+//                        drawable = new BitmapDrawable(activity.getResources(), bitmap);
+//                    }
+//                }
+//                if (drawable == null && !hasPreview) {
+//                    throw new NullPointerException();
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public boolean isPreExecuteRequired() {
+//            return true;
+//        }
+//
+//        @Override
+//        public void onPreExecuteMain() {
+//            if (isGif) {
+//                progressView.setVisibility(View.VISIBLE);
+//            }
+//        }
+//
+//        @Override
+//        public void onSuccessMain() {
+//            progressView.setVisibility(View.GONE);
+//            PhotoViewerActivity activity = getWeakObject();
+//            if (activity != null && drawable != null) {
+//                activity.setDrawable(drawable);
+//            }
+//        }
+//
+//        @Override
+//        public void onFailMain() {
+//            progressView.setVisibility(View.GONE);
+//            photoViewFailedView.setVisibility(View.VISIBLE);
+//            imageView.setVisibility(View.GONE);
+//        }
+//    }
 }

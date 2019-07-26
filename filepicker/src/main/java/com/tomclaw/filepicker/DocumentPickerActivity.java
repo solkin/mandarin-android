@@ -349,13 +349,12 @@ public class DocumentPickerActivity extends AppCompatActivity {
         items.clear();
         String extStorage = Environment.getExternalStorageDirectory().getAbsolutePath();
         ListItem ext = new ListItem();
-        if (Build.VERSION.SDK_INT < 9 || Environment.isExternalStorageRemovable()) {
+        if (Environment.isExternalStorageRemovable()) {
             ext.title = getString(R.string.sd_card);
         } else {
             ext.title = getString(R.string.internal_storage);
         }
-        ext.icon = Build.VERSION.SDK_INT < 9 || Environment.isExternalStorageRemovable() ?
-                R.drawable.ic_micro_sd : R.drawable.ic_phone;
+        ext.icon = Environment.isExternalStorageRemovable() ? R.drawable.ic_micro_sd : R.drawable.ic_phone;
         ext.subtitle = getRootSubtitle(extStorage);
         ext.file = Environment.getExternalStorageDirectory();
         items.add(ext);

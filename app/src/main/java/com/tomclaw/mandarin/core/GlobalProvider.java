@@ -184,7 +184,7 @@ public class GlobalProvider extends ContentProvider {
             + HISTORY_MESSAGE_PREV_ID + " int, "
             + HISTORY_MESSAGE_ID + " int, "
             + HISTORY_MESSAGE_TYPE + " int, "
-            + HISTORY_MESSAGE_COOKIE + " text, "
+            + HISTORY_MESSAGE_COOKIE + " text unique, "
             + HISTORY_MESSAGE_TIME + " int, "
             + HISTORY_MESSAGE_TEXT + " text, "
             + HISTORY_CONTENT_TYPE + " int default " + HISTORY_CONTENT_TYPE_TEXT + ", "

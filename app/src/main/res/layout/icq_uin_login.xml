@@ -12,7 +12,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/first_screen_bg" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme"
         android:background="@android:color/transparent" />

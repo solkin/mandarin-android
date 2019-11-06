@@ -9,8 +9,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 
 import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.R;

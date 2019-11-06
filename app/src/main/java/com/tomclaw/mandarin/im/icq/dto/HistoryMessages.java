@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.im.icq.dto;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Collections;

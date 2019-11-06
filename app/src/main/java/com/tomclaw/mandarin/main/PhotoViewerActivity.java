@@ -1,14 +1,11 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,12 +27,7 @@ import com.tomclaw.helpers.AppsMenuHelper;
 import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
-import com.tomclaw.mandarin.core.TaskExecutor;
-import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.design.TouchImageView;
-import com.tomclaw.mandarin.util.BitmapHelper;
-import com.tomclaw.helpers.GifDrawable;
-import com.tomclaw.helpers.GifFileDecoder;
 import com.tomclaw.preferences.PreferenceHelper;
 
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;

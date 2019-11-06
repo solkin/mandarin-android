@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.RemoteInput;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.im.Buddy;

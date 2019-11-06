@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 import android.util.Log;
 
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class GifDrawable extends Drawable implements Animatable {
     private static final int MSG_REDRAW = 1;
     private static final int MSG_FINALIZE = 2;
 
-    private static LongSparseArray<ThreadInfo> threads = new LongSparseArray<ThreadInfo>();
+    private static LongSparseArray<ThreadInfo> threads = new LongSparseArray<>();
     private static Handler mainHandler;
 
     private static class ThreadInfo {

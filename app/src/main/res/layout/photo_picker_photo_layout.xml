@@ -4,7 +4,7 @@
     android:layout_height="100dp"
     android:layout_gravity="top">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/media_photo_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

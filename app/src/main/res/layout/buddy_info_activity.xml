@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme" />
 
@@ -41,7 +41,7 @@
                         android:outAnimation="@android:anim/fade_out"
                         android:paddingBottom="22dp">
 
-                        <android.support.design.widget.FloatingActionButton
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/add_buddy_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                             android:src="@drawable/ic_add_contact"
                             app:fabSize="normal" />
 
-                        <android.support.design.widget.FloatingActionButton
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/open_dialog_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

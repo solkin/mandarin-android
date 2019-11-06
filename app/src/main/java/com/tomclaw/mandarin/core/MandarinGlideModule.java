@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.annotation.GlideModule;
@@ -30,4 +30,5 @@ public final class MandarinGlideModule extends AppGlideModule {
                 .setArrayPool(new LruArrayPool(calculator.getArrayPoolSizeInBytes()))
                 .setBitmapPool(new LruBitmapPool(calculator.getBitmapPoolSize()));
     }
+
 }

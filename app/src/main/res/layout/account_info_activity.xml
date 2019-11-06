@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme" />
 
@@ -39,7 +39,7 @@
                         android:paddingRight="8dp"
                         android:paddingBottom="32dp">
 
-                        <android.support.design.widget.FloatingActionButton
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/edit_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

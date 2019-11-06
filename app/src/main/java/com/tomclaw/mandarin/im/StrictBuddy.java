@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.im;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by ivsolkin on 12.10.16.

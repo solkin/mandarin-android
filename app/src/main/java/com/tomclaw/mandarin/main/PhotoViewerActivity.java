@@ -111,19 +111,9 @@ public class PhotoViewerActivity extends AppCompatActivity {
         pickerButtons = findViewById(R.id.picker_buttons);
 
         Button cancelButton = findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        cancelButton.setOnClickListener(view -> finish());
         doneButton = findViewById(R.id.done_button);
-        doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendSelectedPhotos();
-            }
-        });
+        doneButton.setOnClickListener(view -> sendSelectedPhotos());
 
         cancelButton.setText(getString(R.string.cancel).toUpperCase());
         doneButtonTextView = doneButton.findViewById(R.id.done_button_text);

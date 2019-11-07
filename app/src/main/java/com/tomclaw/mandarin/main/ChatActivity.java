@@ -758,12 +758,9 @@ public class ChatActivity extends ChiefActivity {
     }
 
     public void scrollBottom() {
-        chatList.post(new Runnable() {
-            @Override
-            public void run() {
-                chatList.scrollToPosition(0);
-                chatList.requestLayout();
-            }
+        chatList.post(() -> {
+            chatList.scrollToPosition(0);
+            chatList.requestLayout();
         });
     }
 

@@ -132,18 +132,15 @@ public class PhotoViewerActivity extends AppCompatActivity {
         progressView = findViewById(R.id.progress_view);
 
         imageView = findViewById(R.id.touch_image_view);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActionBar bar = getSupportActionBar();
-                if (bar != null) {
-                    if (bar.isShowing()) {
-                        bar.hide();
-                        hidePickerButtons();
-                    } else {
-                        bar.show();
-                        showPickerButtons();
-                    }
+        imageView.setOnClickListener(v -> {
+            ActionBar bar1 = getSupportActionBar();
+            if (bar1 != null) {
+                if (bar1.isShowing()) {
+                    bar1.hide();
+                    hidePickerButtons();
+                } else {
+                    bar1.show();
+                    showPickerButtons();
                 }
             }
         });

@@ -13,12 +13,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -145,12 +147,12 @@ public class ChatActivity extends ChiefActivity {
 
         setContentView(R.layout.chat_activity);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        buddyNick = (TextView) toolbar.findViewById(R.id.buddy_nick);
-        buddyStatusMessage = (ScrollingTextView) toolbar.findViewById(R.id.buddy_status_message);
-        buddyStatusIcon = (ImageView) toolbar.findViewById(R.id.buddy_status_icon);
+        buddyNick = toolbar.findViewById(R.id.buddy_nick);
+        buddyStatusMessage = toolbar.findViewById(R.id.buddy_status_message);
+        buddyStatusIcon = toolbar.findViewById(R.id.buddy_status_icon);
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();
@@ -203,7 +205,7 @@ public class ChatActivity extends ChiefActivity {
         chatHistoryAdapter.setSelectionModeListener(selectionModeListener);
         chatHistoryAdapter.setHistoryIntegrityListener(historyIntegrityListener);
 
-        chatList = (RecyclerView) findViewById(R.id.chat_list);
+        chatList = findViewById(R.id.chat_list);
         chatLayoutManager = new ChatLayoutManager(this);
         chatList.setLayoutManager(chatLayoutManager);
         chatList.setHasFixedSize(true);
@@ -215,29 +217,18 @@ public class ChatActivity extends ChiefActivity {
         chatList.setBackgroundResource(chatBackground);
 
         // Send button and message field initialization.
-        final ImageButton sendButton = (ImageButton) findViewById(R.id.send_button);
-        messageText = (EditText) findViewById(R.id.message_text);
+        final ImageButton sendButton = findViewById(R.id.send_button);
+        messageText = findViewById(R.id.message_text);
         setMessageTextFromDraft(buddy);
         applySharingData(sharingData);
-        messageText.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                hidePopup();
-            }
-        });
+        messageText.setOnClickListener(v -> hidePopup());
         messageWatcher = new MessageWatcher();
         messageText.addTextChangedListener(messageWatcher);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
+        sendButton.setOnClickListener(v -> sendMessage());
 
-        chatRoot = (LinearLayout) findViewById(R.id.chat_root);
+        chatRoot = findViewById(R.id.chat_root);
         popupView = getLayoutInflater().inflate(R.layout.smileys_popup, chatRoot, false);
-        smileysFooter = (LinearLayout) findViewById(R.id.smileys_footer);
+        smileysFooter = findViewById(R.id.smileys_footer);
 
         // Defining default height of keyboard.
         initKeyboardHeight = (int) getResources().getDimension(R.dimen.init_keyboard_height);
@@ -254,28 +245,24 @@ public class ChatActivity extends ChiefActivity {
         };
 
         // Showing and Dismissing pop up on clicking smileys button.
-        ImageView smileysButton = (ImageView) findViewById(R.id.smileys_button);
-        smileysButton.setOnClickListener(new View.OnClickListener() {
+        ImageView smileysButton = findViewById(R.id.smileys_button);
+        smileysButton.setOnClickListener(v -> {
+            if (popupWindow.isShowing()) {
+                popupWindow.dismiss();
+            } else {
+                // This must be refactored.
+                smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                        keyboardWidth, keyboardHeight, callback);
+                smileysPager.setAdapter(smileysAdapter);
 
-            @Override
-            public void onClick(View v) {
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
+                popupWindow.setHeight(keyboardHeight);
+                if (isKeyboardVisible) {
+                    smileysFooter.setVisibility(LinearLayout.GONE);
                 } else {
-                    // This must be refactored.
-                    smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
-                            keyboardWidth, keyboardHeight, callback);
-                    smileysPager.setAdapter(smileysAdapter);
-
-                    popupWindow.setHeight(keyboardHeight);
-                    if (isKeyboardVisible) {
-                        smileysFooter.setVisibility(LinearLayout.GONE);
-                    } else {
-                        smileysFooter.setVisibility(LinearLayout.VISIBLE);
-                    }
-
-                    popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, getSoftButtonsBarHeight());
+                    smileysFooter.setVisibility(LinearLayout.VISIBLE);
                 }
+
+                popupWindow.showAtLocation(chatRoot, Gravity.BOTTOM, 0, getSoftButtonsBarHeight());
             }
         });
 
@@ -283,23 +270,17 @@ public class ChatActivity extends ChiefActivity {
 
         ViewTreeObserver treeObserver = chatRoot.getViewTreeObserver();
         if (treeObserver != null) {
-            treeObserver.addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener() {
-
-                        @Override
-                        public void onGlobalLayout() {
-                            // This must be refactored.
-                            onGlobalLayoutUpdated();
-                            if (isConfigurationChanging) {
-                                isConfigurationChanging = false;
-                                updateKeyboardHeight(initKeyboardHeight);
-                                smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
-                                        keyboardWidth, keyboardHeight, callback);
-                                smileysPager.setAdapter(smileysAdapter);
-                            }
-                        }
-                    }
-            );
+            treeObserver.addOnGlobalLayoutListener(() -> {
+                // This must be refactored.
+                onGlobalLayoutUpdated();
+                if (isConfigurationChanging) {
+                    isConfigurationChanging = false;
+                    updateKeyboardHeight(initKeyboardHeight);
+                    smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
+                            keyboardWidth, keyboardHeight, callback);
+                    smileysPager.setAdapter(smileysAdapter);
+                }
+            });
         }
 
         // Checking for we must show keyboard automatically.
@@ -432,14 +413,14 @@ public class ChatActivity extends ChiefActivity {
      * Defining all components of smileys keyboard
      */
     private void initPopupView() {
-        smileysPager = (ViewPager) popupView.findViewById(R.id.smileys_pager);
+        smileysPager = popupView.findViewById(R.id.smileys_pager);
         smileysPager.setOffscreenPageLimit(3);
 
         smileysAdapter = new SmileysPagerAdapter(ChatActivity.this,
                 keyboardWidth, keyboardHeight, callback);
         smileysPager.setAdapter(smileysAdapter);
 
-        CirclePageIndicator pageIndicator = (CirclePageIndicator) popupView.findViewById(R.id.circle_pager);
+        CirclePageIndicator pageIndicator = popupView.findViewById(R.id.circle_pager);
         pageIndicator.setViewPager(smileysPager);
 
         // Creating a pop window for smileys keyboard.

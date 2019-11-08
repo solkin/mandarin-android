@@ -3,11 +3,11 @@ package com.tomclaw.mandarin.main.tasks;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -69,21 +69,18 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
                         .setView(view)
                         .create();
 
-                ListView listView = (ListView) view.findViewById(R.id.accounts_list_view);
+                ListView listView = view.findViewById(R.id.accounts_list_view);
                 final AccountsSelectorAdapter adapter = new AccountsSelectorAdapter(activity, activity.getLoaderManager());
                 listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        try {
-                            int accountDbId = adapter.getAccountDbId(position);
-                            callback.onAccountSelected(accountDbId);
-                        } catch (AccountNotFoundException ignored) {
-                            callback.onNoActiveAccounts();
-                        }
-                        // Hide dialog in any way.
-                        dialog.dismiss();
+                listView.setOnItemClickListener((parent, view1, position, id) -> {
+                    try {
+                        int accountDbId = adapter.getAccountDbId(position);
+                        callback.onAccountSelected(accountDbId);
+                    } catch (AccountNotFoundException ignored) {
+                        callback.onNoActiveAccounts();
                     }
+                    // Hide dialog in any way.
+                    dialog.dismiss();
                 });
                 if (!activity.isFinishing()) {
                     dialog.show();
@@ -98,8 +95,10 @@ public class AccountProviderTask extends WeakObjectTask<Activity> {
 
     public interface AccountProviderCallback {
 
-        public void onAccountSelected(int accountDbId);
+        void onAccountSelected(int accountDbId);
 
-        public void onNoActiveAccounts();
+        void onNoActiveAccounts();
+
     }
+
 }

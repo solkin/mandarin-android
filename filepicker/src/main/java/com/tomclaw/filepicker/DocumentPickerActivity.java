@@ -94,6 +94,7 @@ public class DocumentPickerActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstance) {
         int themeRes = PreferenceHelper.getThemeRes(this);

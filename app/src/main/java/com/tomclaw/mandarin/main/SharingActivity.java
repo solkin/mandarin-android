@@ -54,27 +54,23 @@ public class SharingActivity extends ChiefActivity {
                 getLoaderManager());
         // Accepting adapter.
         generalList.setAdapter(generalAdapter);
-        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Buddy buddy = generalAdapter.getBuddy(position);
-                int accountDbId = buddy.getAccountDbId();
-                String buddyId = buddy.getBuddyId();
-                Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(databaseLayer, buddy, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(Buddy.KEY_STRUCT, buddy)
-                            .putExtra(EXTRA_SHARING_DATA, sharingData);
-                    startActivity(intent);
-                    finish();
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
+        generalList.setOnItemClickListener((parent, view, position, id) -> {
+            Buddy buddy = generalAdapter.getBuddy(position);
+            int accountDbId = buddy.getAccountDbId();
+            String buddyId = buddy.getBuddyId();
+            Logger.log("Opening dialog with buddy: " + buddyId + "(from account db id: " + accountDbId + ")");
+            try {
+                // Trying to open dialog with this buddy.
+                QueryHelper.modifyDialog(databaseLayer, buddy, true);
+                // Open chat dialog for this buddy.
+                Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(Buddy.KEY_STRUCT, buddy)
+                        .putExtra(EXTRA_SHARING_DATA, sharingData);
+                startActivity(intent);
+                finish();
+            } catch (Exception ignored) {
+                // Nothing to do in this case.
             }
         });
 

@@ -128,36 +128,33 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         mediaGrid = findViewById(R.id.media_grid);
         mediaGrid.setAdapter(new AlbumsAdapter(this, albums));
-        mediaGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (selectedAlbum == null) {
-                    if (i < 0 || i >= albums.size()) {
-                        return;
-                    }
-                    selectedAlbum = albums.get(i);
-                    getSupportActionBar().setTitle(selectedAlbum.bucketName);
-                    mediaGrid.setAdapter(new PhotosAdapter(getBaseContext(), selectedAlbum));
-                    fixLayoutInternal();
-                } else {
-                    if (i < 0 || i >= selectedAlbum.photos.size()) {
-                        return;
-                    }
-                    PhotoEntry photoEntity = selectedAlbum.photos.get(i);
-
-                    File photoFile = new File(photoEntity.path);
-                    Uri uri = Uri.fromFile(photoFile);
-                    int selectedCount = selectedPhotos.size();
-                    if (!selectedPhotos.containsKey(photoEntity.imageId)) {
-                        selectedCount++;
-                    }
-                    Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
-                    intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
-                    intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
-                    intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
-                    intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
-                    startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
+        mediaGrid.setOnItemClickListener((adapterView, view, i, l) -> {
+            if (selectedAlbum == null) {
+                if (i < 0 || i >= albums.size()) {
+                    return;
                 }
+                selectedAlbum = albums.get(i);
+                getSupportActionBar().setTitle(selectedAlbum.bucketName);
+                mediaGrid.setAdapter(new PhotosAdapter(getBaseContext(), selectedAlbum));
+                fixLayoutInternal();
+            } else {
+                if (i < 0 || i >= selectedAlbum.photos.size()) {
+                    return;
+                }
+                PhotoEntry photoEntity = selectedAlbum.photos.get(i);
+
+                File photoFile = new File(photoEntity.path);
+                Uri uri = Uri.fromFile(photoFile);
+                int selectedCount = selectedPhotos.size();
+                if (!selectedPhotos.containsKey(photoEntity.imageId)) {
+                    selectedCount++;
+                }
+                Intent intent = new Intent(PhotoPickerActivity.this, PhotoViewerActivity.class);
+                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, photoFile.getName());
+                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
+                intent.putExtra(PhotoViewerActivity.EXTRA_SELECTED_COUNT, selectedCount);
+                intent.putExtra(PhotoViewerActivity.EXTRA_PHOTO_ENTRY, photoEntity);
+                startActivityForResult(intent, PHOTO_VIEW_RESULT_CODE);
             }
         });
 

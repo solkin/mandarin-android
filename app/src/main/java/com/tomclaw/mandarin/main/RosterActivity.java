@@ -104,24 +104,20 @@ public class RosterActivity extends ChiefActivity {
         }
         // Accepting adapter.
         generalList.setAdapter(generalAdapter);
-        generalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StrictBuddy buddy = generalAdapter.getBuddy(position);
-                Logger.log("Opening dialog with buddy: " + buddy.toString());
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(databaseLayer, buddy, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(Buddy.KEY_STRUCT, buddy);
-                    startActivity(intent);
-                    finish();
-                } catch (Exception e) {
-                    // Nothing to do in this case.
-                }
+        generalList.setOnItemClickListener((parent, view, position, id) -> {
+            StrictBuddy buddy = generalAdapter.getBuddy(position);
+            Logger.log("Opening dialog with buddy: " + buddy.toString());
+            try {
+                // Trying to open dialog with this buddy.
+                QueryHelper.modifyDialog(databaseLayer, buddy, true);
+                // Open chat dialog for this buddy.
+                Intent intent = new Intent(RosterActivity.this, ChatActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(Buddy.KEY_STRUCT, buddy);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                // Nothing to do in this case.
             }
         });
         generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());

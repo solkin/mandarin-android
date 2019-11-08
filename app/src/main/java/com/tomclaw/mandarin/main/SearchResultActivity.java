@@ -62,23 +62,15 @@ public class SearchResultActivity extends ChiefActivity {
 
         emptyViewSwitcher = findViewById(android.R.id.empty);
 
-        searchAdapter = new SearchResultAdapter(this, new EndlessListAdapter.EndlessAdapterListener() {
-            @Override
-            public void onLoadMoreItems(int offset) {
-                requestItems(offset);
-            }
-        });
+        searchAdapter = new SearchResultAdapter(this, this::requestItems);
         ListView searchResultList = findViewById(R.id.search_result_list);
         searchResultList.setEmptyView(emptyViewSwitcher);
         searchResultList.setAdapter(searchAdapter);
         requestItems(0);
-        searchResultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ShortBuddyInfo info = searchAdapter.getItem(position);
-                if (info != null) {
-                    showBuddyInfo(info);
-                }
+        searchResultList.setOnItemClickListener((parent, view, position, id) -> {
+            ShortBuddyInfo info = searchAdapter.getItem(position);
+            if (info != null) {
+                showBuddyInfo(info);
             }
         });
     }

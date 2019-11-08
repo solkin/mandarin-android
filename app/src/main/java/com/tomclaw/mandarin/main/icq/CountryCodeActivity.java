@@ -60,13 +60,10 @@ public class CountryCodeActivity extends AppCompatActivity {
         countryCodeAdapter = new CountryCodeAdapter(this, CountriesProvider.getInstance().getCountries(this));
         StickyListHeadersListView listView = findViewById(R.id.countries_list_view);
         listView.setAdapter(countryCodeAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Country country = countryCodeAdapter.getItem(position);
-                setResult(RESULT_OK, new Intent().putExtra(EXTRA_COUNTRY_SHORT_NAME, country.getShortName()));
-                finish();
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Country country = countryCodeAdapter.getItem(position);
+            setResult(RESULT_OK, new Intent().putExtra(EXTRA_COUNTRY_SHORT_NAME, country.getShortName()));
+            finish();
         });
 
         onQueryTextListener = new SearchView.OnQueryTextListener() {

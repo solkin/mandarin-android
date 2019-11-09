@@ -3,9 +3,11 @@ package com.tomclaw.mandarin.main;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +31,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.design.TouchImageView;
 import com.tomclaw.preferences.PreferenceHelper;
+
+import java.util.Objects;
 
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
 
@@ -86,7 +90,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Extract picture path we must show.
-        Bundle extras = getIntent().getExtras();
+        Bundle extras = Objects.requireNonNull(getIntent().getExtras());
         String uriString = extras.getString(EXTRA_PICTURE_URI);
         name = extras.getString(EXTRA_PICTURE_NAME);
         selectedCount = extras.getInt(EXTRA_SELECTED_COUNT, -1);

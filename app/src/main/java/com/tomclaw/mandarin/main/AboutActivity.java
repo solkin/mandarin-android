@@ -5,12 +5,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
@@ -46,31 +46,21 @@ public class AboutActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException ignored) {
         }
 
-        findViewById(R.id.rate_application).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rateApplication();
-            }
-        });
+        findViewById(R.id.rate_application).setOnClickListener(v -> rateApplication());
 
-        findViewById(R.id.all_projects).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                allProjects();
-            }
-        });
+        findViewById(R.id.all_projects).setOnClickListener(v -> allProjects());
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                return true;
-            }
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return false;
     }

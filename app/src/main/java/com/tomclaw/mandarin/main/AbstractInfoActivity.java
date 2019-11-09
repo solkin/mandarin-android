@@ -115,12 +115,7 @@ public abstract class AbstractInfoActivity
             // findViewById(R.id.info_status_title).setVisibility(View.VISIBLE);
             View statusContent = findViewById(R.id.info_status_content);
             statusContent.setVisibility(View.VISIBLE);
-            statusContent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Strings.copyStringToClipboard(AbstractInfoActivity.this, statusString.toString(), R.string.status_copied);
-                }
-            });
+            statusContent.setOnClickListener(v -> Strings.copyStringToClipboard(AbstractInfoActivity.this, statusString.toString(), R.string.status_copied));
 
             ((ImageView) findViewById(R.id.status_icon)).setImageResource(statusImageResource);
             ((TextView) findViewById(R.id.status_text)).setText(statusString);
@@ -129,21 +124,18 @@ public abstract class AbstractInfoActivity
         // Buddy avatar.
         ContactImage contactBadge = findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, getAvatarHash(), getDefaultAvatar(), false);
-        contactBadge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View container = findViewById(R.id.buddy_image_container);
-                int targetHeight;
-                if (container.getWidth() != container.getHeight()) {
-                    targetHeight = container.getWidth();
-                } else {
-                    targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
-                }
-                ResizeAnimation resizeAnimation = new ResizeAnimation(container, targetHeight);
-                resizeAnimation.setInterpolator(new OvershootInterpolator());
-                resizeAnimation.setDuration(500);
-                container.startAnimation(resizeAnimation);
+        contactBadge.setOnClickListener(v -> {
+            View container = findViewById(R.id.buddy_image_container);
+            int targetHeight;
+            if (container.getWidth() != container.getHeight()) {
+                targetHeight = container.getWidth();
+            } else {
+                targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
             }
+            ResizeAnimation resizeAnimation = new ResizeAnimation(container, targetHeight);
+            resizeAnimation.setInterpolator(new OvershootInterpolator());
+            resizeAnimation.setDuration(500);
+            container.startAnimation(resizeAnimation);
         });
     }
 
@@ -496,4 +488,5 @@ public abstract class AbstractInfoActivity
             }
         }
     }
+
 }

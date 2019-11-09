@@ -95,18 +95,8 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
             openDialogButton.setLayoutParams(p);
         }
 
-        addBuddyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addBuddy();
-            }
-        });
-        openDialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog();
-            }
-        });
+        addBuddyButton.setOnClickListener(v -> addBuddy());
+        openDialogButton.setOnClickListener(v -> openDialog());
 
         BuddyCursor buddyCursor = null;
         try {
@@ -203,7 +193,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
         private Buddy buddy;
 
-        public OpenDialogTask(BuddyInfoActivity object, Buddy buddy) {
+        OpenDialogTask(BuddyInfoActivity object, Buddy buddy) {
             super(object);
             this.buddy = buddy;
         }

@@ -1,17 +1,17 @@
 package com.tomclaw.mandarin.main;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.RequestHelper;
@@ -68,22 +68,19 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.remove_account_title);
                 builder.setMessage(R.string.remove_account_text);
-                builder.setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Collection<Integer> selectedAccounts = Collections.singleton(getAccountDbId());
-                        AccountsRemoveTask task = new AccountsRemoveTask(AccountInfoActivity.this, selectedAccounts) {
+                builder.setPositiveButton(R.string.yes_remove, (dialog, which) -> {
+                    Collection<Integer> selectedAccounts = Collections.singleton(getAccountDbId());
+                    AccountsRemoveTask task = new AccountsRemoveTask(AccountInfoActivity.this, selectedAccounts) {
 
-                            @Override
-                            public void onSuccessMain() {
-                                ChiefActivity chiefActivity = getChiefActivity();
-                                if (chiefActivity != null) {
-                                    chiefActivity.finish();
-                                }
+                        @Override
+                        public void onSuccessMain() {
+                            ChiefActivity chiefActivity = getChiefActivity();
+                            if (chiefActivity != null) {
+                                chiefActivity.finish();
                             }
-                        };
-                        TaskExecutor.getInstance().execute(task);
-                    }
+                        }
+                    };
+                    TaskExecutor.getInstance().execute(task);
                 });
                 builder.setNegativeButton(R.string.do_not_remove, null);
                 builder.show();
@@ -109,12 +106,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
         }
 
         View editButton = findViewById(R.id.edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editUserInfo();
-            }
-        });
+        editButton.setOnClickListener(v -> editUserInfo());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             FrameLayout.LayoutParams p;
@@ -150,6 +142,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_USER_INFO_EDIT) {
             if (resultCode == RESULT_OK) {
                 // Obtain fresh info.

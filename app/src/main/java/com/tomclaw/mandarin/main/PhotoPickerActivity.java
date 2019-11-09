@@ -10,9 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -22,12 +19,16 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DecodeFormat;
@@ -45,9 +46,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.bumptech.glide.request.RequestOptions.noTransformation;
-
 import static com.bumptech.glide.request.RequestOptions.centerInsideTransform;
+import static com.bumptech.glide.request.RequestOptions.noTransformation;
 
 /**
  * Created by Solkin on 04.11.2014.
@@ -107,19 +107,9 @@ public class PhotoPickerActivity extends AppCompatActivity {
         albums = loadGalleryPhotosAlbums();
 
         Button cancelButton = findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        cancelButton.setOnClickListener(view -> finish());
         doneButton = findViewById(R.id.done_button);
-        doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendSelectedPhotos();
-            }
-        });
+        doneButton.setOnClickListener(view -> sendSelectedPhotos());
 
         cancelButton.setText(getString(R.string.cancel).toUpperCase());
         doneButtonTextView = doneButton.findViewById(R.id.done_button_text);
@@ -188,11 +178,9 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                return true;
-            }
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return false;
     }
@@ -202,7 +190,10 @@ public class PhotoPickerActivity extends AppCompatActivity {
         if (selectedAlbum != null) {
             selectedAlbum = null;
             mediaGrid.setAdapter(new AlbumsAdapter(this, albums));
-            getSupportActionBar().setTitle(getString(R.string.gallery));
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(getString(R.string.gallery));
+            }
             fixLayoutInternal();
             return;
         }
@@ -211,6 +202,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PICK_IMAGE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
@@ -233,6 +225,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void fixLayoutInternal() {
         int position = mediaGrid.getFirstVisiblePosition();
         WindowManager manager = (WindowManager) getSystemService(Activity.WINDOW_SERVICE);
@@ -263,11 +256,12 @@ public class PhotoPickerActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         fixLayoutInternal();
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     public ArrayList<AlbumEntry> loadGalleryPhotosAlbums() {
         final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
         SparseArray<AlbumEntry> albums = new SparseArray<>();
@@ -336,13 +330,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private class AlbumsAdapter extends BaseAdapter {
 
-        private Context context;
         private ArrayList<AlbumEntry> albums;
 
         private LayoutInflater inflater;
 
-        public AlbumsAdapter(Context context, ArrayList<AlbumEntry> albums) {
-            this.context = context;
+        AlbumsAdapter(Context context, ArrayList<AlbumEntry> albums) {
             this.albums = albums;
             this.inflater = LayoutInflater.from(context);
         }
@@ -385,13 +377,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private class PhotosAdapter extends BaseAdapter {
 
-        private Context context;
         private AlbumEntry albumEntry;
 
         private LayoutInflater inflater;
 
         private PhotosAdapter(Context context, AlbumEntry albumEntry) {
-            this.context = context;
             this.albumEntry = albumEntry;
             this.inflater = LayoutInflater.from(context);
         }
@@ -416,16 +406,13 @@ public class PhotoPickerActivity extends AppCompatActivity {
             if (view == null) {
                 view = inflater.inflate(R.layout.photo_picker_photo_layout, viewGroup, false);
                 View checkImageView = view.findViewById(R.id.photo_check_frame);
-                checkImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PhotoEntry photoEntry = getItem((Integer) ((View) v.getParent()).getTag());
-                        if (selectedPhotos.remove(photoEntry.imageId) == null) {
-                            selectedPhotos.put(photoEntry.imageId, photoEntry);
-                        }
-                        updateSelectedPhoto((View) v.getParent(), photoEntry);
-                        updateSelectedCount();
+                checkImageView.setOnClickListener(v -> {
+                    PhotoEntry photoEntry = getItem((Integer) ((View) v.getParent()).getTag());
+                    if (selectedPhotos.remove(photoEntry.imageId) == null) {
+                        selectedPhotos.put(photoEntry.imageId, photoEntry);
                     }
+                    updateSelectedPhoto((View) v.getParent(), photoEntry);
+                    updateSelectedCount();
                 });
             }
             ViewGroup.LayoutParams params = view.getLayoutParams();
@@ -437,11 +424,10 @@ public class PhotoPickerActivity extends AppCompatActivity {
             view.setTag(position);
             showThumbnail(imageView, photoEntry);
             updateSelectedPhoto(view, photoEntry);
-            boolean showing = false;
             View frameView = view.findViewById(R.id.photo_frame);
-            frameView.setVisibility(showing ? View.GONE : View.VISIBLE);
+            frameView.setVisibility(View.VISIBLE);
             ImageView checkImageView = view.findViewById(R.id.photo_check);
-            checkImageView.setVisibility(showing ? View.GONE : View.VISIBLE);
+            checkImageView.setVisibility(View.VISIBLE);
             return view;
         }
     }
@@ -491,7 +477,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
             doneButtonTextView.setTextColor(0xffffffff);
             doneButtonTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             doneButtonBadgeTextView.setVisibility(View.VISIBLE);
-            doneButtonBadgeTextView.setText("" + selectedPhotos.size());
+            doneButtonBadgeTextView.setText(String.valueOf(selectedPhotos.size()));
             doneButton.setEnabled(true);
         }
     }

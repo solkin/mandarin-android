@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -79,12 +81,9 @@ public class MainActivity extends ChiefActivity {
         drawerLayout.setDrawerTitle(getString(R.string.accounts));
 
         FloatingActionButton actionButton = findViewById(R.id.fab);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RosterActivity.class);
-                startActivity(intent);
-            }
+        actionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RosterActivity.class);
+            startActivity(intent);
         });
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -164,15 +163,12 @@ public class MainActivity extends ChiefActivity {
                 }
             }
         });
-        dialogsAdapter.setClickListener(new RosterDialogsAdapter.ClickListener() {
-            @Override
-            public void onItemClicked(StrictBuddy buddy) {
-                Logger.log("Check out dialog with: " + buddy.toString());
-                Intent intent = new Intent(MainActivity.this, ChatActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        .putExtra(Buddy.KEY_STRUCT, buddy);
-                startActivity(intent);
-            }
+        dialogsAdapter.setClickListener(buddy -> {
+            Logger.log("Check out dialog with: " + buddy.toString());
+            Intent intent = new Intent(MainActivity.this, ChatActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra(Buddy.KEY_STRUCT, buddy);
+            startActivity(intent);
         });
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
     }
@@ -265,7 +261,7 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerLayout.onToggleConfigurationChanged(newConfig);
     }
@@ -343,7 +339,7 @@ public class MainActivity extends ChiefActivity {
                     try {
                         ContentResolver contentResolver = getContentResolver();
                         DatabaseLayer databaseLayer = ContentResolverLayer.from(contentResolver);
-                        Collection<Buddy> selectedBuddies = Collections.<Buddy>unmodifiableCollection(selectionHelper.getSelected());
+                        Collection<Buddy> selectedBuddies = Collections.unmodifiableCollection(selectionHelper.getSelected());
                         QueryHelper.modifyDialogs(databaseLayer, selectedBuddies, false);
                     } catch (Exception ignored) {
                         // Nothing to do in this case.

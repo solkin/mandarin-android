@@ -505,15 +505,12 @@ public class ChatActivity extends ChiefActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.export_history);
                 builder.setMessage(R.string.export_history_text);
-                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
-                                ChatActivity.this,
-                                timeHelper,
-                                chatHistoryAdapter.getBuddy());
-                        TaskExecutor.getInstance().execute(exportHistoryTask);
-                    }
+                builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                    ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
+                            ChatActivity.this,
+                            timeHelper,
+                            chatHistoryAdapter.getBuddy());
+                    TaskExecutor.getInstance().execute(exportHistoryTask);
                 });
                 builder.setNegativeButton(R.string.no, null);
                 builder.show();
@@ -533,13 +530,10 @@ public class ChatActivity extends ChiefActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.clear_history_title);
                 builder.setMessage(R.string.clear_history_text);
-                builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
-                                chatHistoryAdapter.getBuddy());
-                        TaskExecutor.getInstance().execute(clearHistoryTask);
-                    }
+                builder.setPositiveButton(R.string.yes_clear, (dialog, which) -> {
+                    ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
+                            chatHistoryAdapter.getBuddy());
+                    TaskExecutor.getInstance().execute(clearHistoryTask);
                 });
                 builder.setNegativeButton(R.string.do_not_clear, null);
                 builder.show();
@@ -874,14 +868,12 @@ public class ChatActivity extends ChiefActivity {
             new AlertDialog.Builder(ChatActivity.this)
                     .setTitle(R.string.remove_messages)
                     .setMessage(R.string.remove_selected_messages)
-                    .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            QueryHelper.removeMessages(databaseLayer, selectionHelper.getSelected());
-                            mode.finish();
-                        }
+                    .setPositiveButton(R.string.yes_remove, (dialog, which) -> {
+                        QueryHelper.removeMessages(databaseLayer, selectionHelper.getSelected());
+                        mode.finish();
                     })
-                    .setNeutralButton(R.string.do_not_remove, null).show();
+                    .setNeutralButton(R.string.do_not_remove, null)
+                    .show();
         }
     }
 

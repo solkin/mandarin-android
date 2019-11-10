@@ -270,18 +270,15 @@ public class RosterActivity extends ChiefActivity {
                 AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
                         .setTitle(R.string.edit_buddy_name_title)
                         .setView(view)
-                        .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String buddySatisfiedNick = buddyNameText.getText().toString();
-                                // Renaming only if buddy nicks are different.
-                                if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
-                                    QueryHelper.modifyBuddyNick(databaseLayer, buddy,
-                                            buddySatisfiedNick, isPersistent);
-                                    if (isPersistent) {
-                                        RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
-                                                buddyPreviousNick, buddySatisfiedNick);
-                                    }
+                        .setPositiveButton(R.string.apply, (dialog, which) -> {
+                            String buddySatisfiedNick = buddyNameText.getText().toString();
+                            // Renaming only if buddy nicks are different.
+                            if (!TextUtils.equals(buddyPreviousNick, buddySatisfiedNick)) {
+                                QueryHelper.modifyBuddyNick(databaseLayer, buddy,
+                                        buddySatisfiedNick, isPersistent);
+                                if (isPersistent) {
+                                    RequestHelper.requestRename(getContentResolver(), accountDbId, buddyId,
+                                            buddyPreviousNick, buddySatisfiedNick);
                                 }
                             }
                         })

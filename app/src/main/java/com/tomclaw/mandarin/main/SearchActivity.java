@@ -2,22 +2,24 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
+import com.tomclaw.design.AgePickerView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
-import com.tomclaw.design.AgePickerView;
+
+import java.util.Objects;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -47,7 +49,7 @@ public class SearchActivity extends ChiefActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
@@ -69,13 +71,7 @@ public class SearchActivity extends ChiefActivity {
         final MenuItem item = menu.findItem(R.id.search_action_menu);
         TextView actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
-        actionView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                menu.performIdentifierAction(item.getItemId(), 0);
-            }
-        });
+        actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
         return true;
     }
 

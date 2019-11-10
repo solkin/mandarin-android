@@ -6,11 +6,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -18,12 +13,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -49,6 +49,7 @@ import com.tomclaw.preferences.PreferenceHelper;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -76,13 +77,10 @@ public class RosterActivity extends ChiefActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton actionButton = findViewById(R.id.fab);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SearchAccountCallback callback = new SearchAccountCallback(RosterActivity.this);
-                AccountProviderTask task = new AccountProviderTask(RosterActivity.this, callback);
-                TaskExecutor.getInstance().execute(task);
-            }
+        actionButton.setOnClickListener(v -> {
+            SearchAccountCallback callback = new SearchAccountCallback(RosterActivity.this);
+            AccountProviderTask task = new AccountProviderTask(RosterActivity.this, callback);
+            TaskExecutor.getInstance().execute(task);
         });
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -122,21 +120,17 @@ public class RosterActivity extends ChiefActivity {
         });
         generalList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener());
 
-        final ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(actionBar.getThemedContext(),
                 R.array.roster_filter_strings, android.R.layout.simple_spinner_dropdown_item);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionBar.setListNavigationCallbacks(filterAdapter, new ActionBar.OnNavigationListener() {
-
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                setFilterValue(itemPosition);
-                generalAdapter.setRosterFilter(itemPosition);
-                generalAdapter.initLoader();
-                return true;
-            }
+        actionBar.setListNavigationCallbacks(filterAdapter, (itemPosition, itemId) -> {
+            setFilterValue(itemPosition);
+            generalAdapter.setRosterFilter(itemPosition);
+            generalAdapter.initLoader();
+            return true;
         });
         actionBar.setSelectedNavigationItem(generalAdapter.getRosterFilter());
 
@@ -166,13 +160,11 @@ public class RosterActivity extends ChiefActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -258,6 +250,7 @@ public class RosterActivity extends ChiefActivity {
             selectionHelper.clearSelection();
         }
 
+        @SuppressWarnings("TryFinallyCanBeTryWithResources")
         private void renameSelectedBuddy(final Buddy buddy) {
             BuddyCursor buddyCursor = null;
             try {
@@ -316,12 +309,9 @@ public class RosterActivity extends ChiefActivity {
             AlertDialog alertDialog = new AlertDialog.Builder(RosterActivity.this)
                     .setTitle(isMultiple ? R.string.remove_buddies_title : R.string.remove_buddy_title)
                     .setMessage(message)
-                    .setPositiveButton(R.string.yes_remove, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
-                            TaskExecutor.getInstance().execute(task);
-                        }
+                    .setPositiveButton(R.string.yes_remove, (dialog, which) -> {
+                        BuddyRemoveTask task = new BuddyRemoveTask(RosterActivity.this, selectedBuddies);
+                        TaskExecutor.getInstance().execute(task);
                     })
                     .setNegativeButton(R.string.do_not_remove, null)
                     .create();

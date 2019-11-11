@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -38,7 +39,7 @@ public class AccountsAdapter extends CursorAdapter implements
     /**
      * Adapter ID
      */
-    private final int ADAPTER_ID = 0x01;
+    private static final int ADAPTER_ID = 0x01;
 
     /**
      * Columns
@@ -76,6 +77,7 @@ public class AccountsAdapter extends CursorAdapter implements
         CONNECTING_STATUS_FILTER = context.getResources().getColor(R.color.connecting_status_filter);
     }
 
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
@@ -113,15 +115,14 @@ public class AccountsAdapter extends CursorAdapter implements
         }
         ((TextView) view.findViewById(R.id.user_nick)).setText(userNick);
         ((TextView) view.findViewById(R.id.user_id)).setText(userId);
-        TextView statusMessageView = ((TextView) view.findViewById(R.id.user_status_message));
-        ImageView statusImage = ((ImageView) view.findViewById(R.id.status_icon));
+        TextView statusMessageView = view.findViewById(R.id.user_status_message);
+        ImageView statusImage = view.findViewById(R.id.status_icon);
         // Statuses.
         final int statusIndex = cursor.getInt(COLUMN_USER_STATUS);
         final String statusTitle = cursor.getString(COLUMN_USER_STATUS_TITLE);
         final String statusMessage = cursor.getString(COLUMN_USER_STATUS_MESSAGE);
         final boolean isConnecting = cursor.getInt(COLUMN_ACCOUNT_CONNECTING) == 1;
         final String accountType = cursor.getString(COLUMN_ACCOUNT_TYPE);
-        final boolean isConnected = (!isConnecting && statusIndex != StatusUtil.STATUS_OFFLINE);
 
         // Stable status string.
         String userStatusTitle = statusTitle;
@@ -155,26 +156,20 @@ public class AccountsAdapter extends CursorAdapter implements
 
         // Avatar.
         final String avatarHash = cursor.getString(COLUMN_ACCOUNT_AVATAR_HASH);
-        ContactImage userAvatar = (ContactImage) view.findViewById(R.id.user_badge);
+        ContactImage userAvatar = view.findViewById(R.id.user_badge);
         BitmapCache.getInstance().getBitmapAsync(userAvatar, avatarHash, R.drawable.def_avatar_0x48, false);
 
         View userContainer = view.findViewById(R.id.user_container);
-        userContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onAccountClickListener != null) {
-                    onAccountClickListener.onAccountClicked(accountDbId, isConnecting);
-                }
+        userContainer.setOnClickListener(v -> {
+            if (onAccountClickListener != null) {
+                onAccountClickListener.onAccountClicked(accountDbId, isConnecting);
             }
         });
 
         View statusContainer = view.findViewById(R.id.status_container);
-        statusContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onStatusClickListener != null) {
-                    onStatusClickListener.onStatusClicked(accountDbId, accountType, userId, statusIndex, statusTitle, statusMessage, isConnecting);
-                }
+        statusContainer.setOnClickListener(v -> {
+            if (onStatusClickListener != null) {
+                onStatusClickListener.onStatusClicked(accountDbId, accountType, userId, statusIndex, statusTitle, statusMessage, isConnecting);
             }
         });
     }
@@ -278,6 +273,6 @@ public class AccountsAdapter extends CursorAdapter implements
             Online
         }
 
-        public void onAccountsStateChanged(AccountsState state);
+        void onAccountsStateChanged(AccountsState state);
     }
 }

@@ -10,7 +10,10 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -116,7 +119,8 @@ public class RosterDialogsAdapter
     }
 
     @Override
-    public DialogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public DialogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.buddy_item, parent, false);
         return new DialogViewHolder(view);
     }
@@ -192,13 +196,13 @@ public class RosterDialogsAdapter
         DialogViewHolder(View itemView) {
             super(itemView);
 
-            buddyNick = ((TextView) itemView.findViewById(R.id.buddy_nick));
-            buddyStatus = ((ImageView) itemView.findViewById(R.id.buddy_status));
-            buddyStatusMessage = ((TextView) itemView.findViewById(R.id.buddy_status_message));
-            counterText = ((TextView) itemView.findViewById(R.id.counter_text));
+            buddyNick = itemView.findViewById(R.id.buddy_nick);
+            buddyStatus = itemView.findViewById(R.id.buddy_status);
+            buddyStatusMessage = itemView.findViewById(R.id.buddy_status_message);
+            counterText = itemView.findViewById(R.id.counter_text);
             counterLayout = itemView.findViewById(R.id.counter_layout);
             draftIndicator = itemView.findViewById(R.id.draft_indicator);
-            contactBadge = ((ContactBadge) itemView.findViewById(R.id.buddy_badge));
+            contactBadge = itemView.findViewById(R.id.buddy_badge);
         }
 
         void bind(SelectionHelper<StrictBuddy> selectionHelper, BuddyCursor buddyCursor, TimeHelper timeHelper) {
@@ -242,11 +246,11 @@ public class RosterDialogsAdapter
                     String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
 
                     Calendar today = Calendar.getInstance();
-                    today = TimeHelper.clearTimes(today);
+                    TimeHelper.clearTimes(today);
 
                     Calendar yesterday = Calendar.getInstance();
                     yesterday.add(Calendar.DAY_OF_YEAR, -1);
-                    yesterday = TimeHelper.clearTimes(yesterday);
+                    TimeHelper.clearTimes(yesterday);
 
                     if (lastSeen * 1000 > today.getTimeInMillis()) {
                         lastSeenText = context.getString(R.string.last_seen_time, lastSeenTime);
@@ -284,39 +288,28 @@ public class RosterDialogsAdapter
             // On-avatar click listener.
             final StrictBuddy buddy = buddyCursor.toBuddy();
             final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(itemView.getContext(), buddy);
-            contactBadge.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TaskExecutor.getInstance().execute(buddyInfoTask);
-                }
-            });
+            contactBadge.setOnClickListener(v -> TaskExecutor.getInstance().execute(buddyInfoTask));
         }
 
         void bindClickListeners(final ClickListener clickListener,
                                 final SelectionModeListener selectionModeListener,
                                 final SelectionHelper<StrictBuddy> selectionHelper,
                                 final StrictBuddy buddy) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (selectionHelper.isSelectionMode()) {
-                        selectionHelper.toggleChecked(buddy);
-                        selectionModeListener.onItemStateChanged(buddy);
-                        // Check for this was last selected item.
-                        if (selectionHelper.isEmptySelection()) {
-                            selectionModeListener.onNothingSelected();
-                        }
-                    } else {
-                        clickListener.onItemClicked(buddy);
+            itemView.setOnClickListener(v -> {
+                if (selectionHelper.isSelectionMode()) {
+                    selectionHelper.toggleChecked(buddy);
+                    selectionModeListener.onItemStateChanged(buddy);
+                    // Check for this was last selected item.
+                    if (selectionHelper.isEmptySelection()) {
+                        selectionModeListener.onNothingSelected();
                     }
+                } else {
+                    clickListener.onItemClicked(buddy);
                 }
             });
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    selectionModeListener.onLongClicked(buddy, selectionHelper);
-                    return true;
-                }
+            itemView.setOnLongClickListener(v -> {
+                selectionModeListener.onLongClicked(buddy, selectionHelper);
+                return true;
             });
         }
     }

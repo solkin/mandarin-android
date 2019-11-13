@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -91,6 +92,7 @@ public abstract class RosterStickyAdapter extends CursorAdapter
     /**
      * @see android.widget.ListAdapter#getView(int, android.view.View, android.view.ViewGroup)
      */
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         Cursor cursor = getCursor();
@@ -152,17 +154,12 @@ public abstract class RosterStickyAdapter extends CursorAdapter
                 TextUtils.isEmpty(buddyDraft) ? View.GONE : View.VISIBLE);
         // Avatar.
         final String avatarHash = buddyCursor.getAvatarHash();
-        ContactBadge contactBadge = (ContactBadge) view.findViewById(R.id.buddy_badge);
+        ContactBadge contactBadge = view.findViewById(R.id.buddy_badge);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_x48, false);
         // On-avatar click listener.
         final Buddy buddy = buddyCursor.toBuddy();
         final BuddyInfoTask buddyInfoTask = new BuddyInfoTask(context, buddy);
-        contactBadge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(buddyInfoTask);
-            }
-        });
+        contactBadge.setOnClickListener(v -> TaskExecutor.getInstance().execute(buddyInfoTask));
     }
 
     @Override

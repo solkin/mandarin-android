@@ -5,11 +5,12 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
+
+import java.util.Objects;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +37,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
     @Override
@@ -49,25 +50,15 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
 
     @Override
     public void onCoreServiceReady() {
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = Objects.requireNonNull(getSupportActionBar());
         bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(!isStartHelper());
         if (!isStartHelper()) {
             bar.show();
         }
 
-        findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startPhoneLogin();
-            }
-        });
-        findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startPlainLogin();
-            }
-        });
+        findViewById(R.id.phone_login_button).setOnClickListener(v -> startPhoneLogin());
+        findViewById(R.id.uin_login_button).setOnClickListener(v -> startPlainLogin());
     }
 
     @Override
@@ -78,6 +69,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
     public void onCoreServiceIntent(Intent intent) {
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isStartHelper() {
         return getIntent().getBooleanExtra(EXTRA_START_HELPER, false);
     }

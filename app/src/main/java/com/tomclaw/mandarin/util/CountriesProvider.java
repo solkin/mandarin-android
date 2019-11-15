@@ -26,7 +26,7 @@ public class CountriesProvider {
         return Holder.instance;
     }
 
-    private List<Country> countries = new ArrayList<Country>();
+    private List<Country> countries = new ArrayList<>();
 
     public List<Country> getCountries(Context context) {
         if (countries.isEmpty()) {

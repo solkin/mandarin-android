@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.main.icq;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +28,8 @@ import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
+
+import java.util.Objects;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -53,11 +55,11 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.icq_phone_login);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize action bar.
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = Objects.requireNonNull(getSupportActionBar());
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setDisplayShowTitleEnabled(false);
 
@@ -66,24 +68,19 @@ public class PhoneLoginActivity extends AppCompatActivity {
             country = CountriesProvider.getInstance().getCountryByCurrentLocale(this, getString(R.string.default_locale));
         } catch (CountriesProvider.CountryNotFoundException ignored) {
             // This is rather strange situation. No current or event default locale?
-            country = null;
+            country = new Country("USA", 1, "US");
         }
 
-        View.OnClickListener showCountryListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
-                        REQUEST_CODE_COUNTRY);
-            }
-        };
+        View.OnClickListener showCountryListener = v -> startActivityForResult(new Intent(PhoneLoginActivity.this, CountryCodeActivity.class),
+                REQUEST_CODE_COUNTRY);
 
-        countryCodeView = (TextView) findViewById(R.id.country_code_view);
+        countryCodeView = findViewById(R.id.country_code_view);
         countryCodeView.setOnClickListener(showCountryListener);
 
-        countryNameView = (TextView) findViewById(R.id.country_name_view);
+        countryNameView = findViewById(R.id.country_name_view);
         countryNameView.setOnClickListener(showCountryListener);
 
-        phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
+        phoneNumberField = findViewById(R.id.phone_number_field);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         phoneNumberField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -99,28 +96,20 @@ public class PhoneLoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-        phoneNumberField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    if (isActionVisible()) {
-                        requestSms();
-                    }
-                    return true;
+        phoneNumberField.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                if (isActionVisible()) {
+                    requestSms();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
         View view = findViewById(R.id.phone_number_faq_view);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPhoneNumberFaq();
-            }
-        });
+        view.setOnClickListener(v -> showPhoneNumberFaq());
 
-        TextView privacyPolicyView = (TextView) findViewById(R.id.privacy_policy_view);
+        TextView privacyPolicyView = findViewById(R.id.privacy_policy_view);
         privacyPolicyView.setMovementMethod(LinkMovementMethod.getInstance());
         privacyPolicyView.setFocusable(true);
 
@@ -134,12 +123,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
             @Override
             public void onPhoneValidated(final String msisdn, final String transId) {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onSmsSent(msisdn, transId);
-                    }
-                });
+                MainExecutor.execute(() -> onSmsSent(msisdn, transId));
             }
 
             @Override
@@ -148,22 +132,12 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
             @Override
             public void onProtocolError() {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRequestError(R.string.checking_phone_protocol_error);
-                    }
-                });
+                MainExecutor.execute(() -> onRequestError(R.string.checking_phone_protocol_error));
             }
 
             @Override
             public void onNetworkError() {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRequestError(R.string.phone_auth_network_error);
-                    }
-                });
+                MainExecutor.execute(() -> onRequestError(R.string.phone_auth_network_error));
             }
         };
         updateActionVisibility();
@@ -177,6 +151,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
         return getPhoneNumber().length() >= MIN_PHONE_BODY_LENGTH;
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateCountryViews(Country country) {
         countryCodeView.setText("+" + country.getCode());
         countryNameView.setText(country.getName() + " (+" + country.getCode() + ")");
@@ -196,18 +171,13 @@ public class PhoneLoginActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
         TextView actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
-        actionView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                menu.performIdentifierAction(item.getItemId(), 0);
-            }
-        });
+        actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
 
         if (isActionVisible()) {
             item.setVisible(true);
@@ -312,6 +282,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_COUNTRY) {
                 String countryShortName = data.getStringExtra(CountryCodeActivity.EXTRA_COUNTRY_SHORT_NAME);

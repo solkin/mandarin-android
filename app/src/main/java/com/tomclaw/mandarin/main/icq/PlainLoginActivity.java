@@ -5,12 +5,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +16,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -31,6 +31,8 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.preferences.PreferenceHelper;
+
+import java.util.Objects;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -49,24 +51,21 @@ public class PlainLoginActivity extends ChiefActivity {
 
         setContentView(R.layout.icq_uin_login);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
         View view = findViewById(R.id.register_using_phone_view);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(IntroActivity.RESULT_REDIRECT_PHONE_LOGIN);
-                finish();
-            }
+        view.setOnClickListener(v -> {
+            setResult(IntroActivity.RESULT_REDIRECT_PHONE_LOGIN);
+            finish();
         });
 
-        userIdEditText = (EditText) findViewById(R.id.user_id_field);
-        userPasswordEditText = (EditText) findViewById(R.id.user_password_field);
+        userIdEditText = findViewById(R.id.user_id_field);
+        userPasswordEditText = findViewById(R.id.user_password_field);
 
         TextWatcher checkActionTextWatcher = new TextWatcher() {
             @Override
@@ -86,17 +85,14 @@ public class PlainLoginActivity extends ChiefActivity {
         userIdEditText.addTextChangedListener(checkActionTextWatcher);
 
         userPasswordEditText.addTextChangedListener(checkActionTextWatcher);
-        userPasswordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (isActionVisible()) {
-                        checkAccount();
-                    }
-                    return true;
+        userPasswordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (isActionVisible()) {
+                    checkAccount();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
         updateActionVisibility();
@@ -118,13 +114,7 @@ public class PlainLoginActivity extends ChiefActivity {
         final MenuItem item = menu.findItem(R.id.save_action_menu);
         TextView actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
-        actionView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                menu.performIdentifierAction(item.getItemId(), 0);
-            }
-        });
+        actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
 
         if (isActionVisible()) {
             item.setVisible(true);
@@ -179,24 +169,18 @@ public class PlainLoginActivity extends ChiefActivity {
 
                 @Override
                 public void onPassed() {
-                    MainExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            storeAccountRoot();
-                            progressDialog.dismiss();
-                        }
+                    MainExecutor.execute(() -> {
+                        storeAccountRoot();
+                        progressDialog.dismiss();
                     });
                 }
 
                 @Override
                 public void onFailed() {
-                    MainExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dismiss();
-                            Toast.makeText(PlainLoginActivity.this, R.string.invalid_credentials,
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                    MainExecutor.execute(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(PlainLoginActivity.this, R.string.invalid_credentials,
+                                Toast.LENGTH_SHORT).show();
                     });
                 }
             });
@@ -231,4 +215,5 @@ public class PlainLoginActivity extends ChiefActivity {
         imm.hideSoftInputFromWindow(userIdEditText.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(userPasswordEditText.getWindowToken(), 0);
     }
+
 }

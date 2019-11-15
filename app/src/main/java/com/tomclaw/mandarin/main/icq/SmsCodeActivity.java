@@ -6,24 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+
+import com.tomclaw.helpers.TimeHelper;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
 import com.tomclaw.mandarin.core.DatabaseLayer;
@@ -33,10 +33,10 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
-import com.tomclaw.helpers.TimeHelper;
 import com.tomclaw.preferences.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 /**
  * Created by Solkin on 02.10.2014.
@@ -57,7 +57,6 @@ public class SmsCodeActivity extends ChiefActivity {
 
     private String transId;
     private String msisdn;
-    private String phoneFormatted;
 
     private SmsTimer timer;
 
@@ -69,11 +68,11 @@ public class SmsCodeActivity extends ChiefActivity {
 
         setContentView(R.layout.sms_code_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize action bar.
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = Objects.requireNonNull(getSupportActionBar());
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(false);
@@ -81,9 +80,9 @@ public class SmsCodeActivity extends ChiefActivity {
         Intent intent = getIntent();
         msisdn = intent.getStringExtra(EXTRA_MSISDN);
         transId = intent.getStringExtra(EXTRA_TRANS_ID);
-        phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
+        String phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
 
-        smsCodeField = (EditText) findViewById(R.id.sms_code_field);
+        smsCodeField = findViewById(R.id.sms_code_field);
         smsCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,31 +97,25 @@ public class SmsCodeActivity extends ChiefActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-        smsCodeField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (isActionVisible()) {
-                        loginPhone();
-                    }
-                    return true;
+        smsCodeField.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (isActionVisible()) {
+                    loginPhone();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
-        TextView smsCodeHeader = (TextView) findViewById(R.id.sms_code_header_view);
+        TextView smsCodeHeader = findViewById(R.id.sms_code_header_view);
         String text = String.format(getResources().getString(R.string.sms_code_header), phoneFormatted);
         smsCodeHeader.setText(Html.fromHtml(text));
 
-        resendCodeView = (TextView) findViewById(R.id.resend_code_view);
-        resendCodeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.isEnabled()) {
-                    showProgress(R.string.requesting_sms_code);
-                    RegistrationHelper.validatePhone(msisdn, callback);
-                }
+        resendCodeView = findViewById(R.id.resend_code_view);
+        resendCodeView.setOnClickListener(v -> {
+            if (v.isEnabled()) {
+                showProgress(R.string.requesting_sms_code);
+                RegistrationHelper.validatePhone(msisdn, callback);
             }
         });
         startTimer();
@@ -134,13 +127,10 @@ public class SmsCodeActivity extends ChiefActivity {
 
             @Override
             public void onPhoneValidated(final String msisdn, final String transId) {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgress();
-                        setTransId(transId);
-                        startTimer();
-                    }
+                MainExecutor.execute(() -> {
+                    hideProgress();
+                    setTransId(transId);
+                    startTimer();
                 });
             }
 
@@ -150,32 +140,17 @@ public class SmsCodeActivity extends ChiefActivity {
                 accountRoot.setContext(SmsCodeActivity.this);
                 accountRoot.setUserId(login);
                 accountRoot.setClientLoginResult(login, tokenA, sessionKey, expiresIn, hostTime);
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        storeAccountRoot(accountRoot);
-                    }
-                });
+                MainExecutor.execute(() -> storeAccountRoot(accountRoot));
             }
 
             @Override
             public void onProtocolError() {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRequestError(R.string.checking_sms_error);
-                    }
-                });
+                MainExecutor.execute(() -> onRequestError(R.string.checking_sms_error));
             }
 
             @Override
             public void onNetworkError() {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        onRequestError(R.string.checking_sms_error);
-                    }
-                });
+                MainExecutor.execute(() -> onRequestError(R.string.checking_sms_error));
             }
         };
     }
@@ -206,18 +181,13 @@ public class SmsCodeActivity extends ChiefActivity {
         return true;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void inflateMenu(final Menu menu, int menuRes, int menuItem) {
         getMenuInflater().inflate(menuRes, menu);
         final MenuItem item = menu.findItem(menuItem);
         TextView actionView = ((TextView) item.getActionView());
         actionView.setText(actionView.getText().toString().toUpperCase());
-        actionView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                menu.performIdentifierAction(item.getItemId(), 0);
-            }
-        });
+        actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
 
         if (isActionVisible()) {
             item.setVisible(true);
@@ -266,6 +236,7 @@ public class SmsCodeActivity extends ChiefActivity {
         RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void onRequestError(int message) {
         hideProgress();
         showError(message);
@@ -333,10 +304,10 @@ public class SmsCodeActivity extends ChiefActivity {
         private TimeHelper timeHelper;
         private WeakReference<TextView> weakResendCode;
 
-        public SmsTimer(TextView resendCodeView) {
+        SmsTimer(TextView resendCodeView) {
             super(SMS_WAIT_INTERVAL, 1000);
             timeHelper = new TimeHelper(resendCodeView.getContext());
-            weakResendCode = new WeakReference<TextView>(resendCodeView);
+            weakResendCode = new WeakReference<>(resendCodeView);
         }
 
         @Override

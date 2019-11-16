@@ -3,7 +3,6 @@ package com.tomclaw.design;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.View;
 
 /**
  * Created by Solkin on 11.07.2014.
@@ -30,23 +29,20 @@ public class AgePickerView extends PseudoSpinnerView {
             a.recycle();
         }
 
-        setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RangePickerDialog dialog = new RangePickerDialog(context, R.string.select_age,
-                        ageMin, ageMax, valueMin, valueMax, new RangePickerDialog.RangePickerListener() {
-                    @Override
-                    public void onRangePicked(int min, int max) {
-                        updateText(min, max);
-                    }
+        setOnClickListener(v -> {
+            RangePickerDialog dialog = new RangePickerDialog(context, R.string.select_age,
+                    ageMin, ageMax, valueMin, valueMax, new RangePickerDialog.RangePickerListener() {
+                @Override
+                public void onRangePicked(int min, int max) {
+                    updateText(min, max);
+                }
 
-                    @Override
-                    public void onRangeAny() {
-                        updateText(ageMin, ageMax);
-                    }
-                });
-                dialog.show();
-            }
+                @Override
+                public void onRangeAny() {
+                    updateText(ageMin, ageMax);
+                }
+            });
+            dialog.show();
         });
 
         updateText(valueMin, valueMax);

@@ -4,8 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.DatePicker;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +13,7 @@ import java.util.GregorianCalendar;
 /**
  * Created by Solkin on 04.04.2015.
  */
+@SuppressWarnings("unused")
 public class DatePickerView extends PseudoSpinnerView {
 
     /**
@@ -27,40 +26,31 @@ public class DatePickerView extends PseudoSpinnerView {
     public DatePickerView(final Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int initYear, initMonth, initDay;
-                // Check if date set or not. If not set - start choosing from current date.
-                if (isDateSet()) {
-                    initYear = year;
-                    initMonth = month;
-                    initDay = day;
-                } else {
-                    Calendar calendar = Calendar.getInstance();
-                    initYear = calendar.get(Calendar.YEAR);
-                    initMonth = calendar.get(Calendar.MONTH);
-                    initDay = calendar.get(Calendar.DAY_OF_MONTH);
-                }
-                DatePickerDialog dialog = new DatePickerDialog(context,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
-                                updateText(year, monthOfYear, dayOfMonth);
-                            }
-                        }, initYear, initMonth, initDay);
-                dialog.setButton(
-                        DialogInterface.BUTTON_NEGATIVE,
-                        getResources().getString(R.string.date_picker_cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        }
-                );
-                dialog.show();
+        setOnClickListener(v -> {
+            int initYear, initMonth, initDay;
+            // Check if date set or not. If not set - start choosing from current date.
+            if (isDateSet()) {
+                initYear = year;
+                initMonth = month;
+                initDay = day;
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                initYear = calendar.get(Calendar.YEAR);
+                initMonth = calendar.get(Calendar.MONTH);
+                initDay = calendar.get(Calendar.DAY_OF_MONTH);
             }
+            DatePickerDialog dialog = new DatePickerDialog(
+                    context,
+                    (view, year, monthOfYear, dayOfMonth) ->
+                            updateText(year, monthOfYear, dayOfMonth), initYear, initMonth, initDay
+            );
+            dialog.setButton(
+                    DialogInterface.BUTTON_NEGATIVE,
+                    getResources().getString(R.string.date_picker_cancel),
+                    (dialog1, which) -> {
+                    }
+            );
+            dialog.show();
         });
 
         updateText(0, 0, 0);

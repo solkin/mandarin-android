@@ -124,6 +124,7 @@ public class GlobalProvider extends ContentProvider {
     public static final int HISTORY_CONTENT_TYPE_PICTURE = 1;
     public static final int HISTORY_CONTENT_TYPE_VIDEO = 2;
     public static final int HISTORY_CONTENT_TYPE_FILE = 3;
+    public static final int HISTORY_CONTENT_TYPE_PTT = 3;
 
     public static final int HISTORY_CONTENT_STATE_STABLE = 0;
     public static final int HISTORY_CONTENT_STATE_INTERRUPT = 1;

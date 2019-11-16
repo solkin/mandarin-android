@@ -2,4 +2,11 @@
 <resources>
     <dimen name="preview_size">200dp</dimen>
     <dimen name="toolbar_shadow_size">3dp</dimen>
+
+    <dimen name="preview_max_width">220dp</dimen>
+    <dimen name="preview_max_height">220dp</dimen>
+    <dimen name="preview_initial_height">120dp</dimen>
+    <dimen name="preview_initial_width">120dp</dimen>
+    <dimen name="preview_min_width">@dimen/preview_initial_width</dimen>
+    <dimen name="preview_min_height">96dp</dimen>
 </resources>

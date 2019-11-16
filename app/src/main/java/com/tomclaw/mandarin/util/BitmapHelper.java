@@ -242,4 +242,53 @@ public class BitmapHelper {
         return output;
     }
 
+    public static Rect calcPreviewScale(int maxWidth, int maxHeight, int minWidth, int minHeight, int srcWidth, int srcHeight, int orientation) {
+        if (minWidth <= srcWidth && srcWidth <= maxWidth &&
+                minHeight <= srcHeight && srcHeight <= maxHeight)
+            return new Rect(0, 0, srcWidth, srcHeight);
+
+        int[] x = new int[1];
+        int[] y = new int[1];
+        float scale = calcPreviewScale(maxWidth, maxHeight, minWidth, minHeight, srcHeight, srcWidth, orientation, x, y);
+        return new Rect((int) (x[0] * scale), (int) (y[0] * scale), (int) ((srcWidth - x[0]) * scale), (int) ((srcHeight - y[0]) * scale));
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private static float calcPreviewScale(int maxWidth, int maxHeight, int minWidth, int minHeight, int srcHeight, int srcWidth, int orientation, int[] outXOffset, int[] outYOffset) {
+        float scale;
+        boolean scaleByHeight = (srcHeight * maxWidth) > (maxHeight * srcWidth);
+        if (scaleByHeight) {
+            if (orientation != 90 && orientation != 270) {
+                scale = scaleParams(maxHeight, minHeight, minWidth, srcHeight, srcWidth, outYOffset);
+            } else {
+                scale = scaleParams(maxWidth, minWidth, minHeight, srcHeight, srcWidth, outYOffset);
+            }
+        } else {
+            if (orientation != 90 && orientation != 270) {
+                scale = scaleParams(maxWidth, minWidth, minHeight, srcWidth, srcHeight, outXOffset);
+            } else {
+                scale = scaleParams(maxHeight, minHeight, minWidth, srcWidth, srcHeight, outXOffset);
+            }
+        }
+        return scale;
+    }
+
+    private static float scaleParams(int maxWidth, int minWidth, int minHeight, int srcWidth, int srcHeight, int[] outXOffset) {
+        float scale;
+        if (srcWidth > minWidth) {
+            scale = (float) maxWidth / srcWidth;
+            if (scale * srcHeight < minHeight) {
+                scale = (float) minHeight / srcHeight;
+                outXOffset[0] = (int) ((srcWidth - maxWidth / scale) / 2);
+            }
+        } else {
+            scale = (float) minHeight / srcHeight;
+            float w = scale * srcWidth;
+            if (w > maxWidth) {
+                outXOffset[0] = (int) ((w - maxWidth) / (2 * scale));
+            }
+        }
+        return scale;
+    }
+
 }

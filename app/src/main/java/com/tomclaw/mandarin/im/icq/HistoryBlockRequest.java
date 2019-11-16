@@ -43,7 +43,7 @@ public class HistoryBlockRequest extends CabbageRequest {
     }
 
     @Override
-    protected int parseResults(JSONObject results) throws Throwable {
+    protected int parseResults(JSONObject results) {
         GsonSingleton gson = GsonSingleton.getInstance();
         HistoryMessages historyMessages = gson.fromJson(results.toString(), HistoryMessages.class);
         Logger.log("messages received: " + historyMessages.getMessages().size());

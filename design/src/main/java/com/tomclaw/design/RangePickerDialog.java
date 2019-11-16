@@ -1,11 +1,12 @@
 package com.tomclaw.design;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by Solkin on 11.07.2014.
@@ -16,6 +17,7 @@ public class RangePickerDialog extends AlertDialog {
     private NumberPicker pickerMin;
     private NumberPicker pickerMax;
 
+    @SuppressLint("InflateParams")
     public RangePickerDialog(Context context, int title, int min, int max,
                              int initMin, int initMax, final RangePickerListener listener) {
         super(context);
@@ -36,44 +38,23 @@ public class RangePickerDialog extends AlertDialog {
         pickerMin.setValue(initMin);
         pickerMax.setValue(initMax);
 
-        pickerMin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                if (getMinValue() > getMaxValue()) {
-                    setMaxValue(getMinValue());
-                }
+        pickerMin.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            if (getMinValue() > getMaxValue()) {
+                setMaxValue(getMinValue());
             }
         });
 
-        pickerMax.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                if (getMinValue() > getMaxValue()) {
-                    setMinValue(getMaxValue());
-                }
+        pickerMax.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            if (getMinValue() > getMaxValue()) {
+                setMinValue(getMaxValue());
             }
         });
 
         setView(view);
 
-        setButton(BUTTON_NEGATIVE, context.getString(R.string.not_now), new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dismiss();
-            }
-        });
-        setButton(BUTTON_NEUTRAL, context.getString(R.string.age_any), new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                listener.onRangeAny();
-            }
-        });
-        setButton(BUTTON_POSITIVE, context.getString(R.string.apply), new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                listener.onRangePicked(getMinValue(), getMaxValue());
-            }
-        });
+        setButton(BUTTON_NEGATIVE, context.getString(R.string.not_now), (dialog, which) -> dismiss());
+        setButton(BUTTON_NEUTRAL, context.getString(R.string.age_any), (dialog, which) -> listener.onRangeAny());
+        setButton(BUTTON_POSITIVE, context.getString(R.string.apply), (dialog, which) -> listener.onRangePicked(getMinValue(), getMaxValue()));
     }
 
     private void setMinValue(int value) {
@@ -97,5 +78,7 @@ public class RangePickerDialog extends AlertDialog {
         void onRangePicked(int min, int max);
 
         void onRangeAny();
+
     }
+
 }

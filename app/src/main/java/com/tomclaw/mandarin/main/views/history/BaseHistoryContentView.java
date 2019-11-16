@@ -13,6 +13,7 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
 
     private ChatHistoryAdapter.ContentMessageClickListener contentClickListener;
 
+    @SuppressWarnings("WeakerAccess")
     public BaseHistoryContentView(View itemView) {
         super(itemView);
     }
@@ -78,18 +79,17 @@ public abstract class BaseHistoryContentView extends BaseHistoryView {
         this.contentClickListener = contentClickListener;
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected ChatHistoryAdapter.ContentMessageClickListener getContentClickListener() {
         return contentClickListener;
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void bindContentClickListener() {
-        getClickableView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ChatHistoryAdapter.ContentMessageClickListener listener = getContentClickListener();
-                if (listener != null) {
-                    listener.onClicked(getHistoryItem());
-                }
+        getClickableView().setOnClickListener(v -> {
+            ChatHistoryAdapter.ContentMessageClickListener listener = getContentClickListener();
+            if (listener != null) {
+                listener.onClicked(getHistoryItem());
             }
         });
     }

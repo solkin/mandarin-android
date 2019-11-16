@@ -38,20 +38,22 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         super(itemView);
         this.itemView = itemView;
         dateLayout = itemView.findViewById(getDateLayoutViewId());
-        messageDate = (TextView) itemView.findViewById(getDateTextViewId());
+        messageDate = itemView.findViewById(getDateTextViewId());
         addonView = itemView.findViewById(R.id.addon_layout);
-        fromIdView = (TextView) itemView.findViewById(R.id.from_message_id);
-        tillIdView = (TextView) itemView.findViewById(R.id.till_message_id);
+        fromIdView = itemView.findViewById(R.id.from_message_id);
+        tillIdView = itemView.findViewById(R.id.till_message_id);
         if (hasDeliveryState()) {
-            deliveryState = (ImageView) itemView.findViewById(R.id.message_delivery);
+            deliveryState = itemView.findViewById(R.id.message_delivery);
         }
-        timeView = (TextView) itemView.findViewById(getTimeViewId());
+        timeView = itemView.findViewById(getTimeViewId());
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected int getDateLayoutViewId() {
         return R.id.date_layout;
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected int getDateTextViewId() {
         return R.id.message_date;
     }
@@ -60,6 +62,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
 
     protected abstract boolean hasDeliveryState();
 
+    @SuppressWarnings("WeakerAccess")
     public SelectionHelper<Long> getSelectionHelper() {
         return selectionHelper;
     }
@@ -135,6 +138,7 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
         return itemView.findViewById(id);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public ChatHistoryItem getHistoryItem() {
         return historyItem;
     }
@@ -157,25 +161,19 @@ public abstract class BaseHistoryView extends RecyclerView.ViewHolder implements
 
     private void bindClickListeners() {
         View view = getClickableView();
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectionHelper.isSelectionMode()) {
-                    selectionHelper.toggleChecked(historyItem.getMessageDbId());
-                    selectionModeListener.onItemStateChanged(historyItem);
-                    // Check for this was last selected item.
-                    if (selectionHelper.isEmptySelection()) {
-                        selectionModeListener.onNothingSelected();
-                    }
+        view.setOnClickListener(v -> {
+            if (selectionHelper.isSelectionMode()) {
+                selectionHelper.toggleChecked(historyItem.getMessageDbId());
+                selectionModeListener.onItemStateChanged(historyItem);
+                // Check for this was last selected item.
+                if (selectionHelper.isEmptySelection()) {
+                    selectionModeListener.onNothingSelected();
                 }
             }
         });
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                selectionModeListener.onLongClicked(historyItem, selectionHelper);
-                return true;
-            }
+        view.setOnLongClickListener(v -> {
+            selectionModeListener.onLongClicked(historyItem, selectionHelper);
+            return true;
         });
     }
 }

@@ -29,7 +29,7 @@ public class UpdateLastReadTask extends DatabaseTask {
     }
 
     @Override
-    protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
+    protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) {
         Collection<Buddy> buddies;
         Buddy bundleBuddy = bundle.getParcelable(KEY_BUDDY);
         if (bundleBuddy != null) {

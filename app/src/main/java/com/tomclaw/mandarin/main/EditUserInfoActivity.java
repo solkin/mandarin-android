@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -66,6 +67,8 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     private Bitmap manualAvatar;
     private String manualAvatarVirtualHash;
     private boolean isInfoReceived;
+
+    private Uri pickedUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -305,8 +308,10 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                         uri = Uri.parse(data.getAction());
                     }
                     if (uri != null) {
-                        TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
+                        uploadAvatar(uri);
                     }
+                } else {
+                    uploadAvatar(pickedUri);
                 }
                 break;
             }
@@ -324,6 +329,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
     }
 
     private void onAvatarPicked(Uri uri) {
+        this.pickedUri = uri;
         try {
             Intent intent = new Intent(ACTION_CROP);
             intent.setData(uri);
@@ -333,10 +339,16 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             intent.putExtra("outputX", LARGE_AVATAR_SIZE);
             intent.putExtra("outputY", LARGE_AVATAR_SIZE);
             intent.putExtra("noFaceDetection", true);
-            startActivityForResult(intent, CROP_AVATAR_REQUEST_CODE);
+            PackageManager packageManager = getPackageManager();
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivityForResult(intent, CROP_AVATAR_REQUEST_CODE);
+            } else {
+                Logger.log("No Intent available to handle crop action");
+                uploadAvatar(uri);
+            }
         } catch (Throwable ignored) {
             // No such application?!
-            TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
+            uploadAvatar(uri);
         }
     }
 
@@ -381,6 +393,10 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
                 .putExtra(LAST_NAME, getLastName())
                 .putExtra(AVATAR_HASH, manualAvatarVirtualHash));
         finish();
+    }
+
+    private void uploadAvatar(Uri uri) {
+        TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
     }
 
     public static class AvatarSamplingTask extends WeakObjectTask<EditUserInfoActivity> {

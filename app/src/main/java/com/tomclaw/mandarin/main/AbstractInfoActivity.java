@@ -448,7 +448,7 @@ public abstract class AbstractInfoActivity
 
     public static class BuddyInfoRequestTask extends ServiceTask<AbstractInfoActivity> {
 
-        public BuddyInfoRequestTask(AbstractInfoActivity object) {
+        BuddyInfoRequestTask(AbstractInfoActivity object) {
             super(object);
         }
 

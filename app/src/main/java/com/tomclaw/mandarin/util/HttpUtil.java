@@ -121,6 +121,7 @@ public class HttpUtil {
         }
     }
 
+    @SuppressWarnings("CharsetObjectCanBeUsed")
     public static String streamToString(InputStream inputStream) throws IOException {
         return new String(streamToArray(inputStream), HttpUtil.UTF8_ENCODING);
     }
@@ -135,6 +136,7 @@ public class HttpUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
+    @SuppressWarnings("CharsetObjectCanBeUsed")
     public static byte[] stringToArray(String string) throws IOException {
         return string.getBytes(HttpUtil.UTF8_ENCODING);
     }

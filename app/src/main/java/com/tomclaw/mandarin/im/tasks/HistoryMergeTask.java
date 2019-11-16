@@ -36,7 +36,7 @@ public class HistoryMergeTask extends DatabaseTask {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) throws Throwable {
+    protected void runInTransaction(Context context, DatabaseLayer databaseLayer, Bundle bundle) {
         Timer timer = new Timer().start();
         List<MessageData> messages = (List<MessageData>) bundle.getSerializable(KEY_MESSAGES);
         if (messages == null) {

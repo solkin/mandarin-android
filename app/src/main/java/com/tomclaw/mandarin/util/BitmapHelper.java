@@ -28,7 +28,7 @@ import java.io.InputStream;
  */
 public class BitmapHelper {
 
-    public static final long KB_IN_BYTES = 1024;
+    private static final long KB_IN_BYTES = 1024;
 
     /**
      * Buffer is large enough to rewind past any EXIF headers.
@@ -37,9 +37,7 @@ public class BitmapHelper {
 
     public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri, int reqWidth, int reqHeight) {
         Bitmap bitmap;
-        InputStream inputStream = null;
-        try {
-            inputStream = context.getContentResolver().openInputStream(uri);
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
             bitmap = decodeSampledBitmapFromStream(inputStream, reqWidth, reqHeight);
 
             int orientation = getOrientation(context, uri);
@@ -53,13 +51,6 @@ public class BitmapHelper {
             }
         } catch (Throwable ignored) {
             bitmap = null;
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
         return bitmap;
     }
@@ -220,18 +211,12 @@ public class BitmapHelper {
 
     public static String getMediaPath(Context context, Uri uri) {
         String path = null;
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+        try (Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 path = cursor.getString(dataColumnIndex);
             }
         } catch (Throwable ignore) {
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
         return path;
     }
@@ -256,4 +241,5 @@ public class BitmapHelper {
 
         return output;
     }
+
 }

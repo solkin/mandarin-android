@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -39,12 +38,7 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
     }
 
     public void sortParams() {
-        Collections.sort(this, new Comparator<Pair<String, String>>() {
-            @Override
-            public int compare(Pair<String, String> lhs, Pair<String, String> rhs) {
-                return lhs.first.compareTo(rhs.first);
-            }
-        });
+        Collections.sort(this, (lhs, rhs) -> lhs.first.compareTo(rhs.first));
     }
 
     /**
@@ -72,6 +66,6 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
     }
 
     public static HttpParamsBuilder emptyParams() {
-        return new HttpParamsBuilder(Collections.<Pair<String, String>>emptyList());
+        return new HttpParamsBuilder(Collections.emptyList());
     }
 }

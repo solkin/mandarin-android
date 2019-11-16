@@ -50,9 +50,11 @@ public abstract class DatabaseTask extends WeakObjectTask<Context> {
         }
     }
 
-    protected abstract void runInTransaction(Context context,
-                                             DatabaseLayer databaseLayer,
-                                             Bundle bundle) throws Throwable;
+    protected abstract void runInTransaction(
+            Context context,
+            DatabaseLayer databaseLayer,
+            Bundle bundle
+    ) throws Throwable;
 
     protected abstract List<Uri> getModifiedUris();
 

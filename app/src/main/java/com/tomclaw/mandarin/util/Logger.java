@@ -39,4 +39,5 @@ public class Logger {
     public static void logResponse(String message, String response) {
         log(message + " ⟵ " + response);
     }
+
 }

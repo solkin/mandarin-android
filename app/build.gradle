@@ -13,12 +13,12 @@ android {
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
         versionName "2.0"
         resConfigs "ru", "en"
-        manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
+        manifestPlaceholders = [APPCENTER_APP_ID: "16283e6b-ea48-0850-d8f4-c1b41d7a74be"]
     }
     buildTypes {
         release {
@@ -52,7 +52,8 @@ dependencies {
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'
     implementation 'com.github.machinarius:preferencefragment:0.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
-    implementation 'net.hockeyapp.android:HockeySDK:5.1.1'
+    implementation "com.microsoft.appcenter:appcenter-analytics:2.5.0"
+    implementation "com.microsoft.appcenter:appcenter-crashes:2.5.0"
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'

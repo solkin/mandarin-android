@@ -1,7 +1,9 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,13 +35,10 @@ import com.tomclaw.mandarin.im.StrictBuddy;
 import com.tomclaw.mandarin.main.adapters.RosterDialogsAdapter;
 import com.tomclaw.mandarin.main.icq.IntroActivity;
 import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
+import com.tomclaw.mandarin.util.AppCenterHelper;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.preferences.PreferenceHelper;
-
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.CrashManagerListener;
-import net.hockeyapp.android.utils.Util;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -170,22 +171,13 @@ public class MainActivity extends ChiefActivity {
                     .putExtra(Buddy.KEY_STRUCT, buddy);
             startActivity(intent);
         });
+        AppCenterHelper.checkForCrashes(getApplication());
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        checkForCrashes();
-    }
-
-    private void checkForCrashes() {
-        String appIdentifier = Util.getAppIdentifier(this);
-        CrashManager.register(this, appIdentifier, new CrashManagerListener() {
-            public boolean shouldAutoUploadCrashes() {
-                return true;
-            }
-        });
     }
 
     @Override

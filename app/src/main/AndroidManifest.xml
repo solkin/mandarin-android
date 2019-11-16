@@ -20,9 +20,8 @@
         android:theme="@style/Theme.Mandarin.Light"
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
-            android:name="net.hockeyapp.android.appIdentifier"
-            android:value="${HOCKEYAPP_APP_ID}" />
-        <activity android:name="net.hockeyapp.android.UpdateActivity" />
+            android:name="com.microsoft.appcenter.appIdentifier"
+            android:value="${APPCENTER_APP_ID}" />
         <receiver
             android:name=".core.BootCompletedReceiver"
             android:enabled="true"

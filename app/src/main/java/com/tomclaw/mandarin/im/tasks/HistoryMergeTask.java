@@ -22,7 +22,6 @@ import static com.tomclaw.mandarin.core.QueryHelper.insertOrUpdateMessage;
 /**
  * Created by ivsolkin on 26.11.16.
  */
-
 public class HistoryMergeTask extends DatabaseTask {
 
     public static String KEY_MESSAGES = "key_messages";

@@ -32,12 +32,13 @@ public class MessageData {
         this.messageType = messageType;
         this.messageTime = messageTime;
         this.messageText = messageText;
+
     }
 
-    public MessageData(int buddyAccountDbId, String buddyId, long messagePrevId, long messageId,
-                       String cookie, int messageType, long messageTime, String messageText,
-                       int contentType, long contentSize, int contentState, int contentProgress,
-                       String contentUri, String contentName, String previewHash, String contentTag) {
+    MessageData(int buddyAccountDbId, String buddyId, long messagePrevId, long messageId,
+                String cookie, int messageType, long messageTime, String messageText,
+                int contentType, long contentSize, int contentState, int contentProgress,
+                String contentUri, String contentName, String previewHash, String contentTag) {
         this.buddyAccountDbId = buddyAccountDbId;
         this.buddyId = buddyId;
         this.messagePrevId = messagePrevId;

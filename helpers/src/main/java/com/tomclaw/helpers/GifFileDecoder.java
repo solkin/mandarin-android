@@ -43,6 +43,7 @@ public class GifFileDecoder {
     private int loopCount; // iterations; 0 = repeat forever
     private boolean hasGct;
     private final int[] gct = new int[256]; // global color table
+    @SuppressWarnings("FieldCanBeLocal")
     private boolean hasLct;
     private final int[] lct = new int[256]; // local color table
     private int[] act; // active color table
@@ -208,12 +209,14 @@ public class GifFileDecoder {
 
         // rewind file
         reopenStream();
+        //noinspection ResultOfMethodCallIgnored
         in.skip(headerSize);
 
         // recursion - read first frame
         return readFrame();
     }
 
+    @SuppressWarnings("DuplicateBranchesInSwitch")
     private void readExtension() throws IOException {
         int code = read();
         switch (code) {
@@ -222,11 +225,11 @@ public class GifFileDecoder {
                 break;
             case 0xff: // application extension
                 readBlock();
-                String app = "";
+                StringBuilder app = new StringBuilder();
                 for (int i = 0; i < 11; i++) {
-                    app += (char) block[i];
+                    app.append((char) block[i]);
                 }
-                if (app.equals("NETSCAPE2.0")) {
+                if (app.toString().equals("NETSCAPE2.0")) {
                     readNetscapeExt();
                 } else {
                     skip(); // don't care
@@ -322,6 +325,7 @@ public class GifFileDecoder {
         return image;
     }
 
+    @SuppressWarnings({"UnnecessaryLocalVariable", "UnusedAssignment"})
     private void decodeBitmapData() throws IOException {
         final int npix = iw * ih;
         if ((pixels == null) || (pixels.length < npix))
@@ -532,6 +536,7 @@ public class GifFileDecoder {
     }
 
     // Skips variable length blocks up to and including next zero length block.
+    @SuppressWarnings("StatementWithEmptyBody")
     private void skip() throws IOException {
         while (readBlock() > 0) ;
     }

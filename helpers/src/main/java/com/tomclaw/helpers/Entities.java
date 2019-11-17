@@ -9,6 +9,7 @@ import java.util.Map;
  * This class supplies some methods
  * to escape / unescape special chars according XML specifications
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 class Entities {
 
     private static final String[][] BASIC_ARRAY = {
@@ -31,7 +32,7 @@ class Entities {
     }
 
 
-    static interface EntityMap {
+    interface EntityMap {
         void add(String name, int value);
 
         String name(int value);
@@ -40,8 +41,8 @@ class Entities {
     }
 
     static class PrimitiveEntityMap implements EntityMap {
-        private Map<String, Integer> mapNameToValue = new HashMap<String, Integer>();
-        private SparseArray<String> mapValueToName = new SparseArray<String>();
+        private Map<String, Integer> mapNameToValue = new HashMap<>();
+        private SparseArray<String> mapValueToName = new SparseArray<>();
 
         public void add(String name, int value) {
             mapNameToValue.put(name, value);

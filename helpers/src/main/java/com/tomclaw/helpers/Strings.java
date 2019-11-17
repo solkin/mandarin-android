@@ -1,5 +1,6 @@
 package com.tomclaw.helpers;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -26,11 +27,12 @@ import javax.crypto.spec.SecretKeySpec;
  * Date: 13.10.13
  * Time: 20:09
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Strings {
 
-    public static final int DEFAULT_ALPHABET_INDEX = '?';
+    private static final int DEFAULT_ALPHABET_INDEX = '?';
 
-    public static final String UTF8_ENCODING = "UTF-8";
+    private static final String UTF8_ENCODING = "UTF-8";
 
     private static final String MAPPING_ORIGIN = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
@@ -93,6 +95,7 @@ public class Strings {
         return fixed;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static String replaceMappedSymbols(String string, String mapping, String origin) {
         StringBuilder builder = new StringBuilder();
         for (int c = 0; c < string.length(); c++) {
@@ -138,6 +141,7 @@ public class Strings {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     public static String formatSpeed(float bytesPerSecond) {
         float bitsPerSecond = bytesPerSecond * 8;
         int unit = 1000;
@@ -216,7 +220,9 @@ public class Strings {
         String result = source;
         for (String key : patterns.keySet()) {
             String value = patterns.get(key);
-            result = result.replace('{' + key + '}', value);
+            if (value != null) {
+                result = result.replace('{' + key + '}', value);
+            }
         }
         return result;
     }

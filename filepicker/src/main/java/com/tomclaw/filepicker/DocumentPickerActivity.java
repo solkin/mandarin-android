@@ -10,20 +10,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.tomclaw.helpers.AppsMenuHelper;
 import com.tomclaw.preferences.PreferenceHelper;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,16 +61,14 @@ public class DocumentPickerActivity extends AppCompatActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context arg0, Intent intent) {
-            Runnable runnable = new Runnable() {
-                public void run() {
-                    try {
-                        if (currentDir == null) {
-                            listRoots();
-                        } else {
-                            listFiles(currentDir);
-                        }
-                    } catch (Exception ignored) {
+            Runnable runnable = () -> {
+                try {
+                    if (currentDir == null) {
+                        listRoots();
+                    } else {
+                        listFiles(currentDir);
                     }
+                } catch (Exception ignored) {
                 }
             };
             if (Intent.ACTION_MEDIA_UNMOUNTED.equals(intent.getAction())) {
@@ -131,64 +127,56 @@ public class DocumentPickerActivity extends AppCompatActivity {
 
         listAdapter = new ListAdapter(this);
         emptyView = findViewById(R.id.searchEmptyView);
-        emptyView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                return true;
-            }
-        });
+        emptyView.setOnTouchListener((view, event) -> true);
         listView = findViewById(R.id.listView);
         listView.setEmptyView(emptyView);
         listView.setAdapter(listAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ListItem item = items.get(position);
-                File file = item.file;
-                if (file == null) {
-                    HistoryEntry entry = history.remove(history.size() - 1);
-                    setActivityTitle(entry.title);
-                    if (entry.dir != null) {
-                        listFiles(entry.dir);
-                    } else {
-                        listRoots();
-                    }
-                    listView.setSelectionFromTop(entry.scrollItem, entry.scrollOffset);
-                } else if (file.isDirectory()) {
-                    HistoryEntry entry = new HistoryEntry();
-                    entry.scrollItem = listView.getFirstVisiblePosition();
-                    entry.scrollOffset = listView.getChildAt(0).getTop();
-                    entry.dir = currentDir;
-                    entry.title = getActivityTitle();
-                    if (!listFiles(file)) {
-                        return;
-                    }
-                    history.add(entry);
-                    setActivityTitle(item.title);
-                    listView.setSelection(0);
+        listView.setOnItemClickListener((adapterView, view, position, id) -> {
+            ListItem item = items.get(position);
+            File file = item.file;
+            if (file == null) {
+                HistoryEntry entry = history.remove(history.size() - 1);
+                setActivityTitle(entry.title);
+                if (entry.dir != null) {
+                    listFiles(entry.dir);
                 } else {
-                    if (!file.canRead()) {
-                        showErrorBox(getString(R.string.access_error));
-                        return;
-                    }
-                    if (sizeLimit != 0) {
-                        if (file.length() > sizeLimit) {
-                            showErrorBox(
-                                    getString(
-                                            R.string.file_upload_limit,
-                                            formatBytes(getResources(), sizeLimit)
-                                    )
-                            );
-                            return;
-                        }
-                    }
-                    if (file.length() == 0) {
-                        return;
-                    }
-                    Intent intent = new Intent(getIntent().getAction(), Uri.fromFile(file));
-                    setResult(RESULT_OK, intent);
-                    finish();
+                    listRoots();
                 }
+                listView.setSelectionFromTop(entry.scrollItem, entry.scrollOffset);
+            } else if (file.isDirectory()) {
+                HistoryEntry entry = new HistoryEntry();
+                entry.scrollItem = listView.getFirstVisiblePosition();
+                entry.scrollOffset = listView.getChildAt(0).getTop();
+                entry.dir = currentDir;
+                entry.title = getActivityTitle();
+                if (!listFiles(file)) {
+                    return;
+                }
+                history.add(entry);
+                setActivityTitle(item.title);
+                listView.setSelection(0);
+            } else {
+                if (!file.canRead()) {
+                    showErrorBox(getString(R.string.access_error));
+                    return;
+                }
+                if (sizeLimit != 0) {
+                    if (file.length() > sizeLimit) {
+                        showErrorBox(
+                                getString(
+                                        R.string.file_upload_limit,
+                                        formatBytes(getResources(), sizeLimit)
+                                )
+                        );
+                        return;
+                    }
+                }
+                if (file.length() == 0) {
+                    return;
+                }
+                Intent intent = new Intent(getIntent().getAction(), Uri.fromFile(file));
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
         listRoots();
@@ -216,13 +204,9 @@ public class DocumentPickerActivity extends AppCompatActivity {
     }
 
     @Override
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                onBackPressed();
-                break;
-            }
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return true;
     }
@@ -252,14 +236,12 @@ public class DocumentPickerActivity extends AppCompatActivity {
     }
 
     @Override
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case PICK_FILE_RESULT_CODE: {
-                if (resultCode == RESULT_OK) {
-                    setResult(resultCode, data);
-                    finish();
-                }
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_RESULT_CODE) {
+            if (resultCode == RESULT_OK) {
+                setResult(resultCode, data);
+                finish();
             }
         }
     }
@@ -301,14 +283,11 @@ public class DocumentPickerActivity extends AppCompatActivity {
         }
         currentDir = dir;
         items.clear();
-        Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                if (lhs.isDirectory() != rhs.isDirectory()) {
-                    return lhs.isDirectory() ? -1 : 1;
-                }
-                return lhs.getName().compareToIgnoreCase(rhs.getName());
+        Arrays.sort(files, (lhs, rhs) -> {
+            if (lhs.isDirectory() != rhs.isDirectory()) {
+                return lhs.isDirectory() ? -1 : 1;
             }
+            return lhs.getName().compareToIgnoreCase(rhs.getName());
         });
         for (File file : files) {
             if (file.getName().startsWith(".")) {
@@ -370,10 +349,12 @@ public class DocumentPickerActivity extends AppCompatActivity {
                     continue;
                 }
                 String[] info = line.split(" ");
-                if (!aliases.containsKey(info[0])) {
-                    aliases.put(info[0], new ArrayList<String>());
+                ArrayList<String> entry = aliases.get(info[0]);
+                if (entry == null) {
+                    entry = new ArrayList<>();
+                    aliases.put(info[0], entry);
                 }
-                aliases.get(info[0]).add(info[1]);
+                entry.add(info[1]);
                 if (info[1].equals(extStorage)) {
                     extDevice = info[0];
                 }
@@ -381,7 +362,10 @@ public class DocumentPickerActivity extends AppCompatActivity {
             }
             reader.close();
             if (extDevice != null) {
-                result.removeAll(aliases.get(extDevice));
+                List<String> entries = aliases.get(extDevice);
+                if (entries != null) {
+                    result.removeAll(entries);
+                }
                 for (String path : result) {
                     try {
                         ListItem item = new ListItem();

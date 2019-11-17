@@ -1,10 +1,13 @@
 package com.tomclaw.helpers;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
  * Created by ivsolkin on 27.08.16.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class NameValuePair implements Serializable {
 
     private String name;
@@ -35,10 +38,12 @@ public class NameValuePair implements Serializable {
         return value;
     }
 
+    @NonNull
     public String toString() {
         return ("name=" + name + ", " + "value=" + value);
     }
 
+    @SuppressWarnings("EqualsReplaceableByObjectsCall")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

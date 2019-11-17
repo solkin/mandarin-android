@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
+import androidx.annotation.NonNull;
 import androidx.collection.LongSparseArray;
 import android.util.Log;
 
@@ -21,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.nio.IntBuffer;
 import java.util.concurrent.Semaphore;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GifDrawable extends Drawable implements Animatable {
 
     private static final String TAG = "GifImageView";
@@ -121,12 +123,7 @@ public class GifDrawable extends Drawable implements Animatable {
     private synchronized static void start(GifDrawable view) {
         if (INFO) Log.i(TAG, "start");
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                backgroundThread();
-            }
-        });
+        Thread thread = new Thread(GifDrawable::backgroundThread);
 
         ThreadInfo info = new ThreadInfo();
         info.view = new WeakReference<>(view);
@@ -163,7 +160,7 @@ public class GifDrawable extends Drawable implements Animatable {
         if (info != null && !info.paused) {
             try {
                 info.pause.acquire();
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException ignored) {
             }
             info.paused = true;
         }
@@ -298,6 +295,7 @@ public class GifDrawable extends Drawable implements Animatable {
         if (DEBUG) Log.d(TAG, "finished thread " + threadId);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void sendToMain(long threadId, int what, Bitmap bitmap) {
         ThreadParam param = new ThreadParam();
         param.threadId = threadId;
@@ -335,7 +333,7 @@ public class GifDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         if (imageBitmap != null) {
             canvas.drawBitmap(imageBitmap, matrix, paint);
         }

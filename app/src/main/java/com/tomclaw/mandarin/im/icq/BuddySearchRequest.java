@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +57,16 @@ public class BuddySearchRequest extends WimRequest {
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
         // Start to JSON parsing.
-        JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
-        int statusCode = responseObject.getInt(STATUS_CODE);
+        JSONObject responseObject = response.optJSONObject(RESPONSE_OBJECT);
+        int statusCode = 0;
+        if (responseObject != null) {
+            statusCode = responseObject.optInt(STATUS_CODE);
+        } else {
+            RequestHelper.requestBuddyPresence(getAccountRoot().getContentResolver(),
+                    CoreService.getAppSession(), getAccountRoot().getAccountDbId(),
+                    0, 0, Collections.<String>emptyList(), searchOptions);
+            return REQUEST_DELETE;
+        }
         // Check for server reply.
         if (statusCode == WIM_OK) {
             JSONObject data = responseObject.getJSONObject("data");

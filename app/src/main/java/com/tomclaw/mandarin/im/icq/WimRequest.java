@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.text.TextUtils;
+
 import com.tomclaw.mandarin.core.HttpRequest;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
@@ -33,6 +35,9 @@ public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
     }
 
     protected JSONObject parseResponse(String responseString) throws JSONException {
+        if (TextUtils.isEmpty(responseString)) {
+            return new JSONObject();
+        }
         return new JSONObject(responseString);
     }
 

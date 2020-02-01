@@ -70,17 +70,9 @@ public class UserInfoRequest extends WimRequest {
                 Context context = getAccountRoot().getContext();
                 // Only first profile we need.
                 JSONObject user = users.getJSONObject(0);
-                String iconId = user.optString("iconId");
-                String buddyIcon = user.optString("buddyIcon");
-                String largeIconId = user.optString("largeIconId");
+                String buddyIcon = HttpUtil.getAvatarUrl(user.optString("buddyIcon"), buddyId);
                 // Check avatar fields be able to modify.
-                if (!TextUtils.isEmpty(iconId) && !TextUtils.isEmpty(buddyIcon) && iconId.length() > 4 &&
-                        !TextUtils.isEmpty(largeIconId) && largeIconId.length() > 4) {
-                    // Cut four first bytes and replace icon type.
-                    iconId = iconId.substring(4);
-                    largeIconId = largeIconId.substring(4);
-                    buddyIcon = buddyIcon.replace(iconId, largeIconId);
-                    buddyIcon = buddyIcon.replace("buddyIcon", "largeBuddyIcon");
+                if (!TextUtils.isEmpty(buddyIcon)) {
                     String hash = HttpUtil.getUrlHash(buddyIcon);
                     Logger.log("large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.

@@ -10,6 +10,7 @@ import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
@@ -70,11 +71,7 @@ public class BuddyPresenceRequest extends WimRequest {
                 if (profile != null) {
                     ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
                     String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
-                    String buddyIcon = buddy.optString(WimConstants.BUDDY_ICON);
-                    String bigBuddyIcon = buddy.optString(WimConstants.BIG_BUDDY_ICON);
-                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                        buddyIcon = bigBuddyIcon;
-                    }
+                    String buddyIcon = HttpUtil.getAvatarUrl(buddy.optString(WimConstants.BUDDY_ICON), buddyId);
 
                     int statusIndex;
                     try {

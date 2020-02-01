@@ -139,7 +139,7 @@ public class IcqSession {
 
     public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
-    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,bigBuddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
+    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
     private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
@@ -487,12 +487,8 @@ public class IcqSession {
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
                             int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                             String statusTitle = getStatusTitle(moodTitle, statusIndex);
-                            String buddyType = buddyObject.getString(USER_TYPE);
-                            String buddyIcon = buddyObject.optString(BUDDY_ICON);
-                            String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
-                            if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                                buddyIcon = bigBuddyIcon;
-                            }
+                            String buddyType = buddyObject.optString(USER_TYPE);
+                            String buddyIcon = HttpUtil.getAvatarUrl(buddyObject.optString(BUDDY_ICON), buddyId);
                             long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
                             buddyDatas.add(new BuddyData(groupId, groupName, buddyId, buddyNick, statusIndex,
                                     statusTitle, statusMessage, buddyIcon, lastSeen));
@@ -533,11 +529,7 @@ public class IcqSession {
                         buddyNick = sourceObject.optString(FRIENDLY);
                         String buddyStatus = sourceObject.optString(STATE, FALLBACK_STATE);
                         String buddyType = sourceObject.optString(USER_TYPE);
-                        buddyIcon = sourceObject.optString(BUDDY_ICON);
-                        String bigBuddyIcon = sourceObject.optString(WimConstants.BIG_BUDDY_ICON);
-                        if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                            buddyIcon = bigBuddyIcon;
-                        }
+                        buddyIcon = HttpUtil.getAvatarUrl(sourceObject.optString(BUDDY_ICON), buddyId);
                         lastSeen = sourceObject.optLong(LAST_SEEN, -1);
                         statusIndex = getStatusIndex(null, buddyStatus);
                     } else {
@@ -645,11 +637,7 @@ public class IcqSession {
                     int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                     String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
-                    String buddyIcon = eventData.optString(BUDDY_ICON);
-                    String bigBuddyIcon = eventData.optString(WimConstants.BIG_BUDDY_ICON);
-                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                        buddyIcon = bigBuddyIcon;
-                    }
+                    String buddyIcon = HttpUtil.getAvatarUrl(eventData.optString(BUDDY_ICON), buddyId);
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 

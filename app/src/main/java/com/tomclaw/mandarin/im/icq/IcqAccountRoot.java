@@ -297,10 +297,6 @@ public class IcqAccountRoot extends AccountRoot {
 
         // Avatar checking and requesting.
         String buddyIcon = myInfo.getBuddyIcon();
-        String bigBuddyIcon = myInfo.getBigBuddyIcon();
-        if (!TextUtils.isEmpty(bigBuddyIcon)) {
-            buddyIcon = bigBuddyIcon;
-        }
         if (TextUtils.isEmpty(buddyIcon)) {
             setAvatarHash(null);
         } else {

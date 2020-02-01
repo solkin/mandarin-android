@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
@@ -26,7 +27,6 @@ public class MyInfo implements Unobfuscatable {
     private String userType;
     private String attachedPhoneNumber;
     private String buddyIcon;
-    private String bigBuddyIcon;
 
     public String getAimId() {
         return aimId;
@@ -74,11 +74,7 @@ public class MyInfo implements Unobfuscatable {
     }
 
     public String getBuddyIcon() {
-        return buddyIcon;
-    }
-
-    public String getBigBuddyIcon() {
-        return bigBuddyIcon;
+        return HttpUtil.getAvatarUrl(buddyIcon, aimId);
     }
 
     public void setState(String state) {

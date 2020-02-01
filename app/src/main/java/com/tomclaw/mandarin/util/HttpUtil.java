@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.util;
 
+import android.text.TextUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +35,13 @@ public class HttpUtil {
         byte[] md5 = getMD5(url.getBytes());
         BigInteger bi = new BigInteger(md5).abs();
         return bi.toString(RADIX);
+    }
+
+    public static String getAvatarUrl(String buddyIcon, String buddyId) {
+        if (TextUtils.isEmpty(buddyIcon)) {
+            return "";
+        }
+        return "https://api.icq.net/expressions/get?f=native&type=floorLargeBuddyIcon&t=" + buddyId;
     }
 
     private static byte[] getMD5(byte[] data) {

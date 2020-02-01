@@ -38,7 +38,7 @@
 
 # Ugly workaround for 4.2.2 and Support library
 -keep class !android.support.v7.internal.view.menu.*
--keep class implements android.support.v4.internal.view.SupportMenu
+-keep class * implements android.support.v4.internal.view.SupportMenu
 -keep class android.support.v7.** {*;}
 -keep interface android.support.v7.** { *; }
 -dontwarn android.support.v7.**

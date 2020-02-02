@@ -117,7 +117,6 @@ public class HttpUtil {
 
     private static InputStream getResponse(HttpURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
-        InputStream in;
         // Checking for this is error stream.
         if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
             return connection.getErrorStream();

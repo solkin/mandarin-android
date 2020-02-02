@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 15
+        targetSdkVersion 21
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
-        versionName "1.9.8"
+        versionName "1.9.9"
         resConfigs "ru", "en", "be", "uk", "kk"
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }
@@ -50,7 +50,7 @@ dependencies {
     implementation 'se.emilsjolander:stickylistheaders:2.7.0' // TODO: remove
     implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
     implementation 'com.github.machinarius:preferencefragment:0.1.1'
-    implementation 'net.hockeyapp.android:HockeySDK:4.0.2'
+    implementation 'net.hockeyapp.android:HockeySDK:5.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }

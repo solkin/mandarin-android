@@ -37,6 +37,8 @@ android {
     }
     lintOptions {
         warningsAsErrors false
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 

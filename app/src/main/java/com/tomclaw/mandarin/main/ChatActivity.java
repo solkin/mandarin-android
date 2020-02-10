@@ -1,11 +1,13 @@
 package com.tomclaw.mandarin.main;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -14,6 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -90,6 +94,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -100,6 +106,10 @@ public class ChatActivity extends ChiefActivity {
 
     private static final int PICK_FILE_RESULT_CODE = 1;
     private static final int PICK_GALLERY_RESULT_CODE = 2;
+
+    private static final int REQUEST_PICK_GALLERY = 3;
+    private static final int REQUEST_PICK_VIDEO = 4;
+    private static final int REQUEST_PICK_DOCUMENT = 5;
 
     private LinearLayout chatRoot;
     private RecyclerView chatList;
@@ -566,22 +576,15 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.send_picture_menu: {
-                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                checkStoragePermissions(REQUEST_PICK_GALLERY);
                 return true;
             }
             case R.id.send_video_menu: {
-                try {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("video/*");
-                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
-                    return true;
-                } catch (Throwable ignored) {
-                    // No video picker application.
-                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
-                }
+                checkStoragePermissions(REQUEST_PICK_VIDEO);
+                return true;
             }
             case R.id.send_document_menu: {
-                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                checkStoragePermissions(REQUEST_PICK_DOCUMENT);
                 return true;
             }
             default: {
@@ -835,6 +838,68 @@ public class ChatActivity extends ChiefActivity {
                 // Set text to field and move cursor to the end.
                 messageText.setText(share);
                 messageText.setSelection(share.length());
+            }
+        }
+    }
+
+    private void checkStoragePermissions(final int request) {
+        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (!hasPermissions(this, PERMISSION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
+                // Show an explanation to the user
+                Toast.makeText(this, "Please...", Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(ChatActivity.this)
+                        .setTitle("Need permission")
+                        .setMessage("Please")
+                        .setPositiveButton(R.string.yes_mark, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(
+                                        ChatActivity.this,
+                                        new String[]{PERMISSION}, request
+                                );
+                            }
+                        })
+                        .setNeutralButton(R.string.no_need, null).show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this, new String[]{PERMISSION}, request);
+            }
+        } else {
+            onPermissionGranted(request);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted(requestCode);
+        } else {
+            Toast.makeText(this, "The app was not allowed to write your store.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void onPermissionGranted(int request) {
+        switch (request) {
+            case REQUEST_PICK_GALLERY: {
+                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                break;
+            }
+            case REQUEST_PICK_VIDEO: {
+                try {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("video/*");
+                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                } catch (Throwable ignored) {
+                    // No video picker application.
+                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case REQUEST_PICK_DOCUMENT: {
+                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                break;
             }
         }
     }

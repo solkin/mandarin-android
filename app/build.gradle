@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 28
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
         versionName "1.9.9"
         resConfigs "ru", "en", "be", "uk", "kk"

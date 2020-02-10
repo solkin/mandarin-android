@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -844,14 +845,15 @@ public class ChatActivity extends ChiefActivity {
 
     private void checkStoragePermissions(final int request) {
         final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!hasPermissions(this, PERMISSION)) {
+        if (hasPermissions(this, PERMISSION)) {
+            onPermissionGranted(request);
+        } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
                 // Show an explanation to the user
-                Toast.makeText(this, "Please...", Toast.LENGTH_LONG).show();
                 new AlertDialog.Builder(ChatActivity.this)
-                        .setTitle("Need permission")
-                        .setMessage("Please")
-                        .setPositiveButton(R.string.yes_mark, new DialogInterface.OnClickListener() {
+                        .setTitle(R.string.permission_request_title)
+                        .setMessage(R.string.permission_request_message)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ActivityCompat.requestPermissions(
@@ -860,13 +862,11 @@ public class ChatActivity extends ChiefActivity {
                                 );
                             }
                         })
-                        .setNeutralButton(R.string.no_need, null).show();
+                        .show();
             } else {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(this, new String[]{PERMISSION}, request);
             }
-        } else {
-            onPermissionGranted(request);
         }
     }
 
@@ -876,7 +876,7 @@ public class ChatActivity extends ChiefActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             onPermissionGranted(requestCode);
         } else {
-            Toast.makeText(this, "The app was not allowed to write your store.", Toast.LENGTH_LONG).show();
+            Snackbar.make(chatList, R.string.permission_request_message, Snackbar.LENGTH_LONG).show();
         }
     }
 

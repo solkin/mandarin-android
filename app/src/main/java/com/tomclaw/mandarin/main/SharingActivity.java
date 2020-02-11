@@ -144,7 +144,7 @@ public class SharingActivity extends ChiefActivity {
                 // Show an explanation to the user
                 new AlertDialog.Builder(SharingActivity.this)
                         .setTitle(R.string.permission_request_title)
-                        .setMessage(R.string.permission_request_message)
+                        .setMessage(R.string.share_files_permission_request_message)
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -173,7 +173,7 @@ public class SharingActivity extends ChiefActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             onPermissionGranted();
         } else {
-            Snackbar.make(generalList, R.string.permission_request_message, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(generalList, R.string.share_files_permission_request_message, Snackbar.LENGTH_LONG).show();
         }
     }
 

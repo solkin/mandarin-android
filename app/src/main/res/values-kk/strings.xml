@@ -419,6 +419,7 @@
     <string name="incoming_messages">Входящие сообщения</string>
     <string name="file_sharing">Обмен файлами</string>
     <string name="permission_request_title">Доступ к файлам</string>
-    <string name="permission_request_message">Для обмена файлами необходимо разрешить Мандарину доступ к файлам на устройстве</string>
+    <string name="share_files_permission_request_message">Для обмена файлами необходимо разрешить Мандарину доступ к файлам на устройстве</string>
+    <string name="history_export_permission_request_message">Для экспорта истории необходимо разрешить Мандарину доступ к файлам на устройстве</string>
     <string name="ok">OK</string>
 </resources>

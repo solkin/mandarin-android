@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
@@ -113,6 +114,7 @@ public class ChatActivity extends ChiefActivity {
     private static final int REQUEST_PICK_DOCUMENT = 5;
     private static final int REQUEST_CLICK_INCOMING = 6;
     private static final int REQUEST_CLICK_OUTGOING = 7;
+    private static final int REQUEST_HISTORY_EXPORT = 8;
 
     private LinearLayout chatRoot;
     private RecyclerView chatList;
@@ -537,21 +539,17 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.export_history_menu: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.export_history);
-                builder.setMessage(R.string.export_history_text);
-                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
-                                ChatActivity.this,
-                                timeHelper,
-                                chatHistoryAdapter.getBuddyDbId());
-                        TaskExecutor.getInstance().execute(exportHistoryTask);
-                    }
-                });
-                builder.setNegativeButton(R.string.no, null);
-                builder.show();
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.export_history)
+                        .setMessage(R.string.export_history_text)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkStoragePermissions(REQUEST_HISTORY_EXPORT);
+                            }
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
                 return true;
             }
             case R.id.close_chat_menu: {
@@ -856,7 +854,7 @@ public class ChatActivity extends ChiefActivity {
                 // Show an explanation to the user
                 new AlertDialog.Builder(ChatActivity.this)
                         .setTitle(R.string.permission_request_title)
-                        .setMessage(R.string.permission_request_message)
+                        .setMessage(getPermissionsRequestMessage(request))
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -881,7 +879,7 @@ public class ChatActivity extends ChiefActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             onPermissionGranted(requestCode);
         } else {
-            Snackbar.make(chatList, R.string.permission_request_message, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(chatList, getPermissionsRequestMessage(requestCode), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -920,7 +918,31 @@ public class ChatActivity extends ChiefActivity {
                         historyItem.getPreviewHash(), historyItem.getMessageCookie());
                 break;
             }
+            case REQUEST_HISTORY_EXPORT: {
+                ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
+                        this,
+                        timeHelper,
+                        chatHistoryAdapter.getBuddyDbId()
+                );
+                TaskExecutor.getInstance().execute(exportHistoryTask);
+                break;
+            }
         }
+    }
+
+    @StringRes
+    private static int getPermissionsRequestMessage(int request) {
+        switch (request) {
+            case REQUEST_PICK_GALLERY:
+            case REQUEST_PICK_VIDEO:
+            case REQUEST_PICK_DOCUMENT:
+            case REQUEST_CLICK_INCOMING:
+            case REQUEST_CLICK_OUTGOING:
+                return R.string.share_files_permission_request_message;
+            case REQUEST_HISTORY_EXPORT:
+                return R.string.history_export_permission_request_message;
+        }
+        throw new IllegalArgumentException("No message for request type: " + request);
     }
 
     private void onIncomingClicked(int contentState, String contentTag, String contentUri,

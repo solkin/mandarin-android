@@ -1,8 +1,15 @@
 package com.tomclaw.mandarin.main;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,6 +28,8 @@ import com.tomclaw.mandarin.util.Logger;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
+
 /**
  * Created by Igor on 23.04.2015.
  */
@@ -28,9 +37,14 @@ public class SharingActivity extends ChiefActivity {
 
     public static final String EXTRA_SHARING_DATA = "sharing_data";
 
+    private static final int REQUEST_SHARE_FILE = 1;
+
+    private StickyListHeadersListView generalList;
     private SharingData sharingData;
     private RosterStickyAdapter generalAdapter;
     private SearchView.OnQueryTextListener onQueryTextListener;
+
+    private int selectedBuddyDbId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +59,7 @@ public class SharingActivity extends ChiefActivity {
         setSupportActionBar(toolbar);
 
         // Sticky list.
-        StickyListHeadersListView generalList = findViewById(R.id.sharing_list_view);
+        generalList = findViewById(R.id.sharing_list_view);
         generalAdapter = new RosterSharingAdapter(this,
                 getLoaderManager());
         // Accepting adapter.
@@ -54,21 +68,8 @@ public class SharingActivity extends ChiefActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int buddyDbId = generalAdapter.getBuddyDbId(position);
-                Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
-                try {
-                    // Trying to open dialog with this buddy.
-                    QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
-                    // Open chat dialog for this buddy.
-                    Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
-                            .putExtra(EXTRA_SHARING_DATA, sharingData);
-                    startActivity(intent);
-                    finish();
-                } catch (Exception ignored) {
-                    // Nothing to do in this case.
-                }
+                selectedBuddyDbId = generalAdapter.getBuddyDbId(position);
+                checkStoragePermissions();
             }
         });
 
@@ -131,6 +132,66 @@ public class SharingActivity extends ChiefActivity {
             overridePendingTransition(0, 0);
             startActivity(accountAddIntent);
             finish();
+        }
+    }
+
+    private void checkStoragePermissions() {
+        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (hasPermissions(this, PERMISSION)) {
+            onPermissionGranted();
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
+                // Show an explanation to the user
+                new AlertDialog.Builder(SharingActivity.this)
+                        .setTitle(R.string.permission_request_title)
+                        .setMessage(R.string.permission_request_message)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(
+                                        SharingActivity.this,
+                                        new String[]{PERMISSION},
+                                        REQUEST_SHARE_FILE
+                                );
+                            }
+                        })
+                        .show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{PERMISSION},
+                        REQUEST_SHARE_FILE
+                );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted();
+        } else {
+            Snackbar.make(generalList, R.string.permission_request_message, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onPermissionGranted() {
+        int buddyDbId = selectedBuddyDbId;
+        Logger.log("Opening dialog with buddy (db id): " + buddyDbId);
+        try {
+            // Trying to open dialog with this buddy.
+            QueryHelper.modifyDialog(getContentResolver(), buddyDbId, true);
+            // Open chat dialog for this buddy.
+            Intent intent = new Intent(SharingActivity.this, ChatActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                    .putExtra(EXTRA_SHARING_DATA, sharingData);
+            startActivity(intent);
+            finish();
+        } catch (Exception ignored) {
+            // Nothing to do in this case.
         }
     }
 

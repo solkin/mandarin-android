@@ -80,7 +80,7 @@ public class HistoryDispatcher {
             );
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
-            notificationChannel.enableVibration(true);
+            notificationChannel.enableVibration(false);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
@@ -292,7 +292,7 @@ public class HistoryDispatcher {
                             RingtoneManager.getRingtone(context, uri).play();
                         }
                         if (PreferenceHelper.isVibrate(context)) {
-                            notificationBuilder.setVibrate(new long[]{0, 500});
+                            vibrate(500);
                         }
                         if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(

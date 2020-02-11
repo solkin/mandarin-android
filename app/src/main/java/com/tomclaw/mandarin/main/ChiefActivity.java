@@ -104,9 +104,9 @@ public abstract class ChiefActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        /** Unbind **/
+        // Unbind
         unbindCoreService();
-        /** Destroy **/
+        // Destroy
         super.onDestroy();
         Logger.log("ChiefActivity onDestroy");
     }
@@ -115,14 +115,14 @@ public abstract class ChiefActivity extends AppCompatActivity {
      * Running core service
      */
     public void startCoreService() {
-        /** Checking for core service is down **/
+        // Checking for core service is down
         if (!checkCoreService()) {
-            /** Starting service **/
+            // Starting service
             Intent intent = new Intent(this, CoreService.class)
                     .putExtra(CoreService.EXTRA_ACTIVITY_START_EVENT, true);
             startService(intent);
         }
-        /** Bind in any case **/
+        // Bind in any case
         bindCoreService();
     }
 
@@ -130,42 +130,42 @@ public abstract class ChiefActivity extends AppCompatActivity {
      * Stopping core service
      */
     protected void stopCoreService() {
-        /** Unbind **/
+        // Unbind
         unbindCoreService();
-        /** Stop service **/
+        // Stop service
         Intent intent = new Intent(this, CoreService.class);
         stopService(intent);
     }
 
     protected void bindCoreService() {
         Logger.log("bindCoreService: isServiceBound = " + isServiceBound);
-        /** Checking for service is not already bound **/
+        // Checking for service is not already bound
         if (!isServiceBound) {
-            /** Broadcast receiver **/
+            // Broadcast receiver
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(CoreService.ACTION_CORE_SERVICE);
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     Logger.log("Intent in main activity received: " + intent.getStringExtra("Data"));
-                    /** Checking for special message from service **/
+                    // Checking for special message from service
                     if (intent.getBooleanExtra(CoreService.EXTRA_STAFF_PARAM, false)) {
-                        /** Obtain service state **/
+                        // Obtain service state
                         int serviceState = intent.getIntExtra(CoreService.EXTRA_STATE_PARAM, CoreService.STATE_DOWN);
-                        /** Checking for service state is up **/
+                        // Checking for service state is up
                         if (serviceState == CoreService.STATE_UP) {
                             coreServiceReady();
                         } else if (serviceState == CoreService.STATE_DOWN) {
                             coreServiceDown();
                         }
                     } else {
-                        /** Redirecting intent **/
+                        // Redirecting intent
                         onCoreServiceIntent(intent);
                     }
                 }
             };
             registerReceiver(broadcastReceiver, intentFilter);
-            /** Creating connection to service **/
+            // Creating connection to service
             serviceConnection = new ServiceConnection() {
 
                 public void onServiceDisconnected(ComponentName name) {
@@ -180,7 +180,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
                     Logger.log("onServiceConnected");
                 }
             };
-            /** Binding service **/
+            // Binding service
             bindService(new Intent(this, CoreService.class), serviceConnection, BIND_AUTO_CREATE);
             isServiceBound = true;
             Logger.log("bindService completed");
@@ -188,11 +188,11 @@ public abstract class ChiefActivity extends AppCompatActivity {
     }
 
     protected void unbindCoreService() {
-        /** Checking for service is bound **/
+        // Checking for service is bound
         if (isServiceBound) {
-            /** Unregister broadcast receiver **/
+            // Unregister broadcast receiver
             unregisterReceiver(broadcastReceiver);
-            /** Unbind service **/
+            // Unbind service
             unbindService(serviceConnection);
             isServiceBound = false;
         }

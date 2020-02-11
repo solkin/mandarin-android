@@ -1,19 +1,28 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.util.List;
 import java.util.Random;
+
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,6 +39,9 @@ public class CoreService extends Service {
     private HistoryDispatcher historyDispatcher;
     private AccountsDispatcher accountsDispatcher;
 
+    private static final int NOTIFICATION_ID = 0x42;
+    private static final String NOTIFICATION_CHANNEL_ID = "core-service";
+
     public static final String ACTION_CORE_SERVICE = "core_service";
     public static final String EXTRA_STAFF_PARAM = "staff";
     public static final String EXTRA_STATE_PARAM = "state";
@@ -43,6 +55,7 @@ public class CoreService extends Service {
     public static final int RESTART_TIMEOUT = 5000;
     public static final int MAINTENANCE_TIMEOUT = 60000;
 
+    private NotificationManager notificationManager;
     private int serviceState;
     private long serviceCreateTime;
     private boolean serviceCommandReceived;
@@ -118,6 +131,7 @@ public class CoreService extends Service {
     @Override
     public void onCreate() {
         long time = System.currentTimeMillis();
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Logger.log("CoreService onCreate");
         super.onCreate();
         updateState(STATE_LOADING);
@@ -163,7 +177,58 @@ public class CoreService extends Service {
                 serviceCommandReceived = true;
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence channelName = getString(R.string.foreground_title);
+//            NotificationChannel notificationChannel = new NotificationChannel(
+//                    NOTIFICATION_CHANNEL_ID,
+//                    channelName,
+//                    IMPORTANCE_NONE
+//            );
+//            notificationChannel.enableLights(false);
+//            notificationChannel.enableVibration(false);
+//            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+//            notificationManager.createNotificationChannel(notificationChannel);
+//
+//            PendingIntent pendingIntent = PendingIntent.getActivity(
+//                    this,
+//                    0,
+//                    new Intent(this, MainActivity.class),
+//                    0
+//            );
+//
+//            Notification.Builder builder = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID);
+//            builder.setContentTitle(getString(R.string.foreground_title))
+//                    .setContentText(getString(R.string.foreground_description))
+//                    .setSmallIcon(R.drawable.ic_notification)
+//                    .setContentIntent(pendingIntent)
+//                    .setCategory(Notification.CATEGORY_SERVICE)
+//                    .setOngoing(true);
+//
+//            startForeground(NOTIFICATION_ID, builder.build());
+
+            CharSequence channelName = getString(R.string.foreground_title);
+            String channelId = createNotificationChannel(NOTIFICATION_CHANNEL_ID, channelName);
+            Notification notification = new NotificationCompat.Builder(this, channelId)
+                    .setOngoing(true)
+                    .setContentTitle(getString(R.string.foreground_title))
+                    .setContentText(getString(R.string.foreground_description))
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setPriority(PRIORITY_MIN)
+                    .setCategory(Notification.CATEGORY_SERVICE)
+                    .build();
+            startForeground(NOTIFICATION_ID, notification);
+        }
         return START_NOT_STICKY;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(String channelId, CharSequence channelName) {
+        NotificationChannel chan = new NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.enableLights(false);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationManager.createNotificationChannel(chan);
+        return channelId;
     }
 
     private void onIntentReceived(Intent intent) {

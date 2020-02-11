@@ -291,11 +291,14 @@ public class HistoryDispatcher {
                         }
                         if (PreferenceHelper.isVibrate(context)) {
                             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                            v.vibrate(750);
+                            v.vibrate(500);
                         }
                         if (PreferenceHelper.isLights(context)) {
-                            notificationBuilder.setLights(Settings.LED_COLOR_RGB,
-                                    Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
+                            notificationBuilder.setLights(
+                                    Settings.LED_COLOR_RGB,
+                                    Settings.LED_BLINK_DELAY,
+                                    Settings.LED_BLINK_DELAY
+                            );
                         }
                         onNotificationShown();
                     }

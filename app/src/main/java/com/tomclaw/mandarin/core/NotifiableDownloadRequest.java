@@ -16,6 +16,8 @@ import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.util.ConnectivityHelper;
 import com.tomclaw.mandarin.util.Logger;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+
 /**
  * Created by Solkin on 02.11.2014.
  */
@@ -35,9 +37,11 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
         mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence channelName = context.getString(R.string.file_sharing);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID, channelName, importance);
+                    NOTIFICATION_CHANNEL_ID,
+                    channelName,
+                    IMPORTANCE_LOW
+            );
             notificationChannel.enableLights(false);
             notificationChannel.enableVibration(false);
             mNotifyManager.createNotificationChannel(notificationChannel);

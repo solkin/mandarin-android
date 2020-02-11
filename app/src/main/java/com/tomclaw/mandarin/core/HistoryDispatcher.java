@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -27,6 +28,8 @@ import com.tomclaw.mandarin.util.Logger;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static android.app.NotificationManager.IMPORTANCE_LOW;
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,9 +72,11 @@ public class HistoryDispatcher {
     private void initChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence channelName = context.getString(R.string.incoming_messages);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID, channelName, importance);
+                    NOTIFICATION_CHANNEL_ID,
+                    channelName,
+                    IMPORTANCE_LOW
+            );
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
             notificationChannel.enableVibration(false);
@@ -282,10 +287,11 @@ public class HistoryDispatcher {
                             .setColor(context.getResources().getColor(R.color.accent_color));
                     if (isAlarmRequired && isNotificationCompleted()) {
                         if (PreferenceHelper.isSound(context)) {
-                            notificationBuilder.setSound(PreferenceHelper.getNotificationUri(context));
+                            RingtoneManager.getRingtone(context, PreferenceHelper.getNotificationUri(context)).play();
                         }
                         if (PreferenceHelper.isVibrate(context)) {
-                            notificationBuilder.setVibrate(new long[]{0, 750});
+                            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                            v.vibrate(750);
                         }
                         if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(Settings.LED_COLOR_RGB,

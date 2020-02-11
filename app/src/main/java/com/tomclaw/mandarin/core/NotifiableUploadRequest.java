@@ -11,6 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.im.AccountRoot;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+
 /**
  * Created by Solkin on 21.10.2014.
  */
@@ -30,9 +32,11 @@ public abstract class NotifiableUploadRequest<A extends AccountRoot> extends Ran
         mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence channelName = context.getString(R.string.file_sharing);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID, channelName, importance);
+                    NOTIFICATION_CHANNEL_ID,
+                    channelName,
+                    IMPORTANCE_LOW
+            );
             notificationChannel.enableLights(false);
             notificationChannel.enableVibration(false);
             mNotifyManager.createNotificationChannel(notificationChannel);

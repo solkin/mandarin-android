@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -287,11 +288,11 @@ public class HistoryDispatcher {
                             .setColor(context.getResources().getColor(R.color.accent_color));
                     if (isAlarmRequired && isNotificationCompleted()) {
                         if (PreferenceHelper.isSound(context)) {
-                            RingtoneManager.getRingtone(context, PreferenceHelper.getNotificationUri(context)).play();
+                            Uri uri = PreferenceHelper.getNotificationUri(context);
+                            RingtoneManager.getRingtone(context, uri).play();
                         }
                         if (PreferenceHelper.isVibrate(context)) {
-                            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                            v.vibrate(500);
+                            notificationBuilder.setVibrate(new long[]{0, 500});
                         }
                         if (PreferenceHelper.isLights(context)) {
                             notificationBuilder.setLights(
@@ -314,8 +315,7 @@ public class HistoryDispatcher {
                 }
                 if (onScreen > 0) {
                     Logger.log("HistoryObserver: Vibrate a little");
-                    Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(80);
+                    vibrate(80);
                     QueryHelper.updateOnScreenMessages(contentResolver);
                 }
             } else {
@@ -348,6 +348,11 @@ public class HistoryDispatcher {
 
         private long getNotificationRemain() {
             return notificationCancelTime - System.currentTimeMillis();
+        }
+
+        private void vibrate(long delay) {
+            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(delay);
         }
     }
 }

@@ -126,7 +126,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
      *
      * @return FileOutputStream to store data.
      */
-    public abstract FileOutputStream getOutputStream() throws FileNotFoundException;
+    public abstract FileOutputStream getOutputStream() throws IOException, DownloadCancelledException;
 
     protected abstract void onStarted() throws Throwable;
 

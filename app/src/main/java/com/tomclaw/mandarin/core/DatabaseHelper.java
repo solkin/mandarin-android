@@ -14,6 +14,9 @@ import com.tomclaw.mandarin.util.StringUtil;
 
 import java.util.Random;
 
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomText;
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -135,40 +138,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             PreferenceHelper.setShowStartHelper(context, false);
         } catch (Throwable ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static String generateRandomText(Random r) {
-        int wordCount = 10 + r.nextInt(13);
-        return generateRandomText(r, wordCount);
-    }
-
-    public static String generateRandomText(Random r, int wordCount) {
-
-        StringBuilder sb = new StringBuilder(wordCount);
-        for (int i = 0; i < wordCount; i++) { // For each letter in the word
-            sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
-        }
-        return sb.toString();
-    }
-
-    private static String generateRandomWord(Random r) {
-        return generateRandomWord(r, true);
-    }
-
-    private static String generateRandomWord(Random r, boolean capitalize) {
-        int wordLength = 4 + r.nextInt(6);
-        // Initialize a Random Number Generator with SysTime as the seed
-        StringBuilder sb = new StringBuilder(wordLength);
-        for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
-            sb.append(tmp); // Add it to the String
-        }
-        String word = sb.toString();
-        if (capitalize) {
-            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
-        } else {
-            return word;
         }
     }
 

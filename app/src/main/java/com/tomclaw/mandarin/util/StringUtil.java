@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -150,4 +151,39 @@ public class StringUtil {
         escaped = escaped.substring(1, escaped.length() - 1);
         return escaped;
     }
+
+    public static String generateRandomText(Random r) {
+        int wordCount = 10 + r.nextInt(13);
+        return generateRandomText(r, wordCount);
+    }
+
+    public static String generateRandomText(Random r, int wordCount) {
+
+        StringBuilder sb = new StringBuilder(wordCount);
+        for (int i = 0; i < wordCount; i++) { // For each letter in the word
+            sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
+        }
+        return sb.toString();
+    }
+
+    public static String generateRandomWord(Random r) {
+        return generateRandomWord(r, true);
+    }
+
+    public static String generateRandomWord(Random r, boolean capitalize) {
+        int wordLength = 4 + r.nextInt(6);
+        // Initialize a Random Number Generator with SysTime as the seed
+        StringBuilder sb = new StringBuilder(wordLength);
+        for (int i = 0; i < wordLength; i++) { // For each letter in the word
+            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
+            sb.append(tmp); // Add it to the String
+        }
+        String word = sb.toString();
+        if (capitalize) {
+            return String.valueOf(word.charAt(0)).toUpperCase() + word.substring(1);
+        } else {
+            return word;
+        }
+    }
+
 }

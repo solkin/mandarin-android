@@ -111,6 +111,8 @@ public class ChatActivity extends ChiefActivity {
     private static final int REQUEST_PICK_GALLERY = 3;
     private static final int REQUEST_PICK_VIDEO = 4;
     private static final int REQUEST_PICK_DOCUMENT = 5;
+    private static final int REQUEST_CLICK_INCOMING = 6;
+    private static final int REQUEST_CLICK_OUTGOING = 7;
 
     private LinearLayout chatRoot;
     private RecyclerView chatList;
@@ -144,6 +146,8 @@ public class ChatActivity extends ChiefActivity {
     private TimeHelper timeHelper;
     private MessageWatcher messageWatcher;
     private boolean isSendByEnter;
+
+    private ChatHistoryItem clickedContentItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -858,7 +862,8 @@ public class ChatActivity extends ChiefActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 ActivityCompat.requestPermissions(
                                         ChatActivity.this,
-                                        new String[]{PERMISSION}, request
+                                        new String[]{PERMISSION},
+                                        request
                                 );
                             }
                         })
@@ -901,6 +906,84 @@ public class ChatActivity extends ChiefActivity {
                 startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
                 break;
             }
+            case REQUEST_CLICK_INCOMING: {
+                ChatHistoryItem historyItem = this.clickedContentItem;
+                onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                        historyItem.getContentUri(), historyItem.getContentName(),
+                        historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                break;
+            }
+            case REQUEST_CLICK_OUTGOING: {
+                ChatHistoryItem historyItem = this.clickedContentItem;
+                onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                        historyItem.getContentUri(), historyItem.getContentName(),
+                        historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                break;
+            }
+        }
+    }
+
+    private void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                                   String contentName, String previewHash, String messageCookie) {
+        switch (contentState) {
+            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                QueryHelper.updateFileState(getContentResolver(),
+                        GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+                        messageCookie);
+                break;
+            }
+            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
+            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                TaskExecutor.getInstance().execute(
+                        new StopDownloadingTask(ChatActivity.this, contentTag, messageCookie));
+                break;
+            }
+            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                viewContent(contentName, contentUri, previewHash);
+                break;
+            }
+        }
+    }
+
+    private void onOutgoingClicked(int contentState, String contentTag, String contentUri,
+                                   String contentName, String previewHash, String messageCookie) {
+        switch (contentState) {
+            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
+            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+                RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+                QueryHelper.updateFileState(getContentResolver(),
+                        GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+                        messageCookie);
+                break;
+            }
+            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
+            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+                TaskExecutor.getInstance().execute(
+                        new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));
+                break;
+            }
+            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+                viewContent(contentName, contentUri, previewHash);
+                break;
+            }
+        }
+    }
+
+    private void viewContent(String contentName, String contentUri, String previewHash) {
+        if (FileHelper.getMimeType(contentName).startsWith("image")) {
+            Intent intent = new Intent(this, PhotoViewerActivity.class);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+            startActivity(intent);
         }
     }
 
@@ -1467,86 +1550,20 @@ public class ChatActivity extends ChiefActivity {
         public void onClicked(ChatHistoryItem historyItem) {
             switch (historyItem.getMessageType()) {
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                    onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
-                            historyItem.getContentUri(), historyItem.getContentName(),
-                            historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                    ChatActivity.this.clickedContentItem = historyItem;
+                    checkStoragePermissions(REQUEST_CLICK_INCOMING);
                     break;
                 }
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
-                    onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
-                            historyItem.getContentUri(), historyItem.getContentName(),
-                            historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                    ChatActivity.this.clickedContentItem = historyItem;
+                    checkStoragePermissions(REQUEST_CLICK_OUTGOING);
                     break;
                 }
-            }
-        }
-
-        void onIncomingClicked(int contentState, String contentTag, String contentUri,
-                               String contentName, String previewHash, String messageCookie) {
-            switch (contentState) {
-                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
-                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                            GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
-                            messageCookie);
-                    break;
-                }
-                case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
-                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                    TaskExecutor.getInstance().execute(
-                            new StopDownloadingTask(ChatActivity.this, contentTag, messageCookie));
-                    break;
-                }
-                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                    viewContent(contentName, contentUri, previewHash);
-                    break;
-                }
-            }
-        }
-
-        void onOutgoingClicked(int contentState, String contentTag, String contentUri,
-                               String contentName, String previewHash, String messageCookie) {
-            switch (contentState) {
-                case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
-                case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
-                    RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
-                    QueryHelper.updateFileState(getContentResolver(),
-                            GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
-                            GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
-                            messageCookie);
-                    break;
-                }
-                case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
-                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                    TaskExecutor.getInstance().execute(
-                            new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));
-                    break;
-                }
-                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                    viewContent(contentName, contentUri, previewHash);
-                    break;
-                }
-            }
-        }
-
-        private void viewContent(String contentName, String contentUri, String previewHash) {
-            if (FileHelper.getMimeType(contentName).startsWith("image")) {
-                Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
-                startActivity(intent);
             }
         }
     }
 
-    private class StopDownloadingTask extends ServiceTask<ChiefActivity> {
+    private static class StopDownloadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;
@@ -1576,7 +1593,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class StopUploadingTask extends ServiceTask<ChiefActivity> {
+    private static class StopUploadingTask extends ServiceTask<ChiefActivity> {
 
         private String contentTag;
         private String messageCookie;

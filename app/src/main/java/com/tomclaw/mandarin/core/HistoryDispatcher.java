@@ -80,7 +80,7 @@ public class HistoryDispatcher {
             );
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
-            notificationChannel.enableVibration(false);
+            notificationChannel.enableVibration(true);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }

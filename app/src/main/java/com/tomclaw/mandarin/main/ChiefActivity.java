@@ -120,7 +120,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
             // Starting service
             Intent intent = new Intent(this, CoreService.class)
                     .putExtra(CoreService.EXTRA_ACTIVITY_START_EVENT, true);
-            startService(intent);
+            CoreService.startCoreService(this, intent);
         }
         // Bind in any case
         bindCoreService();

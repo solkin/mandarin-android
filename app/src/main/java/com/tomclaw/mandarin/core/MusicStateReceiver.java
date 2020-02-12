@@ -119,7 +119,7 @@ public class MusicStateReceiver extends BroadcastReceiver {
             serviceIntent.putExtra(EXTRA_MUSIC_STATUS_MESSAGE, statusMessage);
         }
         serviceIntent.putExtra(EXTRA_MUSIC_EVENT, true);
-        context.startService(serviceIntent);
+        CoreService.startCoreService(context, serviceIntent);
     }
 
     public static boolean isMusicActive(Context context) {

@@ -53,7 +53,7 @@ public class AccountsDispatcher {
                 // Some account has connecting or connected.
                 Intent serviceIntent = new Intent(context, CoreService.class)
                         .putExtra(CoreService.EXTRA_ON_CONNECTED_EVENT, true);
-                context.startService(serviceIntent);
+                CoreService.startCoreService(context, serviceIntent);
             }
         }
     }

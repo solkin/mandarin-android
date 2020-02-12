@@ -34,7 +34,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
         Intent serviceIntent = new Intent(context, CoreService.class)
                 .putExtra(EXTRA_NETWORK_EVENT, true)
                 .putExtra(EXTRA_CONNECTIVITY_STATUS, isConnected);
-        context.startService(serviceIntent);
+        CoreService.startCoreService(context, serviceIntent);
     }
 
     public IntentFilter getIntentFilter() {

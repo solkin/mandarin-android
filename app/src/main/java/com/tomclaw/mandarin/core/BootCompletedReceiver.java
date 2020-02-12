@@ -25,7 +25,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             // Starting service.
             Intent serviceIntent = new Intent(context, CoreService.class)
                     .putExtra(EXTRA_BOOT_EVENT, true);
-            context.startService(serviceIntent);
+            CoreService.startCoreService(context, serviceIntent);
         }
     }
 }

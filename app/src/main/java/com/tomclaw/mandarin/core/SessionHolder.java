@@ -145,10 +145,6 @@ public class SessionHolder {
         throw new AccountNotFoundException();
     }
 
-    public List<AccountRoot> getAccountsList() {
-        return accountRootList;
-    }
-
     public AccountRoot getAccount(int accountDbId) throws AccountNotFoundException {
         for (AccountRoot accountRoot : accountRootList) {
             // Checking for account db id equals.

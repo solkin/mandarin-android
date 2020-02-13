@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -20,7 +19,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
 
-import java.util.List;
 import java.util.Random;
 
 import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
@@ -37,7 +35,9 @@ public class CoreService extends Service {
     private RequestDispatcher requestDispatcher;
     private RequestDispatcher downloadDispatcher;
     private RequestDispatcher uploadDispatcher;
+    @SuppressWarnings("FieldCanBeLocal")
     private HistoryDispatcher historyDispatcher;
+    @SuppressWarnings("FieldCanBeLocal")
     private AccountsDispatcher accountsDispatcher;
 
     private static final int NOTIFICATION_ID = 0x42;
@@ -64,46 +64,39 @@ public class CoreService extends Service {
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
 
-        public int getServiceState() throws RemoteException {
+        public int getServiceState() {
             return serviceState;
         }
 
         @Override
-        public long getUpTime() throws RemoteException {
+        public long getUpTime() {
             return System.currentTimeMillis() - getServiceCreateTime();
         }
 
         @Override
-        public String getAppSession() throws RemoteException {
+        public String getAppSession() {
             return appSession;
         }
 
         @Override
-        public List getAccountsList() throws RemoteException {
-            Logger.log("returning " + sessionHolder.getAccountsList().size() + " accounts");
-            return sessionHolder.getAccountsList();
-        }
-
-        @Override
-        public void holdAccount(int accountDbId) throws RemoteException {
+        public void holdAccount(int accountDbId) {
             Logger.log("hold account " + accountDbId);
             sessionHolder.holdAccountRoot(accountDbId);
         }
 
         @Override
-        public boolean removeAccount(int accountDbId) throws RemoteException {
+        public boolean removeAccount(int accountDbId) {
             return sessionHolder.removeAccountRoot(accountDbId);
         }
 
         @Override
-        public void updateAccountStatusIndex(String accountType, String userId,
-                                             int statusIndex) throws RemoteException {
+        public void updateAccountStatusIndex(String accountType, String userId, int statusIndex) {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
         }
 
         @Override
         public void updateAccountStatus(String accountType, String userId, int statusIndex,
-                                        String statusTitle, String statusMessage) throws RemoteException {
+                                        String statusTitle, String statusMessage) {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
 
@@ -118,12 +111,12 @@ public class CoreService extends Service {
         }
 
         @Override
-        public boolean stopDownloadRequest(String tag) throws RemoteException {
+        public boolean stopDownloadRequest(String tag) {
             return downloadDispatcher.stopRequest(tag);
         }
 
         @Override
-        public boolean stopUploadingRequest(String tag) throws RemoteException {
+        public boolean stopUploadingRequest(String tag) {
             return uploadDispatcher.stopRequest(tag);
         }
     };
@@ -164,6 +157,7 @@ public class CoreService extends Service {
     }
 
     private void initForeground() {
+        if (!isForegroundService()) return;
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.deleteNotificationChannel(CHANNEL_ID);
@@ -359,10 +353,14 @@ public class CoreService extends Service {
     }
 
     public static void startCoreService(Context context, Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isForegroundService()) {
             context.startForegroundService(intent);
         } else {
             context.startService(intent);
         }
+    }
+
+    public static boolean isForegroundService() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 }

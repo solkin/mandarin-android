@@ -10,6 +10,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
+import static com.tomclaw.mandarin.util.MetricsHelper.dp;
+
 /**
  * Created by solkin on 13.07.15.
  */
@@ -78,7 +80,4 @@ public class BubbleColorDrawable extends Drawable {
         canvas.drawPath(path, whitePaint);
     }
 
-    private int dp(float v, Context context) {
-        return (int) (v * context.getResources().getDisplayMetrics().density + 0.5);
-    }
 }

@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 import android.util.Log;
 
 import java.io.IOException;

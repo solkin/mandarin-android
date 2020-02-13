@@ -18,7 +18,7 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme"
         android:background="@color/photo_view_action_bar_color" />

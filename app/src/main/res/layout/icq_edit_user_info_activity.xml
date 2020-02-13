@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarTheme" />
 
@@ -75,7 +75,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true">
 
-                            <android.support.design.widget.FloatingActionButton
+                            <com.google.android.material.floatingactionbutton.FloatingActionButton
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/change_avatar_button"

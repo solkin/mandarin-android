@@ -2,9 +2,9 @@ package com.tomclaw.mandarin.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
 

@@ -12,8 +12,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+
+import androidx.core.app.NotificationCompat;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -21,7 +22,7 @@ import com.tomclaw.mandarin.util.Logger;
 
 import java.util.Random;
 
-import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -158,40 +159,50 @@ public class CoreService extends Service {
     }
 
     private void startForeground() {
-        if (!sessionHolder.hasActiveAccounts() || !isForegroundService()) return;
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.deleteNotificationChannel(CHANNEL_ID);
-            final Runnable callback = new Runnable() {
-                @Override
-                public void run() {
-                    String name = getString(R.string.core_service);
-                    NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_MIN);
-                    notificationChannel.setShowBadge(false);
-                    notificationManager.createNotificationChannel(notificationChannel);
-                }
-            };
-            callback.run();
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-            final Notification notification = buildNotification(builder);
-            startForeground(NOTIFICATION_ID, notification);
+        Handler handler = new Handler();
+        if (isForegroundService()) {
+            final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.deleteNotificationChannel(CHANNEL_ID);
+                final Runnable callback = new Runnable() {
+                    @Override
+                    public void run() {
+                        String name = getString(R.string.core_service);
+                        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_MIN);
+                        notificationChannel.setShowBadge(false);
+                        notificationManager.createNotificationChannel(notificationChannel);
+                    }
+                };
+                callback.run();
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+                final Notification notification = buildNotification(builder);
+                startForeground(NOTIFICATION_ID, notification);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.run();
+                        try {
+                            notificationManager.notify(NOTIFICATION_ID, notification);
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                };
+                runnable.run();
+                handler.post(runnable);
+            } else {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "");
+                Notification notification = buildNotification(builder);
+                startForeground(NOTIFICATION_ID, notification);
+            }
+        }
+        if (!sessionHolder.hasActiveAccounts()) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    callback.run();
-                    try {
-                        notificationManager.notify(NOTIFICATION_ID, notification);
-                    } catch (Throwable ignored) {
-                    }
+                    stopForeground(true);
                 }
             };
-            runnable.run();
-            Handler handler = new Handler();
             handler.post(runnable);
-        } else {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "");
-            Notification notification = buildNotification(builder);
-            startForeground(NOTIFICATION_ID, notification);
         }
     }
 

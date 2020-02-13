@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,10 +14,10 @@
         android:layout_height="match_parent">
 
         <ViewSwitcher
+            android:id="@+id/content_view_switcher"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/info_block_background_color"
-            android:id="@+id/content_view_switcher"
             android:inAnimation="@android:anim/fade_in"
             android:outAnimation="@android:anim/fade_out">
 
@@ -28,9 +27,9 @@
                 android:layout_gravity="center" />
 
             <ScrollView
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -47,66 +46,70 @@
                             android:layout_height="@dimen/buddy_info_avatar_height">
 
                             <com.tomclaw.mandarin.main.views.ContactImage
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
                                 android:id="@+id/buddy_image"
-                                android:src="@drawable/def_avatar_0"
-                                android:scaleType="centerCrop" />
-
-                            <com.tomclaw.mandarin.main.views.ContactImage
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/def_avatar_0" />
+
+                            <com.tomclaw.mandarin.main.views.ContactImage
                                 android:id="@+id/buddy_image_update"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:scaleType="centerCrop" />
 
                             <com.tomclaw.mandarin.main.views.ContactImage
+                                android:id="@+id/buddy_image_manual"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:id="@+id/buddy_image_manual"
                                 android:scaleType="centerCrop" />
+
                         </FrameLayout>
 
                         <FrameLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-42dp"
-                            android:paddingRight="8dp"
                             android:layout_below="@+id/buddy_image_container"
+                            android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true">
+                            android:layout_marginTop="-42dp"
+                            android:paddingRight="8dp">
 
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                android:id="@+id/change_avatar_button"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/change_avatar_button"
-                                android:src="@drawable/ic_photo"
                                 android:layout_marginLeft="18dp"
-                                android:layout_marginRight="18dp"
                                 android:layout_marginTop="12dp"
+                                android:layout_marginRight="18dp"
                                 android:layout_marginBottom="12dp"
+                                android:src="@drawable/ic_photo"
                                 app:elevation="4dp"
-                                app:pressedTranslationZ="4dp"
-                                app:fabSize="normal" />
+                                app:fabSize="normal"
+                                app:pressedTranslationZ="4dp" />
+
                         </FrameLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/buddy_image_container"
                             android:orientation="vertical"
                             android:padding="12dp"
-                            android:layout_below="@+id/buddy_image_container"
                             android:weightSum="1">
 
                             <com.tomclaw.mandarin.main.views.TightTextView
                                 style="@style/UserInfoFieldTitle"
-                                android:text="@string/friendly_name" />
+                                android:text="@string/friendly_name"
+                                android:visibility="gone" />
 
                             <EditText
                                 android:id="@+id/friendly_name"
+                                style="@style/UserInfoEditField"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapWords|textPersonName|textNoSuggestions"
-                                style="@style/UserInfoEditField" />
+                                android:visibility="gone" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -117,8 +120,8 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp">
 
@@ -128,17 +131,18 @@
 
                                     <EditText
                                         android:id="@+id/first_name"
+                                        style="@style/UserInfoEditField"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="textCapWords|textPersonName|textNoSuggestions"
-                                        style="@style/UserInfoEditField" />
+                                        android:inputType="textCapWords|textPersonName|textNoSuggestions" />
+
                                 </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp">
 
@@ -148,24 +152,27 @@
 
                                     <EditText
                                         android:id="@+id/last_name"
+                                        style="@style/UserInfoEditField"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="textCapWords|textPersonName|textNoSuggestions"
-                                        style="@style/UserInfoEditField" />
+                                        android:inputType="textCapWords|textPersonName|textNoSuggestions" />
+
                                 </LinearLayout>
+
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:paddingTop="12dp">
+                                android:paddingTop="12dp"
+                                android:visibility="gone">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp">
 
@@ -174,20 +181,21 @@
                                         android:text="@string/gender" />
 
                                     <Spinner
+                                        android:id="@+id/gender_selector"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:id="@+id/gender_selector"
-                                        android:textSize="16sp"
+                                        android:gravity="left"
                                         android:paddingLeft="4dp"
                                         android:paddingTop="8dp"
-                                        android:gravity="left" />
+                                        android:textSize="16sp" />
+
                                 </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp">
 
@@ -197,15 +205,17 @@
 
                                     <com.tomclaw.mandarin.main.views.DatePickerView
                                         android:id="@+id/birth_date"
+                                        style="?spinnerStyle"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:background="@drawable/abc_spinner_mtrl_am_alpha"
+                                        android:gravity="left"
                                         android:paddingLeft="4dp"
                                         android:paddingTop="8dp"
-                                        android:textSize="16sp"
-                                        android:gravity="left"
-                                        android:background="@drawable/abc_spinner_mtrl_am_alpha"
-                                        style="?spinnerStyle" />
+                                        android:textSize="16sp" />
+
                                 </LinearLayout>
+
                             </LinearLayout>
 
                             <LinearLayout
@@ -217,10 +227,11 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="0dp"
-                                    android:paddingRight="8dp">
+                                    android:paddingRight="8dp"
+                                    android:visibility="gone">
 
                                     <com.tomclaw.mandarin.main.views.TightTextView
                                         style="@style/UserInfoFieldTitle"
@@ -228,17 +239,18 @@
 
                                     <EditText
                                         android:id="@+id/city"
+                                        style="@style/UserInfoEditField"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="textEmailAddress"
-                                        style="@style/UserInfoEditField" />
+                                        android:inputType="textEmailAddress" />
+
                                 </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
                                     android:layout_weight="1"
+                                    android:orientation="vertical"
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp"
                                     android:visibility="gone">
@@ -249,32 +261,40 @@
 
                                     <EditText
                                         android:id="@+id/website"
+                                        style="@style/UserInfoEditField"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:inputType="textEmailAddress"
-                                        style="@style/UserInfoEditField" />
+                                        android:inputType="textEmailAddress" />
+
                                 </LinearLayout>
+
                             </LinearLayout>
 
                             <com.tomclaw.mandarin.main.views.TightTextView
                                 style="@style/UserInfoFieldTitle"
-                                android:text="@string/about_me"
-                                android:paddingTop="12dp" />
+                                android:paddingTop="12dp"
+                                android:text="@string/about_me" />
 
                             <EditText
                                 android:id="@+id/about_me"
+                                style="@style/UserInfoEditField"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:maxLines="3"
-                                android:singleLine="false"
                                 android:inputType="textMultiLine|textCapSentences"
-                                style="@style/UserInfoEditField" />
+                                android:maxLines="3"
+                                android:singleLine="false" />
+
                         </LinearLayout>
+
                     </RelativeLayout>
+
                 </LinearLayout>
+
             </ScrollView>
+
         </ViewSwitcher>
 
         <include layout="@layout/toolbar_shadow_view" />
     </FrameLayout>
+
 </LinearLayout>

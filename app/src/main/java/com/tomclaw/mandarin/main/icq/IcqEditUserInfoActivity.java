@@ -24,7 +24,7 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
         ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, R.layout.user_info_gender_spinner_item,
                 getResources().getStringArray(R.array.gender_edit_spinner_strings));
         genderAdapter.setDropDownViewResource(R.layout.user_info_gender_spinner_dropdown_item);
-        Spinner genderSelector = (Spinner) findViewById(R.id.gender_selector);
+        Spinner genderSelector = findViewById(R.id.gender_selector);
         genderSelector.setAdapter(genderAdapter);
     }
 
@@ -43,13 +43,13 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
                 int keyInt = Integer.valueOf(key);
                 if (keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
                         keyInt == R.id.website || keyInt == R.id.about_me || keyInt == R.id.city) {
-                    EditText editText = (EditText) findViewById(keyInt);
+                    EditText editText = findViewById(keyInt);
                     editText.setText(bundle.getString(key));
                 } else if (keyInt == R.id.gender) {
-                    Spinner spinner = (Spinner) findViewById(R.id.gender_selector);
+                    Spinner spinner = findViewById(R.id.gender_selector);
                     spinner.setSelection(bundle.getInt(key));
                 } else if (keyInt == R.id.birth_date) {
-                    DatePickerView birthDateView = (DatePickerView) findViewById(R.id.birth_date);
+                    DatePickerView birthDateView = findViewById(R.id.birth_date);
                     long birthDate = bundle.getLong(key);
                     birthDateView.setDate(birthDate);
                 }
@@ -93,17 +93,17 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
     }
 
     private String getTextValue(int viewId) {
-        TextView textView = (TextView) findViewById(viewId);
+        TextView textView = findViewById(viewId);
         return textView.getText().toString();
     }
 
     private int getSpinnerValue(int viewId) {
-        Spinner spinner = (Spinner) findViewById(viewId);
+        Spinner spinner = findViewById(viewId);
         return spinner.getSelectedItemPosition();
     }
 
     private long getDateValue(int viewId) {
-        DatePickerView datePickerView = (DatePickerView) findViewById(viewId);
+        DatePickerView datePickerView = findViewById(viewId);
         return datePickerView.getDate();
     }
 }

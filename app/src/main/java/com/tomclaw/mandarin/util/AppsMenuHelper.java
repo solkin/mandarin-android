@@ -5,13 +5,20 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import static com.tomclaw.mandarin.util.BitmapHelper.drawableToBitmap;
+import static com.tomclaw.mandarin.util.BitmapHelper.fixBitmapToSquare;
+import static com.tomclaw.mandarin.util.MetricsHelper.dp;
 
 /**
  * Created by Igor on 13.05.2015.
@@ -35,10 +42,13 @@ public class AppsMenuHelper {
                 new AppsMenuHelper.ShareMenuItemClickListener(activity, resolveInfoList, intent, requestCode);
         // Fill menu item with submenu elements with app name and icon.
         int i = 0;
+        int size = dp(24, activity);
         for (ResolveInfo resolveInfo : resolveInfoList) {
             try {
+                Bitmap icon = drawableToBitmap(resolveInfo.loadIcon(packageManager));
+                icon = fixBitmapToSquare(icon, size);
                 subMenu.add(0, i, i, resolveInfo.loadLabel(packageManager))
-                        .setIcon(resolveInfo.loadIcon(packageManager))
+                        .setIcon(new BitmapDrawable(activity.getResources(), icon))
                         .setOnMenuItemClickListener(onMenuItemClickListener);
                 i++;
             } catch (Throwable ignored) {

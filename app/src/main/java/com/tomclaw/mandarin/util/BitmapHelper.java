@@ -13,6 +13,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -254,5 +256,57 @@ public class BitmapHelper {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 1;
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 1;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
+    public static Bitmap fixBitmapToSquare(Bitmap image, int maxResolution) {
+        if (maxResolution <= 0) return image;
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float ratio = (width >= height) ? (float) maxResolution / width : (float) maxResolution / height;
+
+        int finalWidth = (int) ((float) width * ratio);
+        int finalHeight = (int) ((float) height * ratio);
+
+        image = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true);
+
+        if (image.getWidth() == image.getHeight()) {
+            return image;
+        } else {
+            int left = 0;
+            int top = 0;
+
+            if (image.getWidth() != maxResolution)
+                left = (maxResolution - image.getWidth()) / 2;
+
+            if (image.getHeight() != maxResolution)
+                top = (maxResolution - image.getHeight()) / 2;
+
+            Bitmap bitmap = Bitmap.createBitmap(maxResolution, maxResolution, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawBitmap(image, left, top, null);
+            canvas.save();
+            canvas.restore();
+
+            return bitmap;
+        }
     }
 }

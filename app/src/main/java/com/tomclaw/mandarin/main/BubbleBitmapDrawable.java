@@ -14,6 +14,8 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
+import static com.tomclaw.mandarin.util.MetricsHelper.dp;
+
 public class BubbleBitmapDrawable extends Drawable {
 
     public static int HORIZONTAL_OFFSET;
@@ -173,10 +175,6 @@ public class BubbleBitmapDrawable extends Drawable {
         }
         p.close();
         return p;
-    }
-
-    private int dp(float v, Context context) {
-        return (int) (v * context.getResources().getDisplayMetrics().density + 0.5);
     }
 
 }

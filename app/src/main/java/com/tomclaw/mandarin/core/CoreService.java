@@ -52,6 +52,7 @@ public class CoreService extends Service {
     public static final String EXTRA_RESTART_FLAG = "restart_flag";
     public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
     public static final String EXTRA_ON_CONNECTED_EVENT = "on_connected";
+    public static final String EXTRA_ON_DISCONNECTED_EVENT = "on_disconnected";
 
     public static final int RESTART_TIMEOUT = 5000;
     public static final int MAINTENANCE_TIMEOUT = 60000;
@@ -126,7 +127,6 @@ public class CoreService extends Service {
         long time = System.currentTimeMillis();
         Logger.log("CoreService onCreate");
         super.onCreate();
-        initForeground();
         updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
         sessionHolder = new SessionHolder(this);
@@ -152,12 +152,13 @@ public class CoreService extends Service {
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");
         Logger.log("core service start time: " + (System.currentTimeMillis() - time));
+        startForeground();
         // Schedule restart immediately after service creation.
         scheduleRestart(true);
     }
 
-    private void initForeground() {
-        if (!isForegroundService()) return;
+    private void startForeground() {
+        if (!sessionHolder.hasActiveAccounts() || !isForegroundService()) return;
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.deleteNotificationChannel(CHANNEL_ID);
@@ -268,6 +269,13 @@ public class CoreService extends Service {
         if (connectedEvent) {
             Logger.logWithPrefix("W", "Received account connected event. Scheduling restart.");
             scheduleRestart(true);
+            startForeground();
+        }
+        // Check for this is disconnection event from accounts dispatcher.
+        boolean disconnectedEvent = intent.getBooleanExtra(EXTRA_ON_DISCONNECTED_EVENT, false);
+        if (disconnectedEvent) {
+            Logger.logWithPrefix("W", "Received accounts disconnected event.");
+            stopForeground(true);
         }
         // Check for service restarted automatically while there is no connected accounts.
         boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);

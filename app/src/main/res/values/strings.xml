@@ -416,6 +416,6 @@
     <string name="share_files_permission_request_message">To share files, you must allow Mandarin access to files on the device</string>
     <string name="history_export_permission_request_message">To export history, you must allow Mandarin access to files on the device</string>
     <string name="ok">OK</string>
-    <string name="foreground_title">Mandarin is working</string>
+    <string name="foreground_title">Mandarin is connected</string>
     <string name="foreground_description">Click to open</string>
 </resources>

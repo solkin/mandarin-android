@@ -1,6 +1,5 @@
 package com.tomclaw.mandarin.core;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,21 +15,27 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import androidx.core.app.NotificationCompat;
-import android.text.Html;
 import android.text.TextUtils;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.ChatActivity;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.NotificationContent;
+import com.tomclaw.mandarin.util.NotificationLine;
+import com.tomclaw.mandarin.util.Notifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,7 +67,6 @@ public class HistoryDispatcher {
         // Variables.
         this.context = context;
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        initChannel();
         contentResolver = context.getContentResolver();
         // Creating observers.
         historyObserver = new HistoryObserver();
@@ -71,18 +75,33 @@ public class HistoryDispatcher {
     }
 
     private void initChannel() {
+        Notifier.init(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence channelName = context.getString(R.string.incoming_messages);
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID,
-                    channelName,
-                    IMPORTANCE_LOW
-            );
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
-            notificationChannel.enableVibration(false);
-            notificationManager.createNotificationChannel(notificationChannel);
+            NotificationChannel channel = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
+            if (channel != null) {
+                updateNotificationChannel(channel);
+            } else {
+                CharSequence channelName = context.getString(R.string.incoming_messages);
+                channel = new NotificationChannel(
+                        NOTIFICATION_CHANNEL_ID,
+                        channelName,
+                        IMPORTANCE_DEFAULT
+                );
+                updateNotificationChannel(channel);
+                notificationManager.createNotificationChannel(channel);
+            }
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void updateNotificationChannel(NotificationChannel channel) {
+        Uri sound = PreferenceHelper.getNotificationUri(context);
+        channel.setShowBadge(true);
+        channel.setSound(sound, RingtoneManager.getRingtone(context, sound).getAudioAttributes());
+        channel.enableLights(true);
+        channel.setLightColor(context.getResources().getColor(R.color.accent_color));
+        channel.enableVibration(true);
+        channel.setVibrationPattern(new long[]{0, 100, 0, 100});
     }
 
     public void startObservation() {
@@ -167,20 +186,15 @@ public class HistoryDispatcher {
                 // Checking for unread messages exist. If no, we must cancel notification.
                 if (unreadList != null && !unreadList.isEmpty()) {
                     boolean isAlarmRequired = (unshown > 0);
-                    // Notification styles for multiple and single sender respectively.
-                    NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-                    NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-                    NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
                     // Building variables.
                     int unread = 0;
-                    boolean multipleSenders = (unreadList.size() > 1);
-                    StringBuilder nickNamesBuilder = new StringBuilder();
                     // Last-message variables.
-                    int buddyDbId = 0;
+                    int buddyDbId;
                     Bitmap largeIcon = null;
-                    String message = "";
-                    int contentType = GlobalProvider.HISTORY_CONTENT_TYPE_TEXT;
-                    String previewHash = "";
+                    String message;
+                    int contentType;
+                    int requestCode = 1;
+                    List<NotificationLine> lines = new ArrayList<>();
                     for (NotificationData data : unreadList) {
                         // Obtaining and collecting message-specific data.
                         unread += data.getUnreadCount();
@@ -189,129 +203,118 @@ public class HistoryDispatcher {
                         String nickName = data.getBuddyNick();
                         String avatarHash = data.getBuddyAvatarHash();
                         contentType = data.getContentType();
-                        previewHash = data.getPreviewHash();
                         if (TextUtils.isEmpty(nickName)) {
                             nickName = context.getString(R.string.unknown_buddy);
                             avatarHash = null;
                         }
-                        if (TextUtils.isEmpty(nickNamesBuilder)) {
-                            // This is first buddy with unread message.
-                            if (!TextUtils.isEmpty(avatarHash)) {
-                                // Obtain avatar for notification.
-                                largeIcon = BitmapCache.getInstance().getBitmapSync(
-                                        avatarHash, largeIconSize, largeIconSize, true, true);
-                                // Make round avatar for lollipop and newer.
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    largeIcon = BitmapHelper.getRoundBitmap(largeIcon);
-                                }
+                        if (!TextUtils.isEmpty(avatarHash)) {
+                            // Obtain avatar for notification.
+                            largeIcon = BitmapCache.getInstance().getBitmapSync(
+                                    avatarHash, largeIconSize, largeIconSize, true, true);
+                            // Make round avatar for lollipop and newer.
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                largeIcon = BitmapHelper.getRoundBitmap(largeIcon);
                             }
-                        } else {
-                            nickNamesBuilder.append(", ");
-                            // There are some buddies with unread - no avatar can be placed.
-                            largeIcon = null;
                         }
-                        nickNamesBuilder.append(nickName);
-                        // Checking for style type for correct filling.
-                        if (multipleSenders) {
-                            inboxStyle.addLine(Html.fromHtml("<b>" + nickName + "</b> " + message));
+
+                        PendingIntent openChatIntent = createOpenChatIntent(context, buddyDbId, requestCode++);
+                        PendingIntent replyIntent = createReplyIntent(context, buddyDbId, requestCode++);
+                        PendingIntent readIntent = createReadIntent(context, buddyDbId, requestCode++);
+
+                        NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
+                                R.drawable.ic_reply, context.getString(R.string.reply_now), replyIntent)
+                                .setAllowGeneratedReplies(true)
+                                .build();
+                        NotificationCompat.Action readAction = new NotificationCompat.Action.Builder(
+                                R.drawable.ic_action_read, context.getString(R.string.mark_as_read), readIntent)
+                                .setAllowGeneratedReplies(true)
+                                .build();
+
+                        String text;
+                        switch (contentType) {
+                            case GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE:
+                                text = "Photo";
+                                break;
+                            case GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO:
+                                text = "Video";
+                                break;
+                            case GlobalProvider.HISTORY_CONTENT_TYPE_FILE:
+                                text = "File";
+                                break;
+                            default:
+                                text = message;
+                                break;
                         }
+
+                        NotificationLine line = new NotificationLine(nickName, text, largeIcon, openChatIntent, Arrays.asList(replyAction, readAction));
+                        lines.add(line);
                     }
-                    // Show chat activity with concrete buddy.
-                    PendingIntent replyNowIntent = PendingIntent.getActivity(context, 1,
-                            new Intent(context, ChatActivity.class)
-                                    .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    // Mark all messages as read.
-                    PendingIntent readAllIntent = PendingIntent.getService(context, 2,
-                            new Intent(context, CoreService.class)
-                                    .putExtra(EXTRA_READ_MESSAGES, true),
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    // Simply open chats list.
-                    PendingIntent openChatsIntent = PendingIntent.getActivity(context, 3,
-                            new Intent(context, MainActivity.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    // Common notification variables.
-                    String title;
-                    String content;
-                    int actionIcon;
-                    String actionButton;
-                    PendingIntent actionIntent;
-                    String readButton;
-                    NotificationCompat.Style style;
+
                     boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
-                    // Checking for required style.
-                    if (multipleSenders || privateNotifications) {
+
+                    PendingIntent contentAction;
+                    List<NotificationCompat.Action> actions;
+
+                    String title;
+                    StringBuilder text;
+                    Bitmap image;
+                    if (lines.size() > 1 || privateNotifications) {
+                        PendingIntent openChatsIntent = createOpenChatsIntent(context, requestCode++);
+                        PendingIntent readAllIntent = createReadAllIntent(context, requestCode);
+                        NotificationCompat.Action chatsAction = new NotificationCompat.Action.Builder(
+                                R.drawable.ic_chat, context.getString(R.string.dialogs), openChatsIntent)
+                                .setAllowGeneratedReplies(true)
+                                .build();
+                        NotificationCompat.Action readAllAction = new NotificationCompat.Action.Builder(
+                                R.drawable.ic_action_read, context.getString(R.string.mark_as_read_all), readAllIntent)
+                                .setAllowGeneratedReplies(true)
+                                .build();
+
                         title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
-                        content = nickNamesBuilder.toString();
-                        actionIcon = R.drawable.ic_reply;
-                        actionButton = context.getString(R.string.reply_now);
-                        actionIntent = replyNowIntent;
-                        readButton = context.getString(R.string.mark_as_read_all);
-                        if (privateNotifications) {
-                            style = null;
-                        } else {
-                            inboxStyle.setBigContentTitle(title);
-                            style = inboxStyle;
+                        text = new StringBuilder();
+                        for (NotificationLine line : lines) {
+                            if (text.length() > 0) {
+                                text.append(", ");
+                            }
+                            text.append(line.getTitle());
                         }
+                        image = null;
+                        contentAction = openChatsIntent;
+                        actions = Arrays.asList(chatsAction, readAllAction);
                     } else {
-                        title = nickNamesBuilder.toString();
-                        content = message;
-                        actionIcon = R.drawable.ic_chat;
-                        actionButton = context.getString(R.string.dialogs);
-                        actionIntent = openChatsIntent;
-                        readButton = context.getString(R.string.mark_as_read);
-                        if ((contentType == GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE ||
-                                contentType == GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO) &&
-                                !TextUtils.isEmpty(previewHash)) {
-                            Bitmap previewFull = BitmapCache.getInstance().getBitmapSync(previewHash, previewSize, previewSize, true, false);
-                            bigPictureStyle.bigPicture(previewFull);
-                            bigPictureStyle.setSummaryText(message);
-                            style = bigPictureStyle;
-                        } else {
-                            bigTextStyle.bigText(message);
-                            bigTextStyle.setBigContentTitle(title);
-                            style = bigTextStyle;
-                        }
+                        NotificationLine line = lines.remove(0);
+                        title = line.getTitle();
+                        text = new StringBuilder(line.getText());
+                        image = line.getImage();
+                        contentAction = line.getContentAction();
+                        actions = line.getActions();
                     }
-                    // Notification prepare.
-                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                            .setContentTitle(title)
-                            .setContentText(content)
-                            .setSmallIcon(R.drawable.ic_notification)
-                            .setStyle(style)
-                            .addAction(actionIcon, actionButton, actionIntent)
-                            .addAction(R.drawable.ic_action_read, readButton, readAllIntent)
-                            .setContentIntent(multipleSenders ? openChatsIntent : replyNowIntent)
-                            .setLargeIcon(largeIcon)
-                            .setColor(context.getResources().getColor(R.color.accent_color));
+                    boolean isAlert = false;
                     if (isAlarmRequired && isNotificationCompleted()) {
-                        if (PreferenceHelper.isSound(context)) {
-                            Uri uri = PreferenceHelper.getNotificationUri(context);
-                            RingtoneManager.getRingtone(context, uri).play();
-                        }
-                        if (PreferenceHelper.isVibrate(context)) {
-                            vibrate(500);
-                        }
-                        if (PreferenceHelper.isLights(context)) {
-                            notificationBuilder.setLights(
-                                    Settings.LED_COLOR_RGB,
-                                    Settings.LED_BLINK_DELAY,
-                                    Settings.LED_BLINK_DELAY
-                            );
-                        }
+                        // Wzh-wzh!
                         onNotificationShown();
+                        isAlert = true;
+                        Logger.log("update notifications: wzh-wzh!");
                     }
-                    Notification notification = notificationBuilder.build();
-                    // Notify it right now!
-                    notificationManager.notify(NOTIFICATION_ID, notification);
+                    final NotificationContent data = new NotificationContent(!privateNotifications, isAlert,
+                            title, text.toString(), image, lines, contentAction, actions);
+                    MainExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Notifier.showNotification(context, data);
+                        }
+                    });
                     // Update shown messages flag.
                     QueryHelper.updateShownMessagesFlag(contentResolver);
                 } else {
                     Logger.log("HistoryObserver: No unread messages found");
                     onNotificationCancel();
-                    notificationManager.cancel(NOTIFICATION_ID);
+                    MainExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Notifier.hideNotification(context);
+                        }
+                    });
                 }
                 if (onScreen > 0) {
                     Logger.log("HistoryObserver: Vibrate a little");
@@ -354,5 +357,45 @@ public class HistoryDispatcher {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(delay);
         }
+    }
+
+    private static PendingIntent createOpenChatsIntent(Context context, int requestCode) {
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReadAllIntent(Context context, int requestCode) {
+        return PendingIntent.getService(context, requestCode,
+                new Intent(context, CoreService.class)
+                        .putExtra(EXTRA_READ_MESSAGES, true)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReadIntent(Context context, int buddyDbId, int requestCode) {
+        return PendingIntent.getService(context, requestCode,
+                new Intent(context, CoreService.class)
+                        .putExtra(EXTRA_READ_MESSAGES, true)
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createOpenChatIntent(Context context, int buddyDbId, int requestCode) {
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, ChatActivity.class)
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createReplyIntent(Context context, int buddyDbId, int requestCode) {
+        return PendingIntent.getActivity(context, requestCode,
+                new Intent(context, ChatActivity.class)
+                        .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }

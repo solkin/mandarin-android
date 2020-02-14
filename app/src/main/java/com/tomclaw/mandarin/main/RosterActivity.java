@@ -42,6 +42,8 @@ import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -150,6 +152,7 @@ public class RosterActivity extends ChiefActivity {
                 return false;
             }
         };
+        MetricsManager.trackEvent("Open roster");
     }
 
     @Override

@@ -29,6 +29,8 @@ import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 /**
  * Created by Solkin on 28.09.2014.
  */
@@ -167,6 +169,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
             }
         };
         updateActionVisibility();
+        MetricsManager.trackEvent("Open phone login");
     }
 
     private void updateActionVisibility() {

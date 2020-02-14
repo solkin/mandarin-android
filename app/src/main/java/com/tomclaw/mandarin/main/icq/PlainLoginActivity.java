@@ -29,6 +29,8 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.ChiefActivity;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 /**
  * Created by Solkin on 28.09.2014.
  */
@@ -46,7 +48,7 @@ public class PlainLoginActivity extends ChiefActivity {
 
         setContentView(R.layout.icq_uin_login);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -62,8 +64,8 @@ public class PlainLoginActivity extends ChiefActivity {
             }
         });
 
-        userIdEditText = (EditText) findViewById(R.id.user_id_field);
-        userPasswordEditText = (EditText) findViewById(R.id.user_password_field);
+        userIdEditText = findViewById(R.id.user_id_field);
+        userPasswordEditText = findViewById(R.id.user_password_field);
 
         TextWatcher checkActionTextWatcher = new TextWatcher() {
             @Override
@@ -97,6 +99,8 @@ public class PlainLoginActivity extends ChiefActivity {
         });
 
         updateActionVisibility();
+
+        MetricsManager.trackEvent("Open plain login");
     }
 
     private void updateActionVisibility() {
@@ -215,6 +219,7 @@ public class PlainLoginActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
+            MetricsManager.trackEvent("Plain login success");
         } catch (Throwable ignored) {
             Toast.makeText(this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
         }

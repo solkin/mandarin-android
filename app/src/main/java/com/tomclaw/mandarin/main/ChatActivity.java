@@ -16,17 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -51,6 +40,18 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.BuddyObserver;
@@ -83,6 +84,8 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
+
+import net.hockeyapp.android.metrics.MetricsManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -330,6 +333,8 @@ public class ChatActivity extends ChiefActivity {
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
         Logger.log("chat activity start time: " + (System.currentTimeMillis() - time));
+
+        MetricsManager.trackEvent("Open chat");
     }
 
     @SuppressLint("NewApi")
@@ -401,6 +406,7 @@ public class ChatActivity extends ChiefActivity {
             };
             TaskExecutor.getInstance().execute(
                     new SendMessageTask(this, buddyDbId, message, callback));
+            MetricsManager.trackEvent("Send message");
         }
     }
 
@@ -572,6 +578,7 @@ public class ChatActivity extends ChiefActivity {
                         ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
                                 chatHistoryAdapter.getBuddyDbId());
                         TaskExecutor.getInstance().execute(clearHistoryTask);
+                        MetricsManager.trackEvent("Clear history");
                     }
                 });
                 builder.setNegativeButton(R.string.do_not_clear, null);
@@ -644,6 +651,7 @@ public class ChatActivity extends ChiefActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
@@ -663,6 +671,7 @@ public class ChatActivity extends ChiefActivity {
                             }
                             scrollBottom();
                             TaskExecutor.getInstance().execute(new SendPhotosTask(this, buddyDbId, photoEntries));
+                            MetricsManager.trackEvent("Send photos");
                         }
                     } else if (data.getData() != null) {
                         onFilePicked(data.getData());
@@ -690,6 +699,7 @@ public class ChatActivity extends ChiefActivity {
             UriFile uriFile = UriFile.create(this, uri);
             TaskExecutor.getInstance().execute(
                     new SendFileTask(this, buddyDbId, uriFile, callback));
+            MetricsManager.trackEvent("Send file");
         } catch (Throwable ignored) {
         }
     }
@@ -831,6 +841,7 @@ public class ChatActivity extends ChiefActivity {
                 }
                 TaskExecutor.getInstance().execute(
                         new SendFileTask(this, buddyDbId, uriFiles, callback));
+                MetricsManager.trackEvent("Send shared file");
             } else {
                 String share;
                 if (TextUtils.isEmpty(sharingData.getSubject())) {
@@ -925,6 +936,7 @@ public class ChatActivity extends ChiefActivity {
                         chatHistoryAdapter.getBuddyDbId()
                 );
                 TaskExecutor.getInstance().execute(exportHistoryTask);
+                MetricsManager.trackEvent("Export history");
                 break;
             }
         }

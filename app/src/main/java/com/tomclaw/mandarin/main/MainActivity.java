@@ -42,6 +42,7 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
+import net.hockeyapp.android.metrics.MetricsManager;
 import net.hockeyapp.android.utils.Util;
 
 import java.lang.ref.WeakReference;
@@ -185,6 +186,8 @@ public class MainActivity extends ChiefActivity {
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
 
         checkNfcIntent();
+
+        MetricsManager.register(getApplication());
     }
 
     private void checkNfcIntent() {

@@ -37,6 +37,8 @@ import com.tomclaw.mandarin.main.views.ThumbnailView;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.Logger;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,6 +151,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
         updateSelectedCount();
 
         Logger.log("albums: " + albums.size());
+
+        MetricsManager.trackEvent("Open photo picker");
     }
 
     private void sendSelectedPhotos() {

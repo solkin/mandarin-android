@@ -19,6 +19,8 @@ import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.mandarin.core.MusicStateReceiver;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -48,6 +50,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        MetricsManager.trackEvent("Open settings");
     }
 
     @Override

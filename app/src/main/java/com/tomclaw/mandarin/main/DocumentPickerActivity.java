@@ -10,10 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,11 +21,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.StringUtil;
+
+import net.hockeyapp.android.metrics.MetricsManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -118,7 +121,7 @@ public class DocumentPickerActivity extends AppCompatActivity {
 
         setContentView(R.layout.document_pick_layout);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         actionBar = getSupportActionBar();
@@ -128,14 +131,14 @@ public class DocumentPickerActivity extends AppCompatActivity {
         }
 
         listAdapter = new ListAdapter(this);
-        emptyView = (TextView) findViewById(R.id.searchEmptyView);
+        emptyView = findViewById(R.id.searchEmptyView);
         emptyView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 return true;
             }
         });
-        listView = (ListView) findViewById(R.id.listView);
+        listView = findViewById(R.id.listView);
         listView.setEmptyView(emptyView);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -186,6 +189,8 @@ public class DocumentPickerActivity extends AppCompatActivity {
             }
         });
         listRoots();
+
+        MetricsManager.trackEvent("Open document picker");
     }
 
     public void setActivityTitle(CharSequence title) {
@@ -245,6 +250,7 @@ public class DocumentPickerActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
@@ -480,7 +486,7 @@ public class DocumentPickerActivity extends AppCompatActivity {
             }
             ((TextView) view.findViewById(R.id.docs_item_title)).setText(item.title);
             ((TextView) view.findViewById(R.id.docs_item_info)).setText(item.subtitle);
-            ImageView imageView = (ImageView) view.findViewById(R.id.docs_item_thumb);
+            ImageView imageView = view.findViewById(R.id.docs_item_thumb);
             imageView.setImageResource(item.icon);
             imageView.setVisibility(View.VISIBLE);
             return view;

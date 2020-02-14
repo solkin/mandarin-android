@@ -33,6 +33,8 @@ import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.util.TimeHelper;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -66,7 +68,7 @@ public class SmsCodeActivity extends ChiefActivity {
 
         setContentView(R.layout.sms_code_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize action bar.
@@ -80,7 +82,7 @@ public class SmsCodeActivity extends ChiefActivity {
         transId = intent.getStringExtra(EXTRA_TRANS_ID);
         phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
 
-        smsCodeField = (EditText) findViewById(R.id.sms_code_field);
+        smsCodeField = findViewById(R.id.sms_code_field);
         smsCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -108,11 +110,11 @@ public class SmsCodeActivity extends ChiefActivity {
             }
         });
 
-        TextView smsCodeHeader = (TextView) findViewById(R.id.sms_code_header_view);
+        TextView smsCodeHeader = findViewById(R.id.sms_code_header_view);
         String text = String.format(getResources().getString(R.string.sms_code_header), phoneFormatted);
         smsCodeHeader.setText(Html.fromHtml(text));
 
-        resendCodeView = (TextView) findViewById(R.id.resend_code_view);
+        resendCodeView = findViewById(R.id.resend_code_view);
         resendCodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,6 +177,8 @@ public class SmsCodeActivity extends ChiefActivity {
                 });
             }
         };
+
+        MetricsManager.trackEvent("Open phone verification");
     }
 
     private void startTimer() {
@@ -293,6 +297,7 @@ public class SmsCodeActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
+            MetricsManager.trackEvent("Phone login success");
         } catch (Throwable ignored) {
             showError(R.string.account_add_fail);
         }
@@ -331,7 +336,7 @@ public class SmsCodeActivity extends ChiefActivity {
         public SmsTimer(TextView resendCodeView) {
             super(SMS_WAIT_INTERVAL, 1000);
             timeHelper = new TimeHelper(resendCodeView.getContext());
-            weakResendCode = new WeakReference<TextView>(resendCodeView);
+            weakResendCode = new WeakReference<>(resendCodeView);
         }
 
         @Override

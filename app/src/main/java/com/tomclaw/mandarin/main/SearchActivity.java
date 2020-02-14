@@ -18,6 +18,8 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 /**
  * Created by Igor on 26.06.2014.
  */
@@ -60,6 +62,7 @@ public class SearchActivity extends ChiefActivity {
         cityEdit = findViewById(R.id.city_edit);
         agePickerView = findViewById(R.id.age_range);
         onlineBox = findViewById(R.id.online_check);
+        MetricsManager.trackEvent("Open search");
     }
 
     @Override

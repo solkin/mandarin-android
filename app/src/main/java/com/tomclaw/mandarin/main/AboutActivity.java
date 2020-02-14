@@ -16,6 +16,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 
+import net.hockeyapp.android.metrics.MetricsManager;
+
 /**
  * Created by solkin on 01/03/14.
  */
@@ -62,6 +64,8 @@ public class AboutActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        MetricsManager.trackEvent("Open about");
     }
 
     @Override

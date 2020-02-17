@@ -13,20 +13,26 @@ import java.util.List;
  */
 public class NotificationLine {
 
+    private final int notificationId;
     private final @NonNull String title;
     private final @NonNull String text;
     private final @Nullable Bitmap image;
     private final @Nullable PendingIntent contentAction;
     private final @NonNull List<NotificationCompat.Action> actions;
 
-    public NotificationLine(@NonNull String title, @NonNull String text, @Nullable Bitmap image,
-                            @Nullable PendingIntent contentAction,
+    public NotificationLine(int notificationId, @NonNull String title, @NonNull String text,
+                            @Nullable Bitmap image, @Nullable PendingIntent contentAction,
                             @NonNull List<NotificationCompat.Action> actions) {
+        this.notificationId = notificationId;
         this.title = title;
         this.text = text;
         this.image = image;
         this.contentAction = contentAction;
         this.actions = actions;
+    }
+
+    public int getNotificationId() {
+        return notificationId;
     }
 
     @NonNull

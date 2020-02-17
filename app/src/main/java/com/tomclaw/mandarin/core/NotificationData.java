@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class NotificationData implements Serializable {
 
+    private int messageDbId;
     private String messageText;
     private int buddyDbId;
     private String buddyNick;
@@ -15,8 +16,10 @@ public class NotificationData implements Serializable {
     private int contentType;
     private String previewHash;
 
-    public NotificationData(String messageText, int buddyDbId, String buddyNick, String buddyAvatarHash,
-                            int unreadCount, int contentType, String previewHash) {
+    public NotificationData(int messageDbId, String messageText, int buddyDbId, String buddyNick,
+                            String buddyAvatarHash, int unreadCount, int contentType,
+                            String previewHash) {
+        this.messageDbId = messageDbId;
         this.messageText = messageText;
         this.buddyDbId = buddyDbId;
         this.buddyNick = buddyNick;
@@ -24,6 +27,10 @@ public class NotificationData implements Serializable {
         this.unreadCount = unreadCount;
         this.contentType = contentType;
         this.previewHash = previewHash;
+    }
+
+    public int getMessageDbId() {
+        return messageDbId;
     }
 
     public String getMessageText() {

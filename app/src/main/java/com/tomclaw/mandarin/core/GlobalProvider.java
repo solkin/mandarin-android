@@ -208,7 +208,7 @@ public class GlobalProvider extends ContentProvider {
 
     private static final String HISTORY_GET_UNREAD_SB =
             new StringBuilder().append("SELECT").append(' ')
-                    .append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',').append(HISTORY_CONTENT_TYPE).append(',').append(HISTORY_PREVIEW_HASH).append(',')
+                    .append(ROW_AUTO_ID).append(',').append(HISTORY_MESSAGE_TEXT).append(',').append(HISTORY_BUDDY_DB_ID).append(',').append(HISTORY_CONTENT_TYPE).append(',').append(HISTORY_PREVIEW_HASH).append(',')
                     .append('(')
                     .append("SELECT").append(' ')
                     .append(ROSTER_BUDDY_NICK).append(' ')
@@ -430,6 +430,7 @@ public class GlobalProvider extends ContentProvider {
             Cursor cursor = sqLiteDatabase.rawQuery(HISTORY_GET_UNREAD_SB, null);
             Bundle bundle = new Bundle();
             if (cursor.moveToFirst()) {
+                int messageDbIdColumn = cursor.getColumnIndex(ROW_AUTO_ID);
                 int messageTextColumn = cursor.getColumnIndex(HISTORY_MESSAGE_TEXT);
                 int buddyDbIdColumn = cursor.getColumnIndex(HISTORY_BUDDY_DB_ID);
                 int buddyNickColumn = cursor.getColumnIndex(ROSTER_BUDDY_NICK);
@@ -440,6 +441,7 @@ public class GlobalProvider extends ContentProvider {
                 ArrayList<NotificationData> data = new ArrayList<>();
                 do {
                     NotificationData row = new NotificationData(
+                            cursor.getInt(messageDbIdColumn),
                             cursor.getString(messageTextColumn),
                             cursor.getInt(buddyDbIdColumn),
                             cursor.getString(buddyNickColumn),

@@ -51,8 +51,12 @@ public class Notifier {
     }
 
     public static void hideNotification(Context context) {
+        hideNotification(context, NOTIFICATION_ID);
+    }
+
+    public static void hideNotification(Context context, int notificationId) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(NOTIFICATION_ID);
+        notificationManager.cancel(notificationId);
     }
 
     private static void showSingleNotification(Context context, String channelId, int notificationId, boolean isExtended,
@@ -112,7 +116,6 @@ public class Notifier {
 
             notificationManager.notify(notificationId, group.build());
 
-            int index = notificationId;
             for (NotificationLine line : lines) {
                 NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle()
                         .setBigContentTitle(line.getTitle())
@@ -131,7 +134,7 @@ public class Notifier {
                 for (NotificationCompat.Action action : line.getActions()) {
                     notification.addAction(action);
                 }
-                notificationManager.notify(++index, notification.build());
+                notificationManager.notify(line.getNotificationId(), notification.build());
             }
         } else {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)

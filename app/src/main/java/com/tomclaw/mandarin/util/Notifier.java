@@ -102,7 +102,7 @@ public class Notifier {
                                               @NonNull List<NotificationCompat.Action> actions) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        if (isExtended && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (isExtended && isGroupedNotifications()) {
             NotificationCompat.Builder group = new NotificationCompat.Builder(context, channelId)
                     .setGroup(GROUP_KEY)
                     .setColor(color)
@@ -189,6 +189,10 @@ public class Notifier {
             notification.setLights(Settings.LED_COLOR_RGB,
                     Settings.LED_BLINK_DELAY, Settings.LED_BLINK_DELAY);
         }
+    }
+
+    public static boolean isGroupedNotifications() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
 }

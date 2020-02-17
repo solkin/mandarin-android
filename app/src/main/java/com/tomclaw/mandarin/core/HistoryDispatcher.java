@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.tomclaw.mandarin.util.Notifier.isGroupedNotifications;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin
@@ -147,7 +149,7 @@ public class HistoryDispatcher {
                 if (unreadList != null && !unreadList.isEmpty()) {
                     // Building variables.
                     int unread = 0;
-                    boolean isSilentCancelNotification = justShown > 0 && unshown == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+                    boolean isSilentCancelNotification = justShown > 0 && unshown == 0 && isGroupedNotifications();
                     if (isSilentCancelNotification) {
                         MainExecutor.execute(new Runnable() {
                             @Override

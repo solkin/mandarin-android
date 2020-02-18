@@ -21,6 +21,7 @@ import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.Notifier;
 
+import java.util.Collections;
 import java.util.Random;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
@@ -267,7 +268,12 @@ public class CoreService extends Service {
         // Read messages event maybe?
         boolean readMessagesEvent = intent.getBooleanExtra(HistoryDispatcher.EXTRA_READ_MESSAGES, false);
         if (readMessagesEvent) {
-            QueryHelper.readAllMessages(getContentResolver());
+            int buddyDbId = intent.getIntExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, 0);
+            if (buddyDbId > 0) {
+                QueryHelper.readAllMessages(getContentResolver(), Collections.singleton(buddyDbId));
+            } else {
+                QueryHelper.readAllMessages(getContentResolver());
+            }
         }
         // Or maybe this is after-boot event?
         boolean bootEvent = intent.getBooleanExtra(BootCompletedReceiver.EXTRA_BOOT_EVENT, false);

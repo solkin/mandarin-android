@@ -26,12 +26,13 @@ import com.tomclaw.mandarin.util.Notifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.tomclaw.mandarin.util.Notifier.isGroupedNotifications;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +55,7 @@ public class HistoryDispatcher {
 
     private boolean privateNotifications, settingsChanged;
 
-    private List<NotificationLine> activeNotifications = Collections.emptyList();
+    private List<NotificationLine> activeNotifications = emptyList();
 
     public HistoryDispatcher(Context context) {
         // Variables.
@@ -290,8 +291,8 @@ public class HistoryDispatcher {
                         MainExecutor.execute(new Runnable() {
                             @Override
                             public void run() {
+                                activeNotifications = unmodifiableList(data.getLines());
                                 Notifier.showNotification(context, data);
-                                activeNotifications = Collections.unmodifiableList(data.getLines());
                             }
                         });
                     }
@@ -303,6 +304,7 @@ public class HistoryDispatcher {
                     MainExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
+                            activeNotifications = emptyList();
                             Notifier.hideNotification(context);
                         }
                     });

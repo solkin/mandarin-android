@@ -55,7 +55,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.icq_phone_login);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize action bar.
@@ -79,13 +79,13 @@ public class PhoneLoginActivity extends AppCompatActivity {
             }
         };
 
-        countryCodeView = (TextView) findViewById(R.id.country_code_view);
+        countryCodeView = findViewById(R.id.country_code_view);
         countryCodeView.setOnClickListener(showCountryListener);
 
-        countryNameView = (TextView) findViewById(R.id.country_name_view);
+        countryNameView = findViewById(R.id.country_name_view);
         countryNameView.setOnClickListener(showCountryListener);
 
-        phoneNumberField = (EditText) findViewById(R.id.phone_number_field);
+        phoneNumberField = findViewById(R.id.phone_number_field);
         phoneNumberField.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         phoneNumberField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -122,7 +122,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView privacyPolicyView = (TextView) findViewById(R.id.privacy_policy_view);
+        TextView privacyPolicyView = findViewById(R.id.privacy_policy_view);
         privacyPolicyView.setMovementMethod(LinkMovementMethod.getInstance());
         privacyPolicyView.setFocusable(true);
 

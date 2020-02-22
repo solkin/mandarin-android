@@ -6,9 +6,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
+
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +36,8 @@ import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
+
+import java.io.File;
 
 /**
  * Created by Solkin on 05.12.2014.
@@ -170,6 +175,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setDataAndType(uri, FileHelper.getMimeType(name));
 
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);

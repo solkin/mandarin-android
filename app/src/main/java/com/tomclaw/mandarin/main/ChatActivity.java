@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -47,6 +48,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -1007,16 +1010,22 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void viewContent(String contentName, String contentUri, String previewHash) {
+        Uri uri = Uri.parse(contentUri);
+        if (uri.getScheme() != null && uri.getScheme().equals("file")) {
+            File file = new File(uri.getPath());
+            uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+        }
         if (FileHelper.getMimeType(contentName).startsWith("image")) {
             Intent intent = new Intent(this, PhotoViewerActivity.class);
             intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
-            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
             intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
             startActivity(intent);
         } else {
             Intent intent = new Intent();
             intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse(contentUri), FileHelper.getMimeType(contentName));
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, FileHelper.getMimeType(contentName));
             startActivity(intent);
         }
     }

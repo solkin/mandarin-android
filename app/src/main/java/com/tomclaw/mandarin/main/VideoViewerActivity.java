@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.MediaController;
@@ -27,6 +28,7 @@ public class VideoViewerActivity extends AppCompatActivity {
     public static final String EXTRA_VIDEO_NAME = "video_name";
 
     private VideoView videoView;
+    private MediaController mediaController;
 
     private Uri uri;
     private String name;
@@ -61,6 +63,11 @@ public class VideoViewerActivity extends AppCompatActivity {
         }
 
         videoView = findViewById(R.id.video_view);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         playVideo();
     }
@@ -87,8 +94,34 @@ public class VideoViewerActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onPause() {
+        if (videoView != null && mediaController != null) {
+            mediaController.hide();
+            videoView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mediaController != null && mediaController.isShowing()) {
+            mediaController.show(0);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (videoView != null && mediaController != null) {
+            mediaController.hide();
+            videoView.stopPlayback();
+        }
+        super.onDestroy();
+    }
+
     private void playVideo() {
-        final MediaController mediaController = new CustomMediaController(this);
+        mediaController = new CustomMediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -150,6 +183,21 @@ public class VideoViewerActivity extends AppCompatActivity {
 
         public CustomMediaController(Context context) {
             super(context);
+        }
+
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            int keyCode = event.getKeyCode();
+            final boolean uniqueDown = event.getRepeatCount() == 0
+                    && event.getAction() == KeyEvent.ACTION_DOWN;
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (uniqueDown) {
+                    onBackPressed();
+                }
+                return true;
+            } else {
+                return super.dispatchKeyEvent(event);
+            }
         }
 
         @Override

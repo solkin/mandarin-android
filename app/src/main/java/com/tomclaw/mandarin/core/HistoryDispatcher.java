@@ -43,6 +43,7 @@ import static java.util.Collections.unmodifiableList;
 class HistoryDispatcher {
 
     private static final long HISTORY_DISPATCH_DELAY = 750;
+    private static final int NOTIFICATION_ID_OFFSET = 100000;
 
     static String EXTRA_READ_MESSAGES = "read_messages";
 
@@ -165,7 +166,8 @@ class HistoryDispatcher {
                                 for (NotificationLine line : activeNotifications) {
                                     boolean isPresent = false;
                                     for (NotificationData data : unreadList) {
-                                        if (data.getBuddyDbId() == line.getNotificationId()) {
+                                        int notificationId = data.getBuddyDbId() + NOTIFICATION_ID_OFFSET;
+                                        if (notificationId == line.getNotificationId()) {
                                             isPresent = true;
                                         }
                                     }
@@ -234,8 +236,9 @@ class HistoryDispatcher {
                                     break;
                             }
 
+                            int notificationId = buddyDbId + NOTIFICATION_ID_OFFSET;
                             NotificationLine line = new NotificationLine(
-                                    buddyDbId,
+                                    notificationId,
                                     nickName,
                                     text,
                                     largeIcon,

@@ -40,7 +40,7 @@ import static java.util.Collections.unmodifiableList;
  * Date: 28.09.13
  * Time: 15:40
  */
-public class HistoryDispatcher {
+class HistoryDispatcher {
 
     private static final long HISTORY_DISPATCH_DELAY = 750;
 
@@ -57,7 +57,7 @@ public class HistoryDispatcher {
 
     private List<NotificationLine> activeNotifications = emptyList();
 
-    public HistoryDispatcher(Context context) {
+    HistoryDispatcher(Context context) {
         // Variables.
         this.context = context;
         contentResolver = context.getContentResolver();
@@ -66,7 +66,7 @@ public class HistoryDispatcher {
         largeIconSize = BitmapCache.convertDpToPixel(64, context);
     }
 
-    public void startObservation() {
+    void startObservation() {
         // Registering created observers.
         contentResolver.registerContentObserver(
                 Settings.HISTORY_RESOLVER_URI, true, historyObserver);
@@ -105,7 +105,7 @@ public class HistoryDispatcher {
         /**
          * Creates a content observer.
          */
-        public HistoryObserver() {
+        HistoryObserver() {
             super(null);
             executor = Executors.newSingleThreadExecutor();
             historyDispatcherTask = new HistoryDispatcherTask();
@@ -136,6 +136,9 @@ public class HistoryDispatcher {
             long time = System.currentTimeMillis();
             // Obtain last unread for buddy. If exist.
             Bundle bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_MESSAGES_COUNT, null, null);
+            if (bundle == null) {
+                return;
+            }
             int unshown = bundle.getInt(GlobalProvider.KEY_UNSHOWN);
             int justShown = bundle.getInt(GlobalProvider.KEY_JUST_SHOWN);
             int onScreen = bundle.getInt(GlobalProvider.KEY_ON_SCREEN);
@@ -143,6 +146,9 @@ public class HistoryDispatcher {
             // If yes - we must update notification with all unread messages. If no - nothing to do now.
             if (unshown > 0 || justShown > 0 || onScreen > 0 || settingsChanged) {
                 bundle = contentResolver.call(Settings.HISTORY_RESOLVER_URI, GlobalProvider.METHOD_GET_UNREAD, null, null);
+                if (bundle == null) {
+                    return;
+                }
                 final ArrayList<NotificationData> unreadList =
                         (ArrayList<NotificationData>) bundle.getSerializable(GlobalProvider.KEY_NOTIFICATION_DATA);
                 boolean isAlarmRequired = (unshown > 0);
@@ -159,7 +165,7 @@ public class HistoryDispatcher {
                                 for (NotificationLine line : activeNotifications) {
                                     boolean isPresent = false;
                                     for (NotificationData data : unreadList) {
-                                        if (data.getMessageDbId() == line.getNotificationId()) {
+                                        if (data.getBuddyDbId() == line.getNotificationId()) {
                                             isPresent = true;
                                         }
                                     }
@@ -180,9 +186,8 @@ public class HistoryDispatcher {
                         for (NotificationData data : unreadList) {
                             // Obtaining and collecting message-specific data.
                             unread += data.getUnreadCount();
-                            final int messageDbId = data.getMessageDbId();
                             String message = data.getMessageText();
-                            int buddyDbId = data.getBuddyDbId();
+                            final int buddyDbId = data.getBuddyDbId();
                             String nickName = data.getBuddyNick();
                             String avatarHash = data.getBuddyAvatarHash();
                             int contentType = data.getContentType();
@@ -230,7 +235,7 @@ public class HistoryDispatcher {
                             }
 
                             NotificationLine line = new NotificationLine(
-                                    messageDbId,
+                                    buddyDbId,
                                     nickName,
                                     text,
                                     largeIcon,
@@ -346,6 +351,7 @@ public class HistoryDispatcher {
             return notificationCancelTime - System.currentTimeMillis();
         }
 
+        @SuppressWarnings("SameParameterValue")
         private void vibrate(long delay) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(delay);

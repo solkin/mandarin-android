@@ -1022,10 +1022,9 @@ public class ChatActivity extends ChiefActivity {
             intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
             startActivity(intent);
         } else {
-            Intent intent = new Intent();
-            intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setDataAndType(uri, FileHelper.getMimeType(contentName));
+            Intent intent = new Intent(this, VideoViewerActivity.class);
+            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_NAME, contentName);
+            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_URI, uri.toString());
             startActivity(intent);
         }
     }

@@ -99,9 +99,9 @@ class HistoryDispatcher {
 
     private class HistoryObserver extends ContentObserver {
 
-        ExecutorService executor;
-        HistoryDispatcherTask historyDispatcherTask;
-        Runnable taskWrapper;
+        private ExecutorService executor;
+        private HistoryDispatcherTask historyDispatcherTask;
+        private Runnable taskWrapper;
 
         /**
          * Creates a content observer.

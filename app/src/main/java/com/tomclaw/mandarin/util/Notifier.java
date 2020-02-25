@@ -5,6 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
 
@@ -12,7 +15,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -22,6 +24,8 @@ import com.tomclaw.mandarin.core.Settings;
 
 import java.util.List;
 
+import static com.tomclaw.mandarin.util.StringUtil.sha1;
+
 /**
  * Created by ivsolkin on 06/07/2017.
  */
@@ -29,22 +33,18 @@ import java.util.List;
 public class Notifier {
 
     private static final int NOTIFICATION_ID = 0x05;
-    private static final String NOTIFICATION_CHANNEL_ID = "chat_messages";
     private static final String GROUP_KEY = "mandarin_notification";
-
-    public static void init(Context context) {
-        prepareChannel(context, NOTIFICATION_CHANNEL_ID, R.string.incoming_messages);
-    }
 
     public static void showNotification(Context context, NotificationContent data) {
         @DrawableRes int smallImage = R.drawable.ic_notification;
         @ColorInt int color = context.getResources().getColor(R.color.accent_color);
+        String channelId = getChannelId(context);
         if (data.isMultiline()) {
-            showMultiNotification(context, NOTIFICATION_CHANNEL_ID, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
+            showMultiNotification(context, channelId, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), data.getLines(), color, smallImage, data.getContentAction(),
                     data.getActions());
         } else {
-            showSingleNotification(context, NOTIFICATION_CHANNEL_ID, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
+            showSingleNotification(context, channelId, NOTIFICATION_ID, data.isExtended(), data.isAlert(), data.getTitle(),
                     data.getText(), color, smallImage, data.getImage(), data.getContentAction(),
                     data.getActions());
         }
@@ -163,19 +163,55 @@ public class Notifier {
         }
     }
 
-    private static void prepareChannel(Context context, String channelId, @StringRes int channelName) {
+    private static String getNotificationPrefsHash(Context context) {
+        String data = "";
+        if (PreferenceHelper.isSound(context)) {
+            Uri uri = PreferenceHelper.getNotificationUri(context);
+            data += uri.toString();
+        }
+        if (PreferenceHelper.isVibrate(context)) {
+            data += "vibrate";
+        }
+        if (PreferenceHelper.isLights(context)) {
+            data += "lights";
+        }
+        return sha1(data);
+    }
+
+    private static String getChannelId(Context context) {
+        String prefsHash = getNotificationPrefsHash(context);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannel(prefsHash) != null) {
+                return prefsHash;
+            }
             NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    context.getString(channelName),
+                    prefsHash,
+                    context.getString(R.string.incoming_messages),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(context.getResources().getColor(R.color.accent_color));
-            notificationChannel.enableVibration(false);
+            if (PreferenceHelper.isSound(context)) {
+                Uri uri = PreferenceHelper.getNotificationUri(context);
+                AudioAttributes attrs = RingtoneManager.getRingtone(context, uri).getAudioAttributes();
+                notificationChannel.setSound(uri, attrs);
+            } else {
+                notificationChannel.setSound(null, null);
+            }
+            if (PreferenceHelper.isVibrate(context)) {
+                notificationChannel.enableVibration(true);
+                notificationChannel.setVibrationPattern(new long[]{0, 100, 0, 100});
+            } else {
+                notificationChannel.enableVibration(false);
+            }
+            if (PreferenceHelper.isLights(context)) {
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Settings.LED_COLOR_RGB);
+            } else {
+                notificationChannel.enableLights(false);
+            }
             notificationManager.createNotificationChannel(notificationChannel);
         }
+        return prefsHash;
     }
 
     private static void setNotificationAlert(Context context, NotificationCompat.Builder notification) {

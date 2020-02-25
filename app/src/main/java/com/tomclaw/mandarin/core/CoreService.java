@@ -132,7 +132,6 @@ public class CoreService extends Service {
         super.onCreate();
         updateState(STATE_LOADING);
         serviceCreateTime = System.currentTimeMillis();
-        Notifier.init(this);
         sessionHolder = new SessionHolder(this);
         requestDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_SHORT);
         downloadDispatcher = new RequestDispatcher(this, sessionHolder, Request.REQUEST_TYPE_DOWNLOAD);

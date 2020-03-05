@@ -169,6 +169,7 @@ class HistoryDispatcher {
                                         int notificationId = data.getBuddyDbId() + NOTIFICATION_ID_OFFSET;
                                         if (notificationId == line.getNotificationId()) {
                                             isPresent = true;
+                                            break;
                                         }
                                     }
                                     if (isPresent) {
@@ -249,6 +250,7 @@ class HistoryDispatcher {
                         }
 
                         boolean privateNotifications = PreferenceHelper.isPrivateNotifications(context);
+                        boolean multipleSenders = lines.size() > 1;
 
                         PendingIntent contentAction;
                         List<NotificationCompat.Action> actions;
@@ -256,7 +258,7 @@ class HistoryDispatcher {
                         String title;
                         StringBuilder text;
                         Bitmap image;
-                        if (lines.size() > 1 || privateNotifications) {
+                        if (multipleSenders || privateNotifications) {
                             PendingIntent openChatsIntent = createOpenChatsIntent(context, requestCode++);
                             PendingIntent readAllIntent = createReadAllIntent(context, requestCode);
                             NotificationCompat.Action chatsAction = new NotificationCompat.Action.Builder(
@@ -270,14 +272,16 @@ class HistoryDispatcher {
 
                             title = context.getResources().getQuantityString(R.plurals.count_new_messages, unread, unread);
                             text = new StringBuilder();
+                            PendingIntent lineContentAction = null;
                             for (NotificationLine line : lines) {
                                 if (text.length() > 0) {
                                     text.append(", ");
                                 }
                                 text.append(line.getTitle());
+                                lineContentAction = line.getContentAction();
                             }
                             image = null;
-                            contentAction = openChatsIntent;
+                            contentAction = multipleSenders ? openChatsIntent : lineContentAction;
                             actions = Arrays.asList(chatsAction, readAllAction);
                         } else {
                             NotificationLine line = lines.remove(0);

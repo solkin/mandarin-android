@@ -19,7 +19,6 @@ import androidx.core.app.NotificationCompat;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
-import com.tomclaw.mandarin.util.Notifier;
 
 import java.util.Collections;
 import java.util.Random;
@@ -196,15 +195,15 @@ public class CoreService extends Service {
                 Notification notification = buildNotification(builder);
                 startForeground(NOTIFICATION_ID, notification);
             }
-        }
-        if (!sessionHolder.hasActiveAccounts()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    stopForeground(true);
-                }
-            };
-            handler.post(runnable);
+            if (!sessionHolder.hasActiveAccounts()) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        stopForeground(true);
+                    }
+                };
+                handler.postDelayed(runnable, 2000);
+            }
         }
     }
 

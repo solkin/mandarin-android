@@ -49,7 +49,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
-    implementation 'se.emilsjolander:stickylistheaders:2.7.0' // TODO: remove
+    implementation 'com.github.mtotschnig:StickyListHeaders:2.7.1'
     implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
     implementation 'com.github.machinarius:preferencefragment:0.1.1'
     implementation 'net.hockeyapp.android:HockeySDK:5.1.1'

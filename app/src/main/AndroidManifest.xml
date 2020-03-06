@@ -23,7 +23,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+        android:theme="@style/Theme.Mandarin.Light"
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"

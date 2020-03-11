@@ -22,6 +22,8 @@ import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 
+import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
+
 public class VideoViewerActivity extends AppCompatActivity {
 
     public static final String EXTRA_VIDEO_URI = "video_uri";
@@ -88,7 +90,7 @@ public class VideoViewerActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setDataAndType(uri, FileHelper.getMimeType(name));
+        intent.setDataAndType(getExtFileUri(this, uri), FileHelper.getMimeType(name));
 
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;
@@ -152,7 +154,7 @@ public class VideoViewerActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setDataAndType(uri, FileHelper.getMimeType(name));
+        intent.setDataAndType(getExtFileUri(this, uri), FileHelper.getMimeType(name));
         startActivity(intent);
         finish();
     }

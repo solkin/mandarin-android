@@ -1008,21 +1008,16 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void viewContent(String contentName, String contentUri, String previewHash) {
-        Uri uri = Uri.parse(contentUri);
-        if (uri.getScheme() != null && uri.getScheme().equals("file")) {
-            File file = new File(uri.getPath());
-            uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
-        }
         if (FileHelper.getMimeType(contentName).startsWith("image")) {
             Intent intent = new Intent(this, PhotoViewerActivity.class);
             intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
-            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, uri.toString());
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
             intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
             startActivity(intent);
         } else {
             Intent intent = new Intent(this, VideoViewerActivity.class);
             intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_NAME, contentName);
-            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_URI, uri.toString());
+            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_URI, contentUri);
             startActivity(intent);
         }
     }

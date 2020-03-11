@@ -39,6 +39,8 @@ import com.tomclaw.mandarin.util.GifFileDecoder;
 
 import java.io.File;
 
+import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
+
 /**
  * Created by Solkin on 05.12.2014.
  */
@@ -176,7 +178,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setDataAndType(uri, FileHelper.getMimeType(name));
+        intent.setDataAndType(getExtFileUri(this, uri), FileHelper.getMimeType(name));
 
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;

@@ -1,9 +1,15 @@
 package com.tomclaw.mandarin.util;
 
+import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import androidx.core.content.FileProvider;
+
 import com.tomclaw.mandarin.R;
+
+import java.io.File;
 
 /**
  * Created by Solkin on 18.10.2014.
@@ -66,4 +72,13 @@ public class FileHelper {
         }
         return suffix;
     }
+
+    public static Uri getExtFileUri(Context context, Uri uri) {
+        if (uri.getScheme() != null && uri.getScheme().equals("file")) {
+            File file = new File(uri.getPath());
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+        }
+        return uri;
+    }
+
 }

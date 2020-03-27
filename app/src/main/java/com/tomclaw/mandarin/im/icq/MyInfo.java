@@ -74,7 +74,7 @@ public class MyInfo implements Unobfuscatable {
     }
 
     public String getBuddyIcon() {
-        return HttpUtil.getAvatarUrl(buddyIcon, aimId);
+        return HttpUtil.getAvatarUrl(aimId);
     }
 
     public void setState(String state) {

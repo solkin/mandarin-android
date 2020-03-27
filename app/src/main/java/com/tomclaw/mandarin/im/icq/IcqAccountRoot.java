@@ -35,7 +35,6 @@ public class IcqAccountRoot extends AccountRoot {
     private String aimSid;
     private String fetchBaseUrl;
     private MyInfo myInfo;
-    private WellKnownUrls wellKnownUrls;
 
     private transient Executor loginExecutor = Executors.newSingleThreadExecutor();
 
@@ -271,10 +270,9 @@ public class IcqAccountRoot extends AccountRoot {
         updateAccount();
     }
 
-    public void setStartSessionResult(String aimSid, String fetchBaseUrl, WellKnownUrls wellKnownUrls) {
+    public void setStartSessionResult(String aimSid, String fetchBaseUrl) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
-        this.wellKnownUrls = wellKnownUrls;
     }
 
     public void setRenewTokenResult(String login, String tokenA, long expiresIn) {
@@ -338,7 +336,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     public boolean checkSessionReady() {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
-                || myInfo == null || wellKnownUrls == null);
+                || myInfo == null);
     }
 
     public void expireLoginData() {
@@ -354,7 +352,6 @@ public class IcqAccountRoot extends AccountRoot {
     public void resetSessionData() {
         aimSid = null;
         fetchBaseUrl = null;
-        wellKnownUrls = null;
     }
 
     public long getHostTime() {
@@ -398,7 +395,4 @@ public class IcqAccountRoot extends AccountRoot {
         return myInfo;
     }
 
-    public WellKnownUrls getWellKnownUrls() {
-        return wellKnownUrls;
-    }
 }

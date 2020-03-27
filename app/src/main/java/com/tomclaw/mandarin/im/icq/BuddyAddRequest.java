@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Solkin on 27.07.2014.
@@ -59,8 +60,7 @@ public class BuddyAddRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("buddylist/addBuddy");
+        return WEB_API_BASE.concat("buddylist/addBuddy");
     }
 
     @Override

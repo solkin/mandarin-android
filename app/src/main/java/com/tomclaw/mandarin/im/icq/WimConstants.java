@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 public class WimConstants {
 
     public static final String TOKEN_A = "a";
-    public static final String CLIENT_LOGIN_URL = "https://api.login.icq.net/auth/clientLogin";
-    public static final String NORMALIZE_PHONE_URL = "https://www.icq.com/smsreg/normalizePhoneNumber.php";
-    public static final String VALIDATE_PHONE_URL = "https://www.icq.com/smsreg/requestPhoneValidation.php";
-    public static final String LOGIN_PHONE_URL = "https://www.icq.com/smsreg/loginWithPhoneNumber.php";
+    public static final String CLIENT_LOGIN_URL = "https://u.icq.net/wim/auth/clientLogin";
+    public static final String NORMALIZE_PHONE_URL = "https://u.icq.net/smsreg/normalizePhoneNumber.php";
+    public static final String VALIDATE_PHONE_URL = "https://u.icq.net/smsreg/requestPhoneValidation.php";
+    public static final String LOGIN_PHONE_URL = "https://u.icq.net/smsreg/loginWithPhoneNumber.php";
     public static final String CLIENT_NAME = "clientName";
     public static final String CLIENT_VERSION = "clientVersion";
     public static final String DEV_ID = "devId";
@@ -50,8 +50,9 @@ public class WimConstants {
     public static final String SESSION_TIMEOUT = "sessionTimeout";
     public static final String TS = "ts";
     public static final String VIEW = "view";
-    public static final String START_SESSION_URL = "https://api.icq.net/aim/startSession";
+    public static final String START_SESSION_URL = "https://u.icq.net/wim/aim/startSession";
     public static final String RENEW_TOKEN_URL = "https://api.login.icq.net/auth/getInfo";
+    public static final String WEB_API_BASE = "https://u.icq.net/wim/";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";
     public static final String EQUAL = "=";
@@ -63,7 +64,6 @@ public class WimConstants {
     public static final String TYPING_STATUS_TYPE = "typing";
     public static final String MY_INFO = "myInfo";
     public static final String SESSION_ENDED = "sessionEnded";
-    public static final String WELL_KNOWN_URLS = "wellKnownUrls";
     public static final String EVENTS_ARRAY = "events";
     public static final String TYPE = "type";
     public static final String EVENT_DATA_OBJECT = "eventData";
@@ -80,7 +80,6 @@ public class WimConstants {
     public static final String DISPLAY_ID = "displayId";
     public static final String STATE = "state";
     public static final String USER_TYPE = "userType";
-    public static final String BUDDY_ICON = "buddyIcon";
     public static final String LAST_SEEN = "lastseen";
     public static final String IM = "im";
     public static final String MESSAGE = "message";

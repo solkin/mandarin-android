@@ -25,6 +25,7 @@ import java.util.Map;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Solkin on 24.07.2014.
@@ -71,8 +72,7 @@ public class BuddyPresenceRequest extends WimRequest {
                 if (profile != null) {
                     ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
                     String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
-                    String buddyIcon = HttpUtil.getAvatarUrl(buddy.optString(WimConstants.BUDDY_ICON), buddyId);
-
+                    String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                     int statusIndex;
                     try {
                         statusIndex = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
@@ -132,8 +132,7 @@ public class BuddyPresenceRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/get");
+        return WEB_API_BASE.concat("presence/get");
     }
 
     @Override

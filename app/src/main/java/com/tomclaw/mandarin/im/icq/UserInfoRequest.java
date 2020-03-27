@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,7 +71,7 @@ public class UserInfoRequest extends WimRequest {
                 Context context = getAccountRoot().getContext();
                 // Only first profile we need.
                 JSONObject user = users.getJSONObject(0);
-                String buddyIcon = HttpUtil.getAvatarUrl(user.optString("buddyIcon"), buddyId);
+                String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                 // Check avatar fields be able to modify.
                 if (!TextUtils.isEmpty(buddyIcon)) {
                     String hash = HttpUtil.getUrlHash(buddyIcon);
@@ -140,8 +141,7 @@ public class UserInfoRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/get");
+        return WEB_API_BASE.concat("presence/get");
     }
 
     @Override

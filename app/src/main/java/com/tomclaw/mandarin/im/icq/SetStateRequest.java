@@ -15,6 +15,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,8 +59,7 @@ public class SetStateRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/setState");
+        return WEB_API_BASE.concat("presence/setState");
     }
 
     @Override

@@ -37,10 +37,7 @@ public class HttpUtil {
         return bi.toString(RADIX);
     }
 
-    public static String getAvatarUrl(String buddyIcon, String buddyId) {
-        if (TextUtils.isEmpty(buddyIcon)) {
-            return "";
-        }
+    public static String getAvatarUrl(String buddyId) {
         return "https://api.icq.net/expressions/get?f=native&type=floorLargeBuddyIcon&t=" + buddyId;
     }
 

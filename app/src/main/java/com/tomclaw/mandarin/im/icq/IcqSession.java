@@ -51,7 +51,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.ASSERT_CAPS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.AUTORESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDIES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDYLIST;
-import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDY_ICON;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUILD_NUMBER;
 import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_LOGIN_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_NAME;
@@ -127,7 +126,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.URL_REGEX;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
-import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
 
 /**
  * Created with IntelliJ IDEA.
@@ -285,10 +283,8 @@ public class IcqSession {
                         // Parsing my info and well-known URL's to send requests.
                         MyInfo myInfo = GsonSingleton.getInstance().fromJson(
                                 StringUtil.fixCyrillicSymbols(dataObject.getJSONObject(MY_INFO).toString()), MyInfo.class);
-                        WellKnownUrls wellKnownUrls = GsonSingleton.getInstance().fromJson(
-                                dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
                         // Update starts session result in database.
-                        icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, wellKnownUrls);
+                        icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl);
                         // Request for status update before my info parsing to prevent status reset.
                         icqAccountRoot.updateStatus();
                         // Update status info in my info to prevent status blinking.
@@ -488,7 +484,7 @@ public class IcqSession {
                             int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                             String statusTitle = getStatusTitle(moodTitle, statusIndex);
                             String buddyType = buddyObject.optString(USER_TYPE);
-                            String buddyIcon = HttpUtil.getAvatarUrl(buddyObject.optString(BUDDY_ICON), buddyId);
+                            String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                             long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
                             buddyDatas.add(new BuddyData(groupId, groupName, buddyId, buddyNick, statusIndex,
                                     statusTitle, statusMessage, buddyIcon, lastSeen));
@@ -529,7 +525,7 @@ public class IcqSession {
                         buddyNick = sourceObject.optString(FRIENDLY);
                         String buddyStatus = sourceObject.optString(STATE, FALLBACK_STATE);
                         String buddyType = sourceObject.optString(USER_TYPE);
-                        buddyIcon = HttpUtil.getAvatarUrl(sourceObject.optString(BUDDY_ICON), buddyId);
+                        buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                         lastSeen = sourceObject.optLong(LAST_SEEN, -1);
                         statusIndex = getStatusIndex(null, buddyStatus);
                     } else {
@@ -637,7 +633,7 @@ public class IcqSession {
                     int statusIndex = getStatusIndex(moodIcon, buddyStatus);
                     String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
-                    String buddyIcon = HttpUtil.getAvatarUrl(eventData.optString(BUDDY_ICON), buddyId);
+                    String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 

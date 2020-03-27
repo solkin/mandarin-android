@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -100,8 +101,7 @@ public class BuddySearchRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("memberDir/search");
+        return WEB_API_BASE.concat("memberDir/search");
     }
 
     @Override

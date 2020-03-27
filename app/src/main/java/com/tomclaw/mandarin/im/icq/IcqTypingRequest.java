@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by solkin on 05/05/14.
@@ -35,8 +36,7 @@ public class IcqTypingRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("im/setTyping");
+        return WEB_API_BASE.concat("im/setTyping");
     }
 
     @Override

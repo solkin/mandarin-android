@@ -15,6 +15,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.REQUEST_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -82,8 +83,7 @@ public class IcqMessageRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("im/sendIM");
+        return WEB_API_BASE.concat("im/sendIM");
     }
 
     @Override

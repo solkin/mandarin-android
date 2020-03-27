@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Igor on 05.04.2015.
@@ -59,8 +60,7 @@ public class UpdateInfoRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("memberDir/update");
+        return WEB_API_BASE.concat("memberDir/update");
     }
 
     @Override

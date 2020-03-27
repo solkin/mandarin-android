@@ -3,18 +3,15 @@ package com.tomclaw.mandarin.im.icq;
 import android.content.Intent;
 
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,20 +46,7 @@ public class SetStateRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK) {
             isRequestOk = true;
-            JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-            JSONObject myInfoObject = dataObject.getJSONObject(MY_INFO);
-            String state = myInfoObject.getString(STATE);
-            try {
-                int statusIndexApplied = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
-                // Check for status setup was fully correct and state successfully applied.
-                if (statusIndexApplied == statusIndex) {
-                    isSetStateSuccess = true;
-                } else {
-                    intent.putExtra(STATE_APPLIED, statusIndexApplied);
-                }
-            } catch (StatusNotFoundException ignored) {
-                // No such state? Hm... Really strange default state.
-            }
+            isSetStateSuccess = true;
         }
         intent.putExtra(SET_STATE_SUCCESS, isSetStateSuccess);
         // Maybe incorrect aim sid or other strange error we've not recognized.
@@ -71,8 +55,7 @@ public class SetStateRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/setState");
+        return WEB_API_BASE.concat("presence/setState");
     }
 
     @Override

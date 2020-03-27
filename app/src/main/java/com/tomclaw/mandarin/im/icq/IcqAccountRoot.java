@@ -10,7 +10,12 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.Locale;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +36,8 @@ public class IcqAccountRoot extends AccountRoot {
     private String aimSid;
     private String fetchBaseUrl;
     private MyInfo myInfo;
-    private WellKnownUrls wellKnownUrls;
+
+    private transient Executor loginExecutor = Executors.newSingleThreadExecutor();
 
     public IcqAccountRoot() {
         icqSession = new IcqSession(this);
@@ -44,12 +50,11 @@ public class IcqAccountRoot extends AccountRoot {
     @Override
     public void connect() {
         Logger.log("icq connection attempt");
-        // TODO: Such thread working model must be rewritten.
-        Thread connectThread = new Thread() {
+        Runnable loginRunnable = new Runnable() {
 
             private void sleep() {
                 try {
-                    sleep(5000);
+                    Thread.sleep(SECONDS.toMillis(5));
                 } catch (InterruptedException ignored) {
                     // No need to check.
                 }
@@ -151,7 +156,7 @@ public class IcqAccountRoot extends AccountRoot {
                 updateAccountState(StatusUtil.STATUS_OFFLINE, false);
             }
         };
-        connectThread.start();
+        loginExecutor.execute(loginRunnable);
     }
 
     @Override
@@ -165,12 +170,11 @@ public class IcqAccountRoot extends AccountRoot {
 
     @Override
     public void checkCredentials(final CredentialsCheckCallback callback) {
-        // TODO: Such thread working model must be rewritten.
-        Thread credentialsCheckThread = new Thread() {
+        Runnable credentialsCheckRunnable = new Runnable() {
 
             private void sleep() {
                 try {
-                    sleep(5000);
+                    Thread.sleep(SECONDS.toMillis(5));
                 } catch (InterruptedException ignored) {
                     // No need to check.
                 }
@@ -194,7 +198,7 @@ public class IcqAccountRoot extends AccountRoot {
                 callback.onPassed();
             }
         };
-        credentialsCheckThread.start();
+        loginExecutor.execute(credentialsCheckRunnable);
     }
 
     public void updateStatus() {
@@ -263,10 +267,9 @@ public class IcqAccountRoot extends AccountRoot {
         updateAccount();
     }
 
-    public void setStartSessionResult(String aimSid, String fetchBaseUrl, WellKnownUrls wellKnownUrls) {
+    public void setStartSessionResult(String aimSid, String fetchBaseUrl) {
         this.aimSid = aimSid;
         this.fetchBaseUrl = fetchBaseUrl;
-        this.wellKnownUrls = wellKnownUrls;
     }
 
     public void setRenewTokenResult(String login, String tokenA, long expiresIn) {
@@ -289,10 +292,6 @@ public class IcqAccountRoot extends AccountRoot {
 
         // Avatar checking and requesting.
         String buddyIcon = myInfo.getBuddyIcon();
-        String bigBuddyIcon = myInfo.getBigBuddyIcon();
-        if (!TextUtils.isEmpty(bigBuddyIcon)) {
-            buddyIcon = bigBuddyIcon;
-        }
         if (TextUtils.isEmpty(buddyIcon)) {
             setAvatarHash(null);
         } else {
@@ -308,10 +307,9 @@ public class IcqAccountRoot extends AccountRoot {
         String moodIcon = myInfo.optMoodIcon();
         String statusMessage = myInfo.optStatusMsg();
         String moodTitle = myInfo.optMoodTitle();
-        String accountType = getAccountType();
 
-        int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
-        String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
+        int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
+        String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
 
         // Checking for we are disconnecting now.
         if (getStatusIndex() != StatusUtil.STATUS_OFFLINE) {
@@ -335,7 +333,7 @@ public class IcqAccountRoot extends AccountRoot {
 
     public boolean checkSessionReady() {
         return !(TextUtils.isEmpty(aimSid) || TextUtils.isEmpty(fetchBaseUrl)
-                || myInfo == null || wellKnownUrls == null);
+                || myInfo == null);
     }
 
     public void expireLoginData() {
@@ -347,14 +345,15 @@ public class IcqAccountRoot extends AccountRoot {
         sessionKey = null;
         tokenExpirationDate = 0;
         // Save account data in database.
+        // TODO: check redundancy
         updateAccount();
     }
 
     public void resetSessionData() {
         aimSid = null;
         fetchBaseUrl = null;
-        wellKnownUrls = null;
         // Save account data in database.
+        // TODO: check redundancy
         updateAccount();
     }
 
@@ -384,6 +383,10 @@ public class IcqAccountRoot extends AccountRoot {
     }
 
     public String getFetchBaseUrl() {
+        if (fetchBaseUrl.startsWith("http://")) {
+            // Force replace http scheme with https for API 28
+            fetchBaseUrl = "https://" + fetchBaseUrl.substring(7);
+        }
         return fetchBaseUrl;
     }
 
@@ -393,10 +396,6 @@ public class IcqAccountRoot extends AccountRoot {
 
     public MyInfo getMyInfo() {
         return myInfo;
-    }
-
-    public WellKnownUrls getWellKnownUrls() {
-        return wellKnownUrls;
     }
 
     public String getLocaleId() {

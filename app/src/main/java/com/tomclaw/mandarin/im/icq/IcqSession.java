@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.tomclaw.helpers.NameValuePair;
 import com.tomclaw.helpers.Strings;
+import com.tomclaw.helpers.UrlParser;
 import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.ContentResolverLayer;
@@ -17,6 +19,7 @@ import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.im.BuddyData;
 import com.tomclaw.mandarin.im.GroupData;
 import com.tomclaw.mandarin.im.SentMessageData;
+import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.dto.HistDlgState;
 import com.tomclaw.mandarin.im.icq.tasks.ProcessDialogStateTask;
@@ -32,9 +35,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
@@ -48,7 +54,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.AMP;
 import static com.tomclaw.mandarin.im.icq.WimConstants.ASSERT_CAPS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDIES_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDYLIST;
-import static com.tomclaw.mandarin.im.icq.WimConstants.BUDDY_ICON;
 import static com.tomclaw.mandarin.im.icq.WimConstants.BUILD_NUMBER;
 import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_LOGIN_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.CLIENT_NAME;
@@ -63,6 +68,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EVENTS_ARRAY;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EVENT_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.EXPIRES_IN;
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FETCH_BASE_URL;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FORMAT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.FRIENDLY;
@@ -118,7 +124,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.TYPING_STATUS_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_DATA_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.USER_TYPE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
-import static com.tomclaw.mandarin.im.icq.WimConstants.WELL_KNOWN_URLS;
 import static com.tomclaw.mandarin.util.HttpUtil.httpToHttps;
 
 /**
@@ -130,8 +135,8 @@ import static com.tomclaw.mandarin.util.HttpUtil.httpToHttps;
 public class IcqSession {
 
     public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
-    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,userAddedToBuddyList,service,buddyRegistered,hist";
-    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,bigBuddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
+    private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
+    private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
     private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
@@ -277,10 +282,8 @@ public class IcqSession {
                         // Parsing my info and well-known URL's to send requests.
                         MyInfo myInfo = GsonSingleton.getInstance().fromJson(
                                 Strings.fixCyrillicSymbols(dataObject.getJSONObject(MY_INFO).toString()), MyInfo.class);
-                        WellKnownUrls wellKnownUrls = GsonSingleton.getInstance().fromJson(
-                                dataObject.getJSONObject(WELL_KNOWN_URLS).toString(), WellKnownUrls.class);
                         // Update starts session result in database.
-                        icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl, wellKnownUrls);
+                        icqAccountRoot.setStartSessionResult(aimSid, fetchBaseUrl);
                         // Request for status update before my info parsing to prevent status reset.
                         icqAccountRoot.updateStatus();
                         // Update status info in my info to prevent status blinking.
@@ -474,18 +477,14 @@ public class IcqSession {
                             if (TextUtils.isEmpty(buddyNick)) {
                                 buddyNick = buddyObject.optString(DISPLAY_ID, buddyId);
                             }
-                            String buddyStatus = buddyObject.getString(STATE);
+                            String buddyStatus = buddyObject.optString(STATE, FALLBACK_STATE);
                             String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
-                            int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
-                            String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
-                            String buddyType = buddyObject.getString(USER_TYPE);
-                            String buddyIcon = buddyObject.optString(BUDDY_ICON);
-                            String bigBuddyIcon = buddyObject.optString(WimConstants.BIG_BUDDY_ICON);
-                            if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                                buddyIcon = bigBuddyIcon;
-                            }
+                            int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                            String statusTitle = getStatusTitle(moodTitle, statusIndex);
+                            String buddyType = buddyObject.optString(USER_TYPE);
+                            String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                             long lastSeen = buddyObject.optLong(LAST_SEEN, -1);
                             buddyDatas.add(new BuddyData(groupId, groupName, buddyId, buddyNick, statusIndex,
                                     statusTitle, statusMessage, buddyIcon, lastSeen));
@@ -547,19 +546,15 @@ public class IcqSession {
                 try {
                     String buddyId = eventData.getString(AIM_ID);
 
-                    String buddyStatus = eventData.getString(STATE);
+                    String buddyStatus = eventData.optString(STATE, FALLBACK_STATE);
                     String moodIcon = eventData.optString(MOOD_ICON);
                     String statusMessage = Strings.unescapeXml(eventData.optString(STATUS_MSG));
                     String moodTitle = Strings.unescapeXml(eventData.optString(MOOD_TITLE));
 
-                    int statusIndex = IcqStatusUtil.getStatusIndex(accountType, moodIcon, buddyStatus);
-                    String statusTitle = IcqStatusUtil.getStatusTitle(accountType, moodTitle, statusIndex);
+                    int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                    String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
-                    String buddyIcon = eventData.optString(BUDDY_ICON);
-                    String bigBuddyIcon = eventData.optString(WimConstants.BIG_BUDDY_ICON);
-                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                        buddyIcon = bigBuddyIcon;
-                    }
+                    String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
 
                     long lastSeen = eventData.optLong(LAST_SEEN, -1);
 
@@ -596,6 +591,79 @@ public class IcqSession {
                 break;
         }
         Logger.log("processed in " + (System.currentTimeMillis() - processStartTime) + " ms.");
+    }
+
+    protected String getStatusTitle(String moodTitle, int statusIndex) {
+        // Define status title.
+        String statusTitle;
+        if (TextUtils.isEmpty(moodTitle)) {
+            // Default title for status index.
+            statusTitle = StatusUtil.getStatusTitle(icqAccountRoot.getAccountType(), statusIndex);
+        } else {
+            // Buddy specified title.
+            statusTitle = moodTitle;
+        }
+        return statusTitle;
+    }
+
+    protected int getStatusIndex(String moodIcon, String buddyStatus) {
+        int statusIndex;
+        // Checking for mood present.
+        if (!TextUtils.isEmpty(moodIcon)) {
+            try {
+                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+            } catch (StatusNotFoundException ignored) {
+            }
+        }
+        try {
+            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+        } catch (StatusNotFoundException ex) {
+            statusIndex = StatusUtil.STATUS_OFFLINE;
+        }
+        return statusIndex;
+    }
+
+    /**
+     * Returns "id" parameter value from specified URL
+     */
+    private static String getIdParam(String url) {
+        URI uri = URI.create(url);
+        for (NameValuePair param : UrlParser.parse(uri, "UTF-8")) {
+            if (param.getName().equals("id")) {
+                return param.getValue();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
+     */
+    public static String parseMood(String moodUrl) {
+        if (moodUrl != null) {
+            final String id = getIdParam(moodUrl);
+
+            InputStream is = new InputStream() {
+                int pos = 0;
+                int length = id.length();
+
+                @Override
+                public int read() throws IOException {
+                    if (pos == length) return -1;
+                    char c1 = id.charAt(pos++);
+                    char c2 = id.charAt(pos++);
+
+                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
+                }
+            };
+            DataInputStream dis = new DataInputStream(is);
+            try {
+                return dis.readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return moodUrl;
     }
 
     @SuppressWarnings("WeakerAccess")

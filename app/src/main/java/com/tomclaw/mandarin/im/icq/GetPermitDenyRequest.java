@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Solkin on 20.12.2015.
@@ -47,8 +48,7 @@ public abstract class GetPermitDenyRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("preference/getPermitDeny");
+        return WEB_API_BASE.concat("preference/getPermitDeny");
     }
 
     @Override

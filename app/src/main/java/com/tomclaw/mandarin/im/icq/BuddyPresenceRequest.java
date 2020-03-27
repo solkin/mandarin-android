@@ -11,6 +11,7 @@ import com.tomclaw.mandarin.im.ShortBuddyInfo;
 import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 
 import org.json.JSONArray;
@@ -21,8 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created by Solkin on 24.07.2014.
@@ -68,13 +71,8 @@ public class BuddyPresenceRequest extends WimRequest {
                 String buddyId = buddy.getString(WimConstants.AIM_ID);
                 if (profile != null) {
                     ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
-                    String state = buddy.getString(WimConstants.STATE);
-                    String buddyIcon = buddy.optString(WimConstants.BUDDY_ICON);
-                    String bigBuddyIcon = buddy.optString(WimConstants.BIG_BUDDY_ICON);
-                    if (!TextUtils.isEmpty(bigBuddyIcon)) {
-                        buddyIcon = bigBuddyIcon;
-                    }
-
+                    String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
+                    String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                     int statusIndex;
                     try {
                         statusIndex = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
@@ -134,8 +132,7 @@ public class BuddyPresenceRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/get");
+        return WEB_API_BASE.concat("presence/get");
     }
 
     @Override

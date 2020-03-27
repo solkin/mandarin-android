@@ -2,8 +2,11 @@ package com.tomclaw.mandarin.im.icq;
 
 import android.text.TextUtils;
 
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.util.Unobfuscatable;
+
+import static com.tomclaw.mandarin.im.icq.WimConstants.FALLBACK_STATE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +19,7 @@ public class MyInfo implements Unobfuscatable {
     private String aimId;
     private String displayId;
     private String friendly;
-    private String state;
+    private String state = FALLBACK_STATE;
     private int invisible = 0;
     private String moodIcon;
     private String moodTitle;
@@ -24,7 +27,6 @@ public class MyInfo implements Unobfuscatable {
     private String userType;
     private String attachedPhoneNumber;
     private String buddyIcon;
-    private String bigBuddyIcon;
 
     public String getAimId() {
         return aimId;
@@ -72,11 +74,11 @@ public class MyInfo implements Unobfuscatable {
     }
 
     public String getBuddyIcon() {
-        return buddyIcon;
+        return HttpUtil.getAvatarUrl(aimId);
     }
 
     public String getBigBuddyIcon() {
-        return bigBuddyIcon;
+        return getBuddyIcon();
     }
 
     public void setState(String state) {

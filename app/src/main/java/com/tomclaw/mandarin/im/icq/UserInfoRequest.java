@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.
@@ -73,31 +74,21 @@ public class UserInfoRequest extends WimRequest {
                 Context context = accountRoot.getContext();
                 // Only first profile we need.
                 JSONObject user = users.getJSONObject(0);
-                String iconId = user.optString("iconId");
-                String buddyIcon = user.optString("buddyIcon");
-                String largeIconId = user.optString("largeIconId");
+                String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
                 // Check avatar fields be able to modify.
-                if (!TextUtils.isEmpty(iconId) && !TextUtils.isEmpty(buddyIcon) && iconId.length() > 4 &&
-                        !TextUtils.isEmpty(largeIconId) && largeIconId.length() > 4) {
-                    // Cut four first bytes and replace icon type.
-                    iconId = iconId.substring(4);
-                    largeIconId = largeIconId.substring(4);
-                    buddyIcon = buddyIcon.replace(iconId, largeIconId);
-                    buddyIcon = buddyIcon.replace("buddyIcon", "largeBuddyIcon");
+                if (!TextUtils.isEmpty(buddyIcon)) {
                     String hash = HttpUtil.getUrlHash(buddyIcon);
                     Logger.log("large buddy icon: " + buddyIcon);
                     // Check for such avatar is already loaded.
                     String avatarHash;
                     try {
-                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(
-                                databaseLayer, accountRoot, buddyId);
+                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(databaseLayer, accountRoot, buddyId);
                     } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
                         // No buddy - no avatar.
                         avatarHash = null;
                     }
                     if (TextUtils.equals(avatarHash, hash)) {
-                        QueryHelper.updateBuddyOrAccountAvatar(
-                                databaseLayer, accountRoot, buddyId, hash);
+                        QueryHelper.updateBuddyOrAccountAvatar(databaseLayer, accountRoot, buddyId, hash);
                         intent.putExtra(BUDDY_AVATAR_HASH, hash);
                     } else {
                         RequestHelper.requestLargeAvatar(
@@ -153,8 +144,7 @@ public class UserInfoRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return getAccountRoot().getWellKnownUrls().getWebApiBase()
-                .concat("presence/get");
+        return WEB_API_BASE.concat("presence/get");
     }
 
     @Override

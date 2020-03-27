@@ -39,6 +39,10 @@ public class HttpUtil {
         return bi.toString(RADIX);
     }
 
+    public static String getAvatarUrl(String buddyId) {
+        return "https://api.icq.net/expressions/get?f=native&type=floorLargeBuddyIcon&t=" + buddyId;
+    }
+
     private static byte[] getMD5(byte[] data) {
         byte[] hash = null;
         try {

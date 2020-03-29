@@ -37,6 +37,9 @@ import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
+
 import java.io.File;
 
 import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
@@ -173,13 +176,12 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.photo_viewer_activity_menu, menu);
-
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setDataAndType(getExtFileUri(this, uri), FileHelper.getMimeType(name));
 
+        getMenuInflater().inflate(R.menu.photo_viewer_activity_menu, menu);
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;
     }

@@ -47,7 +47,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -174,9 +173,11 @@ public class ChatActivity extends ChiefActivity {
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setDisplayShowTitleEnabled(false);
+        if (bar != null) {
+            bar.setDisplayHomeAsUpEnabled(true);
+            bar.setHomeButtonEnabled(true);
+            bar.setDisplayShowTitleEnabled(false);
+        }
 
         timeHelper = new TimeHelper(this);
 
@@ -417,6 +418,7 @@ public class ChatActivity extends ChiefActivity {
                 new SendTypingTask(this, buddyDbId, isTyping));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void setTypingSync(boolean isTyping) {
         RequestHelper.requestTyping(getContentResolver(),
                 chatHistoryAdapter.getBuddyDbId(), isTyping);
@@ -493,7 +495,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         // Think about this.
         isConfigurationChanging = true;
         hideKeyboard();
@@ -763,7 +765,7 @@ public class ChatActivity extends ChiefActivity {
         } catch (BuddyNotFoundException ignored) {
             enteredText = null;
         }
-        if (!TextUtils.isEmpty(enteredText)) {
+        if (enteredText != null && !TextUtils.isEmpty(enteredText)) {
             messageText.setText(enteredText);
             messageText.setSelection(enteredText.length());
         } else {
@@ -1051,6 +1053,7 @@ public class ChatActivity extends ChiefActivity {
             this.selectionHelper = selectionHelper;
         }
 
+        @SuppressWarnings("unused")
         void onItemCheckedStateChanged(ActionMode mode, long id) {
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
@@ -1158,7 +1161,7 @@ public class ChatActivity extends ChiefActivity {
         }
 
         @Override
-        public void onScrollStateChanged(RecyclerView view, int scrollState) {
+        public void onScrollStateChanged(@NonNull RecyclerView view, int scrollState) {
             int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
             int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
             switch (scrollState) {
@@ -1200,7 +1203,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ReadMessagesTask extends WeakObjectTask<Context> {
+    private static class ReadMessagesTask extends WeakObjectTask<Context> {
 
         private final int buddyDbId;
         private final long firstMessageDbId;
@@ -1229,7 +1232,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ClearHistoryTask extends PleaseWaitTask {
+    private static class ClearHistoryTask extends PleaseWaitTask {
 
         private final int buddyDbId;
 
@@ -1259,7 +1262,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ExportHistoryTask extends PleaseWaitTask {
+    private static class ExportHistoryTask extends PleaseWaitTask {
 
         private final TimeHelper timeHelper;
         private final int buddyDbId;
@@ -1271,6 +1274,7 @@ public class ChatActivity extends ChiefActivity {
             this.buddyDbId = buddyDbId;
         }
 
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Override
         public void executeBackground() throws Throwable {
             Context context = getWeakObject();
@@ -1336,7 +1340,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendMessageTask extends WeakObjectTask<ChiefActivity> {
+    private static class SendMessageTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private String message;
@@ -1379,7 +1383,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendPhotosTask extends PleaseWaitTask {
+    private static class SendPhotosTask extends PleaseWaitTask {
 
         private final int buddyDbId;
         private final List<PhotoEntry> selectedPhotos;
@@ -1419,7 +1423,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendFileTask extends PleaseWaitTask {
+    private static class SendFileTask extends PleaseWaitTask {
 
         private final int buddyDbId;
         private List<UriFile> uriFiles;
@@ -1491,7 +1495,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class SendTypingTask extends WeakObjectTask<ChiefActivity> {
+    private static class SendTypingTask extends WeakObjectTask<ChiefActivity> {
 
         private final int buddyDbId;
         private boolean isTyping;
@@ -1572,11 +1576,12 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    abstract class MessageCallback {
+    abstract static class MessageCallback {
 
         public abstract void onSuccess();
 
         public abstract void onFailed();
+
     }
 
     private class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
@@ -1683,11 +1688,11 @@ public class ChatActivity extends ChiefActivity {
                     String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
 
                     Calendar today = Calendar.getInstance();
-                    today = TimeHelper.clearTimes(today);
+                    TimeHelper.clearTimes(today);
 
                     Calendar yesterday = Calendar.getInstance();
                     yesterday.add(Calendar.DAY_OF_YEAR, -1);
-                    yesterday = TimeHelper.clearTimes(yesterday);
+                    TimeHelper.clearTimes(yesterday);
 
                     if (lastSeen * 1000 > today.getTimeInMillis()) {
                         lastSeenText = getString(R.string.last_seen_time, lastSeenTime);

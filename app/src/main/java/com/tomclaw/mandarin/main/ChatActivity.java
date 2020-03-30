@@ -99,6 +99,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
 import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 
 /**
@@ -1016,10 +1017,17 @@ public class ChatActivity extends ChiefActivity {
             intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
             intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
             startActivity(intent);
-        } else {
+        } else if (FileHelper.getMimeType(contentName).startsWith("video")) {
             Intent intent = new Intent(this, VideoViewerActivity.class);
             intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_NAME, contentName);
             intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_URI, contentUri);
+            startActivity(intent);
+        } else {
+            Uri uri = getExtFileUri(this, Uri.parse(contentUri));
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, FileHelper.getMimeType(contentName));
             startActivity(intent);
         }
     }

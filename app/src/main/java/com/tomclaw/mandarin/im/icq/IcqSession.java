@@ -87,7 +87,6 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.LOGIN_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MESSAGE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MINIMIZE_RESPONSE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOBILE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_ICON;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MOOD_TITLE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MSG_ID;
 import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
@@ -135,7 +134,7 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.VIEW;
  */
 public class IcqSession {
 
-    public static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
+    static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
@@ -144,14 +143,14 @@ public class IcqSession {
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";
     private static String DEVICE_ID_VALUE;
 
-    public static final int INTERNAL_ERROR = 1000;
-    public static final int EXTERNAL_LOGIN_OK = 200;
-    public static final int EXTERNAL_LOGIN_ERROR = 330;
-    public static final int EXTERNAL_UNKNOWN = 0;
-    public static final int EXTERNAL_SESSION_OK = 200;
-    public static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
-    public static final int EXTERNAL_FETCH_OK = 200;
-    public static final int EXTERNAL_FORBIDDEN = 403;
+    static final int INTERNAL_ERROR = 1000;
+    private static final int EXTERNAL_LOGIN_OK = 200;
+    static final int EXTERNAL_LOGIN_ERROR = 330;
+    static final int EXTERNAL_UNKNOWN = 0;
+    static final int EXTERNAL_SESSION_OK = 200;
+    static final int EXTERNAL_SESSION_RATE_LIMIT = 607;
+    private static final int EXTERNAL_FETCH_OK = 200;
+    private static final int EXTERNAL_FORBIDDEN = 403;
 
     private static final int TIMEOUT_SOCKET_ADDITION = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int TIMEOUT_CONNECTION = (int) TimeUnit.MINUTES.toMillis(2);
@@ -291,12 +290,12 @@ public class IcqSession {
                         myInfo.setState(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
                                 icqAccountRoot.getBaseStatusValue(icqAccountRoot.getStatusIndex())));
                         int moodStatusValue = icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex());
-                        if (moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
-                            myInfo.setMoodIcon(null);
-                        } else {
-                            myInfo.setMoodIcon(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
-                                    icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex())));
-                        }
+//                        if (moodStatusValue == SetMoodRequest.STATUS_MOOD_RESET) {
+//                            myInfo.setMoodIcon(null);
+//                        } else {
+//                            myInfo.setMoodIcon(StatusUtil.getStatusValue(icqAccountRoot.getAccountType(),
+//                                    icqAccountRoot.getMoodStatusValue(icqAccountRoot.getStatusIndex())));
+//                        }
                         myInfo.setMoodTitle(icqAccountRoot.getStatusTitle());
                         myInfo.setStatusMsg(icqAccountRoot.getStatusMessage());
                         // Now we can update info.
@@ -478,10 +477,9 @@ public class IcqSession {
                                 buddyNick = buddyObject.optString(DISPLAY_ID, buddyId);
                             }
                             String buddyStatus = buddyObject.optString(STATE, FALLBACK_STATE);
-                            String moodIcon = buddyObject.optString(MOOD_ICON);
                             String statusMessage = buddyObject.optString(STATUS_MSG);
                             String moodTitle = buddyObject.optString(MOOD_TITLE);
-                            int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                            int statusIndex = getStatusIndex(moodTitle, buddyStatus);
                             String statusTitle = getStatusTitle(moodTitle, statusIndex);
                             String buddyType = buddyObject.optString(USER_TYPE);
                             String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
@@ -626,11 +624,10 @@ public class IcqSession {
                     String buddyId = eventData.getString(AIM_ID);
 
                     String buddyStatus = eventData.optString(STATE, FALLBACK_STATE);
-                    String moodIcon = eventData.optString(MOOD_ICON);
                     String statusMessage = StringUtil.unescapeXml(eventData.optString(STATUS_MSG));
                     String moodTitle = StringUtil.unescapeXml(eventData.optString(MOOD_TITLE));
 
-                    int statusIndex = getStatusIndex(moodIcon, buddyStatus);
+                    int statusIndex = getStatusIndex(moodTitle, buddyStatus);
                     String statusTitle = getStatusTitle(moodTitle, statusIndex);
 
                     String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
@@ -690,12 +687,12 @@ public class IcqSession {
         // Checking for mood present.
         if (!TextUtils.isEmpty(moodIcon)) {
             try {
-                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), parseMood(moodIcon));
+                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), moodIcon.toLowerCase());
             } catch (StatusNotFoundException ignored) {
             }
         }
         try {
-            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus);
+            statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus.toLowerCase());
         } catch (StatusNotFoundException ex) {
             statusIndex = StatusUtil.STATUS_OFFLINE;
         }
@@ -713,36 +710,6 @@ public class IcqSession {
             }
         }
         return "";
-    }
-
-    /**
-     * Parsing specified URL for "id" parameter, decoding it from UTF-8 byte array in HEX presentation
-     */
-    public static String parseMood(String moodUrl) {
-        if (moodUrl != null) {
-            final String id = getIdParam(moodUrl);
-
-            InputStream is = new InputStream() {
-                int pos = 0;
-                int length = id.length();
-
-                @Override
-                public int read() throws IOException {
-                    if (pos == length) return -1;
-                    char c1 = id.charAt(pos++);
-                    char c2 = id.charAt(pos++);
-
-                    return (Character.digit(c1, 16) << 4) | Character.digit(c2, 16);
-                }
-            };
-            DataInputStream dis = new DataInputStream(is);
-            try {
-                return dis.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return moodUrl;
     }
 
     public String signRequest(String method, String url, HttpParamsBuilder builder)

@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin.util;
+package com.tomclaw.design;
 
 import android.content.Context;
 

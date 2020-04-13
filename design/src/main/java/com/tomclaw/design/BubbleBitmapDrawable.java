@@ -14,7 +14,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
-import static com.tomclaw.mandarin.util.MetricsHelper.dp;
+import static com.tomclaw.design.MetricsHelper.dp;
 
 public class BubbleBitmapDrawable extends Drawable {
 

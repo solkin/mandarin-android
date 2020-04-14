@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 
 import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.helpers.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 
 import java.io.File;

@@ -16,9 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import static com.tomclaw.mandarin.util.BitmapHelper.drawableToBitmap;
-import static com.tomclaw.mandarin.util.BitmapHelper.fixBitmapToSquare;
-import static com.tomclaw.mandarin.util.MetricsHelper.dp;
+import static com.tomclaw.helpers.BitmapHelper.drawableToBitmap;
+import static com.tomclaw.helpers.BitmapHelper.fixBitmapToSquare;
+import static com.tomclaw.helpers.MetricsHelper.dp;
 
 /**
  * Created by Igor on 13.05.2015.

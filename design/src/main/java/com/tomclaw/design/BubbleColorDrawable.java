@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-import static com.tomclaw.mandarin.util.MetricsHelper.dp;
+import static com.tomclaw.helpers.MetricsHelper.dp;
 
 /**
  * Created by solkin on 13.07.15.

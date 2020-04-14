@@ -5,7 +5,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.helpers.BitmapHelper;
 
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_CONTENT_TYPE_FILE;
 import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;

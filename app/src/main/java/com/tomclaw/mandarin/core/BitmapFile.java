@@ -6,7 +6,7 @@ import android.text.TextUtils;
 
 import com.tomclaw.helpers.Files;
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.helpers.BitmapHelper;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.preferences.PreferenceHelper;
 

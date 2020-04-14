@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,7 +35,7 @@ import com.tomclaw.mandarin.core.TaskExecutor;
 import com.tomclaw.mandarin.core.WeakObjectTask;
 import com.tomclaw.mandarin.im.icq.UserInfoRequest;
 import com.tomclaw.design.ContactImage;
-import com.tomclaw.mandarin.util.BitmapHelper;
+import com.tomclaw.helpers.BitmapHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
 

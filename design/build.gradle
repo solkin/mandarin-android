@@ -24,5 +24,6 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':helpers')
     implementation 'androidx.appcompat:appcompat:1.1.0'
 }

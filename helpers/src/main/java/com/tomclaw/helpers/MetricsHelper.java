@@ -1,4 +1,4 @@
-package com.tomclaw.design;
+package com.tomclaw.helpers;
 
 import android.content.Context;
 

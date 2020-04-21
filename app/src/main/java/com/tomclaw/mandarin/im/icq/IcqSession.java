@@ -684,17 +684,17 @@ public class IcqSession {
 
     protected int getStatusIndex(String moodIcon, String buddyStatus) {
         int statusIndex;
-        // Checking for mood present.
-        if (!TextUtils.isEmpty(moodIcon)) {
-            try {
-                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), moodIcon.toLowerCase());
-            } catch (StatusNotFoundException ignored) {
-            }
-        }
         try {
             statusIndex = StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), buddyStatus.toLowerCase());
         } catch (StatusNotFoundException ex) {
             statusIndex = StatusUtil.STATUS_OFFLINE;
+        }
+        // Checking for mood present.
+        if (statusIndex != StatusUtil.STATUS_OFFLINE && !TextUtils.isEmpty(moodIcon)) {
+            try {
+                return StatusUtil.getStatusIndex(icqAccountRoot.getAccountType(), moodIcon.toLowerCase());
+            } catch (StatusNotFoundException ignored) {
+            }
         }
         return statusIndex;
     }

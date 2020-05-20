@@ -7,9 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -44,10 +47,7 @@ import java.lang.ref.WeakReference;
  */
 public abstract class EditUserInfoActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
-    private static final int PICK_AVATAR_REQUEST_CODE = 0x01;
-    private static final int CROP_AVATAR_REQUEST_CODE = 0x02;
     private static final int LARGE_AVATAR_SIZE = 600;
-    private static final String ACTION_CROP = "com.android.camera.action.CROP";
 
     public static final String ACCOUNT_DB_ID = "account_db_id";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -307,56 +307,26 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case PICK_AVATAR_REQUEST_CODE: {
-                if (resultCode == RESULT_OK) {
-                    onAvatarPicked(data.getData());
-                }
-                break;
-            }
-            case CROP_AVATAR_REQUEST_CODE: {
-                if (resultCode == RESULT_OK) {
-                    Uri uri = data.getData();
-                    if (uri == null && !TextUtils.isEmpty(data.getAction())) {
-                        uri = Uri.parse(data.getAction());
-                    }
-                    if (uri != null) {
-                        TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
-                    }
-                }
-                break;
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri uri = result.getUri();
+                TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                onAvatarChangeError();
             }
         }
     }
 
     private void pickAvatar() {
-        try {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, PICK_AVATAR_REQUEST_CODE);
-        } catch (Throwable ignored) {
-            // No such application?!
-        }
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .setCropMenuCropButtonIcon(R.drawable.ic_done)
+                .start(this);
     }
 
-    private void onAvatarPicked(Uri uri) {
-        try {
-            Intent intent = new Intent(ACTION_CROP);
-            intent.setData(uri);
-            intent.putExtra("crop", "true");
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
-            intent.putExtra("outputX", LARGE_AVATAR_SIZE);
-            intent.putExtra("outputY", LARGE_AVATAR_SIZE);
-            intent.putExtra("noFaceDetection", true);
-            startActivityForResult(intent, CROP_AVATAR_REQUEST_CODE);
-        } catch (Throwable ignored) {
-            // No such application?!
-            TaskExecutor.getInstance().execute(new AvatarSamplingTask(this, uri));
-        }
-    }
-
-    @SuppressWarnings("deprecation")
     private void setManualAvatar(Bitmap bitmap, String hash) {
         // Apply manual avatar and hash.
         manualAvatar = bitmap;
@@ -406,7 +376,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         private Bitmap bitmap;
         private String hash;
 
-        public AvatarSamplingTask(EditUserInfoActivity object, Uri uri) {
+        AvatarSamplingTask(EditUserInfoActivity object, Uri uri) {
             super(object);
             this.uri = uri;
             this.hash = HttpUtil.getUrlHash(uri.toString());
@@ -449,8 +419,8 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         private final String virtualHash;
         private final String avatarHash;
 
-        public UpdateAvatarTask(EditUserInfoActivity object, UpdateAvatarCallback callback,
-                                int accountDbId, Bitmap avatar, String virtualHash, String avatarHash) {
+        UpdateAvatarTask(EditUserInfoActivity object, UpdateAvatarCallback callback,
+                         int accountDbId, Bitmap avatar, String virtualHash, String avatarHash) {
             super(object);
             weakActivity = new WeakReference<>(object);
             this.callback = callback;
@@ -499,6 +469,7 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
             void onUpdateCompleted();
 
             void onUpdateFailed();
+
         }
     }
 }

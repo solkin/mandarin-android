@@ -8,6 +8,8 @@ import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.im.icq.IcqStatusCatalogue;
 import com.tomclaw.mandarin.util.Logger;
 
+import static com.tomclaw.mandarin.util.HttpUtil.fixCertificateCheckingOnPreLollipop;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Solkin
@@ -18,6 +20,7 @@ public class Mandarin extends Application {
 
     @Override
     public void onCreate() {
+        fixCertificateCheckingOnPreLollipop();
         long time = System.currentTimeMillis();
         StatusUtil.include(IcqAccountRoot.class.getName(), new IcqStatusCatalogue(this));
         BitmapCache.getInstance().init(this);

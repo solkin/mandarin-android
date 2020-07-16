@@ -1,6 +1,6 @@
 package com.tomclaw.mandarin.util;
 
-import android.text.TextUtils;
+import android.os.Build;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,8 +9,15 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -139,4 +146,38 @@ public class HttpUtil {
     public static byte[] stringToArray(String string) throws IOException {
         return string.getBytes(HttpUtil.UTF8_ENCODING);
     }
+
+    public static void fixCertificateCheckingOnPreLollipop() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            try {
+                disableSSLCertificateChecking();
+            } catch (NoSuchAlgorithmException ignored) {
+            } catch (KeyManagementException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Disables the SSL certificate checking for new instances of {@link HttpsURLConnection}
+     */
+    public static void disableSSLCertificateChecking() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("TLS");
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+            }
+        }};
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
+        HttpsURLConnection.setDefaultSSLSocketFactory(tlsSocketFactory);
+    }
+
 }

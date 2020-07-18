@@ -13,6 +13,8 @@ import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -22,6 +24,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 
 /**
  * Created with IntelliJ IDEA.
@@ -173,14 +176,18 @@ public class HttpUtil {
     }
 
     public static OkHttpClient getOkHttpClient() {
+        OkHttpClient.Builder builder;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            return getUnsafeOkHttpClient();
+            builder = getUnsafeOkHttpClient();
         } else {
-            return new OkHttpClient.Builder().build();
+            builder = new OkHttpClient.Builder();
         }
+        List<Protocol> protocols = new ArrayList<>();
+        protocols.add(Protocol.HTTP_1_1);
+        return builder.protocols(protocols).build();
     }
 
-    private static OkHttpClient getUnsafeOkHttpClient() {
+    private static OkHttpClient.Builder getUnsafeOkHttpClient() {
         try {
             SSLContext sc = SSLContext.getInstance("TLS");
             TrustManager[] trustAllCerts = getTrustManagers();
@@ -194,7 +201,7 @@ public class HttpUtil {
                         public boolean verify(String hostname, SSLSession session) {
                             return true;
                         }
-                    }).build();
+                    });
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw new RuntimeException(e);

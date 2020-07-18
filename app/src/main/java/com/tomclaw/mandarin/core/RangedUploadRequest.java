@@ -21,6 +21,7 @@ import java.net.SocketTimeoutException;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static com.tomclaw.mandarin.util.HttpStatus.SC_OK;
 import static com.tomclaw.mandarin.util.HttpStatus.SC_PARTIAL_CONTENT;
@@ -53,7 +54,6 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
             // Obtain uploading Url.
             String url = getUrl(virtualFile.getName(), virtualFile.getSize());
             // Starting upload.
-
             MediaType type = MediaType.parse("application/octet-stream");
             AlterableBody body = new AlterableBody(type);
             okhttp3.Request request = new okhttp3.Request.Builder()
@@ -112,7 +112,10 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                                     break;
                             }
                         } finally {
-                            response.body().close();
+                            ResponseBody responseBody = response.body();
+                            if (responseBody != null) {
+                                responseBody.close();
+                            }
                         }
                         sent += cache;
                         onBufferReleased(sent, size);

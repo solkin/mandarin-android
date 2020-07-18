@@ -18,11 +18,11 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class TLSSocketFactory extends SSLSocketFactory {
 
-    private final javax.net.ssl.SSLSocketFactory socketFactory;
+    private final javax.net.ssl.SSLSocketFactory delegate;
 
     public TLSSocketFactory(SSLContext sslContext) {
         super();
-        this.socketFactory = sslContext.getSocketFactory();
+        this.delegate = sslContext.getSocketFactory();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class TLSSocketFactory extends SSLSocketFactory {
             final boolean autoClose
     ) throws java.io.IOException {
 
-        SSLSocket sslSocket = (SSLSocket) this.socketFactory.createSocket(
+        SSLSocket sslSocket = (SSLSocket) this.delegate.createSocket(
                 socket,
                 host,
                 port,
@@ -48,12 +48,12 @@ public class TLSSocketFactory extends SSLSocketFactory {
 
     @Override
     public String[] getDefaultCipherSuites() {
-        return this.socketFactory.getDefaultCipherSuites();
+        return this.delegate.getDefaultCipherSuites();
     }
 
     @Override
     public String[] getSupportedCipherSuites() {
-        return this.socketFactory.getSupportedCipherSuites();
+        return this.delegate.getSupportedCipherSuites();
     }
 
     //NoTLS

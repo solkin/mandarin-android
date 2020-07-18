@@ -14,10 +14,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Created with IntelliJ IDEA.
@@ -162,7 +166,43 @@ public class HttpUtil {
      */
     public static void disableSSLCertificateChecking() throws NoSuchAlgorithmException, KeyManagementException {
         SSLContext sc = SSLContext.getInstance("TLS");
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+        TrustManager[] trustAllCerts = getTrustManagers();
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
+        HttpsURLConnection.setDefaultSSLSocketFactory(tlsSocketFactory);
+    }
+
+    public static OkHttpClient getOkHttpClient() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            return getUnsafeOkHttpClient();
+        } else {
+            return new OkHttpClient.Builder().build();
+        }
+    }
+
+    private static OkHttpClient getUnsafeOkHttpClient() {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            TrustManager[] trustAllCerts = getTrustManagers();
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
+
+            return new OkHttpClient.Builder()
+                    .sslSocketFactory(tlsSocketFactory)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    }).build();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static TrustManager[] getTrustManagers() {
+        return new TrustManager[]{new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -175,9 +215,6 @@ public class HttpUtil {
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
             }
         }};
-        sc.init(null, trustAllCerts, new java.security.SecureRandom());
-        TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
-        HttpsURLConnection.setDefaultSSLSocketFactory(tlsSocketFactory);
     }
 
 }

@@ -24,13 +24,14 @@ import okhttp3.Response;
 
 import static com.tomclaw.mandarin.util.HttpStatus.SC_OK;
 import static com.tomclaw.mandarin.util.HttpStatus.SC_PARTIAL_CONTENT;
+import static com.tomclaw.mandarin.util.HttpUtil.getOkHttpClient;
 
 /**
  * Created by Solkin on 14.10.2014.
  */
 public abstract class RangedUploadRequest<A extends AccountRoot> extends Request<A> {
 
-    private final transient OkHttpClient httpClient = new OkHttpClient.Builder().build();
+    private final transient OkHttpClient httpClient = getOkHttpClient();
 
     private static final String CONTENT_RANGE = "Content-Range";
 
@@ -111,7 +112,7 @@ public abstract class RangedUploadRequest<A extends AccountRoot> extends Request
                                     break;
                             }
                         } finally {
-                            response.close();
+                            response.body().close();
                         }
                         sent += cache;
                         onBufferReleased(sent, size);

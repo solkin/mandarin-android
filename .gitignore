@@ -49,3 +49,4 @@ captures/
 
 # macOS-specific files
 Icon?
+.DS_Store

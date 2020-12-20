@@ -14,7 +14,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -71,6 +73,10 @@ public class HttpUtil {
     }
 
     public static String executePost(String urlString, byte[] data) throws IOException {
+        return executePost(urlString, data, Collections.<String, String>emptyMap());
+    }
+
+    public static String executePost(String urlString, byte[] data, Map<String, String> props) throws IOException {
         InputStream responseStream = null;
         HttpURLConnection connection = null;
         try {
@@ -79,6 +85,12 @@ public class HttpUtil {
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(TIMEOUT_CONNECTION);
             connection.setReadTimeout(TIMEOUT_SOCKET);
+
+            if (props.size() > 0) {
+                for (String key : props.keySet()) {
+                    connection.setRequestProperty(key, props.get(key));
+                }
+            }
 
             // Execute request.
             responseStream = HttpUtil.executePost(connection, data);

@@ -4,10 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -129,17 +131,13 @@ public class PhoneLoginActivity extends AppCompatActivity {
         updateCountryViews(country);
 
         callback = new RegistrationHelper.RegistrationCallback() {
-            @Override
-            public void onPhoneNormalized(String msisdn) {
-                RegistrationHelper.validatePhone(msisdn, callback);
-            }
 
             @Override
-            public void onPhoneValidated(final String msisdn, final String transId) {
+            public void onPhoneValidated(final String phoneNumber, final int codeLength, final String sessionId) {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        onSmsSent(msisdn, transId);
+                        onSmsSent(phoneNumber, codeLength, sessionId);
                     }
                 });
             }
@@ -212,11 +210,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
             }
         });
 
-        if (isActionVisible()) {
-            item.setVisible(true);
-        } else {
-            item.setVisible(false);
-        }
+        item.setVisible(isActionVisible());
     }
 
     @Override
@@ -276,15 +270,19 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
     private void requestSms(final String countryCode, final String phoneNumber) {
         showProgress();
-        RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
+        RegistrationHelper.normalizePhone(countryCode + phoneNumber, callback);
     }
 
-    private void onSmsSent(String msisdn, String transId) {
+    private void onSmsSent(String phoneNumber, int codeLength, String sessionId) {
         hideProgress();
-        startActivityForResult(new Intent(this, SmsCodeActivity.class)
-                .putExtra(SmsCodeActivity.EXTRA_MSISDN, msisdn)
-                .putExtra(SmsCodeActivity.EXTRA_TRANS_ID, transId)
-                .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()), REQUEST_SMS_NUMBER);
+        startActivityForResult(
+                new Intent(this, SmsCodeActivity.class)
+                        .putExtra(SmsCodeActivity.EXTRA_PHONE_NUMBER, phoneNumber)
+                        .putExtra(SmsCodeActivity.EXTRA_CODE_LENGTH, codeLength)
+                        .putExtra(SmsCodeActivity.EXTRA_SESSION_ID, sessionId)
+                        .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()),
+                REQUEST_SMS_NUMBER
+        );
     }
 
     private void onRequestError(int message) {
@@ -315,6 +313,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_COUNTRY) {
                 String countryShortName = data.getStringExtra(CountryCodeActivity.EXTRA_COUNTRY_SHORT_NAME);

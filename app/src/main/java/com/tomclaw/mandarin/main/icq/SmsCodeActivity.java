@@ -42,8 +42,9 @@ import java.lang.ref.WeakReference;
  */
 public class SmsCodeActivity extends ChiefActivity {
 
-    public static String EXTRA_MSISDN = "msisdn";
-    public static String EXTRA_TRANS_ID = "trans_id";
+    public static String EXTRA_PHONE_NUMBER = "phone_number";
+    public static String EXTRA_CODE_LENGTH = "code_length";
+    public static String EXTRA_SESSION_ID = "session_id";
     public static String EXTRA_PHONE_FORMATTED = "phone_formatted";
 
     private static final long SMS_WAIT_INTERVAL = 60 * 1000;
@@ -54,8 +55,9 @@ public class SmsCodeActivity extends ChiefActivity {
 
     private RegistrationHelper.RegistrationCallback callback;
 
-    private String transId;
-    private String msisdn;
+    private String phoneNumber;
+    private int codeLength;
+    private String sessionId;
     private String phoneFormatted;
 
     private SmsTimer timer;
@@ -78,11 +80,17 @@ public class SmsCodeActivity extends ChiefActivity {
         bar.setDisplayShowTitleEnabled(false);
 
         Intent intent = getIntent();
-        msisdn = intent.getStringExtra(EXTRA_MSISDN);
-        transId = intent.getStringExtra(EXTRA_TRANS_ID);
+        phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER);
+        codeLength = intent.getIntExtra(EXTRA_CODE_LENGTH, 4);
+        sessionId = intent.getStringExtra(EXTRA_SESSION_ID);
         phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
 
         smsCodeField = findViewById(R.id.sms_code_field);
+        StringBuilder hint = new StringBuilder();
+        for (int c = 0; c < codeLength; c++) {
+            hint.append("- ");
+        }
+        smsCodeField.setHint(hint.toString().trim());
         smsCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -120,24 +128,21 @@ public class SmsCodeActivity extends ChiefActivity {
             public void onClick(View v) {
                 if (v.isEnabled()) {
                     showProgress(R.string.requesting_sms_code);
-                    RegistrationHelper.validatePhone(msisdn, callback);
+                    RegistrationHelper.normalizePhone(phoneNumber, callback);
                 }
             }
         });
         startTimer();
 
         callback = new RegistrationHelper.RegistrationCallback() {
-            @Override
-            public void onPhoneNormalized(String msisdn) {
-            }
 
             @Override
-            public void onPhoneValidated(final String msisdn, final String transId) {
+            public void onPhoneValidated(String phoneNumber, int codeLength, final String sessionId) {
                 MainExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         hideProgress();
-                        setTransId(transId);
+                        setSessionId(sessionId);
                         startTimer();
                     }
                 });
@@ -259,12 +264,12 @@ public class SmsCodeActivity extends ChiefActivity {
         // Now, take the rest, hide keyboard...
         hideKeyboard();
         // ... and wait for account activation.
-        loginPhone(msisdn, transId, getSmsCode());
+        loginPhone(phoneNumber, sessionId, getSmsCode());
     }
 
-    private void loginPhone(final String msisdn, final String transId, final String smsCode) {
+    private void loginPhone(final String phoneNumber, final String sessionId, final String smsCode) {
         showProgress(R.string.checking_sms_code);
-        RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
+        RegistrationHelper.loginPhone(phoneNumber, sessionId, smsCode, callback);
     }
 
     private void onRequestError(int message) {
@@ -324,8 +329,8 @@ public class SmsCodeActivity extends ChiefActivity {
         }
     }
 
-    public void setTransId(String transId) {
-        this.transId = transId;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public static class SmsTimer extends CountDownTimer {

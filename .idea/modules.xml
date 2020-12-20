@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="mandarin-android/app" />
-      <module fileurl="file://$PROJECT_DIR$/mandarin-android.iml" filepath="$PROJECT_DIR$/mandarin-android.iml" group="mandarin-android" />
-      <module fileurl="file://$PROJECT_DIR$/smileys/smileys.iml" filepath="$PROJECT_DIR$/smileys/smileys.iml" group="mandarin-android/smileys" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mandarin-android.iml" filepath="$PROJECT_DIR$/.idea/modules/mandarin-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/mandarin-android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/mandarin-android.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smileys/mandarin-android.smileys.iml" filepath="$PROJECT_DIR$/.idea/modules/smileys/mandarin-android.smileys.iml" />
     </modules>
   </component>
 </project>

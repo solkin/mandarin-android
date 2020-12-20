@@ -51,3 +51,6 @@ captures/
 
 # Keystore files
 *.jks
+
+# Platform-specific
+.DS_Store

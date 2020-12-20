@@ -186,6 +186,10 @@ public class StringUtil {
 
     public static String generateRandomWord(Random r, boolean capitalize) {
         int wordLength = 4 + r.nextInt(6);
+        return generateRandomWord(r, capitalize, wordLength);
+    }
+
+    public static String generateRandomWord(Random r, boolean capitalize, int wordLength) {
         // Initialize a Random Number Generator with SysTime as the seed
         StringBuilder sb = new StringBuilder(wordLength);
         for (int i = 0; i < wordLength; i++) { // For each letter in the word

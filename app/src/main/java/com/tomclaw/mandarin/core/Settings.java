@@ -30,4 +30,5 @@ public class Settings {
     public static Uri GROUP_RESOLVER_URI = Uri.parse(URI_PREFIX + GlobalProvider.ROSTER_GROUP_TABLE);
     public static Uri BUDDY_RESOLVER_URI = Uri.parse(URI_PREFIX + GlobalProvider.ROSTER_BUDDY_TABLE);
     public static Uri HISTORY_RESOLVER_URI = Uri.parse(URI_PREFIX + GlobalProvider.CHAT_HISTORY_TABLE);
+
 }

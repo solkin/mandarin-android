@@ -16,9 +16,8 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 280
-        versionName "1.15"
+        versionName "1.16"
         resConfigs "ru", "en", "be", "uk", "kk"
-        manifestPlaceholders = [HOCKEYAPP_APP_ID: "16283e6bea480850d8f4c1b41d7a74be"]
     }
     splits {
         density {
@@ -51,7 +50,6 @@ dependencies {
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     implementation 'com.github.mtotschnig:StickyListHeaders:2.7.1'
     implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
-    implementation 'net.hockeyapp.android:HockeySDK:5.1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.okhttp3:okhttp:3.0.1'
 }

@@ -9,12 +9,6 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.view.GravityCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +18,14 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -39,11 +41,6 @@ import com.tomclaw.mandarin.main.views.AccountsDrawerLayout;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
-
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.CrashManagerListener;
-import net.hockeyapp.android.metrics.MetricsManager;
-import net.hockeyapp.android.utils.Util;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -186,8 +183,6 @@ public class MainActivity extends ChiefActivity {
         Logger.log("main activity start time: " + (System.currentTimeMillis() - time));
 
         checkNfcIntent();
-
-        MetricsManager.register(getApplication());
     }
 
     private void checkNfcIntent() {
@@ -208,21 +203,6 @@ public class MainActivity extends ChiefActivity {
                 }
             }
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        checkForCrashes();
-    }
-
-    private void checkForCrashes() {
-        String appIdentifier = Util.getAppIdentifier(this);
-        CrashManager.register(this, appIdentifier, new CrashManagerListener() {
-            public boolean shouldAutoUploadCrashes() {
-                return true;
-            }
-        });
     }
 
     @Override
@@ -298,7 +278,7 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerLayout.onToggleConfigurationChanged(newConfig);
     }
@@ -316,7 +296,7 @@ public class MainActivity extends ChiefActivity {
 
     private class MultiChoiceActionCallback implements ActionMode.Callback {
 
-        private SelectionHelper<Integer> selectionHelper;
+        private final SelectionHelper<Integer> selectionHelper;
 
         MultiChoiceActionCallback(SelectionHelper<Integer> selectionHelper) {
             this.selectionHelper = selectionHelper;
@@ -403,7 +383,7 @@ public class MainActivity extends ChiefActivity {
         }
     }
 
-    private class BuddyInfoAccountCallback implements AccountProviderTask.AccountProviderCallback {
+    private static class BuddyInfoAccountCallback implements AccountProviderTask.AccountProviderCallback {
 
         private final NfcBuddyInfo nfcBuddyInfo;
         private final WeakReference<Context> weakContext;

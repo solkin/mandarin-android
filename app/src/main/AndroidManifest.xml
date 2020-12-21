@@ -25,10 +25,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.Mandarin.Light"
         tools:ignore="GoogleAppIndexingWarning">
-        <meta-data
-            android:name="net.hockeyapp.android.appIdentifier"
-            android:value="${HOCKEYAPP_APP_ID}" />
-        <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <receiver
             android:name=".core.BootCompletedReceiver"
             android:enabled="true"

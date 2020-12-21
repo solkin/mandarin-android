@@ -33,7 +33,7 @@ import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 import java.lang.ref.WeakReference;
 

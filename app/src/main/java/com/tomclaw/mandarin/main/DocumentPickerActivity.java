@@ -30,9 +30,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.util.AppsMenuHelper;
 import com.tomclaw.mandarin.util.FileHelper;
+import com.tomclaw.mandarin.util.MetricsManager;
 import com.tomclaw.mandarin.util.StringUtil;
-
-import net.hockeyapp.android.metrics.MetricsManager;
 
 import java.io.BufferedReader;
 import java.io.File;

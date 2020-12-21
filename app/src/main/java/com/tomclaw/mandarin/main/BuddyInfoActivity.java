@@ -24,7 +24,7 @@ import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created with IntelliJ IDEA.

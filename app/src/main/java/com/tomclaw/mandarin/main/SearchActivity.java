@@ -18,7 +18,7 @@ import com.tomclaw.mandarin.core.GlobalProvider;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Igor on 26.06.2014.

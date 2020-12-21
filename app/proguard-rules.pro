@@ -52,11 +52,6 @@
 -keep class com.akexorcist.roundcornerprogressbar.** { *; }
 -dontwarn com.akexorcist.roundcornerprogressbar.**
 
--dontwarn net.hockeyapp.android.UpdateFragment
--keepclassmembers class net.hockeyapp.android.UpdateFragment {
-  *;
-}
-
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }

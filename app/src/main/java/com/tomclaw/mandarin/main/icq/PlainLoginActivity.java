@@ -29,7 +29,7 @@ import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.im.icq.IcqAccountRoot;
 import com.tomclaw.mandarin.main.ChiefActivity;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Solkin on 28.09.2014.

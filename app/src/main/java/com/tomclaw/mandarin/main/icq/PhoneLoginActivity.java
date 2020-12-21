@@ -31,7 +31,7 @@ import com.tomclaw.mandarin.util.CountriesProvider;
 import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Solkin on 28.09.2014.

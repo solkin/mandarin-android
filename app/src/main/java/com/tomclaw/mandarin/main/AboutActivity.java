@@ -16,7 +16,7 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.core.Settings;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by solkin on 01/03/14.

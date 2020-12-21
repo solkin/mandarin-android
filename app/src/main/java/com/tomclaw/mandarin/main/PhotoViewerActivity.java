@@ -6,12 +6,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
-
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +19,10 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.PreferenceHelper;
@@ -36,11 +34,6 @@ import com.tomclaw.mandarin.util.BitmapHelper;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.GifDrawable;
 import com.tomclaw.mandarin.util.GifFileDecoder;
-
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.CrashManagerListener;
-
-import java.io.File;
 
 import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
 

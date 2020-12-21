@@ -85,7 +85,7 @@ import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 import java.io.File;
 import java.io.FileOutputStream;

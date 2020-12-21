@@ -19,7 +19,7 @@ import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.mandarin.core.MusicStateReceiver;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 
-import net.hockeyapp.android.metrics.MetricsManager;
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created with IntelliJ IDEA.

@@ -9,12 +9,12 @@ android {
             if (project.hasProperty("keyPassword")) keyPassword project.keyPassword
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 280
         versionName "1.16"
         resConfigs "ru", "en", "be", "uk", "kk"

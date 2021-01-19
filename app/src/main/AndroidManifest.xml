@@ -24,6 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.Mandarin.Light"
+        tools:remove="appComponentFactory"
         tools:ignore="GoogleAppIndexingWarning">
         <receiver
             android:name=".core.BootCompletedReceiver"

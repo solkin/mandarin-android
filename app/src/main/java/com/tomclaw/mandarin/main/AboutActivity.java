@@ -5,6 +5,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -15,6 +18,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.Settings;
 import com.tomclaw.preferences.PreferenceHelper;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by solkin on 01/03/14.
@@ -54,6 +59,8 @@ public class AboutActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        MetricsManager.trackEvent("Open about");
     }
 
     @Override

@@ -13,14 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-            android:id="@+id/countries_list_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/countries_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="0dp"
-            app:isDrawingListUnderStickyHeader="false" />
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical" />
 
         <include layout="@layout/toolbar_shadow_view" />
 

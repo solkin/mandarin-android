@@ -1,11 +1,13 @@
 package com.tomclaw.mandarin.main;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Environment;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -45,6 +48,18 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.tomclaw.filepicker.DocumentPickerActivity;
 import com.tomclaw.helpers.Files;
 import com.tomclaw.helpers.Strings;
@@ -82,6 +97,8 @@ import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.helpers.TimeHelper;
 import com.tomclaw.preferences.PreferenceHelper;
 
+import com.tomclaw.mandarin.util.MetricsManager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,6 +106,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 
 /**
  * Created with IntelliJ IDEA.
@@ -100,6 +119,13 @@ public class ChatActivity extends ChiefActivity {
 
     private static final int PICK_FILE_RESULT_CODE = 1;
     private static final int PICK_GALLERY_RESULT_CODE = 2;
+
+    private static final int REQUEST_PICK_GALLERY = 3;
+    private static final int REQUEST_PICK_VIDEO = 4;
+    private static final int REQUEST_PICK_DOCUMENT = 5;
+    private static final int REQUEST_CLICK_INCOMING = 6;
+    private static final int REQUEST_CLICK_OUTGOING = 7;
+    private static final int REQUEST_HISTORY_EXPORT = 8;
 
     private LinearLayout chatRoot;
     private RecyclerView chatList;
@@ -136,6 +162,8 @@ public class ChatActivity extends ChiefActivity {
     private boolean isSendByEnter;
     private DatabaseLayer databaseLayer;
 
+    private ChatHistoryItem clickedContentItem;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         databaseLayer = ContentResolverLayer.from(getContentResolver());
@@ -156,9 +184,11 @@ public class ChatActivity extends ChiefActivity {
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-        bar.setHomeButtonEnabled(true);
-        bar.setDisplayShowTitleEnabled(false);
+        if (bar != null) {
+            bar.setDisplayHomeAsUpEnabled(true);
+            bar.setHomeButtonEnabled(true);
+            bar.setDisplayShowTitleEnabled(false);
+        }
 
         timeHelper = new TimeHelper(this);
 
@@ -291,6 +321,8 @@ public class ChatActivity extends ChiefActivity {
         }
         isSendByEnter = PreferenceHelper.isSendByEnter(this);
         Logger.log("chat activity start time: " + (System.currentTimeMillis() - time));
+
+        MetricsManager.trackEvent("Open chat");
     }
 
     @SuppressLint("NewApi")
@@ -362,6 +394,7 @@ public class ChatActivity extends ChiefActivity {
             };
             TaskExecutor.getInstance().execute(
                     new SendMessageTask(this, buddy, message, callback));
+            MetricsManager.trackEvent("Send message");
         }
     }
 
@@ -371,6 +404,7 @@ public class ChatActivity extends ChiefActivity {
                 new SendTypingTask(this, buddy, isTyping));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void setTypingSync(boolean isTyping) {
         Buddy buddy = chatHistoryAdapter.getBuddy();
         int accountDbId = buddy.getAccountDbId();
@@ -449,7 +483,7 @@ public class ChatActivity extends ChiefActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         // Think about this.
         isConfigurationChanging = true;
         hideKeyboard();
@@ -502,18 +536,17 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.export_history_menu: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.export_history);
-                builder.setMessage(R.string.export_history_text);
-                builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-                    ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
-                            ChatActivity.this,
-                            timeHelper,
-                            chatHistoryAdapter.getBuddy());
-                    TaskExecutor.getInstance().execute(exportHistoryTask);
-                });
-                builder.setNegativeButton(R.string.no, null);
-                builder.show();
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.export_history)
+                        .setMessage(R.string.export_history_text)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkStoragePermissions(REQUEST_HISTORY_EXPORT);
+                            }
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
                 return true;
             }
             case R.id.close_chat_menu: {
@@ -527,35 +560,32 @@ public class ChatActivity extends ChiefActivity {
                 return true;
             }
             case R.id.clear_history_menu: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.clear_history_title);
-                builder.setMessage(R.string.clear_history_text);
-                builder.setPositiveButton(R.string.yes_clear, (dialog, which) -> {
-                    ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
-                            chatHistoryAdapter.getBuddy());
-                    TaskExecutor.getInstance().execute(clearHistoryTask);
-                });
-                builder.setNegativeButton(R.string.do_not_clear, null);
-                builder.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                builder.setTitle(R.string.clear_history_title);
+//                builder.setMessage(R.string.clear_history_text);
+//                builder.setPositiveButton(R.string.yes_clear, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ClearHistoryTask clearHistoryTask = new ClearHistoryTask(ChatActivity.this,
+//                                chatHistoryAdapter.getBuddyDbId());
+//                        TaskExecutor.getInstance().execute(clearHistoryTask);
+//                        MetricsManager.trackEvent("Clear history");
+//                    }
+//                });
+//                builder.setNegativeButton(R.string.do_not_clear, null);
+//                builder.show();
                 return true;
             }
             case R.id.send_picture_menu: {
-                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                checkStoragePermissions(REQUEST_PICK_GALLERY);
                 return true;
             }
             case R.id.send_video_menu: {
-                try {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("video/*");
-                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
-                    return true;
-                } catch (Throwable ignored) {
-                    // No video picker application.
-                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
-                }
+                checkStoragePermissions(REQUEST_PICK_VIDEO);
+                return true;
             }
             case R.id.send_document_menu: {
-                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                checkStoragePermissions(REQUEST_PICK_DOCUMENT);
                 return true;
             }
             default: {
@@ -634,6 +664,7 @@ public class ChatActivity extends ChiefActivity {
                             scrollBottom();
                             TaskExecutor.getInstance().execute(
                                     new SendPhotosTask(this, buddy, photoEntries));
+                            MetricsManager.trackEvent("Send photos");
                         }
                     } else if (data.getData() != null) {
                         onFilePicked(data.getData());
@@ -660,6 +691,7 @@ public class ChatActivity extends ChiefActivity {
             scrollBottom();
             UriFile uriFile = UriFile.create(this, uri);
             TaskExecutor.getInstance().execute(new SendFileTask(this, buddy, uriFile, callback));
+            MetricsManager.trackEvent("Send file");
         } catch (Throwable ignored) {
         }
     }
@@ -721,7 +753,7 @@ public class ChatActivity extends ChiefActivity {
         } catch (BuddyNotFoundException ignored) {
             enteredText = null;
         }
-        if (!TextUtils.isEmpty(enteredText)) {
+        if (enteredText != null && !TextUtils.isEmpty(enteredText)) {
             messageText.setText(enteredText);
             messageText.setSelection(enteredText.length());
         } else {
@@ -766,6 +798,7 @@ public class ChatActivity extends ChiefActivity {
                 }
                 TaskExecutor.getInstance().execute(
                         new SendFileTask(this, buddy, uriFiles, callback));
+                MetricsManager.trackEvent("Send shared file");
             } else {
                 String share;
                 if (TextUtils.isEmpty(sharingData.getSubject())) {
@@ -779,6 +812,178 @@ public class ChatActivity extends ChiefActivity {
             }
         }
     }
+
+    private void checkStoragePermissions(final int request) {
+        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (hasPermissions(this, PERMISSION)) {
+            onPermissionGranted(request);
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
+                // Show an explanation to the user
+                new AlertDialog.Builder(ChatActivity.this)
+                        .setTitle(R.string.permission_request_title)
+                        .setMessage(getPermissionsRequestMessage(request))
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(
+                                        ChatActivity.this,
+                                        new String[]{PERMISSION},
+                                        request
+                                );
+                            }
+                        })
+                        .show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this, new String[]{PERMISSION}, request);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted(requestCode);
+        } else {
+            Snackbar.make(chatList, getPermissionsRequestMessage(requestCode), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onPermissionGranted(int request) {
+        switch (request) {
+            case REQUEST_PICK_GALLERY: {
+                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                break;
+            }
+            case REQUEST_PICK_VIDEO: {
+                try {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("video/*");
+                    startActivityForResult(photoPickerIntent, PICK_FILE_RESULT_CODE);
+                } catch (Throwable ignored) {
+                    // No video picker application.
+                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case REQUEST_PICK_DOCUMENT: {
+                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                break;
+            }
+            case REQUEST_CLICK_INCOMING: {
+                ChatHistoryItem historyItem = this.clickedContentItem;
+                onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                        historyItem.getContentUri(), historyItem.getContentName(),
+                        historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                break;
+            }
+            case REQUEST_CLICK_OUTGOING: {
+                ChatHistoryItem historyItem = this.clickedContentItem;
+                onOutgoingClicked(historyItem.getContentState(), historyItem.getContentTag(),
+                        historyItem.getContentUri(), historyItem.getContentName(),
+                        historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                break;
+            }
+            case REQUEST_HISTORY_EXPORT: {
+//                ExportHistoryTask exportHistoryTask = new ExportHistoryTask(
+//                        this,
+//                        timeHelper,
+//                        chatHistoryAdapter.getBuddyDbId()
+//                );
+//                TaskExecutor.getInstance().execute(exportHistoryTask);
+//                MetricsManager.trackEvent("Export history");
+                break;
+            }
+        }
+    }
+
+    @StringRes
+    private static int getPermissionsRequestMessage(int request) {
+        switch (request) {
+            case REQUEST_PICK_GALLERY:
+            case REQUEST_PICK_VIDEO:
+            case REQUEST_PICK_DOCUMENT:
+            case REQUEST_CLICK_INCOMING:
+            case REQUEST_CLICK_OUTGOING:
+                return R.string.share_files_permission_request_message;
+            case REQUEST_HISTORY_EXPORT:
+                return R.string.history_export_permission_request_message;
+        }
+        throw new IllegalArgumentException("No message for request type: " + request);
+    }
+
+    private void onIncomingClicked(int contentState, String contentTag, String contentUri,
+                                   String contentName, String previewHash, String messageCookie) {
+//        switch (contentState) {
+//            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+//                RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+//                QueryHelper.updateFileState(getContentResolver(),
+//                        GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+//                        GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING,
+//                        messageCookie);
+//                break;
+//            }
+//            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
+//            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+//                TaskExecutor.getInstance().execute(
+//                        new StopDownloadingTask(ChatActivity.this, contentTag, messageCookie));
+//                break;
+//            }
+//            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+//                viewContent(contentName, contentUri, previewHash);
+//                break;
+//            }
+//        }
+    }
+
+    private void onOutgoingClicked(int contentState, String contentTag, String contentUri,
+                                   String contentName, String previewHash, String messageCookie) {
+//        switch (contentState) {
+//            case GlobalProvider.HISTORY_CONTENT_STATE_FAILED:
+//            case GlobalProvider.HISTORY_CONTENT_STATE_STOPPED: {
+//                RequestHelper.startDelayedRequest(getContentResolver(), contentTag);
+//                QueryHelper.updateFileState(getContentResolver(),
+//                        GlobalProvider.HISTORY_CONTENT_STATE_WAITING,
+//                        GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING,
+//                        messageCookie);
+//                break;
+//            }
+//            case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
+//            case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
+//                TaskExecutor.getInstance().execute(
+//                        new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));
+//                break;
+//            }
+//            case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
+//                viewContent(contentName, contentUri, previewHash);
+//                break;
+//            }
+//        }
+    }
+
+//    private void viewContent(String contentName, String contentUri, String previewHash) {
+//        if (FileHelper.getMimeType(contentName).startsWith("image")) {
+//            Intent intent = new Intent(this, PhotoViewerActivity.class);
+//            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
+//            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
+//            intent.putExtra(PhotoViewerActivity.EXTRA_PREVIEW_HASH, previewHash);
+//            startActivity(intent);
+//        } else if (FileHelper.getMimeType(contentName).startsWith("video")) {
+//            Intent intent = new Intent(this, VideoViewerActivity.class);
+//            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_NAME, contentName);
+//            intent.putExtra(VideoViewerActivity.EXTRA_VIDEO_URI, contentUri);
+//            startActivity(intent);
+//        } else {
+//            Uri uri = getExtFileUri(this, Uri.parse(contentUri));
+//            Intent intent = new Intent();
+//            intent.setAction(android.content.Intent.ACTION_VIEW);
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            intent.setDataAndType(uri, FileHelper.getMimeType(contentName));
+//            startActivity(intent);
+//        }
+//    }
 
     @Override
     public void startActivity(Intent intent) {
@@ -809,6 +1014,7 @@ public class ChatActivity extends ChiefActivity {
             this.selectionHelper = selectionHelper;
         }
 
+        @SuppressWarnings("unused")
         void onItemCheckedStateChanged(ActionMode mode, long id) {
             mode.setTitle(String.format(getString(R.string.selected_items), selectionHelper.getSelectedCount()));
         }
@@ -910,7 +1116,7 @@ public class ChatActivity extends ChiefActivity {
         }
     }
 
-    private class ExportHistoryTask extends PleaseWaitTask {
+    private static class ExportHistoryTask extends PleaseWaitTask {
 
         private final TimeHelper timeHelper;
         private final Buddy buddy;
@@ -922,6 +1128,7 @@ public class ChatActivity extends ChiefActivity {
             this.buddy = buddy;
         }
 
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Override
         public void executeBackground() throws Throwable {
             Context context = getWeakObject();
@@ -967,7 +1174,7 @@ public class ChatActivity extends ChiefActivity {
         public void onSuccessMain() {
             Context context = getWeakObject();
             if (context != null) {
-                String text = context.getString(R.string.extory_exported);
+                String text = context.getString(R.string.history_exported);
                 Spannable s = new SpannableString(text + infoExportPath);
                 s.setSpan(new TypefaceSpan("monospace"), text.length(), s.length(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1236,6 +1443,7 @@ public class ChatActivity extends ChiefActivity {
         public abstract void onSuccess();
 
         public abstract void onFailed();
+
     }
 
     private class ContentClickListener implements ChatHistoryAdapter.ContentMessageClickListener {
@@ -1244,9 +1452,8 @@ public class ChatActivity extends ChiefActivity {
         public void onClicked(ChatHistoryItem historyItem) {
             switch (historyItem.getMessageType()) {
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING: {
-                    onIncomingClicked(historyItem.getContentState(), historyItem.getContentTag(),
-                            historyItem.getContentUri(), historyItem.getContentName(),
-                            historyItem.getPreviewHash(), historyItem.getMessageCookie());
+                    ChatActivity.this.clickedContentItem = historyItem;
+                    checkStoragePermissions(REQUEST_CLICK_INCOMING);
                     break;
                 }
                 case GlobalProvider.HISTORY_MESSAGE_TYPE_OUTGOING: {
@@ -1294,33 +1501,24 @@ public class ChatActivity extends ChiefActivity {
                             messageCookie);
                     break;
                 }
-                case GlobalProvider.HISTORY_CONTENT_STATE_WAITING:
-                case GlobalProvider.HISTORY_CONTENT_STATE_RUNNING: {
-                    TaskExecutor.getInstance().execute(
-                            new StopUploadingTask(ChatActivity.this, contentTag, messageCookie));
-                    break;
-                }
-                case GlobalProvider.HISTORY_CONTENT_STATE_STABLE: {
-                    viewContent(contentName, contentUri, previewHash);
-                    break;
-                }
-            }
-        }
-
-        private void viewContent(String contentName, String contentUri, String previewHash) {
-            if (Files.getMimeType(contentName).startsWith("image")) {
-                Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
-                intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(contentUri), Files.getMimeType(contentName));
-                startActivity(intent);
             }
         }
     }
+
+    private void viewContent(String contentName, String contentUri, String previewHash) {
+        if (Files.getMimeType(contentName).startsWith("image")) {
+            Intent intent = new Intent(ChatActivity.this, PhotoViewerActivity.class);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_NAME, contentName);
+            intent.putExtra(PhotoViewerActivity.EXTRA_PICTURE_URI, contentUri);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(contentUri), Files.getMimeType(contentName));
+            startActivity(intent);
+        }
+    }
+
 
     private class ChatHistoryIntegrityListener implements ChatHistoryAdapter.HistoryIntegrityListener {
 
@@ -1438,11 +1636,11 @@ public class ChatActivity extends ChiefActivity {
                     String lastSeenTime = timeHelper.getFormattedTime(lastSeen * 1000);
 
                     Calendar today = Calendar.getInstance();
-                    today = TimeHelper.clearTimes(today);
+                    TimeHelper.clearTimes(today);
 
                     Calendar yesterday = Calendar.getInstance();
                     yesterday.add(Calendar.DAY_OF_YEAR, -1);
-                    yesterday = TimeHelper.clearTimes(yesterday);
+                    TimeHelper.clearTimes(yesterday);
 
                     if (lastSeen * 1000 > today.getTimeInMillis()) {
                         lastSeenText = getString(R.string.last_seen_time, lastSeenTime);

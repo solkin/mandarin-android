@@ -3,6 +3,8 @@ package com.tomclaw.mandarin.main;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;

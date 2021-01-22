@@ -87,8 +87,8 @@
         <item name="buddy_primary_color">@color/primary_text_default_material_light</item>
         <item name="buddy_secondary_color">@color/secondary_text_default_material_light</item>
 
-        <item name="header_head_color">@android:color/transparent</item>
-        <item name="header_back_color">@android:color/transparent</item>
+        <item name="header_head_color">?android:attr/windowBackground</item>
+        <item name="header_back_color">?android:attr/windowBackground</item>
         <item name="header_font_color">#ff6600</item>
         <item name="header_line_color">@android:color/transparent</item>
 
@@ -155,8 +155,8 @@
         <item name="buddy_primary_color">@color/primary_text_default_material_dark</item>
         <item name="buddy_secondary_color">@color/secondary_text_default_material_dark</item>
 
-        <item name="header_head_color">@android:color/transparent</item>
-        <item name="header_back_color">@android:color/transparent</item>
+        <item name="header_head_color">?android:attr/windowBackground</item>
+        <item name="header_back_color">?android:attr/windowBackground</item>
         <item name="header_font_color">#A0FFFFFF</item>
         <item name="header_line_color">@android:color/transparent</item>
 

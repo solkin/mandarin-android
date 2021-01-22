@@ -79,7 +79,6 @@
                     android:layout_weight="1"
                     android:padding="10dp"
                     android:textSize="16sp" />
-
             </LinearLayout>
 
             <CheckBox
@@ -91,7 +90,6 @@
                 android:text="@string/buddy_online_search"
                 android:textSize="16sp"
                 android:visibility="gone" />
-
         </LinearLayout>
 
         <include layout="@layout/toolbar_shadow_view" />

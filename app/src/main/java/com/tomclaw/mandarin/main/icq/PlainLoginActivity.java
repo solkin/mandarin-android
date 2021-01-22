@@ -5,6 +5,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,6 +35,8 @@ import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.preferences.PreferenceHelper;
 
 import java.util.Objects;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -96,6 +100,8 @@ public class PlainLoginActivity extends ChiefActivity {
         });
 
         updateActionVisibility();
+
+        MetricsManager.trackEvent("Open plain login");
     }
 
     private void updateActionVisibility() {
@@ -204,6 +210,7 @@ public class PlainLoginActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
+            MetricsManager.trackEvent("Plain login success");
         } catch (Throwable ignored) {
             Toast.makeText(this, R.string.account_add_fail, Toast.LENGTH_LONG).show();
         }

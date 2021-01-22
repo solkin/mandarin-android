@@ -318,6 +318,13 @@
     <string name="export_history">Export history</string>
     <string name="export_history_text">Chat history from this dialog will be saved to a text document on this device so that you can use it for some of your purposes. Continue?</string>
     <string name="export_history_failed">History export operation failed</string>
-    <string name="extory_exported">History has been successfully exported to:\n</string>
+    <string name="history_exported">History has been successfully exported to:\n</string>
     <string name="incoming_messages">Incoming messages</string>
+    <string name="file_sharing">File sharing</string>
+    <string name="permission_request_title">Files access</string>
+    <string name="share_files_permission_request_message">To share files, you must allow Mandarin access to files on the device</string>
+    <string name="history_export_permission_request_message">To export history, you must allow Mandarin access to files on the device</string>
+    <string name="ok">OK</string>
+    <string name="foreground_title">Mandarin is connected</string>
+    <string name="foreground_description">Click to open</string>
 </resources>

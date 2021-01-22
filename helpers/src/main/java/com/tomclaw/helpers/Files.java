@@ -1,7 +1,13 @@
 package com.tomclaw.helpers;
 
+import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
+
+import androidx.core.content.FileProvider;
+
+import java.io.File;
 
 /**
  * Created by Solkin on 18.10.2014.
@@ -64,4 +70,13 @@ public class Files {
         }
         return suffix;
     }
+
+    public static Uri getExtFileUri(Context context, Uri uri) {
+        if (uri.getScheme() != null && uri.getScheme().equals("file")) {
+            File file = new File(uri.getPath());
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+        }
+        return uri;
+    }
+
 }

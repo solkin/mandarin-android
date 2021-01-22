@@ -1,5 +1,6 @@
 package com.tomclaw.mandarin.im.icq;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -31,12 +32,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
+
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 
 /**
  * Created by solkin on 30.10.14.
@@ -52,7 +55,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String fileUrl;
     private final String originalMessage;
     private String tag;
-    private boolean isFirstAttempt = false;
+    private boolean isFirstAttempt;
     private String previewHash = "";
 
     private String cachedFileName;
@@ -143,7 +146,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 //            QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
 //                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
-            if (!isStartDownload(isFirstAttempt, fileSize)) {
+            if (!isStartDownload(isFirstAttempt, fileSize) || !hasStoragePermissions()) {
                 // All other attempts will be manual.
                 isFirstAttempt = false;
                 throw new DownloadCancelledException();
@@ -161,7 +164,10 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         final String base = Files.getFileBaseFromName(fileName);
         final String extension = Files.getFileExtensionFromPath(fileName);
         File directory = getStoragePublicFolder(mimeType);
-        if (directory.exists()) {
+        if (!hasStoragePermissions()) {
+            String randomName = Strings.generateRandomWord();
+            fileName = base + "-" + randomName + "." + extension;
+        } else if (directory.exists()) {
             File[] files = directory.listFiles(new FilenameFilter() {
                 public boolean accept(File file, String name) {
                     return Files.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
@@ -216,8 +222,16 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     @Override
-    public FileOutputStream getOutputStream() throws FileNotFoundException {
-        return new FileOutputStream(storeFile);
+    public FileOutputStream getOutputStream() throws IOException, DownloadCancelledException {
+        if (hasStoragePermissions()) {
+            return new FileOutputStream(storeFile);
+        }
+        throw new DownloadCancelledException();
+    }
+
+    private boolean hasStoragePermissions() {
+        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        return hasPermissions(getService(), PERMISSION);
     }
 
     @Override

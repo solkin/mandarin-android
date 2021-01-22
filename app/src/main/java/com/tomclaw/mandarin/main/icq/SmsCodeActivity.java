@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
@@ -35,6 +38,8 @@ import com.tomclaw.mandarin.im.icq.RegistrationHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.preferences.PreferenceHelper;
 
+import com.tomclaw.mandarin.util.MetricsManager;
+
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
@@ -43,8 +48,9 @@ import java.util.Objects;
  */
 public class SmsCodeActivity extends ChiefActivity {
 
-    public static String EXTRA_MSISDN = "msisdn";
-    public static String EXTRA_TRANS_ID = "trans_id";
+    public static String EXTRA_PHONE_NUMBER = "phone_number";
+    public static String EXTRA_CODE_LENGTH = "code_length";
+    public static String EXTRA_SESSION_ID = "session_id";
     public static String EXTRA_PHONE_FORMATTED = "phone_formatted";
 
     private static final long SMS_WAIT_INTERVAL = 60 * 1000;
@@ -55,8 +61,9 @@ public class SmsCodeActivity extends ChiefActivity {
 
     private RegistrationHelper.RegistrationCallback callback;
 
-    private String transId;
-    private String msisdn;
+    private String phoneNumber;
+    private int codeLength;
+    private String sessionId;
 
     private SmsTimer timer;
 
@@ -78,11 +85,17 @@ public class SmsCodeActivity extends ChiefActivity {
         bar.setDisplayShowTitleEnabled(false);
 
         Intent intent = getIntent();
-        msisdn = intent.getStringExtra(EXTRA_MSISDN);
-        transId = intent.getStringExtra(EXTRA_TRANS_ID);
+        phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER);
+        codeLength = intent.getIntExtra(EXTRA_CODE_LENGTH, 4);
+        sessionId = intent.getStringExtra(EXTRA_SESSION_ID);
         String phoneFormatted = intent.getStringExtra(EXTRA_PHONE_FORMATTED);
 
         smsCodeField = findViewById(R.id.sms_code_field);
+        StringBuilder hint = new StringBuilder();
+        for (int c = 0; c < codeLength; c++) {
+            hint.append("- ");
+        }
+        smsCodeField.setHint(hint.toString().trim());
         smsCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -115,21 +128,18 @@ public class SmsCodeActivity extends ChiefActivity {
         resendCodeView.setOnClickListener(v -> {
             if (v.isEnabled()) {
                 showProgress(R.string.requesting_sms_code);
-                RegistrationHelper.validatePhone(msisdn, callback);
+                RegistrationHelper.normalizePhone(phoneNumber, callback);
             }
         });
         startTimer();
 
         callback = new RegistrationHelper.RegistrationCallback() {
-            @Override
-            public void onPhoneNormalized(String msisdn) {
-            }
 
             @Override
-            public void onPhoneValidated(final String msisdn, final String transId) {
+            public void onPhoneValidated(String phoneNumber, int codeLength, final String sessionId) {
                 MainExecutor.execute(() -> {
                     hideProgress();
-                    setTransId(transId);
+                    setSessionId(sessionId);
                     startTimer();
                 });
             }
@@ -153,6 +163,8 @@ public class SmsCodeActivity extends ChiefActivity {
                 MainExecutor.execute(() -> onRequestError(R.string.checking_sms_error));
             }
         };
+
+        MetricsManager.trackEvent("Open phone verification");
     }
 
     private void startTimer() {
@@ -228,12 +240,12 @@ public class SmsCodeActivity extends ChiefActivity {
         // Now, take the rest, hide keyboard...
         hideKeyboard();
         // ... and wait for account activation.
-        loginPhone(msisdn, transId, getSmsCode());
+        loginPhone(phoneNumber, sessionId, getSmsCode());
     }
 
-    private void loginPhone(final String msisdn, final String transId, final String smsCode) {
+    private void loginPhone(final String phoneNumber, final String sessionId, final String smsCode) {
         showProgress(R.string.checking_sms_code);
-        RegistrationHelper.loginPhone(msisdn, transId, smsCode, callback);
+        RegistrationHelper.loginPhone(phoneNumber, sessionId, smsCode, callback);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -269,6 +281,7 @@ public class SmsCodeActivity extends ChiefActivity {
             // ... and now will go to the dialogs activity.
             setResult(RESULT_OK);
             finish();
+            MetricsManager.trackEvent("Phone login success");
         } catch (Throwable ignored) {
             showError(R.string.account_add_fail);
         }
@@ -295,8 +308,8 @@ public class SmsCodeActivity extends ChiefActivity {
         }
     }
 
-    public void setTransId(String transId) {
-        this.transId = transId;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public static class SmsTimer extends CountDownTimer {

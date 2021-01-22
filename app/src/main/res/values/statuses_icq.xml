@@ -101,54 +101,104 @@
         <item>@string/status_icq_diary</item>
     </string-array>
 
-    <string-array name="status_values_icq" translatable="false">
-        <item>offline</item>
-        <item>mobile</item>
-        <item>online</item>
-        <item>invisible</item>
-        <item>chat</item>
-        <item>away</item>
-        <item>dnd</item>
-        <item>na</item>
-        <item>busy</item>
-        <item>occupied</item>
-        <item>idle</item>
+    <string-array name="status_values_icq_en" translatable="false">
+        <item>Offline</item>
+        <item>From mobile</item>
+        <item>Online</item>
+        <item>Invisible</item>
+        <item>Ready to chat</item>
+        <item>Away</item>
+        <item>Do not disturb</item>
+        <item>Unavailable</item>
+        <item>Busy</item>
+        <item>Busy</item>
+        <item>Invisible</item>
 
-        <item>0icqmood0</item>
-        <item>0icqmood1</item>
-        <item>0icqmood2</item>
-        <item>0icqmood3</item>
-        <item>0icqmood4</item>
-        <item>0icqmood5</item>
-        <item>0icqmood6</item>
-        <item>0icqmood7</item>
-        <item>0icqmood8</item>
-        <item>0icqmood9</item>
-        <item>0icqmood10</item>
-        <item>0icqmood11</item>
-        <item>0icqmood12</item>
-        <item>0icqmood13</item>
-        <item>0icqmood14</item>
-        <item>0icqmood81</item>
-        <item>0icqmood16</item>
-        <item>0icqmood17</item>
-        <item>0icqmood70</item>
-        <item>0icqmood19</item>
-        <item>0icqmood20</item>
-        <item>0icqmood21</item>
-        <item>0icqmood22</item>
-        <item>0icqmood23</item>
-        <item>0icqmood66</item>
-        <item>0icqmood15</item>
-        <item>0icqmood71</item>
-        <item>0icqmood18</item>
-        <item>0icqmood68</item>
-        <item>0icqmood77</item>
-        <item>0icqmood83</item>
-        <item>0icqmood61</item>
-        <item>0icqmood76</item>
-        <item>0icqmood85</item>
-        <item>0icqmood84</item>
+        <item>Shopping</item>
+        <item>Bathing</item>
+        <item>Exhausted</item>
+        <item>Party</item>
+        <item>Beer</item>
+        <item>Thinking</item>
+        <item>Eating</item>
+        <item>TV</item>
+        <item>Friends</item>
+        <item>Coffee</item>
+        <item>Music</item>
+        <item>Business</item>
+        <item>Cinema</item>
+        <item>Having fun</item>
+        <item>Cell phone</item>
+        <item>Gaming</item>
+        <item>Studying</item>
+        <item>Sick</item>
+        <item>Sleeping</item>
+        <item>Surfing</item>
+        <item>Internet</item>
+        <item>Working</item>
+        <item>Typing</item>
+        <item>Mad</item>
+        <item>Having a good time</item>
+        <item>PSP</item>
+        <item>From mobile</item>
+        <item>Falling asleep</item>
+        <item>WC</item>
+        <item>Confused</item>
+        <item>On the way</item>
+        <item>Love</item>
+        <item>In love</item>
+        <item>Searching</item>
+        <item>Diary</item>
+    </string-array>
+
+    <string-array name="status_values_icq_ru" translatable="false">
+        <item>Не в сети</item>
+        <item>Мобильный</item>
+        <item>В сети</item>
+        <item>Невидимый</item>
+        <item>Рад пообщаться</item>
+        <item>Отошёл</item>
+        <item>Не беспокоить</item>
+        <item>Недоступен</item>
+        <item>Занят</item>
+        <item>Занят</item>
+        <item>Невидимый</item>
+
+        <item>Магазины</item>
+        <item>В ванной</item>
+        <item>Устал</item>
+        <item>Вечеринка</item>
+        <item>Пиво</item>
+        <item>Думаю</item>
+        <item>Кушаю</item>
+        <item>Телевизор</item>
+        <item>Друзья</item>
+        <item>Кофе</item>
+        <item>Музыка</item>
+        <item>Дела</item>
+        <item>Кино</item>
+        <item>Развлекаюсь</item>
+        <item>На телефоне</item>
+        <item>Играю</item>
+        <item>Учусь</item>
+        <item>Болею</item>
+        <item>Сплю</item>
+        <item>Отрываюсь</item>
+        <item>В интернете</item>
+        <item>Работаю</item>
+        <item>Пишу</item>
+        <item>Злой</item>
+        <item>Отдыхаю</item>
+        <item>Приставка</item>
+        <item>На мобильном</item>
+        <item>Засыпаю</item>
+        <item>В туалете</item>
+        <item>Вопрос</item>
+        <item>В пути</item>
+        <item>Любовь</item>
+        <item>Влюблён</item>
+        <item>Ищу</item>
+        <item>Дневник</item>
     </string-array>
 
     <integer name="mood_offset">11</integer>

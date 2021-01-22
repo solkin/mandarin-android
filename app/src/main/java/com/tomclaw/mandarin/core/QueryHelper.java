@@ -67,8 +67,22 @@ public class QueryHelper {
                     int dbIdColumnIndex = cursor.getColumnIndex(GlobalProvider.ROW_AUTO_ID);
                     // Iterate all accounts.
                     do {
-                        accountRootList.add(createAccountRoot(context, cursor.getString(typeColumnIndex),
-                                cursor.getString(bundleColumnIndex), cursor.getInt(dbIdColumnIndex)));
+                        String className = cursor.getString(typeColumnIndex);
+                               String accountRootJson = cursor.getString(bundleColumnIndex);
+                    int accountDbId = cursor.getInt(dbIdColumnIndex);
+                    boolean isAccountLoaded = false;
+                    for (AccountRoot accountRoot : accountRootList) {
+                        if (accountRoot.getAccountDbId() == accountDbId) {
+                            isAccountLoaded = true;
+                            break;
+                        }
+                    }
+                    if (isAccountLoaded) {
+                        Logger.log("What da fuck? Account is already loaded!");
+                    } else {
+                        accountRootList.add(createAccountRoot(context, className,
+                                accountRootJson, accountDbId));
+                    }
                     } while (cursor.moveToNext()); // Trying to move to position.
                 }
             }
@@ -359,7 +373,8 @@ public class QueryHelper {
 //                messageType, cookie, 0, messageText);
 //    }
 
-//    public static void insertOutgoingFileMessage(ContentResolver contentResolver, int buddyDbId, String cookie,
+//    public static void insertOutgoingFileMessage(ContentResolver contentResolver,
+//                                         int buddyDbId, String cookie,
 //                                                 Uri uri, String name, int contentType, long contentSize,
 //                                                 String previewHash, String contentTag)
 //            throws BuddyNotFoundException {
@@ -549,6 +564,25 @@ public class QueryHelper {
         }
         throw new MessageNotFoundException();
     }
+
+//    public static boolean checkMessageExist(ContentResolver contentResolver, int messageType,
+//                                            String cookie) {
+//        QueryBuilder queryBuilder = new QueryBuilder()
+//                .columnEquals(GlobalProvider.HISTORY_MESSAGE_TYPE, messageType)
+//                .and()
+//                .like(GlobalProvider.HISTORY_MESSAGE_COOKIE, cookie);
+//        Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
+//        try {
+//            if (cursor != null && cursor.moveToFirst()) {
+//                return true;
+//            }
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//        }
+//        return false;
+//    }
 
     public static void removeMessages(DatabaseLayer databaseLayer, Collection<Long> messageIds) {
         messagesByIds(messageIds).delete(databaseLayer, Settings.HISTORY_RESOLVER_URI);

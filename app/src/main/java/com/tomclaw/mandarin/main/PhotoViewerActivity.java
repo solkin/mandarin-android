@@ -27,6 +27,10 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.tomclaw.helpers.AppsMenuHelper;
 import com.tomclaw.helpers.Files;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.design.TouchImageView;
@@ -161,12 +165,12 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.photo_viewer_activity_menu, menu);
-
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
-        intent.setDataAndType(uri, Files.getMimeType(name));
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setDataAndType(Files.getExtFileUri(this, uri), Files.getMimeType(name));
 
+        getMenuInflater().inflate(R.menu.photo_viewer_activity_menu, menu);
         AppsMenuHelper.fillMenuItemSubmenu(this, menu, R.id.view_in_external_app_menu, intent);
         return true;
     }

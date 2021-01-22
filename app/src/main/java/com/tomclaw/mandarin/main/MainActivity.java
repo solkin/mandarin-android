@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +36,8 @@ import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.preferences.PreferenceHelper;
 
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -171,11 +174,6 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -266,7 +264,7 @@ public class MainActivity extends ChiefActivity {
 
     private class MultiChoiceActionCallback implements ActionMode.Callback {
 
-        private SelectionHelper<StrictBuddy> selectionHelper;
+        private final SelectionHelper<StrictBuddy> selectionHelper;
 
         MultiChoiceActionCallback(SelectionHelper<StrictBuddy> selectionHelper) {
             this.selectionHelper = selectionHelper;

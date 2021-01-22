@@ -13,8 +13,10 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Random;
 import java.util.Random;
 
 import javax.crypto.Mac;
@@ -67,6 +69,20 @@ public class Strings {
         messageAuthenticationCode.update(key.getBytes());
         byte[] digest = messageAuthenticationCode.doFinal();
         return Base64.encodeToString(digest, Base64.NO_WRAP);
+    }
+
+    public static String sha1(String input) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("SHA1");
+            byte[] digest = md5.digest(input.getBytes(UTF8_ENCODING));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(Integer.toHexString((b & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     public static String unescapeXml(String string) {

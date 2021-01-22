@@ -57,7 +57,15 @@ public class AccountsDispatcher {
                 // Some account has connecting or connected.
                 Intent serviceIntent = new Intent(context, CoreService.class)
                         .putExtra(CoreService.EXTRA_ON_CONNECTED_EVENT, true);
-                context.startService(serviceIntent);
+                CoreService.startCoreService(context, serviceIntent);
+            }
+            // Checking for all accounts are now disconnected.
+            if (activeAccountsBefore && !hasActiveAccounts) {
+                Logger.log("AccountsObserver: accounts was disconnected. We must notify core service.");
+                // All accounts are now disconnected.
+                Intent serviceIntent = new Intent(context, CoreService.class)
+                        .putExtra(CoreService.EXTRA_ON_DISCONNECTED_EVENT, true);
+                CoreService.startCoreService(context, serviceIntent);
             }
         }
     }

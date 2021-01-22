@@ -9,16 +9,23 @@ android {
             if (project.hasProperty("keyPassword")) keyPassword project.keyPassword
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 16
-        targetSdkVersion 28
-        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 1
+        targetSdkVersion 29
+        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 280
         versionName "2.0"
         resConfigs "ru", "en"
         manifestPlaceholders = [APPCENTER_APP_ID: "16283e6b-ea48-0850-d8f4-c1b41d7a74be"]
+    }
+    splits {
+        density {
+            enable false
+            reset()
+            include "nodpi", "hdpi", "xhdpi", "xxxhdpi"
+        }
     }
     buildTypes {
         release {
@@ -30,6 +37,8 @@ android {
     }
     lintOptions {
         warningsAsErrors false
+        checkReleaseBuilds false
+        abortOnError false
     }
     compileOptions {
         targetCompatibility = "8"
@@ -43,17 +52,19 @@ dependencies {
     implementation project(path: ':design')
     implementation project(path: ':preferences')
     implementation project(path: ':filepicker')
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     annotationProcessor 'androidx.annotation:annotation:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     implementation 'com.github.mtotschnig:StickyListHeaders:2.7.1'
+    implementation 'org.zakariya.stickyheaders:stickyheaders:0.7.6'
     implementation 'com.github.machinarius:preferencefragment:0.1.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.0.1'
     implementation "com.microsoft.appcenter:appcenter-analytics:3.0.0"
     implementation "com.microsoft.appcenter:appcenter-crashes:3.0.0"
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 }

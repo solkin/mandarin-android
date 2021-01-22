@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.im.icq;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.helpers.Strings;
 import com.tomclaw.mandarin.util.Unobfuscatable;
 
@@ -21,7 +22,6 @@ public class MyInfo implements Unobfuscatable {
     private String friendly;
     private String state = FALLBACK_STATE;
     private int invisible = 0;
-    private String moodIcon;
     private String moodTitle;
     private String statusMsg;
     private String userType;
@@ -42,13 +42,6 @@ public class MyInfo implements Unobfuscatable {
 
     public String getState() {
         return invisible == 1 ? WimConstants.INVISIBLE : state;
-    }
-
-    public String optMoodIcon() {
-        if (TextUtils.isEmpty(moodIcon)) {
-            return "";
-        }
-        return moodIcon;
     }
 
     public String optMoodTitle() {
@@ -83,10 +76,6 @@ public class MyInfo implements Unobfuscatable {
 
     public void setState(String state) {
         this.state = state;
-    }
-
-    public void setMoodIcon(String moodIcon) {
-        this.moodIcon = moodIcon;
     }
 
     public void setMoodTitle(String moodTitle) {

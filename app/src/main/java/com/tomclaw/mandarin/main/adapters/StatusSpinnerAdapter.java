@@ -2,6 +2,7 @@ package com.tomclaw.mandarin.main.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import androidx.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,11 +43,12 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
         DROPDOWN_PADDING_LEFT = getPxFromDp(10);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view;
         try {
-            int statusIndex = getItem(position);
+            int statusIndex = getStatus(position);
             if (convertView == null) {
                 view = newView(parent);
             } else {
@@ -61,26 +63,28 @@ public class StatusSpinnerAdapter extends ArrayAdapter<Integer> {
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+    public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = getView(position, convertView, parent);
         view.setPadding(DROPDOWN_PADDING_LEFT, DROPDOWN_PADDING, DROPDOWN_PADDING, DROPDOWN_PADDING);
         return view;
     }
 
-    public View newView(ViewGroup viewGroup) {
+    private View newView(ViewGroup viewGroup) {
         return inflater.inflate(R.layout.status_item, viewGroup, false);
     }
 
     private void bindView(View view, int statusIndex) {
-        ImageView statusImage = (ImageView) view.findViewById(R.id.status_icon);
-        TextView statusName = (TextView) view.findViewById(R.id.status_name);
+        ImageView statusImage = view.findViewById(R.id.status_icon);
+        TextView statusName = view.findViewById(R.id.status_name);
 
         statusImage.setImageResource(StatusUtil.getStatusDrawable(accountType, statusIndex));
         statusName.setText(StatusUtil.getStatusTitle(accountType, statusIndex));
     }
 
     public int getStatus(int position) {
-        return getItem(position);
+        Integer statusIndex = getItem(position);
+        if (statusIndex == null) throw new NullPointerException("Status is null");
+        return statusIndex;
     }
 
     public int getStatusPosition(int statusValue) throws StatusNotFoundException {

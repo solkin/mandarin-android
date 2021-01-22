@@ -1,10 +1,12 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import androidx.core.app.NotificationCompat;
+import android.os.Build;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
@@ -15,12 +17,15 @@ import com.tomclaw.mandarin.util.ConnectivityHelper;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.preferences.PreferenceHelper;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+
 /**
  * Created by Solkin on 02.11.2014.
  */
 public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends RangedDownloadRequest<A> {
 
     private static final int NOTIFICATION_ID = 0x03;
+    private static final String NOTIFICATION_CHANNEL_ID = "file_sharing";
 
     private transient NotificationCompat.Builder mBuilder;
     private transient NotificationManager mNotifyManager;
@@ -31,7 +36,18 @@ public abstract class NotifiableDownloadRequest<A extends AccountRoot> extends R
     protected final void onStarted() throws Throwable {
         Context context = getAccountRoot().getContext();
         mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mBuilder = new NotificationCompat.Builder(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = context.getString(R.string.file_sharing);
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    channelName,
+                    IMPORTANCE_LOW
+            );
+            notificationChannel.enableLights(false);
+            notificationChannel.enableVibration(false);
+            mNotifyManager.createNotificationChannel(notificationChannel);
+        }
+        mBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
         mBuilder.setContentTitle(context.getString(R.string.file_download_title))
                 .setContentText(getDescription())
                 .setSmallIcon(android.R.drawable.stat_sys_download)

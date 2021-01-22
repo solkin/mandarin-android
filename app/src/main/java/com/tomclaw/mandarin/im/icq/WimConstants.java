@@ -8,13 +8,14 @@ import java.util.regex.Pattern;
  * Date: 6/19/13
  * Time: 10:43 AM
  */
+@SuppressWarnings("WeakerAccess")
 public class WimConstants {
 
     public static final String TOKEN_A = "a";
     public static final String CLIENT_LOGIN_URL = "https://u.icq.net/wim/auth/clientLogin";
-    public static final String NORMALIZE_PHONE_URL = "https://u.icq.net/smsreg/normalizePhoneNumber.php";
+    public static final String NORMALIZE_PHONE_URL = "https://u.icq.net/api/v35/rapi/auth/sendCode";
     public static final String VALIDATE_PHONE_URL = "https://u.icq.net/smsreg/requestPhoneValidation.php";
-    public static final String LOGIN_PHONE_URL = "https://u.icq.net/smsreg/loginWithPhoneNumber.php";
+    public static final String LOGIN_PHONE_URL = "https://u.icq.net/api/v35/smsreg/loginWithPhoneNumber.php";
     public static final String CLIENT_NAME = "clientName";
     public static final String CLIENT_VERSION = "clientVersion";
     public static final String DEV_ID = "devId";
@@ -89,7 +90,6 @@ public class WimConstants {
     public static final String PRESENCE = "presence";
     public static final String STATUS_MSG = "statusMsg";
     public static final String MOOD_TITLE = "moodTitle";
-    public static final String MOOD_ICON = "moodIcon";
     public static final String TIMESTAMP = "timestamp";
     public static final String QUE = "?";
     public static final String OFFLINE_IM = "offlineIM";

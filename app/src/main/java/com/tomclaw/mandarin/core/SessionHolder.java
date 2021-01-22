@@ -18,6 +18,7 @@ import java.util.List;
  * Time: 2:10 AM
  * Store opened accounts and sessions
  */
+@SuppressWarnings("WeakerAccess")
 public class SessionHolder {
 
     private final List<AccountRoot> accountRootList;
@@ -123,10 +124,6 @@ public class SessionHolder {
             }
         }
         throw new AccountNotFoundException();
-    }
-
-    public List<AccountRoot> getAccountsList() {
-        return accountRootList;
     }
 
     public AccountRoot getAccount(int accountDbId) throws AccountNotFoundException {

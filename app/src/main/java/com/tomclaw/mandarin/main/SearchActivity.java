@@ -3,6 +3,9 @@ package com.tomclaw.mandarin.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -16,10 +19,11 @@ import androidx.appcompat.widget.Toolbar;
 import com.tomclaw.design.AgePickerView;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
-import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 
 import java.util.Objects;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Igor on 26.06.2014.
@@ -63,6 +67,7 @@ public class SearchActivity extends ChiefActivity {
         cityEdit = findViewById(R.id.city_edit);
         agePickerView = findViewById(R.id.age_range);
         onlineBox = findViewById(R.id.online_check);
+        MetricsManager.trackEvent("Open search");
     }
 
     @Override

@@ -90,7 +90,7 @@ public class BitmapFile extends VirtualFile {
         throw new UnsupportedFileTypeException();
     }
 
-    public static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
+    private static File saveBitmapSync(String fileName, Bitmap bitmap, int quality) {
         try {
             File file = File.createTempFile("MND_",
                     "." + Files.getFileExtensionFromPath(fileName));
@@ -107,9 +107,9 @@ public class BitmapFile extends VirtualFile {
         return null;
     }
 
-    public static class UnsupportedFileTypeException extends Throwable {
+    private static class UnsupportedFileTypeException extends Throwable {
     }
 
-    public static class ImageCompressionDesireLackException extends Throwable {
+    private static class ImageCompressionDesireLackException extends Throwable {
     }
 }

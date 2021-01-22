@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,9 +141,10 @@ public class ChatHistoryAdapter extends CursorRecyclerAdapter<BaseHistoryView> i
         return messageCursor;
     }
 
+    @NonNull
     @Override
     @SuppressWarnings("unchecked")
-    public BaseHistoryView onCreateViewHolder(ViewGroup viewGroup, int messageType) {
+    public BaseHistoryView onCreateViewHolder(@NonNull ViewGroup viewGroup, int messageType) {
         try {
             // Inflate view by type.
             View view = inflater.inflate(ITEM_LAYOUTS[messageType], viewGroup, false);

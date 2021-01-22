@@ -2,6 +2,9 @@ package com.tomclaw.mandarin.main.views.history;
 
 import android.content.res.Resources;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;

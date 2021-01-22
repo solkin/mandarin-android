@@ -4,6 +4,8 @@ import android.os.Build;
 
 import com.tomclaw.mandarin.BuildConfig;
 
+import android.os.Build;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +13,24 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,6 +77,10 @@ public class HttpUtil {
     }
 
     public static String executePost(String urlString, byte[] data) throws IOException {
+        return executePost(urlString, data, Collections.<String, String>emptyMap());
+    }
+
+    public static String executePost(String urlString, byte[] data, Map<String, String> props) throws IOException {
         InputStream responseStream = null;
         HttpURLConnection connection = null;
         try {
@@ -67,6 +89,12 @@ public class HttpUtil {
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(TIMEOUT_CONNECTION);
             connection.setReadTimeout(TIMEOUT_SOCKET);
+
+            if (props.size() > 0) {
+                for (String key : props.keySet()) {
+                    connection.setRequestProperty(key, props.get(key));
+                }
+            }
 
             // Execute request.
             responseStream = HttpUtil.executePost(connection, data);
@@ -116,7 +144,6 @@ public class HttpUtil {
 
     private static InputStream getResponse(HttpURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
-        InputStream in;
         // Checking for this is error stream.
         if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
             return connection.getErrorStream();
@@ -155,4 +182,75 @@ public class HttpUtil {
         }
         return url;
     }
+
+    public static void fixCertificateCheckingOnPreLollipop() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            try {
+                disableSSLCertificateChecking();
+            } catch (NoSuchAlgorithmException ignored) {
+            } catch (KeyManagementException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Disables the SSL certificate checking for new instances of {@link HttpsURLConnection}
+     */
+    public static void disableSSLCertificateChecking() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("TLS");
+        TrustManager[] trustAllCerts = getTrustManagers();
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
+        HttpsURLConnection.setDefaultSSLSocketFactory(tlsSocketFactory);
+    }
+
+    public static OkHttpClient getOkHttpClient() {
+        OkHttpClient.Builder builder;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            builder = getUnsafeOkHttpClient();
+        } else {
+            builder = new OkHttpClient.Builder();
+        }
+        List<Protocol> protocols = new ArrayList<>();
+        protocols.add(Protocol.HTTP_1_1);
+        return builder.protocols(protocols).build();
+    }
+
+    private static OkHttpClient.Builder getUnsafeOkHttpClient() {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            TrustManager[] trustAllCerts = getTrustManagers();
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            TLSSocketFactory tlsSocketFactory = new TLSSocketFactory(sc);
+
+            return new OkHttpClient.Builder()
+                    .sslSocketFactory(tlsSocketFactory)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static TrustManager[] getTrustManagers() {
+        return new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+            }
+        }};
+    }
+
 }

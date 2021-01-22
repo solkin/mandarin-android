@@ -1,14 +1,18 @@
 package com.tomclaw.mandarin.core;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import androidx.core.app.RemoteInput;
 import android.text.TextUtils;
@@ -16,11 +20,17 @@ import android.text.TextUtils;
 import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.tasks.UpdateLastReadTask;
 import com.tomclaw.mandarin.main.ChatActivity;
+import androidx.core.app.NotificationCompat;
+
+import com.tomclaw.mandarin.R;
+import com.tomclaw.mandarin.main.MainActivity;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.Notifier;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Random;
+
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +49,9 @@ public class CoreService extends Service {
 
     private ConnectivityReceiver connectivityReceiver;
 
+    private static final int NOTIFICATION_ID = 0x42;
+    private static final String CHANNEL_ID = "core_service";
+
     public static final String ACTION_CORE_SERVICE = "core_service";
     public static final String EXTRA_STAFF_PARAM = "staff";
     public static final String EXTRA_STATE_PARAM = "state";
@@ -48,6 +61,7 @@ public class CoreService extends Service {
     public static final String EXTRA_RESTART_FLAG = "restart_flag";
     public static final String EXTRA_ACTIVITY_START_EVENT = "activity_start_event";
     public static final String EXTRA_ON_CONNECTED_EVENT = "on_connected";
+    public static final String EXTRA_ON_DISCONNECTED_EVENT = "on_disconnected";
     public static final String EXTRA_READ_MESSAGES = "read_messages";
     public static final String EXTRA_REPLY_ON_MESSAGE = "reply_on_message";
     public static final String KEY_REPLY_ON_MESSAGE = "key_reply_on_message";
@@ -63,46 +77,39 @@ public class CoreService extends Service {
 
     private ServiceInteraction.Stub serviceInteraction = new ServiceInteraction.Stub() {
 
-        public int getServiceState() throws RemoteException {
+        public int getServiceState() {
             return serviceState;
         }
 
         @Override
-        public long getUpTime() throws RemoteException {
+        public long getUpTime() {
             return System.currentTimeMillis() - getServiceCreateTime();
         }
 
         @Override
-        public String getAppSession() throws RemoteException {
+        public String getAppSession() {
             return appSession;
         }
 
         @Override
-        public List getAccountsList() throws RemoteException {
-            Logger.log("returning " + sessionHolder.getAccountsList().size() + " accounts");
-            return sessionHolder.getAccountsList();
-        }
-
-        @Override
-        public void holdAccount(int accountDbId) throws RemoteException {
+        public void holdAccount(int accountDbId) {
             Logger.log("hold account " + accountDbId);
             sessionHolder.holdAccountRoot(accountDbId);
         }
 
         @Override
-        public boolean removeAccount(int accountDbId) throws RemoteException {
+        public boolean removeAccount(int accountDbId) {
             return sessionHolder.removeAccountRoot(accountDbId);
         }
 
         @Override
-        public void updateAccountStatusIndex(String accountType, String userId,
-                                             int statusIndex) throws RemoteException {
+        public void updateAccountStatusIndex(String accountType, String userId, int statusIndex) {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex);
         }
 
         @Override
         public void updateAccountStatus(String accountType, String userId, int statusIndex,
-                                        String statusTitle, String statusMessage) throws RemoteException {
+                                        String statusTitle, String statusMessage) {
             sessionHolder.updateAccountStatus(accountType, userId, statusIndex, statusTitle, statusMessage);
         }
 
@@ -117,12 +124,12 @@ public class CoreService extends Service {
         }
 
         @Override
-        public boolean stopDownloadRequest(String tag) throws RemoteException {
+        public boolean stopDownloadRequest(String tag) {
             return downloadDispatcher.stopRequest(tag);
         }
 
         @Override
-        public boolean stopUploadingRequest(String tag) throws RemoteException {
+        public boolean stopUploadingRequest(String tag) {
             return uploadDispatcher.stopRequest(tag);
         }
     };
@@ -156,8 +163,75 @@ public class CoreService extends Service {
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");
         Logger.log("core service start time: " + (System.currentTimeMillis() - time));
+        startForeground();
         // Schedule restart immediately after service creation.
         scheduleRestart(true);
+    }
+
+    private void startForeground() {
+        Handler handler = new Handler();
+        if (isForegroundService()) {
+            final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.deleteNotificationChannel(CHANNEL_ID);
+                final Runnable callback = new Runnable() {
+                    @Override
+                    public void run() {
+                        String name = getString(R.string.core_service);
+                        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_MIN);
+                        notificationChannel.setShowBadge(false);
+                        notificationManager.createNotificationChannel(notificationChannel);
+                    }
+                };
+                callback.run();
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+                final Notification notification = buildNotification(builder);
+                startForeground(NOTIFICATION_ID, notification);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.run();
+                        try {
+                            notificationManager.notify(NOTIFICATION_ID, notification);
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                };
+                runnable.run();
+                handler.post(runnable);
+            } else {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "");
+                Notification notification = buildNotification(builder);
+                startForeground(NOTIFICATION_ID, notification);
+            }
+            if (!sessionHolder.hasActiveAccounts()) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        stopForeground(true);
+                    }
+                };
+                handler.postDelayed(runnable, 2000);
+            }
+        }
+    }
+
+    private Notification buildNotification(NotificationCompat.Builder builder) {
+        String title = getString(R.string.foreground_title);
+        String subtitle = getString(R.string.foreground_description);
+        int color = getResources().getColor(R.color.accent_color);
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        return builder
+                .setContentTitle(title)
+                .setContentText(subtitle)
+                .setColor(color)
+                .setAutoCancel(false)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .setPriority(PRIORITY_MIN)
+                .setSmallIcon(R.drawable.ic_notification)
+                .build();
     }
 
     @Override
@@ -215,6 +289,13 @@ public class CoreService extends Service {
         if (connectedEvent) {
             Logger.logWithPrefix("W", "Received account connected event. Scheduling restart.");
             scheduleRestart(true);
+            startForeground();
+        }
+        // Check for this is disconnection event from accounts dispatcher.
+        boolean disconnectedEvent = intent.getBooleanExtra(EXTRA_ON_DISCONNECTED_EVENT, false);
+        if (disconnectedEvent) {
+            Logger.logWithPrefix("W", "Received accounts disconnected event.");
+            stopForeground(true);
         }
         // Check for service restarted automatically while there is no connected accounts.
         boolean restartEvent = intent.getBooleanExtra(EXTRA_RESTART_FLAG, false);
@@ -329,5 +410,17 @@ public class CoreService extends Service {
             TaskExecutor.getInstance().execute(
                     new ChatActivity.SendMessageTask(this, buddy, text, callback));
         }
+    }
+
+    public static void startCoreService(Context context, Intent intent) {
+        if (isForegroundService()) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+    public static boolean isForegroundService() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 }

@@ -323,6 +323,13 @@
     <string name="export_history">Экспорт истории</string>
     <string name="export_history_text">Переписка из этого диалога будет сохранена в текстовый документ на этом устройстве, чтобы Вы могли использовать её в каких-то своих целях. Продолжаем?</string>
     <string name="export_history_failed">Не удалось экспортировать историю</string>
-    <string name="extory_exported">История успешно экспортирована в:\n</string>
     <string name="incoming_messages">Входящие сообщения</string>
+    <string name="history_exported">История успешно экспортирована в:\n</string>
+    <string name="file_sharing">Обмен файлами</string>
+    <string name="permission_request_title">Доступ к файлам</string>
+    <string name="share_files_permission_request_message">Для обмена файлами необходимо разрешить Мандарину доступ к файлам на устройстве</string>
+    <string name="history_export_permission_request_message">Для экспорта истории необходимо разрешить Мандарину доступ к файлам на устройстве</string>
+    <string name="ok">OK</string>
+    <string name="foreground_title">Мандарин подключен</string>
+    <string name="foreground_description">Нажмите для открытия</string>
 </resources>

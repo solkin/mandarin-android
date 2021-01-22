@@ -6,6 +6,11 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +34,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
     private int rowCount;
     private OnSmileyClickCallback callback;
 
-    public SmileysPagerAdapter(Activity context, int width, int height, OnSmileyClickCallback callback) {
+    public SmileysPagerAdapter(Context context, int width, int height, OnSmileyClickCallback callback) {
         this.inflater = LayoutInflater.from(context);
         smileyParser = SmileyParser.getInstance();
         smileySize = (int) context.getResources().getDimension(R.dimen.smiley_size);
@@ -38,11 +43,11 @@ public class SmileysPagerAdapter extends PagerAdapter {
         this.callback = callback;
     }
 
-    @Override
     @NonNull
+    @Override
     @SuppressLint("InflateParams")
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View view = inflater.inflate(R.layout.smileys_grid, null);
+        View view = inflater.inflate(R.layout.smileys_grid, container, false);
         GridLayout gridLayout = view.findViewById(R.id.smileys_grid);
         gridLayout.setColumnCount(columnCount);
         gridLayout.setRowCount(rowCount);
@@ -53,7 +58,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
                 pageColumnCount = smileyParser.getSmileysCount() - smilesAdded;
             }
             for (int column = 0; column < pageColumnCount; column++) {
-                View itemView = inflater.inflate(R.layout.smiley_item, null);
+                View itemView = inflater.inflate(R.layout.smiley_item, container, false);
                 ImageView imageView = itemView.findViewById(R.id.smiley_image);
                 imageView.setImageResource(smileyParser.getSmiley(smilesAdded + column));
                 final String smileyText = smileyParser.getSmileyText(smilesAdded + column);
@@ -69,7 +74,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, @NonNull Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
     }
 
@@ -82,7 +87,7 @@ public class SmileysPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, @NonNull Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view.equals(object);
     }
 

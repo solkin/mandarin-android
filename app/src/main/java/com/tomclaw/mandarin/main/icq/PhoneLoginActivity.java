@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,8 @@ import com.tomclaw.mandarin.util.Country;
 import com.tomclaw.mandarin.util.PhoneNumberFormattingTextWatcher;
 
 import java.util.Objects;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 /**
  * Created by Solkin on 28.09.2014.
@@ -116,14 +119,10 @@ public class PhoneLoginActivity extends AppCompatActivity {
         updateCountryViews(country);
 
         callback = new RegistrationHelper.RegistrationCallback() {
-            @Override
-            public void onPhoneNormalized(String msisdn) {
-                RegistrationHelper.validatePhone(msisdn, callback);
-            }
 
             @Override
-            public void onPhoneValidated(final String msisdn, final String transId) {
-                MainExecutor.execute(() -> onSmsSent(msisdn, transId));
+            public void onPhoneValidated(final String phoneNumber, final int codeLength, final String sessionId) {
+                MainExecutor.execute(() -> onSmsSent(phoneNumber, codeLength, sessionId));
             }
 
             @Override
@@ -141,6 +140,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
             }
         };
         updateActionVisibility();
+        MetricsManager.trackEvent("Open phone login");
     }
 
     private void updateActionVisibility() {
@@ -179,11 +179,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
         actionView.setText(actionView.getText().toString().toUpperCase());
         actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
 
-        if (isActionVisible()) {
-            item.setVisible(true);
-        } else {
-            item.setVisible(false);
-        }
+        item.setVisible(isActionVisible());
     }
 
     @Override
@@ -243,15 +239,19 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
     private void requestSms(final String countryCode, final String phoneNumber) {
         showProgress();
-        RegistrationHelper.normalizePhone(countryCode, phoneNumber, callback);
+        RegistrationHelper.normalizePhone(countryCode + phoneNumber, callback);
     }
 
-    private void onSmsSent(String msisdn, String transId) {
+    private void onSmsSent(String phoneNumber, int codeLength, String sessionId) {
         hideProgress();
-        startActivityForResult(new Intent(this, SmsCodeActivity.class)
-                .putExtra(SmsCodeActivity.EXTRA_MSISDN, msisdn)
-                .putExtra(SmsCodeActivity.EXTRA_TRANS_ID, transId)
-                .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()), REQUEST_SMS_NUMBER);
+        startActivityForResult(
+                new Intent(this, SmsCodeActivity.class)
+                        .putExtra(SmsCodeActivity.EXTRA_PHONE_NUMBER, phoneNumber)
+                        .putExtra(SmsCodeActivity.EXTRA_CODE_LENGTH, codeLength)
+                        .putExtra(SmsCodeActivity.EXTRA_SESSION_ID, sessionId)
+                        .putExtra(SmsCodeActivity.EXTRA_PHONE_FORMATTED, getPhoneFormatted()),
+                REQUEST_SMS_NUMBER
+        );
     }
 
     private void onRequestError(int message) {

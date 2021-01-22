@@ -26,6 +26,8 @@ import com.tomclaw.mandarin.im.Buddy;
 import com.tomclaw.mandarin.im.BuddyCursor;
 import com.tomclaw.mandarin.util.Logger;
 
+import com.tomclaw.mandarin.util.MetricsManager;
+
 /**
  * Created with IntelliJ IDEA.
  * User: anton
@@ -111,6 +113,7 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
                 buddyCursor.close();
             }
         }
+        MetricsManager.trackEvent("Open buddy info");
     }
 
     @Override

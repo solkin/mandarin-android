@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -45,6 +50,8 @@ import com.tomclaw.mandarin.main.tasks.BuddyRemoveTask;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.preferences.PreferenceHelper;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -146,6 +153,7 @@ public class RosterActivity extends ChiefActivity {
                 return false;
             }
         };
+        MetricsManager.trackEvent("Open roster");
     }
 
     @Override

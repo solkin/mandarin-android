@@ -88,8 +88,8 @@ public class AccountsSelectorAdapter extends CursorAdapter implements
         final String userId = cursor.getString(COLUMN_USER_ID);
         String userNick = cursor.getString(COLUMN_USER_NICK);
 
-        ImageView statusImage = ((ImageView) view.findViewById(R.id.user_status));
-        TextView userIdView = ((TextView) view.findViewById(R.id.user_id));
+        ImageView statusImage = view.findViewById(R.id.user_status);
+        TextView userIdView = view.findViewById(R.id.user_id);
         if (TextUtils.isEmpty(userNick)) {
             userIdView.setVisibility(View.GONE);
             userNick = userId;

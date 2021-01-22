@@ -9,7 +9,6 @@ interface ServiceInteraction
 	long getUpTime();
     String getAppSession();
 	// Accounts API
-	List getAccountsList();
 	void holdAccount(int accountDbId);
 	boolean removeAccount(int accountDbId);
 	void updateAccountStatusIndex(String accountType, String userId, int statusIndex);

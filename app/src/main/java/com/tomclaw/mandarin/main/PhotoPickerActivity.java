@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -40,6 +43,8 @@ import com.tomclaw.mandarin.core.BitmapCache;
 import com.tomclaw.mandarin.core.GlideApp;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.preferences.PreferenceHelper;
+
+import com.tomclaw.mandarin.util.MetricsManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -152,6 +157,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
         updateSelectedCount();
 
         Logger.log("albums: " + albums.size());
+
+        MetricsManager.trackEvent("Open photo picker");
     }
 
     private void sendSelectedPhotos() {

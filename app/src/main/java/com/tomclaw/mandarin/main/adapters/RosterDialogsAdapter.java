@@ -13,7 +13,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -118,8 +117,8 @@ public class RosterDialogsAdapter
         }
     }
 
-    @Override
     @NonNull
+    @Override
     public DialogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.buddy_item, parent, false);
         return new DialogViewHolder(view);

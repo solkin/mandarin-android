@@ -3,6 +3,7 @@ package com.tomclaw.mandarin.main.tasks;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;

@@ -33,7 +33,7 @@ public class RosterSharingAdapter extends RosterStickyAdapter {
         if (cursor == null || !cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        TextView headerTextView = (TextView) convertView.findViewById(R.id.header_text);
+        TextView headerTextView = convertView.findViewById(R.id.header_text);
         int headerTitle;
         boolean dialogOpened = cursor.getDialog();
         if (dialogOpened) {

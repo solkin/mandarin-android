@@ -17,6 +17,8 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BootCompletedReceiver;
 import com.tomclaw.preferences.PreferenceHelper;
 
+import com.tomclaw.mandarin.util.MetricsManager;
+
 /**
  * Created with IntelliJ IDEA.
  * User: solkin
@@ -46,6 +48,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        MetricsManager.trackEvent("Open settings");
     }
 
     @Override

@@ -17,6 +17,12 @@ import java.util.Locale;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * Created with IntelliJ IDEA.
  * User: anton
@@ -243,8 +249,12 @@ public class IcqAccountRoot extends AccountRoot {
         return R.array.status_drawable_icq;
     }
 
-    public static int getStatusValuesResource() {
-        return R.array.status_values_icq;
+    public static int getStatusValuesResourceEn() {
+        return R.array.status_values_icq_en;
+    }
+
+    public static int getStatusValuesResourceRu() {
+        return R.array.status_values_icq_ru;
     }
 
     public static int getStatusConnectResource() {
@@ -304,11 +314,10 @@ public class IcqAccountRoot extends AccountRoot {
 
         // Update account status info.
         String buddyStatus = myInfo.getState();
-        String moodIcon = myInfo.optMoodIcon();
         String statusMessage = myInfo.optStatusMsg();
         String moodTitle = myInfo.optMoodTitle();
 
-        int statusIndex = icqSession.getStatusIndex(moodIcon, buddyStatus);
+        int statusIndex = icqSession.getStatusIndex(moodTitle, buddyStatus);
         String statusTitle = icqSession.getStatusTitle(moodTitle, statusIndex);
 
         // Checking for we are disconnecting now.

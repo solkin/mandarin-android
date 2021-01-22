@@ -42,11 +42,6 @@ public abstract class CabbageRequest extends Request<IcqAccountRoot> {
         } catch (Throwable ex) {
             Logger.log("Unable to execute request due to exception", ex);
             return REQUEST_PENDING;
-        } finally {
-            // Consume connection.
-            if (response != null) {
-                response.close();
-            }
         }
     }
 

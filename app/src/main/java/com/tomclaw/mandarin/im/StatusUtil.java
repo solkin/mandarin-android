@@ -32,7 +32,7 @@ public class StatusUtil {
     }
 
     public static int getStatusIndex(String accountType, String statusValue) throws StatusNotFoundException {
-        return getStatusCatalogue(accountType).getStatusIndex(statusValue);
+        return getStatusCatalogue(accountType).getStatusIndex(statusValue.toLowerCase());
     }
 
     public static int getStatusDrawable(String accountType, int statusIndex) {

@@ -5,9 +5,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -16,10 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.Settings;
-import com.tomclaw.preferences.PreferenceHelper;
-
 import com.tomclaw.mandarin.util.MetricsManager;
+import com.tomclaw.preferences.PreferenceHelper;
 
 /**
  * Created by solkin on 01/03/14.
@@ -27,9 +22,9 @@ import com.tomclaw.mandarin.util.MetricsManager;
 public class AboutActivity extends AppCompatActivity {
 
     private static final String MARKET_DETAILS_URI = "market://details?id=";
-    private static final String MARKET_DEVELOPER_URI = "market://search?q=";
+    private static final String MARKET_DEVELOPER_URI = "market://search?q=pub:TomClaw+Software";
     private static final String GOOGLE_PLAY_DETAILS_URI = "https://play.google.com/store/apps/details?id=";
-    private static final String GOOGLE_PLAY_DEVELOPER_URI = "https://play.google.com/store/apps/search?q=";
+    private static final String GOOGLE_PLAY_DEVELOPER_URI = "http://play.google.com/store/apps/developer?id=TomClaw+Software";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,10 +86,10 @@ public class AboutActivity extends AppCompatActivity {
     private void allProjects() {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(MARKET_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
+                    Uri.parse(MARKET_DEVELOPER_URI)));
         } catch (android.content.ActivityNotFoundException ignored) {
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(GOOGLE_PLAY_DEVELOPER_URI + Settings.DEVELOPER_NAME)));
+                    Uri.parse(GOOGLE_PLAY_DEVELOPER_URI)));
         }
     }
 }

@@ -19,7 +19,6 @@ public class Settings {
     public static int MESSAGES_COLLAPSE_DELAY = 2 * 60 * 1000;
     public static final int TYPING_DELAY = 5 * 1000;
     public static boolean FORCE_RESTART = true;
-    public static String DEVELOPER_NAME = "TomClaw";
     public static String LOG_TAG = "Mandarin";
     public static boolean LOG_TO_FILE = false;
     public static final String MIME_TYPE = "application/com.tomclaw.mandarin";

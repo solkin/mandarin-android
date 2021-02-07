@@ -32,7 +32,7 @@ android {
             shrinkResources true
             minifyEnabled true
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFile 'proguard-rules.pro'
         }
     }
     lintOptions {
@@ -67,4 +67,45 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+}
+
+/// OPTIMIZATION ///
+
+android {
+    packagingOptions {
+        exclude "META-INF/androidx.activity_activity.version"
+        exclude "META-INF/androidx.appcompat_appcompat-resources.version"
+        exclude "META-INF/androidx.appcompat_appcompat.version"
+        exclude "META-INF/androidx.cardview_cardview.version"
+        exclude "META-INF/androidx.coordinatorlayout_coordinatorlayout.version"
+        exclude "META-INF/androidx.core_core.version"
+        exclude "META-INF/androidx.customview_customview.version"
+        exclude "META-INF/androidx.drawerlayout_drawerlayout.version"
+        exclude "META-INF/androidx.fragment_fragment.version"
+        exclude "META-INF/androidx.interpolator_interpolator.version"
+        exclude "META-INF/androidx.lifecycle_lifecycle-runtime.version"
+        exclude "META-INF/androidx.lifecycle_lifecycle-viewmodel.version"
+        exclude "META-INF/androidx.recyclerview_recyclerview.version"
+        exclude "META-INF/androidx.savedstate_savedstate.version"
+        exclude "META-INF/androidx.vectordrawable_vectordrawable.version"
+        exclude "META-INF/androidx.viewpager_viewpager.version"
+        exclude "META-INF/com.google.android.material_material.version"
+    }
+}
+configurations {
+    all {
+        exclude group: "androidx.arch.core", module: "core-runtime"
+        exclude group: "androidx.cursoradapter", module: "cursoradapter"
+        exclude group: "androidx.exifinterface", module: "exifinterface"
+        exclude group: "androidx.lifecycle", module: "lifecycle-livedata"
+        exclude group: "androidx.lifecycle", module: "lifecycle-livedata-core"
+        exclude group: "androidx.loader", module: "loader"
+        exclude group: "androidx.transition", module: "transition"
+        exclude group: "androidx.vectordrawable", module: "vectordrawable-animated"
+        exclude group: "androidx.versionedparcelable", module: "versionedparcelable"
+        exclude group: "androidx.viewpager2", module: "viewpager2"
+    }
+}
+dependencies {
+    implementation 'androidx.interpolator:interpolator:1.0.0'
 }

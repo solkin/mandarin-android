@@ -40,6 +40,7 @@
     <string name="error_remove_account">Sorry, there was a problem removing your account</string>
     <string name="recycle">Trash</string>
     <string name="message_copy">Copy</string>
+    <string name="message_quote">Quote</string>
     <string name="message_remove">Delete</string>
     <string name="message_unread">Unread</string>
     <string name="message_share">Share</string>

@@ -41,6 +41,7 @@
     <string name="error_remove_account">Извините, произошла ошибка при удалении профиля</string>
     <string name="recycle">Корзина</string>
     <string name="message_copy">Копировать</string>
+    <string name="message_quote">Цитировать</string>
     <string name="message_remove">Удалить</string>
     <string name="message_unread">Не прочитано</string>
     <string name="message_share">Поделиться</string>

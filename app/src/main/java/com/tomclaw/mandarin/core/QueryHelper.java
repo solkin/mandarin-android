@@ -819,17 +819,17 @@ public class QueryHelper {
      * @param messageIds      - messages to be queried.
      * @return formatted messages.
      */
-    public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, Collection<Long> messageIds) {
+    public static String getMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, MessageDecorator decorator, Collection<Long> messageIds) {
         QueryBuilder queryBuilder = messagesByIds(messageIds);
         StringWriter writer = new StringWriter();
         try {
-            outputMessagesTexts(contentResolver, timeHelper, queryBuilder, writer);
+            outputMessagesTexts(contentResolver, timeHelper, decorator, queryBuilder, writer);
         } catch (IOException ignored) {
         }
         return writer.toString();
     }
 
-    public static void outputMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper,
+    public static void outputMessagesTexts(ContentResolver contentResolver, TimeHelper timeHelper, MessageDecorator decorator,
                                            QueryBuilder queryBuilder, Writer writer) throws IOException {
         // Get specified messages.
         Cursor cursor = queryBuilder.query(contentResolver, Settings.HISTORY_RESOLVER_URI);
@@ -866,10 +866,7 @@ public class QueryHelper {
                     } catch (AccountNotFoundException ignored) {
                     }
                     // Building message copy.
-                    writer.append('[').append(buddyNick).append(']').append('\n');
-                    writer.append(messageDateText).append(" - ").append(messageTimeText).append('\n');
-                    writer.append(messageText);
-                    writer.append('\n').append('\n');
+                    decorator.decorate(writer, buddyNick, messageDateText, messageTimeText, messageText);
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -1555,5 +1552,11 @@ public class QueryHelper {
             return getAccountAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId());
         }
         return getBuddyAvatarHash(accountRoot.getContentResolver(), accountRoot.getAccountDbId(), buddyId);
+    }
+
+    public interface MessageDecorator {
+
+        void decorate(Writer writer, String buddyNick, String date, String time, String text) throws IOException;
+
     }
 }

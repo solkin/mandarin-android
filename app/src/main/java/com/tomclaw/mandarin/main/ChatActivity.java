@@ -92,6 +92,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1082,7 +1083,10 @@ public class ChatActivity extends ChiefActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.message_copy:
-                    StringUtil.copyStringToClipboard(ChatActivity.this, getSelectedMessages());
+                    StringUtil.copyStringToClipboard(ChatActivity.this, getPlainSelectedMessages());
+                    break;
+                case R.id.message_quote:
+                    StringUtil.copyStringToClipboard(ChatActivity.this, getQuotedSelectedMessages());
                     break;
                 case R.id.message_share:
                     startActivity(createShareIntent());
@@ -1106,17 +1110,33 @@ public class ChatActivity extends ChiefActivity {
             chatHistoryAdapter.notifyDataSetChanged();
         }
 
-        private String getSelectedMessages() {
+        private String getPlainSelectedMessages() {
+            return getSelectedMessages((writer, buddyNick, date, time, text) -> {
+                writer.append(text);
+                writer.append('\n').append('\n');
+            });
+        }
+
+        private String getQuotedSelectedMessages() {
+            return getSelectedMessages((writer, buddyNick, date, time, text) -> {
+                writer.append('[').append(buddyNick).append(']').append('\n');
+                writer.append(date).append(" - ").append(time).append('\n');
+                writer.append(text);
+                writer.append('\n').append('\n');
+            });
+        }
+
+        private String getSelectedMessages(QueryHelper.MessageDecorator decorator) {
             // Obtain selected positions.
             Collection<Long> selectedIds = selectionHelper.getSelectedIds();
             return QueryHelper.getMessagesTexts(getContentResolver(),
-                    chatHistoryAdapter.getTimeHelper(), selectedIds).trim();
+                    chatHistoryAdapter.getTimeHelper(), decorator, selectedIds).trim();
         }
 
         private Intent createShareIntent() {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedMessages());
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getQuotedSelectedMessages());
             return Intent.createChooser(shareIntent, getString(R.string.share_messages_via));
         }
 
@@ -1310,7 +1330,13 @@ public class ChatActivity extends ChiefActivity {
                         file.createNewFile();
                         outputStream = new FileOutputStream(file);
                         PrintWriter writer = new PrintWriter(outputStream);
-                        QueryHelper.outputMessagesTexts(contentResolver, timeHelper, queryBuilder, writer);
+                        QueryHelper.MessageDecorator decorator = (writer1, buddyNick, date, time, text) -> {
+                            writer1.append('[').append(buddyNick).append(']').append('\n');
+                            writer1.append(date).append(" - ").append(time).append('\n');
+                            writer1.append(text);
+                            writer1.append('\n').append('\n');
+                        };
+                        QueryHelper.outputMessagesTexts(contentResolver, timeHelper, decorator, queryBuilder, writer);
                         writer.flush();
                     } finally {
                         if (outputStream != null) {

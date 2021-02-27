@@ -9,6 +9,7 @@ projectFilesBackup/
 !.idea/codeStyleSettings.xml
 !.idea/encodings.xml
 !.idea/inspectionProfiles/
+.idea/caches/*
 
 # Built application files
 *.apk

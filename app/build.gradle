@@ -16,7 +16,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 280
-        versionName "1.16"
+        versionName "1.17"
         resConfigs "ru", "en", "be", "uk", "kk"
     }
     splits {

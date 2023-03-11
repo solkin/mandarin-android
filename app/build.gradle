@@ -17,7 +17,7 @@ android {
         targetSdkVersion 29
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 280
         versionName "1.17"
-        resConfigs "ru", "en", "be", "uk", "kk"
+        resConfigs 'ru', 'en', 'be', 'uk', 'kk'
     }
     splits {
         density {
@@ -34,14 +34,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
-        warningsAsErrors false
-        checkReleaseBuilds false
-        abortOnError false
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    namespace 'com.tomclaw.mandarin'
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+        warningsAsErrors false
     }
 }
 

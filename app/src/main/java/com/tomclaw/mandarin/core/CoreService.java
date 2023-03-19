@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.core;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_MUTABLE;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -212,7 +215,7 @@ public class CoreService extends Service {
         String subtitle = getString(R.string.foreground_description);
         int color = getResources().getColor(R.color.accent_color);
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE);
         return builder
                 .setContentTitle(title)
                 .setContentText(subtitle)
@@ -319,7 +322,7 @@ public class CoreService extends Service {
             Intent restartServiceIntent = new Intent(this, CoreService.class)
                     .putExtra(EXTRA_RESTART_FLAG, true);
             PendingIntent restartServicePendingIntent = PendingIntent.getService(
-                    this, 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
+                    this, 1, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE);
             AlarmManager alarmService = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmService.set(
                     AlarmManager.ELAPSED_REALTIME,

@@ -42,7 +42,8 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:windowActionBarOverlay="true">
+            android:windowActionBarOverlay="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -166,7 +167,8 @@
             android:excludeFromRecents="true"
             android:label="@string/select_buddy"
             android:launchMode="singleInstance"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />

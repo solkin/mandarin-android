@@ -23,11 +23,14 @@ public class WimConstants {
     public static final String ID_TYPE = "idType";
     public static final String PASSWORD = "pwd";
     public static final String LOGIN = "s";
+    public static final String RESULTS_OBJECT = "results";
     public static final String RESPONSE_OBJECT = "response";
     public static final String DATA_OBJECT = "data";
     public static final String USER_DATA_OBJECT = "userData";
     public static final String LOGIN_ID = "loginId";
     public static final String HOST_TIME = "hostTime";
+    public static final String STATUS_OBJECT = "status";
+    public static final String CODE = "code";
     public static final String STATUS_CODE = "statusCode";
     public static final String SESSION_SECRET = "sessionSecret";
     public static final String SESSION_KEY = "sessionKey";
@@ -53,6 +56,7 @@ public class WimConstants {
     public static final String START_SESSION_URL = "https://u.icq.net/wim/aim/startSession";
     public static final String RENEW_TOKEN_URL = "https://api.login.icq.net/auth/getInfo";
     public static final String WEB_API_BASE = "https://u.icq.net/wim/";
+    public static final String WEB_RAPI_BASE = "https://u.icq.net/api/";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";
     public static final String EQUAL = "=";

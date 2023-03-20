@@ -119,6 +119,8 @@ public class BitmapHelper {
                 retriever.release();
             } catch (RuntimeException ex) {
                 // Ignore failures while cleaning up.
+            } catch (IOException e) {
+                // Nothing to do for now
             }
         }
 

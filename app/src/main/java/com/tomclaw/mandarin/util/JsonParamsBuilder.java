@@ -1,4 +1,4 @@
-package com.tomclaw.mandarin;
+package com.tomclaw.mandarin.util;
 
 import com.tomclaw.mandarin.util.ParamsBuilder;
 

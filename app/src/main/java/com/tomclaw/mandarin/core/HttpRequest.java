@@ -4,15 +4,17 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.im.AccountRoot;
 import com.tomclaw.mandarin.im.icq.WimConstants;
-import com.tomclaw.mandarin.util.HttpParamsBuilder;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.ParamsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,6 +32,11 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
             boolean isGetRequest = getHttpRequestType().equals(HttpUtil.GET);
             url = new URL(isUrlWithParameters() ? getUrlWithParameters() : getUrl());
             urlConnection = (HttpURLConnection) url.openConnection();
+            Map<String, String> props = getRequestProperties();
+            for (String key : props.keySet()) {
+                String value = props.get(key);
+                urlConnection.setRequestProperty(key, value);
+            }
             // Executing request.
             InputStream in = isGetRequest ?
                     HttpUtil.executeGet(urlConnection) :
@@ -85,7 +92,7 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
      *
      * @return List of Get parameters.
      */
-    protected abstract HttpParamsBuilder getParams();
+    protected abstract ParamsBuilder getParams();
 
     /**
      * Returns url with prepared parameters to perform Get request.
@@ -103,5 +110,9 @@ public abstract class HttpRequest<A extends AccountRoot> extends Request<A> {
             url = url.concat(WimConstants.QUE).concat(parameters);
         }
         return url;
+    }
+
+    public Map<String, String> getRequestProperties() {
+        return Collections.emptyMap();
     }
 }

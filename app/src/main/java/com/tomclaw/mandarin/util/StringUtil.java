@@ -38,6 +38,8 @@ public class StringUtil {
     private static final String MAPPING_CP1250 = "ŔÁÂĂÄĹ¨ĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺ¸ćçčéęëěíîďđńňóôőö÷řůúűüýţ˙";
     private static final String MAPPING_CP1252 = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
 
+    public static Random random = new Random(System.currentTimeMillis());
+
     public static int getAlphabetIndex(String name) {
         for (int c = 0; c < name.length(); c++) {
             char character = name.charAt(c);
@@ -178,6 +180,10 @@ public class StringUtil {
             sb.append(generateRandomWord(r, i == 0)).append((i < (wordCount - 1)) ? " " : "."); // Add it to the String
         }
         return sb.toString();
+    }
+
+    public static String generateRandomWord() {
+        return generateRandomWord(random, true);
     }
 
     public static String generateRandomWord(Random r) {

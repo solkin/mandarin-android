@@ -12,7 +12,7 @@ import java.util.Comparator;
 /**
  * Created by Solkin on 28.09.2014.
  */
-public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
+public class HttpParamsBuilder extends ArrayList<Pair<String, String>> implements ParamsBuilder {
 
     private static final String AMP = "&";
     private static final String EQUAL = "=";
@@ -51,6 +51,7 @@ public class HttpParamsBuilder extends ArrayList<Pair<String, String>> {
      * @return String - Url request parameters.
      * @throws java.io.UnsupportedEncodingException
      */
+    @Override
     public String build() throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         // Perform pair concatenation.

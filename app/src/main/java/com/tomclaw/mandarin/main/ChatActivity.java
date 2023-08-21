@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.main;
 
+import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -7,7 +10,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -47,6 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.PermissionChecker;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -79,29 +82,24 @@ import com.tomclaw.mandarin.main.views.ScrollingTextView;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
+import com.tomclaw.mandarin.util.MetricsManager;
 import com.tomclaw.mandarin.util.QueryBuilder;
 import com.tomclaw.mandarin.util.SelectionHelper;
 import com.tomclaw.mandarin.util.SmileyParser;
 import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
-import com.tomclaw.mandarin.util.MetricsManager;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import static com.tomclaw.mandarin.util.FileHelper.getExtFileUri;
-import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 
 /**
  * Created with IntelliJ IDEA.
@@ -892,7 +890,7 @@ public class ChatActivity extends ChiefActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.length > 0 && grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
             onPermissionGranted(requestCode);
         } else {
             Snackbar.make(chatList, getPermissionsRequestMessage(requestCode), Snackbar.LENGTH_LONG).show();

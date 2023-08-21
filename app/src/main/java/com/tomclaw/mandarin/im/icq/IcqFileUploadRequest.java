@@ -63,14 +63,14 @@ public class IcqFileUploadRequest extends NotifiableUploadRequest<IcqAccountRoot
                     new Intent(context, ChatActivity.class)
                             .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } catch (Throwable ignored) {
             // No such buddy?!
             // Okay, open chats at least.
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, MainActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
     }
 

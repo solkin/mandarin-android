@@ -1,21 +1,17 @@
 package com.tomclaw.mandarin.im.icq;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
+import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
+
 import android.content.Intent;
 
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.im.StatusNotFoundException;
 import com.tomclaw.mandarin.im.StatusUtil;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.tomclaw.mandarin.im.icq.WimConstants.DATA_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.MY_INFO;
-import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
 
 /**
  * Created with IntelliJ IDEA.

@@ -299,38 +299,40 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                     // Show info blocks.
                     setInfoBlocksVisibility(View.VISIBLE);
                     // Iterate by info keys.
-                    for (String key : bundle.keySet()) {
-                        if (StringUtil.isNumeric(key)) {
-                            int keyInt = Integer.valueOf(key);
-                            String[] extra = intent.getStringArrayExtra(key);
-                            // Strange, but... Let's check extra is not empty.
-                            if (extra != null && extra.length >= 1) {
-                                String title = getString(Integer.parseInt(extra[0]));
-                                String value = extra[1];
-                                // Prepare buddy info item.
-                                View buddyInfoItem = findViewById(keyInt);
-                                if (buddyInfoItem != null) {
-                                    TextView titleView = buddyInfoItem.findViewById(R.id.info_title);
-                                    if (titleView != null) {
-                                        titleView.setText(title);
+                    if (bundle != null) {
+                        for (String key : bundle.keySet()) {
+                            if (StringUtil.isNumeric(key)) {
+                                int keyInt = Integer.parseInt(key);
+                                String[] extra = intent.getStringArrayExtra(key);
+                                // Strange, but... Let's check extra is not empty.
+                                if (extra != null && extra.length >= 1) {
+                                    String title = getString(Integer.parseInt(extra[0]));
+                                    String value = extra[1];
+                                    // Prepare buddy info item.
+                                    View buddyInfoItem = findViewById(keyInt);
+                                    if (buddyInfoItem != null) {
+                                        TextView titleView = buddyInfoItem.findViewById(R.id.info_title);
+                                        if (titleView != null) {
+                                            titleView.setText(title);
+                                        }
+                                        TextView valueView = buddyInfoItem.findViewById(R.id.info_value);
+                                        if (valueView != null) {
+                                            valueView.setText(value);
+                                        }
+                                        buddyInfoItem.setVisibility(View.VISIBLE);
                                     }
-                                    TextView valueView = buddyInfoItem.findViewById(R.id.info_value);
-                                    if (valueView != null) {
-                                        valueView.setText(value);
+                                    // Correct user-defined values for sharing.
+                                    if (keyInt == R.id.friendly_name) {
+                                        setBuddyNick(value);
+                                    } else if (keyInt == R.id.first_name) {
+                                        setFirstName(value);
+                                    } else if (keyInt == R.id.last_name) {
+                                        setLastName(value);
+                                    } else if (keyInt == R.id.about_me) {
+                                        setAboutMe(value);
+                                    } else if (keyInt == R.id.website) {
+                                        setWebsite(value);
                                     }
-                                    buddyInfoItem.setVisibility(View.VISIBLE);
-                                }
-                                // Correct user-defined values for sharing.
-                                if (keyInt == R.id.friendly_name) {
-                                    setBuddyNick(value);
-                                } else if (keyInt == R.id.first_name) {
-                                    setFirstName(value);
-                                } else if (keyInt == R.id.last_name) {
-                                    setLastName(value);
-                                } else if (keyInt == R.id.about_me) {
-                                    setAboutMe(value);
-                                } else if (keyInt == R.id.website) {
-                                    setWebsite(value);
                                 }
                             }
                         }

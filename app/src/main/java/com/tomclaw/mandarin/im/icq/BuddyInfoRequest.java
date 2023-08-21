@@ -1,9 +1,7 @@
 package com.tomclaw.mandarin.im.icq;
 
 import static com.tomclaw.mandarin.im.icq.WimConstants.CODE;
-import static com.tomclaw.mandarin.im.icq.WimConstants.RESPONSE_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.RESULTS_OBJECT;
-import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_CODE;
 import static com.tomclaw.mandarin.im.icq.WimConstants.STATUS_OBJECT;
 import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_RAPI_BASE;
 import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
@@ -12,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.util.JsonParamsBuilder;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
 import com.tomclaw.mandarin.core.QueryHelper;
@@ -20,6 +17,7 @@ import com.tomclaw.mandarin.core.RequestHelper;
 import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
 import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpUtil;
+import com.tomclaw.mandarin.util.JsonParamsBuilder;
 import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.ParamsBuilder;
 import com.tomclaw.mandarin.util.StringUtil;

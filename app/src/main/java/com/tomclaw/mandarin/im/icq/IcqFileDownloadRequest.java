@@ -1,5 +1,8 @@
 package com.tomclaw.mandarin.im.icq;
 
+import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
+import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
+
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -32,14 +35,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
-
-import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
-import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
 
 /**
  * Created by solkin on 30.10.14.
@@ -54,7 +53,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private final String fileId;
     private final String fileUrl;
     private final String originalMessage;
-    private String tag;
+    private final String tag;
     private boolean isFirstAttempt;
     private String previewHash = "";
 
@@ -168,13 +167,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             String randomName = generateRandomWord(random);
             fileName = base + "-" + randomName + "." + extension;
         } else if (directory.exists()) {
-            File[] files = directory.listFiles(new FilenameFilter() {
-                public boolean accept(File file, String name) {
-                    return FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
-                            FileHelper.getFileExtensionFromPath(name).toLowerCase().equals(extension.toLowerCase());
-                }
-            });
-            if (files.length > 0) {
+            File[] files = directory.listFiles((file, name) -> FileHelper.getFileBaseFromName(name).toLowerCase().startsWith(base.toLowerCase()) &&
+                    FileHelper.getFileExtensionFromPath(name).equalsIgnoreCase(extension));
+            if (files != null && files.length > 0) {
                 fileName = base + "-" + files.length + "." + extension;
             }
         }
@@ -245,14 +240,14 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     new Intent(context, ChatActivity.class)
                             .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } catch (Throwable ignored) {
             // No such buddy?!
             // Okay, open chats at least.
             return PendingIntent.getActivity(context, 0,
                     new Intent(context, MainActivity.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
     }
 

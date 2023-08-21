@@ -88,8 +88,6 @@ public class AccountInfoActivity extends AbstractInfoActivity {
                 builder.setNegativeButton(R.string.do_not_remove, null);
                 builder.show();
                 return true;
-            case R.id.account_instance:
-                RequestHelper.leaveOtherSessions(getContentResolver(), getAccountDbId());
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -150,6 +148,7 @@ public class AccountInfoActivity extends AbstractInfoActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_USER_INFO_EDIT) {
             if (resultCode == RESULT_OK) {
                 // Obtain fresh info.

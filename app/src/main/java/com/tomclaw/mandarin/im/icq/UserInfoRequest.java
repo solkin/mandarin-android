@@ -109,15 +109,15 @@ public class UserInfoRequest extends WimRequest {
                     }
                     JSONArray homeAddress = profile.optJSONArray("homeAddress");
                     if (homeAddress != null) {
-                        String city = "";
+                        StringBuilder city = new StringBuilder();
                         for (int c = 0; c < homeAddress.length(); c++) {
                             if (c > 0) {
-                                city += ", ";
+                                city.append(", ");
                             }
-                            city += homeAddress.getJSONObject(c).optString("city");
+                            city.append(homeAddress.getJSONObject(c).optString("city"));
                         }
-                        if (!TextUtils.isEmpty(city)) {
-                            putExtra(intent, R.id.city, city);
+                        if (!TextUtils.isEmpty(city.toString())) {
+                            putExtra(intent, R.id.city, city.toString());
                         }
                     }
 

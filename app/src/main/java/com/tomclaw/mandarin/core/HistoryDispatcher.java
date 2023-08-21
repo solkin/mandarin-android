@@ -47,9 +47,9 @@ class HistoryDispatcher {
 
     static String EXTRA_READ_MESSAGES = "read_messages";
 
-    private Context context;
-    private ContentResolver contentResolver;
-    private ContentObserver historyObserver;
+    private final Context context;
+    private final ContentResolver contentResolver;
+    private final ContentObserver historyObserver;
     private volatile long notificationCancelTime = 0;
 
     private final int largeIconSize;
@@ -99,9 +99,9 @@ class HistoryDispatcher {
 
     private class HistoryObserver extends ContentObserver {
 
-        private ExecutorService executor;
-        private HistoryDispatcherTask historyDispatcherTask;
-        private Runnable taskWrapper;
+        private final ExecutorService executor;
+        private final HistoryDispatcherTask historyDispatcherTask;
+        private final Runnable taskWrapper;
 
         /**
          * Creates a content observer.
@@ -369,7 +369,7 @@ class HistoryDispatcher {
         return PendingIntent.getActivity(context, requestCode,
                 new Intent(context, MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static PendingIntent createReadAllIntent(Context context, int requestCode) {
@@ -377,7 +377,7 @@ class HistoryDispatcher {
                 new Intent(context, CoreService.class)
                         .putExtra(EXTRA_READ_MESSAGES, true)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static PendingIntent createReadIntent(Context context, int buddyDbId, int requestCode) {
@@ -386,7 +386,7 @@ class HistoryDispatcher {
                         .putExtra(EXTRA_READ_MESSAGES, true)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static PendingIntent createOpenChatIntent(Context context, int buddyDbId, int requestCode) {
@@ -394,7 +394,7 @@ class HistoryDispatcher {
                 new Intent(context, ChatActivity.class)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static PendingIntent createReplyIntent(Context context, int buddyDbId, int requestCode) {
@@ -402,6 +402,6 @@ class HistoryDispatcher {
                 new Intent(context, ChatActivity.class)
                         .putExtra(GlobalProvider.HISTORY_BUDDY_DB_ID, buddyDbId)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 }

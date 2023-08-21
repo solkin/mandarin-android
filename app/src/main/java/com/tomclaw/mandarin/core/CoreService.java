@@ -1,7 +1,7 @@
 package com.tomclaw.mandarin.core;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
-import static android.app.PendingIntent.FLAG_MUTABLE;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -25,8 +25,6 @@ import com.tomclaw.mandarin.util.Logger;
 
 import java.util.Collections;
 import java.util.Random;
-
-import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Created with IntelliJ IDEA.

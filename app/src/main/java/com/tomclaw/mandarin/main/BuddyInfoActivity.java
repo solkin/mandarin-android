@@ -155,10 +155,10 @@ public class BuddyInfoActivity extends AbstractInfoActivity {
 
     private class AddBuddyTask extends WeakObjectTask<Context> {
 
-        private int accountDbId;
-        private String buddyId;
-        private String buddyNick;
-        private String avatarHash;
+        private final int accountDbId;
+        private final String buddyId;
+        private final String buddyNick;
+        private final String avatarHash;
 
         private AddBuddyTask(Context context, int accountDbId, String buddyId,
                              String buddyNick, String avatarHash) {

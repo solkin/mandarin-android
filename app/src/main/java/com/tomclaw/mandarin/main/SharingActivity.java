@@ -12,6 +12,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.PermissionChecker;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -170,7 +172,7 @@ public class SharingActivity extends ChiefActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.length > 0 && grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
             onPermissionGranted();
         } else {
             Snackbar.make(generalList, R.string.share_files_permission_request_message, Snackbar.LENGTH_LONG).show();

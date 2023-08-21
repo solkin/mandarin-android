@@ -9,7 +9,7 @@ android {
             if (project.hasProperty("keyPassword")) keyPassword project.keyPassword
         }
     }
-    compileSdkVersion 33
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
@@ -17,7 +17,7 @@ android {
         targetSdkVersion 33
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 300
         versionName "1.20"
-        resConfigs 'ru', 'en', 'be', 'uk', 'kk'
+        resourceConfigurations += ['ru', 'en', 'be', 'uk', 'kk']
     }
     splits {
         density {
@@ -43,6 +43,9 @@ android {
         abortOnError false
         checkReleaseBuilds false
         warningsAsErrors false
+    }
+    buildFeatures {
+        aidl true
     }
 }
 

@@ -167,20 +167,12 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         getMenuInflater().inflate(R.menu.edit_user_info_menu, menu);
         final MenuItem item = menu.findItem(R.id.edit_user_info_complete);
         TextView actionView = ((TextView) item.getActionView());
-        actionView.setText(actionView.getText().toString().toUpperCase());
-        actionView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                menu.performIdentifierAction(item.getItemId(), 0);
-            }
-        });
-
-        if (isInfoReceived) {
-            item.setVisible(true);
-        } else {
-            item.setVisible(false);
+        if (actionView != null) {
+            actionView.setText(actionView.getText().toString().toUpperCase());
+            actionView.setOnClickListener(v -> menu.performIdentifierAction(item.getItemId(), 0));
         }
+
+        item.setVisible(isInfoReceived);
         return true;
     }
 

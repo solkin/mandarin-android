@@ -4,13 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +15,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.MainExecutor;
@@ -42,7 +43,6 @@ import com.tomclaw.mandarin.util.Logger;
 public class AccountsDrawerLayout extends DrawerLayout {
 
     private ChiefActivity activity;
-    private AccountsAdapter accountsAdapter;
     private ActionBarDrawerToggle drawerToggle;
     private CharSequence title;
     private CharSequence drawerTitle;
@@ -53,7 +53,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
 
     public void init(final MainActivity activity, final Toolbar toolbar) {
         this.activity = activity;
-        setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         drawerToggle = new ActionBarDrawerToggle(activity, this,
                 toolbar, R.string.dialogs, R.string.accounts) {
@@ -77,135 +77,105 @@ public class AccountsDrawerLayout extends DrawerLayout {
         setDrawerListener(drawerToggle);
 
         // Buttons.
-        final Button connectionButton = (Button) findViewById(R.id.connection_button);
-        final View.OnClickListener connectListener = new View.OnClickListener() {
+        final Button connectionButton = findViewById(R.id.connection_button);
+        final View.OnClickListener connectListener = v -> TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
             @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
-                    @Override
-                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
-                        interaction.connectAccounts();
-                    }
-                });
+            public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                interaction.connectAccounts();
             }
-        };
-        final View.OnClickListener disconnectListener = new View.OnClickListener() {
+        });
+        final View.OnClickListener disconnectListener = v -> TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
             @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new ServiceTask<ChiefActivity>(activity) {
-                    @Override
-                    public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
-                        interaction.disconnectAccounts();
-                    }
-                });
+            public void executeServiceTask(ServiceInteraction interaction) throws Throwable {
+                interaction.disconnectAccounts();
             }
-        };
-        Button addAccountButton = (Button) findViewById(R.id.add_account_button);
-        addAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent accountAddIntent = new Intent(activity, IntroActivity.class);
-                activity.startActivity(accountAddIntent);
+        });
+        Button addAccountButton = findViewById(R.id.add_account_button);
+        addAccountButton.setOnClickListener(v -> {
+            Intent accountAddIntent = new Intent(activity, IntroActivity.class);
+            activity.startActivity(accountAddIntent);
+            closeAccountsPanel();
+        });
+        // Accounts list.
+        ListView accountsList = findViewById(R.id.accounts_list_view);
+        // Creating adapter for accounts list.
+        AccountsAdapter accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
+        accountsAdapter.setOnAccountClickListener((accountDbId, isConnecting) -> {
+            if (!isConnecting) {
+                // Account is online or offline and we can show it's brief info.
+                final AccountInfoTask accountInfoTask =
+                        new AccountInfoTask(activity, accountDbId);
+                TaskExecutor.getInstance().execute(accountInfoTask);
                 closeAccountsPanel();
             }
         });
-        // Accounts list.
-        ListView accountsList = (ListView) findViewById(R.id.accounts_list_view);
-        // Creating adapter for accounts list.
-        accountsAdapter = new AccountsAdapter(activity, activity.getLoaderManager());
-        accountsAdapter.setOnAccountClickListener(new AccountsAdapter.OnAccountClickListener() {
-
-            @Override
-            public void onAccountClicked(int accountDbId, boolean isConnecting) {
-                if (!isConnecting) {
-                    // Account is online or offline and we can show it's brief info.
-                    final AccountInfoTask accountInfoTask =
-                            new AccountInfoTask(activity, accountDbId);
-                    TaskExecutor.getInstance().execute(accountInfoTask);
-                    closeAccountsPanel();
-                }
-            }
-        });
-        accountsAdapter.setOnStatusClickListener(new AccountsAdapter.OnStatusClickListener() {
-            @Override
-            public void onStatusClicked(int accountDbId, String accountType, String userId, int statusIndex,
-                                        String statusTitle, String statusMessage, boolean isConnecting) {
-                // Checking for account is connecting now and we must wait for some time.
-                if (isConnecting) {
-                    int toastMessage;
-                    if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                        toastMessage = R.string.account_shutdowning;
-                    } else {
-                        toastMessage = R.string.account_connecting;
-                    }
-                    Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show();
+        accountsAdapter.setOnStatusClickListener((accountDbId, accountType, userId, statusIndex, statusTitle, statusMessage, isConnecting) -> {
+            // Checking for account is connecting now and we must wait for some time.
+            if (isConnecting) {
+                int toastMessage;
+                if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                    toastMessage = R.string.account_shutdowning;
                 } else {
-                    // Checking for account is offline and we need to connect.
-                    if (statusIndex == StatusUtil.STATUS_OFFLINE) {
-                        showConnectionDialog(accountType, userId);
-                    } else {
-                        // Account is online and we can change status.
-                        showChangeStatusDialog(accountType, userId, statusIndex, statusTitle, statusMessage);
-                    }
-                    closeAccountsPanel();
+                    toastMessage = R.string.account_connecting;
+                }
+                Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show();
+            } else {
+                // Checking for account is offline and we need to connect.
+                if (statusIndex == StatusUtil.STATUS_OFFLINE) {
+                    showConnectionDialog(accountType, userId);
+                } else {
+                    // Account is online and we can change status.
+                    showChangeStatusDialog(accountType, userId, statusIndex, statusTitle, statusMessage);
+                }
+                closeAccountsPanel();
+            }
+        });
+        accountsAdapter.setOnAccountsStateListener(state -> MainExecutor.execute(() -> {
+            int buttonText;
+            boolean buttonEnabled;
+            boolean buttonVisibility;
+            OnClickListener buttonListener;
+            switch (state) {
+                case NoAccounts: {
+                    buttonText = R.string.accounts;
+                    buttonEnabled = false;
+                    buttonVisibility = false;
+                    buttonListener = null;
+                    break;
+                }
+                case Offline: {
+                    buttonText = R.string.accounts_connect;
+                    buttonEnabled = true;
+                    buttonVisibility = true;
+                    buttonListener = connectListener;
+                    break;
+                }
+                case Online: {
+                    buttonText = R.string.accounts_shutdown;
+                    buttonEnabled = true;
+                    buttonVisibility = true;
+                    buttonListener = disconnectListener;
+                    break;
+                }
+                case Connecting: {
+                    buttonText = R.string.connecting;
+                    buttonEnabled = false;
+                    buttonVisibility = true;
+                    buttonListener = null;
+                    break;
+                }
+                default: {
+                    buttonText = R.string.disconnecting;
+                    buttonEnabled = false;
+                    buttonVisibility = true;
+                    buttonListener = null;
                 }
             }
-        });
-        accountsAdapter.setOnAccountsStateListener(new AccountsAdapter.OnAccountsStateListener() {
-
-            @Override
-            public void onAccountsStateChanged(final AccountsState state) {
-                MainExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int buttonText;
-                        boolean buttonEnabled;
-                        boolean buttonVisibility;
-                        View.OnClickListener buttonListener;
-                        switch (state) {
-                            case NoAccounts: {
-                                buttonText = R.string.accounts;
-                                buttonEnabled = false;
-                                buttonVisibility = false;
-                                buttonListener = null;
-                                break;
-                            }
-                            case Offline: {
-                                buttonText = R.string.accounts_connect;
-                                buttonEnabled = true;
-                                buttonVisibility = true;
-                                buttonListener = connectListener;
-                                break;
-                            }
-                            case Online: {
-                                buttonText = R.string.accounts_shutdown;
-                                buttonEnabled = true;
-                                buttonVisibility = true;
-                                buttonListener = disconnectListener;
-                                break;
-                            }
-                            case Connecting: {
-                                buttonText = R.string.connecting;
-                                buttonEnabled = false;
-                                buttonVisibility = true;
-                                buttonListener = null;
-                                break;
-                            }
-                            default: {
-                                buttonText = R.string.disconnecting;
-                                buttonEnabled = false;
-                                buttonVisibility = true;
-                                buttonListener = null;
-                            }
-                        }
-                        connectionButton.setText(buttonText);
-                        connectionButton.setEnabled(buttonEnabled);
-                        connectionButton.setVisibility(buttonVisibility ? VISIBLE : GONE);
-                        connectionButton.setOnClickListener(buttonListener);
-                    }
-                });
-            }
-        });
+            connectionButton.setText(buttonText);
+            connectionButton.setEnabled(buttonEnabled);
+            connectionButton.setVisibility(buttonVisibility ? VISIBLE : GONE);
+            connectionButton.setOnClickListener(buttonListener);
+        }));
         // Bind to our new adapter.
         accountsList.setAdapter(accountsAdapter);
     }
@@ -236,7 +206,7 @@ public class AccountsDrawerLayout extends DrawerLayout {
 
     public void showConnectionDialog(final String accountType, final String userId) {
         View connectionView = LayoutInflater.from(activity).inflate(R.layout.connect_dialog, null);
-        final Spinner statusSpinner = (Spinner) connectionView.findViewById(R.id.status_spinner);
+        final Spinner statusSpinner = connectionView.findViewById(R.id.status_spinner);
 
         final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
                 getContext(), accountType, StatusUtil.getConnectStatuses(accountType));
@@ -267,8 +237,8 @@ public class AccountsDrawerLayout extends DrawerLayout {
     public void showChangeStatusDialog(final String accountType, final String userId,
                                        int userStatusIndex, String userStatusTitle, String userStatusMessage) {
         View changeStatusView = LayoutInflater.from(activity).inflate(R.layout.change_status_dialog, null);
-        final Spinner statusSpinner = (Spinner) changeStatusView.findViewById(R.id.status_spinner);
-        final EditText statusMessage = (EditText) changeStatusView.findViewById(R.id.status_message_edit);
+        final Spinner statusSpinner = changeStatusView.findViewById(R.id.status_spinner);
+        final EditText statusMessage = changeStatusView.findViewById(R.id.status_message_edit);
 
         final StatusSpinnerAdapter spinnerAdapter = new StatusSpinnerAdapter(
                 getContext(), accountType, StatusUtil.getSetupStatuses(accountType));

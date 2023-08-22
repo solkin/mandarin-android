@@ -915,7 +915,12 @@ public class ChatActivity extends ChiefActivity {
                 break;
             }
             case REQUEST_PICK_DOCUMENT: {
-                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
+                Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.setType("*/*");
+                chooseFile = Intent.createChooser(chooseFile, getString(R.string.select_file));
+                startActivityForResult(chooseFile, PICK_FILE_RESULT_CODE);
+
+//                startActivityForResult(new Intent(this, DocumentPickerActivity.class), PICK_FILE_RESULT_CODE);
                 break;
             }
             case REQUEST_CLICK_INCOMING: {

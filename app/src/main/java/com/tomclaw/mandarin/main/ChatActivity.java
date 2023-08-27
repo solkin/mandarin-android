@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -91,6 +93,7 @@ import com.tomclaw.mandarin.util.StringUtil;
 import com.tomclaw.mandarin.util.TimeHelper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -882,29 +885,33 @@ public class ChatActivity extends ChiefActivity {
     }
 
     private void checkStoragePermissions(final int request) {
-        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (hasPermissions(this, PERMISSION)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             onPermissionGranted(request);
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
-                // Show an explanation to the user
-                new AlertDialog.Builder(ChatActivity.this)
-                        .setTitle(R.string.permission_request_title)
-                        .setMessage(getPermissionsRequestMessage(request))
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(
-                                        ChatActivity.this,
-                                        new String[]{PERMISSION},
-                                        request
-                                );
-                            }
-                        })
-                        .show();
+            final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            if (hasPermissions(this, PERMISSION)) {
+                onPermissionGranted(request);
             } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(this, new String[]{PERMISSION}, request);
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
+                    // Show an explanation to the user
+                    new AlertDialog.Builder(ChatActivity.this)
+                            .setTitle(R.string.permission_request_title)
+                            .setMessage(getPermissionsRequestMessage(request))
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(
+                                            ChatActivity.this,
+                                            new String[]{PERMISSION},
+                                            request
+                                    );
+                                }
+                            })
+                            .show();
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(this, new String[]{PERMISSION}, request);
+                }
             }
         }
     }

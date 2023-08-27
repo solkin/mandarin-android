@@ -1,17 +1,23 @@
 package com.tomclaw.mandarin.im.icq;
 
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
+import static com.tomclaw.mandarin.core.GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO;
 import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 import static com.tomclaw.mandarin.util.StringUtil.generateRandomWord;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
@@ -34,8 +40,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
@@ -60,7 +66,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     private String cachedFileName;
 
     private transient long fileSize;
-    private transient File storeFile;
+    private transient Uri storeUri;
 
     private transient int metaTryCount;
 
@@ -124,24 +130,61 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                     }
                 }
             }
-            // Saving obtained data to the history table.
-            if (TextUtils.isEmpty(cachedFileName)) {
-                // This is probable first attempt to download file.
-                // Create new file.
-                storeFile = getUniqueFile(mimeType, fileName);
-                cachedFileName = storeFile.getName();
+
+
+            int contentType = getContentType(mimeType);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                Uri collections;
+                switch (contentType) {
+                    case HISTORY_CONTENT_TYPE_PICTURE: {
+                        collections = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                        break;
+                    }
+                    case HISTORY_CONTENT_TYPE_VIDEO: {
+                        collections = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                        break;
+                    }
+                    default: {
+                        collections = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                        break;
+                    }
+                }
+
+                ContentValues fileDetails = new ContentValues();
+                fileDetails.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                fileDetails.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    fileDetails.put(MediaStore.Images.Media.IS_PENDING, 1);
+                }*/
+
+                ContentResolver resolver = getAccountRoot().getContext().getContentResolver();
+                if (resolver == null) return null;
+                storeUri = resolver.insert(collections, fileDetails);
+                if (storeUri == null) throw new IllegalArgumentException();
             } else {
-                // Continue downloading to existing file.
-                storeFile = new File(getStoragePublicFolder(mimeType), cachedFileName);
+                File storeFile;
+                // Saving obtained data to the history table.
+                if (TextUtils.isEmpty(cachedFileName)) {
+                    // This is probable first attempt to download file.
+                    // Create new file.
+                    storeFile = getUniqueFile(mimeType, fileName);
+                    cachedFileName = storeFile.getName();
+                } else {
+                    // Continue downloading to existing file.
+                    storeFile = new File(getStoragePublicFolder(mimeType), cachedFileName);
+                }
+                // Make directories for this path.
+                storeFile.getParentFile().mkdirs();
+                storeUri = Uri.fromFile(storeFile);
             }
-            // Make directories for this path.
-            storeFile.getParentFile().mkdirs();
+
             int buddyDbId = QueryHelper.getBuddyDbId(getAccountRoot().getContentResolver(),
                     getAccountRoot().getAccountDbId(), buddyId);
-            int contentType = getContentType(mimeType);
-            Uri uri = Uri.fromFile(storeFile);
+
             QueryHelper.insertIncomingFileMessage(getAccountRoot().getContentResolver(), buddyDbId, cookie,
-                    time, getUrlMessage(), uri, fileName, contentType, fileSize, previewHash, tag);
+                    time, getUrlMessage(), storeUri, fileName, contentType, fileSize, previewHash, tag);
             // Check to download file now.
             if (!isStartDownload(isFirstAttempt, fileSize) || !hasStoragePermissions()) {
                 // All other attempts will be manual.
@@ -157,6 +200,44 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
             throw new DownloadException();
         }
     }
+
+    /*private Uri saveFileToMediaStore(Context context, String displayName, String mimeType) {
+        Uri collections;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            collections = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            collections = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+
+        ContentValues fileDetails = new ContentValues();
+        fileDetails.put(MediaStore.Images.Media.DISPLAY_NAME, displayName);
+        fileDetails.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            fileDetails.put(MediaStore.Images.Media.IS_PENDING, 1);
+        }
+
+        ContentResolver resolver = context.getApplicationContext().getContentResolver();
+        if (resolver == null) return null;
+        return resolver.insert(collections, fileDetails);
+
+        try {
+            OutputStream os = resolver.openOutputStream(imageContentUri, "w");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                imageDetails.clear();
+                imageDetails.put(MediaStore.Images.Media.IS_PENDING, 0);
+                resolver.update(imageContentUri, imageDetails, null, null);
+            }
+
+            return imageContentUri;
+        } catch (FileNotFoundException e) {
+            // Some legacy devices won't create directory for the Uri if dir not exist, resulting in
+            // a FileNotFoundException. To resolve this issue, we should use the File API to save the
+            // image, which allows us to create the directory ourselves.
+            return null;
+        }
+    }*/
 
     private File getUniqueFile(String mimeType, String fileName) {
         final String base = FileHelper.getFileBaseFromName(fileName);
@@ -203,9 +284,9 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
 
     public int getContentType(String mimeType) {
         if (mimeType.startsWith("image")) {
-            return GlobalProvider.HISTORY_CONTENT_TYPE_PICTURE;
+            return HISTORY_CONTENT_TYPE_PICTURE;
         } else if (mimeType.startsWith("video")) {
-            return GlobalProvider.HISTORY_CONTENT_TYPE_VIDEO;
+            return HISTORY_CONTENT_TYPE_VIDEO;
         } else {
             return GlobalProvider.HISTORY_CONTENT_TYPE_FILE;
         }
@@ -217,16 +298,19 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     @Override
-    public FileOutputStream getOutputStream() throws IOException, DownloadCancelledException {
-        if (hasStoragePermissions()) {
-            return new FileOutputStream(storeFile);
+    public OutputStream getOutputStream() throws IOException, DownloadCancelledException {
+        if (!hasStoragePermissions()) {
+            throw new DownloadCancelledException();
         }
-        throw new DownloadCancelledException();
+        return getAccountRoot().getContext().getContentResolver().openOutputStream(storeUri, "w");
     }
 
     private boolean hasStoragePermissions() {
-        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        return hasPermissions(getService(), PERMISSION);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            return hasPermissions(getService(), PERMISSION);
+        }
+        return true;
     }
 
     @Override
@@ -303,7 +387,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
                 GlobalProvider.HISTORY_CONTENT_STATE_STABLE, getUrlMessage(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, cookie);
         // Update file in system gallery.
-        MediaScannerConnection.scanFile(getAccountRoot().getContext(), new String[]{storeFile.getPath()}, null, null);
+        MediaScannerConnection.scanFile(getAccountRoot().getContext(), new String[]{storeUri.getPath()}, null, null);
     }
 
     @Override
@@ -311,9 +395,11 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
         QueryHelper.revertFileToMessage(getAccountRoot().getContentResolver(),
                 GlobalProvider.HISTORY_MESSAGE_TYPE_INCOMING, originalMessage, cookie);
         // Checking for file is being created.
-        if (storeFile != null) {
+        if (storeUri != null) {
             // Remove file fragment.
-            storeFile.delete();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                getAccountRoot().getContext().getContentResolver().delete(storeUri, null);
+            }
         }
     }
 
@@ -329,7 +415,7 @@ public class IcqFileDownloadRequest extends NotifiableDownloadRequest<IcqAccount
     }
 
     private String getUrlMessage() {
-        return storeFile.getName() + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
+        return storeUri.getLastPathSegment() + " (" + StringUtil.formatBytes(getAccountRoot().getResources(), fileSize) + ")"
                 + "\n" + fileUrl;
     }
 }

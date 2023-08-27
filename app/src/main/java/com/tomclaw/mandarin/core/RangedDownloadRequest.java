@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -28,12 +29,12 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
             onStarted();
             URL url = new URL(getUrl());
             long size = getSize();
-            FileOutputStream outputStream = getOutputStream();
-            long read = outputStream.getChannel().size();
+            OutputStream outputStream = getOutputStream();
+            long read = 0;//outputStream.getChannel().size();
             VariableBuffer buffer = new VariableBuffer();
             onDownload();
             do {
-                outputStream.getChannel().position(read);
+//                outputStream.getChannel().position(read);
                 String range = "bytes=" + read + "-" + (size - 1);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Connection", "Keep-Alive");
@@ -126,7 +127,7 @@ public abstract class RangedDownloadRequest<A extends AccountRoot> extends Reque
      *
      * @return FileOutputStream to store data.
      */
-    public abstract FileOutputStream getOutputStream() throws IOException, DownloadCancelledException;
+    public abstract OutputStream getOutputStream() throws IOException, DownloadCancelledException;
 
     protected abstract void onStarted() throws Throwable;
 

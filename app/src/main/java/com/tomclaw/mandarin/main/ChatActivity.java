@@ -78,7 +78,7 @@ import com.tomclaw.mandarin.main.adapters.ChatHistoryAdapter;
 import com.tomclaw.mandarin.main.adapters.SmileysPagerAdapter;
 import com.tomclaw.mandarin.main.tasks.BuddyInfoTask;
 import com.tomclaw.mandarin.main.views.CirclePageIndicator;
-import com.tomclaw.mandarin.main.views.ScrollingTextView;
+import com.tomclaw.mandarin.main.views.LazyImageView;
 import com.tomclaw.mandarin.util.FileHelper;
 import com.tomclaw.mandarin.util.HttpUtil;
 import com.tomclaw.mandarin.util.Logger;
@@ -124,9 +124,11 @@ public class ChatActivity extends ChiefActivity {
     private ChatLayoutManager chatLayoutManager;
     private ChatHistoryAdapter chatHistoryAdapter;
     private EditText messageText;
+    private View goBack;
     private TextView buddyNick;
-    private ScrollingTextView buddyStatusMessage;
-    private ImageView buddyStatusIcon;
+    private TextView buddyStatusMessage;
+    private ImageView buddyOnlineIcon;
+    private LazyImageView buddyAvatar;
     private ActionMode actionMode;
     private MultiChoiceActionCallback actionCallback;
     private ContentClickListener contentClickListener;
@@ -167,15 +169,19 @@ public class ChatActivity extends ChiefActivity {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        goBack = toolbar.findViewById(R.id.go_back);
         buddyNick = toolbar.findViewById(R.id.buddy_nick);
         buddyStatusMessage = toolbar.findViewById(R.id.buddy_status_message);
-        buddyStatusIcon = toolbar.findViewById(R.id.buddy_status_icon);
+        buddyOnlineIcon = toolbar.findViewById(R.id.buddy_online_icon);
+        buddyAvatar = toolbar.findViewById(R.id.buddy_avatar);
+
+        goBack.setOnClickListener(v -> onBackPressed());
 
         // Initialize action bar.
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
-            bar.setDisplayHomeAsUpEnabled(true);
-            bar.setHomeButtonEnabled(true);
+            bar.setDisplayHomeAsUpEnabled(false);
+            bar.setHomeButtonEnabled(false);
             bar.setDisplayShowTitleEnabled(false);
         }
 
@@ -1709,14 +1715,16 @@ public class ChatActivity extends ChiefActivity {
             final int icon = StatusUtil.getStatusDrawable(buddyCursor.getBuddyAccountType(),
                     buddyCursor.getBuddyStatus());
             final String title = buddyCursor.getBuddyNick();
+            final String avatarHash = buddyCursor.getBuddyAvatarHash();
             final String subtitle;
+            long lastSeen = buddyCursor.getBuddyLastSeen();
+            final boolean isOnline = lastSeen <= 0;
 
             long lastTyping = buddyCursor.getBuddyLastTyping();
             // Checking for typing no more than 5 minutes.
             if (lastTyping > 0 && System.currentTimeMillis() - lastTyping < Settings.TYPING_DELAY) {
                 subtitle = getString(R.string.typing);
             } else {
-                long lastSeen = buddyCursor.getBuddyLastSeen();
                 if (lastSeen > 0) {
                     String lastSeenText;
                     String lastSeenDate = timeHelper.getShortFormattedDate(lastSeen * 1000);
@@ -1743,13 +1751,11 @@ public class ChatActivity extends ChiefActivity {
                 }
             }
 
-            MainExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    buddyNick.setText(title);
-                    buddyStatusMessage.setText(subtitle);
-                    buddyStatusIcon.setImageResource(icon);
-                }
+            MainExecutor.execute(() -> {
+                buddyNick.setText(title);
+                buddyStatusMessage.setText(subtitle);
+                BitmapCache.getInstance().getBitmapAsync(buddyAvatar, avatarHash, R.drawable.def_avatar_x48, false);
+                buddyOnlineIcon.setVisibility(isOnline ? View.VISIBLE : View.GONE);
             });
         }
     }

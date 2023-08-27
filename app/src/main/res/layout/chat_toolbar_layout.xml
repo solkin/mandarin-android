@@ -1,44 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
     android:gravity="center_vertical">
 
-    <com.tomclaw.mandarin.main.views.TightTextView
-        android:id="@+id/buddy_nick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:textColor="@color/abc_primary_text_material_dark"
-        android:lines="1"
-        android:singleLine="true"
-        android:ellipsize="marquee" />
-
     <LinearLayout
+        android:id="@+id/go_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:background="?selectableItemBackgroundBorderless"
         android:gravity="center_vertical"
-        android:paddingTop="2dp">
+        android:orientation="horizontal"
+        android:paddingRight="4dp">
 
         <ImageView
-            android:id="@+id/buddy_status_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/buddy_status" />
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="?android:textColorPrimary" />
 
-        <com.tomclaw.mandarin.main.views.ScrollingTextView
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="2dp">
+
+            <com.tomclaw.mandarin.main.views.ContactBadge
+                android:id="@+id/buddy_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/def_avatar" />
+
+            <ImageView
+                android:id="@+id/buddy_online_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="end|bottom"
+                android:src="@drawable/online_indicator" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:orientation="vertical"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp">
+
+        <TextView
+            android:id="@+id/buddy_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:singleLine="true"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="Name" />
+
+        <TextView
             android:id="@+id/buddy_status_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:includeFontPadding="false"
-            android:fontFamily="sans-serif"
-            android:paddingLeft="4dp"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
-            android:textColor="@color/abc_secondary_text_material_dark" />
+            android:ellipsize="end"
+            android:lines="1"
+            android:singleLine="true"
+            android:textColor="?android:textColorSecondary"
+            android:textSize="12sp"
+            tools:text="Last seen at 3:34 a.m" />
+
     </LinearLayout>
+
 </LinearLayout>

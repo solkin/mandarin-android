@@ -106,30 +106,22 @@ public abstract class EditUserInfoActivity extends ChiefActivity implements Chie
         // Buddy avatar.
         ContactImage contactBadge = findViewById(R.id.buddy_image);
         BitmapCache.getInstance().getBitmapAsync(contactBadge, avatarHash, R.drawable.def_avatar_0, false);
-        contactBadge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View container = findViewById(R.id.buddy_image_container);
-                int targetHeight;
-                if (container.getWidth() != container.getHeight()) {
-                    targetHeight = container.getWidth();
-                } else {
-                    targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
-                }
-                ResizeAnimation resizeAnimation = new ResizeAnimation(container, targetHeight);
-                resizeAnimation.setInterpolator(new OvershootInterpolator());
-                resizeAnimation.setDuration(500);
-                container.startAnimation(resizeAnimation);
+        contactBadge.setOnClickListener(v -> {
+            View container = findViewById(R.id.buddy_image_container);
+            int targetHeight;
+            if (container.getWidth() != container.getHeight()) {
+                targetHeight = container.getWidth();
+            } else {
+                targetHeight = (int) getResources().getDimension(R.dimen.buddy_info_avatar_height);
             }
+            ResizeAnimation resizeAnimation = new ResizeAnimation(container, targetHeight);
+            resizeAnimation.setInterpolator(new OvershootInterpolator());
+            resizeAnimation.setDuration(500);
+            container.startAnimation(resizeAnimation);
         });
 
         View changeAvatarButton = findViewById(R.id.change_avatar_button);
-        changeAvatarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pickAvatar();
-            }
-        });
+        changeAvatarButton.setOnClickListener(v -> pickAvatar());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             FrameLayout.LayoutParams p;

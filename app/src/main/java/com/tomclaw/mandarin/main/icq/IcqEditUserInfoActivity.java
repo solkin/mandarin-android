@@ -40,18 +40,24 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
         for (String key : bundle.keySet()) {
             // Check for this is field key.
             if (StringUtil.isNumeric(key)) {
-                int keyInt = Integer.valueOf(key);
-                if (keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
-                        keyInt == R.id.website || keyInt == R.id.about_me || keyInt == R.id.city) {
-                    EditText editText = findViewById(keyInt);
-                    editText.setText(bundle.getString(key));
-                } else if (keyInt == R.id.gender) {
-                    Spinner spinner = findViewById(R.id.gender_selector);
-                    spinner.setSelection(bundle.getInt(key));
-                } else if (keyInt == R.id.birth_date) {
-                    DatePickerView birthDateView = findViewById(R.id.birth_date);
-                    long birthDate = bundle.getLong(key);
-                    birthDateView.setDate(birthDate);
+                int keyInt = Integer.parseInt(key);
+                String[] extra = intent.getStringArrayExtra(key);
+                // Strange, but... Let's check extra is not empty.
+                if (extra != null && extra.length >= 1) {
+                    String title = getString(Integer.parseInt(extra[0]));
+                    String value = extra[1];
+                    if (keyInt == R.id.friendly_name || keyInt == R.id.first_name || keyInt == R.id.last_name ||
+                            keyInt == R.id.website || keyInt == R.id.about_me || keyInt == R.id.city) {
+                        EditText editText = findViewById(keyInt);
+                        editText.setText(value);
+                    } else if (keyInt == R.id.gender) {
+                        Spinner spinner = findViewById(R.id.gender_selector);
+                        spinner.setSelection(Integer.parseInt(value));
+                    } else if (keyInt == R.id.birth_date) {
+                        DatePickerView birthDateView = findViewById(R.id.birth_date);
+                        long birthDate = Long.parseLong(value);
+                        birthDateView.setDate(birthDate);
+                    }
                 }
             }
         }

@@ -29,7 +29,6 @@ import com.tomclaw.mandarin.im.icq.SetPermitDenyRequest;
 import com.tomclaw.mandarin.im.icq.SetStateRequest;
 import com.tomclaw.mandarin.im.icq.UpdateInfoRequest;
 import com.tomclaw.mandarin.im.icq.UploadAvatarRequest;
-import com.tomclaw.mandarin.im.icq.UserInfoRequest;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.QueryBuilder;
 
@@ -143,8 +142,8 @@ public class RequestHelper {
             // Cursor may have more than only one entry.
             if (cursor.moveToFirst()) {
                 String userId = cursor.getString(cursor.getColumnIndex(GlobalProvider.ACCOUNT_USER_ID));
-                UserInfoRequest userInfoRequest = new UserInfoRequest(userId);
-                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, userInfoRequest);
+                BuddyInfoRequest infoRequest = new BuddyInfoRequest(userId);
+                insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, infoRequest);
             }
             cursor.close();
         }

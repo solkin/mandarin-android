@@ -6,6 +6,7 @@ import static com.tomclaw.mandarin.util.PermissionsHelper.hasPermissions;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -664,7 +665,7 @@ public class ChatActivity extends ChiefActivity {
         switch (requestCode) {
             case PICK_FILE_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
-                    onFilePicked(data.getData());
+                    onFilePicked(data);
                 }
                 break;
             }
@@ -683,14 +684,14 @@ public class ChatActivity extends ChiefActivity {
                             MetricsManager.trackEvent("Send photos");
                         }
                     } else if (data.getData() != null) {
-                        onFilePicked(data.getData());
+                        onFilePicked(data);
                     }
                 }
             }
         }
     }
 
-    private void onFilePicked(Uri uri) {
+    private void onFilePicked(Intent intent) {
         try {
             int buddyDbId = chatHistoryAdapter.getBuddyDbId();
             MessageCallback callback = new MessageCallback() {
@@ -705,9 +706,24 @@ public class ChatActivity extends ChiefActivity {
                 }
             };
             scrollBottom();
-            UriFile uriFile = UriFile.create(this, uri);
-            TaskExecutor.getInstance().execute(
-                    new SendFileTask(this, buddyDbId, uriFile, callback));
+
+            List<Uri> uris = new ArrayList<>();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && intent.getClipData() != null) {
+                ClipData clipData = intent.getClipData();
+                int count = clipData.getItemCount();
+                List<PhotoEntry> entries = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    ClipData.Item item = clipData.getItemAt(i);
+                    uris.add(item.getUri());
+                }
+            } else if (intent.getData() != null) {
+                uris.add(intent.getData());
+            }
+            for (Uri uri : uris) {
+                UriFile uriFile = UriFile.create(this, uri);
+                TaskExecutor.getInstance().execute(
+                        new SendFileTask(this, buddyDbId, uriFile, callback));
+            }
             MetricsManager.trackEvent("Send file");
         } catch (Throwable ignored) {
         }
@@ -906,7 +922,18 @@ public class ChatActivity extends ChiefActivity {
     private void onPermissionGranted(int request) {
         switch (request) {
             case REQUEST_PICK_GALLERY: {
-                startActivityForResult(new Intent(this, PhotoPickerActivity.class), PICK_GALLERY_RESULT_CODE);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    }
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, PICK_FILE_RESULT_CODE);
+                } catch (Throwable ignored) {
+                    // No photo picker application.
+                    Toast.makeText(this, R.string.no_video_picker, Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
             case REQUEST_PICK_VIDEO: {
@@ -922,6 +949,10 @@ public class ChatActivity extends ChiefActivity {
             }
             case REQUEST_PICK_DOCUMENT: {
                 Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                }
+                chooseFile.setAction(Intent.ACTION_GET_CONTENT);
                 chooseFile.setType("*/*");
                 chooseFile = Intent.createChooser(chooseFile, getString(R.string.select_file));
                 startActivityForResult(chooseFile, PICK_FILE_RESULT_CODE);

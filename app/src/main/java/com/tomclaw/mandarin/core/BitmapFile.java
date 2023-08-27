@@ -71,11 +71,11 @@ public class BitmapFile extends VirtualFile {
             int sampleSize;
             int quality;
             if (TextUtils.equals(imageCompression, context.getString(R.string.compression_medium))) {
-                sampleSize = 768;
-                quality = 75;
+                sampleSize = 2048;
+                quality = 85;
             } else {
-                sampleSize = 480;
-                quality = 60;
+                sampleSize = 1280;
+                quality = 75;
             }
             // Now we can compress this image with pleasure.
             Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(context, file.getUri(), sampleSize, sampleSize);

@@ -302,7 +302,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
                     decoded = true;
                 }
                 if (!decoded) {
-                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1024, 1024);
+                    Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromUri(activity, uri, 1536, 1536);
                     if (bitmap != null) {
                         drawable = new BitmapDrawable(activity.getResources(), bitmap);
                     }

@@ -140,12 +140,6 @@
             android:windowActionBarOverlay="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".main.PhotoPickerActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/gallery"
-            android:windowActionBarOverlay="true"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".main.PhotoViewerActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/gallery"

@@ -123,6 +123,8 @@ public class ChatActivity extends ChiefActivity {
     private static final int REQUEST_CLICK_OUTGOING = 7;
     private static final int REQUEST_HISTORY_EXPORT = 8;
 
+    public static final String SELECTED_ENTRIES = "selected_entries";
+
     private LinearLayout chatRoot;
     private RecyclerView chatList;
     private ChatLayoutManager chatLayoutManager;
@@ -675,8 +677,8 @@ public class ChatActivity extends ChiefActivity {
             case PICK_GALLERY_RESULT_CODE: {
                 if (resultCode == RESULT_OK) {
                     int buddyDbId = chatHistoryAdapter.getBuddyDbId();
-                    if (data.getExtras() != null && data.hasExtra(PhotoPickerActivity.SELECTED_ENTRIES)) {
-                        Bundle bundle = data.getExtras().getBundle(PhotoPickerActivity.SELECTED_ENTRIES);
+                    if (data.getExtras() != null && data.hasExtra(SELECTED_ENTRIES)) {
+                        Bundle bundle = data.getExtras().getBundle(SELECTED_ENTRIES);
                         if (bundle != null) {
                             List<PhotoEntry> photoEntries = new ArrayList<>();
                             for (String key : bundle.keySet()) {

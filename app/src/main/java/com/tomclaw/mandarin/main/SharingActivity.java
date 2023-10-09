@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
@@ -138,33 +139,37 @@ public class SharingActivity extends ChiefActivity {
     }
 
     private void checkStoragePermissions() {
-        final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (hasPermissions(this, PERMISSION)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             onPermissionGranted();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
-                // Show an explanation to the user
-                new AlertDialog.Builder(SharingActivity.this)
-                        .setTitle(R.string.permission_request_title)
-                        .setMessage(R.string.share_files_permission_request_message)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(
-                                        SharingActivity.this,
-                                        new String[]{PERMISSION},
-                                        REQUEST_SHARE_FILE
-                                );
-                            }
-                        })
-                        .show();
+            final String PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            if (hasPermissions(this, PERMISSION)) {
+                onPermissionGranted();
             } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{PERMISSION},
-                        REQUEST_SHARE_FILE
-                );
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION)) {
+                    // Show an explanation to the user
+                    new AlertDialog.Builder(SharingActivity.this)
+                            .setTitle(R.string.permission_request_title)
+                            .setMessage(R.string.share_files_permission_request_message)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(
+                                            SharingActivity.this,
+                                            new String[]{PERMISSION},
+                                            REQUEST_SHARE_FILE
+                                    );
+                                }
+                            })
+                            .show();
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(
+                            this,
+                            new String[]{PERMISSION},
+                            REQUEST_SHARE_FILE
+                    );
+                }
             }
         }
     }

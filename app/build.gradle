@@ -15,8 +15,8 @@ android {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
         targetSdkVersion 33
-        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 306
-        versionName "1.30"
+        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 307
+        versionName "1.31"
         resourceConfigurations += ['ru', 'en', 'be', 'uk', 'kk']
     }
     splits {

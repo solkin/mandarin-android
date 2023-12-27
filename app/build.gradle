@@ -9,22 +9,15 @@ android {
             if (project.hasProperty("keyPassword")) keyPassword project.keyPassword
         }
     }
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 307
         versionName "1.31"
         resourceConfigurations += ['ru', 'en', 'be', 'uk', 'kk']
-    }
-    splits {
-        density {
-            enable false
-            reset()
-            include "nodpi", "hdpi", "xhdpi", "xxxhdpi"
-        }
     }
     buildTypes {
         release {
@@ -52,7 +45,7 @@ android {
 dependencies {
     implementation project(':smileys')
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
-    implementation 'androidx.recyclerview:recyclerview:1.6.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'

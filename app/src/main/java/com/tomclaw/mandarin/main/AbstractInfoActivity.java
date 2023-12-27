@@ -60,8 +60,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     private TextView buddyNickView;
 
-    private NfcAdapter mNfcAdapter;
-
     private boolean isAvatarImmutable = false;
 
     @Override
@@ -150,13 +148,6 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                 container.startAnimation(resizeAnimation);
             }
         });
-
-        // Check for available NFC Adapter
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter != null) {
-            // Register callback
-            mNfcAdapter.setNdefPushMessageCallback(this, this);
-        }
     }
 
     @Override

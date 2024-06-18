@@ -1,8 +1,10 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -44,12 +47,15 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import static com.tomclaw.mandarin.im.AccountRoot.AUTH_LOST;
 
 public class MainActivity extends ChiefActivity {
 
+    private static final String ICQ_ALERT_KEY = "icq_closing_alert_shown";
     private RosterDialogsAdapter dialogsAdapter;
     private Toolbar toolbar;
     private ViewFlipper viewFlipper;
@@ -265,6 +271,13 @@ public class MainActivity extends ChiefActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        showIcqClosingAlert();
+    }
+
+    @Override
     public void setTitle(CharSequence title) {
         drawerLayout.setTitle(title.toString());
         toolbar.setTitle(title);
@@ -292,6 +305,28 @@ public class MainActivity extends ChiefActivity {
 
     private void openSettings() {
         startActivity(new Intent(this, SettingsActivity.class));
+    }
+
+    private void showIcqClosingAlert() {
+        long timeShown = PreferenceHelper.getSharedPreferences(this).getLong(ICQ_ALERT_KEY, 0);
+        Date d1 = new Date(timeShown);
+        Date d2 = new Date();
+        boolean sameDay = d1.getYear() == d2.getYear() &&
+                d1.getMonth() == d2.getMonth() &&
+                d1.getDate() == d2.getDate();
+        if (!sameDay) {
+            new AlertDialog.Builder(this)
+                    .setView(R.layout.icq_closing_alert)
+                    .setPositiveButton(R.string.join_group, (dialog, which) -> {
+                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/mandarin_im"));
+                        startActivity(browserIntent);
+                    })
+                    .setNeutralButton(R.string.ok, (dialog, which) -> {
+                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
+                    })
+                    .show();
+        }
     }
 
     private class MultiChoiceActionCallback implements ActionMode.Callback {

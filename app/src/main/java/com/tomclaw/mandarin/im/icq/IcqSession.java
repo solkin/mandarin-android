@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
-import com.tomclaw.mandarin.BuildConfig;
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.BuddyData;
 import com.tomclaw.mandarin.core.GlobalProvider;
@@ -136,8 +135,6 @@ public class IcqSession {
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
     private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
-    private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
-    private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";
     private static String DEVICE_ID_VALUE;
 
@@ -174,7 +171,6 @@ public class IcqSession {
             // Specifying login data.
             HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()
                     .appendParam(CLIENT_NAME, CLIENT_NAME_VALUE)
-                    .appendParam(CLIENT_VERSION, CLIENT_VERSION_VALUE)
                     .appendParam(DEV_ID, DEV_ID_VALUE)
                     .appendParam(FORMAT, WimConstants.FORMAT_JSON)
                     .appendParam(ID_TYPE, "ICQ")
@@ -237,9 +233,7 @@ public class IcqSession {
             HttpParamsBuilder nameValuePairs = new HttpParamsBuilder()
                     .appendParam(WimConstants.TOKEN_A, icqAccountRoot.getTokenA())
                     .appendParam(ASSERT_CAPS, ASSERT_CAPS_VALUE)
-                    .appendParam(BUILD_NUMBER, BUILD_NUMBER_VALUE)
                     .appendParam(CLIENT_NAME, CLIENT_NAME_VALUE)
-                    .appendParam(CLIENT_VERSION, CLIENT_VERSION_VALUE)
                     .appendParam(DEVICE_ID, getDeviceId())
                     .appendParam(EVENTS, EVENTS_VALUE)
                     .appendParam(FORMAT, WimConstants.FORMAT_JSON)

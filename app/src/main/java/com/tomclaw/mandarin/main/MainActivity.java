@@ -1,7 +1,6 @@
 package com.tomclaw.mandarin.main;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -47,7 +46,6 @@ import com.tomclaw.mandarin.util.SelectionHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 

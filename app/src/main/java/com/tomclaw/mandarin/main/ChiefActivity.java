@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.appcompat.app.ActionBar;
@@ -164,7 +165,11 @@ public abstract class ChiefActivity extends AppCompatActivity {
                     }
                 }
             };
-            registerReceiver(broadcastReceiver, intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(broadcastReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(broadcastReceiver, intentFilter);
+            }
             // Creating connection to service
             serviceConnection = new ServiceConnection() {
 

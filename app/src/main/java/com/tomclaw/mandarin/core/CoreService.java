@@ -148,17 +148,9 @@ public class CoreService extends Service {
         accountsDispatcher.startObservation();
         // Register broadcast receivers.
         MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter(), RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
-        }
+        registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
         ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter(), RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
-        }
+        registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
         // Service is now ready.
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");

@@ -44,7 +44,10 @@ public class SetMoodRequest extends WimRequest {
         intent.putExtra(BuddyInfoRequest.ACCOUNT_DB_ID, getAccountRoot().getAccountDbId());
         intent.putExtra(SetStateRequest.STATE_REQUESTED, statusIndex);
         // Parsing response.
-        JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
+        JSONObject responseObject = response.optJSONObject(RESPONSE_OBJECT);
+        if (responseObject == null) {
+            return REQUEST_SKIP;
+        }
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {

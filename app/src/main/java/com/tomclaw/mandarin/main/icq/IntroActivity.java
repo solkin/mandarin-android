@@ -1,20 +1,15 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.tomclaw.mandarin.R;
-import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +19,6 @@ import java.util.Date;
  */
 public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreServiceListener {
 
-    private static final String ICQ_ALERT_KEY = "icq_closing_alert_shown";
     public static final String EXTRA_START_HELPER = "start_helper";
     public static final String EXTRA_RELAY_INTENT = "pending_intent";
     public static final int RESULT_LOGIN_COMPLETED = 1;
@@ -43,13 +37,6 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         setSupportActionBar(toolbar);
 
         getSupportActionBar().hide();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        showIcqClosingAlert();
     }
 
     @Override
@@ -105,28 +92,6 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
 
     private void startPlainLogin() {
         startActivityForResult(new Intent(getBaseContext(), PlainLoginActivity.class), RESULT_LOGIN_COMPLETED);
-    }
-
-    private void showIcqClosingAlert() {
-        long timeShown = PreferenceHelper.getSharedPreferences(this).getLong(ICQ_ALERT_KEY, 0);
-        Date d1 = new Date(timeShown);
-        Date d2 = new Date();
-        boolean sameDay = d1.getYear() == d2.getYear() &&
-                d1.getMonth() == d2.getMonth() &&
-                d1.getDate() == d2.getDate();
-        if (!sameDay) {
-            new AlertDialog.Builder(this)
-                    .setView(R.layout.icq_closing_alert)
-                    .setPositiveButton(R.string.join_group, (dialog, which) -> {
-                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/mandarin_im"));
-                        startActivity(browserIntent);
-                    })
-                    .setNeutralButton(R.string.ok, (dialog, which) -> {
-                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
-                    })
-                    .show();
-        }
     }
 
     @Override

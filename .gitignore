@@ -25,6 +25,11 @@ projectFilesBackup/
 bin/
 gen/
 out/
+app/mapping.txt
+app/seeds.txt
+app/unused.txt
+app/release/output-metadata.json
+app/release/
 
 # Gradle files
 .gradle/

@@ -500,8 +500,8 @@ public class IcqSession {
                         cookie = String.valueOf(System.currentTimeMillis());
                     }
                     long messageTime = eventData.getLong(TIMESTAMP);
-                    String imf = eventData.getString(IMF);
-                    String autoResponse = eventData.getString(AUTORESPONSE);
+                    String imf = eventData.optString(IMF);
+                    String autoResponse = eventData.optString(AUTORESPONSE);
                     JSONObject sourceObject = eventData.optJSONObject(SOURCE_OBJECT);
                     String buddyId;
                     String buddyNick;

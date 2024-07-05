@@ -1,5 +1,7 @@
 package com.tomclaw.mandarin.util;
 
+import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
+
 import android.os.Build;
 
 import java.io.ByteArrayOutputStream;
@@ -54,7 +56,7 @@ public class HttpUtil {
     }
 
     public static String getAvatarUrl(String buddyId) {
-        return "https://api.icq.net/expressions/get?f=native&type=floorLargeBuddyIcon&t=" + buddyId;
+        return WEB_API_BASE + "expressions/get?f=native&type=floorLargeBuddyIcon&t=" + buddyId;
     }
 
     private static byte[] getMD5(byte[] data) {
@@ -141,6 +143,7 @@ public class HttpUtil {
     private static InputStream getResponse(HttpURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
         // Checking for this is error stream.
+        Logger.log(connection.getURL() + " -> " + responseCode);
         if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
             return connection.getErrorStream();
         } else {

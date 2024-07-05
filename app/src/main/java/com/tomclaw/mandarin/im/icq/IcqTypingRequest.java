@@ -24,7 +24,10 @@ public class IcqTypingRequest extends WimRequest {
 
     @Override
     protected int parseJson(JSONObject response) throws JSONException {
-        JSONObject responseObject = response.getJSONObject(RESPONSE_OBJECT);
+        JSONObject responseObject = response.optJSONObject(RESPONSE_OBJECT);
+        if (responseObject == null) {
+            return REQUEST_SKIP;
+        }
         int statusCode = responseObject.getInt(STATUS_CODE);
         // Check for server reply.
         if (statusCode == WIM_OK) {

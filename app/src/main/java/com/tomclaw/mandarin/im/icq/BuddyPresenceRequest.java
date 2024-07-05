@@ -69,25 +69,25 @@ public class BuddyPresenceRequest extends WimRequest {
                 JSONObject buddy = users.getJSONObject(i);
                 JSONObject profile = buddy.optJSONObject("profile");
                 String buddyId = buddy.getString(WimConstants.AIM_ID);
+                ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
+                String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
+                String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
+                int statusIndex;
+                try {
+                    statusIndex = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
+                } catch (StatusNotFoundException ignored) {
+                    // Wow, this is a pretty strange status!
+                    statusIndex = StatusUtil.STATUS_OFFLINE;
+                }
+                buddyInfo.setOnline(statusIndex != StatusUtil.STATUS_OFFLINE);
+                // Create custom avatar request.
+                if (!TextUtils.isEmpty(buddyIcon)) {
+                    Logger.log("search avatar for " + buddyId + ": " + buddyIcon);
+                    RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
+                            getAccountRoot().getAccountDbId(), buddyId,
+                            CoreService.getAppSession(), buddyIcon);
+                }
                 if (profile != null) {
-                    ShortBuddyInfo buddyInfo = new ShortBuddyInfo(buddyId);
-                    String state = buddy.optString(WimConstants.STATE, FALLBACK_STATE);
-                    String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
-                    int statusIndex;
-                    try {
-                        statusIndex = StatusUtil.getStatusIndex(getAccountRoot().getAccountType(), state);
-                    } catch (StatusNotFoundException ignored) {
-                        // Wow, this is a pretty strange status!
-                        statusIndex = StatusUtil.STATUS_OFFLINE;
-                    }
-                    buddyInfo.setOnline(statusIndex != StatusUtil.STATUS_OFFLINE);
-                    // Create custom avatar request.
-                    if (!TextUtils.isEmpty(buddyIcon)) {
-                        Logger.log("search avatar for " + buddyId + ": " + buddyIcon);
-                        RequestHelper.requestSearchAvatar(getAccountRoot().getContentResolver(),
-                                getAccountRoot().getAccountDbId(), buddyId,
-                                CoreService.getAppSession(), buddyIcon);
-                    }
                     // Parsing profile.
                     buddyInfo.setBuddyNick(profile.optString("friendlyName"));
                     buddyInfo.setFirstName(profile.optString("firstName"));
@@ -115,9 +115,9 @@ public class BuddyPresenceRequest extends WimRequest {
                         long birthDate = profile.optLong("birthDate") * 1000;
                         buddyInfo.setBirthDate(birthDate);
                     }
-                    buddyInfo.setItemStatic(isKeywordNumeric && TextUtils.equals(buddyId, searchOptions.getKeyword()));
-                    shortInfoMap.put(buddyId, buddyInfo);
                 }
+                buddyInfo.setItemStatic(isKeywordNumeric && TextUtils.equals(buddyId, searchOptions.getKeyword()));
+                shortInfoMap.put(buddyId, buddyInfo);
             }
             intent = BuddySearchRequest.getSearchResultIntent(getAccountRoot().getAccountDbId(),
                     searchOptions, total, skipped, shortInfoMap);

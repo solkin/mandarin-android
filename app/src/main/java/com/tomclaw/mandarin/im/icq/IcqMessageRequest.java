@@ -51,7 +51,7 @@ public class IcqMessageRequest extends WimRequest {
         if (statusCode == WIM_OK) {
             String requestId = responseObject.getString(REQUEST_ID);
             JSONObject dataObject = responseObject.getJSONObject(DATA_OBJECT);
-            String state = dataObject.getString(STATE);
+            String state = dataObject.optString(STATE, "sent");
             String msgId = dataObject.getString(MSG_ID);
             // This will mark message with server-side msgId
             // to provide message stated in fetch events.

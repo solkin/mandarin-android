@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class WimConstants {
 
     public static final String TOKEN_A = "a";
-    public static final String CLIENT_LOGIN_URL = "https://u.icq.net/wim/auth/clientLogin";
+    public static final String CLIENT_LOGIN_URL = "https://api.nina.chat/auth/clientLogin";
     public static final String NORMALIZE_PHONE_URL = "https://u.icq.net/api/v35/rapi/auth/sendCode";
     public static final String VALIDATE_PHONE_URL = "https://u.icq.net/smsreg/requestPhoneValidation.php";
     public static final String LOGIN_PHONE_URL = "https://u.icq.net/api/v35/smsreg/loginWithPhoneNumber.php";
@@ -53,9 +53,9 @@ public class WimConstants {
     public static final String SESSION_TIMEOUT = "sessionTimeout";
     public static final String TS = "ts";
     public static final String VIEW = "view";
-    public static final String START_SESSION_URL = "https://u.icq.net/wim/aim/startSession";
+    public static final String START_SESSION_URL = "https://api.nina.chat/aim/startSession";
     public static final String RENEW_TOKEN_URL = "https://api.login.icq.net/auth/getInfo";
-    public static final String WEB_API_BASE = "https://u.icq.net/wim/";
+    public static final String WEB_API_BASE = "https://api.nina.chat/";
     public static final String WEB_RAPI_BASE = "https://u.icq.net/api/";
     public static final String POST_PREFIX = "POST&";
     public static final String AMP = "&";

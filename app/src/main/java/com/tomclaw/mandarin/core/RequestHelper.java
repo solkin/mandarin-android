@@ -12,6 +12,7 @@ import com.tomclaw.mandarin.im.icq.BuddyAddRequest;
 import com.tomclaw.mandarin.im.icq.BuddyAvatarRequest;
 import com.tomclaw.mandarin.im.icq.BuddyIgnoreStateRequest;
 import com.tomclaw.mandarin.im.icq.BuddyInfoRequest;
+import com.tomclaw.mandarin.im.icq.BuddyPresenceRequest;
 import com.tomclaw.mandarin.im.icq.BuddyRemoveRequest;
 import com.tomclaw.mandarin.im.icq.BuddyRenameRequest;
 import com.tomclaw.mandarin.im.icq.BuddySearchRequest;
@@ -30,6 +31,8 @@ import com.tomclaw.mandarin.im.icq.UpdateInfoRequest;
 import com.tomclaw.mandarin.im.icq.UploadAvatarRequest;
 import com.tomclaw.mandarin.util.GsonSingleton;
 import com.tomclaw.mandarin.util.QueryBuilder;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -198,6 +201,13 @@ public class RequestHelper {
                                      SearchOptionsBuilder optionsBuilder, int offset) {
         BuddySearchRequest buddySearchRequest = new BuddySearchRequest((IcqSearchOptionsBuilder) optionsBuilder, 20, offset, "RU");
         insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, buddySearchRequest);
+    }
+
+    public static void requestBuddyPresence(ContentResolver contentResolver, String appSession, int accountDbId,
+                                            int total, int skipped, List<String> buddyIds,
+                                            IcqSearchOptionsBuilder searchOptions) {
+        BuddyPresenceRequest request = new BuddyPresenceRequest(total, skipped, buddyIds, searchOptions);
+        insertRequest(contentResolver, Request.REQUEST_TYPE_SHORT, false, accountDbId, appSession, request);
     }
 
     public static void requestSearchAvatar(ContentResolver contentResolver, int accountDbId, String buddyId,

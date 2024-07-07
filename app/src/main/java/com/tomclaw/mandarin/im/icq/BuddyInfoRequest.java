@@ -53,7 +53,7 @@ public class BuddyInfoRequest extends WimRequest {
     /**
      * Date format helper
      */
-    private static final transient DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
+    private static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     public BuddyInfoRequest() {
     }

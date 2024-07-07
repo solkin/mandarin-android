@@ -22,8 +22,8 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
  */
 public class SetMoodRequest extends WimRequest {
 
-    public static final transient int STATUS_MOOD_RESET = -1;
-    public static final transient String STATUS_TEXT_EMPTY = "";
+    public static final int STATUS_MOOD_RESET = -1;
+    public static final String STATUS_TEXT_EMPTY = "";
 
     private final int statusIndex;
     private String statusTitle;

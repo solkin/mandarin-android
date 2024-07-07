@@ -21,16 +21,16 @@ import static com.tomclaw.mandarin.im.icq.WimConstants.WEB_API_BASE;
  */
 public class UploadAvatarRequest extends WimRequest {
 
-    public static final transient int TYPE_NORMAL_AVATAR = 1;
-    public static final transient int TYPE_BIG_AVATAR = 2;
-    public static final transient int TYPE_LARGE_AVATAR = 3;
+    public static final int TYPE_NORMAL_AVATAR = 1;
+    public static final int TYPE_BIG_AVATAR = 2;
+    public static final int TYPE_LARGE_AVATAR = 3;
 
-    private static final transient int SIZE_NORMAL = 64;
-    private static final transient int SIZE_BIG = 128;
-    private static final transient int SIZE_LARGE = 600;
+    private static final int SIZE_NORMAL = 64;
+    private static final int SIZE_BIG = 128;
+    private static final int SIZE_LARGE = 600;
 
-    private int type;
-    private String hash;
+    private final int type;
+    private final String hash;
 
     public UploadAvatarRequest(int type, String hash) {
         this.type = type;

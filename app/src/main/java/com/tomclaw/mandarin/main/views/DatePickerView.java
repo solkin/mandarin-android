@@ -22,7 +22,7 @@ public class DatePickerView extends PseudoSpinnerView {
     /**
      * Date format helper
      */
-    private static final transient DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
+    private static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     private int year, month, day;
 

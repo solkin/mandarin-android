@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class SharingData implements Serializable {
 
-    public static final transient String EXTRA_SUBJECT = "android.intent.extra.SUBJECT";
-    public static final transient String EXTRA_TEXT = "android.intent.extra.TEXT";
-    public static final transient String EXTRA_STREAM = "android.intent.extra.STREAM";
+    public static final String EXTRA_SUBJECT = "android.intent.extra.SUBJECT";
+    public static final String EXTRA_TEXT = "android.intent.extra.TEXT";
+    public static final String EXTRA_STREAM = "android.intent.extra.STREAM";
 
     private String subject, text;
     private List<String> uris;

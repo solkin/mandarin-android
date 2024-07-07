@@ -19,9 +19,9 @@ import java.io.InputStream;
  */
 public abstract class WimRequest extends HttpRequest<IcqAccountRoot> {
 
-    protected static final transient int WIM_OK = 200;
-    protected static final transient int CABBAGE_OK = 20000;
-    protected static final transient int WIM_AUTH_REQUIRED = 401;
+    protected static final int WIM_OK = 200;
+    protected static final int CABBAGE_OK = 20000;
+    protected static final int WIM_AUTH_REQUIRED = 401;
 
     @Override
     protected String getHttpRequestType() {

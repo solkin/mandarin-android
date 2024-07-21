@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -33,7 +34,8 @@
         </receiver>
         <service
             android:name=".core.CoreService"
-            android:label="@string/core_service" />
+            android:label="@string/core_service"
+            android:foregroundServiceType="remoteMessaging" />
 
         <activity
             android:name=".main.MainActivity"

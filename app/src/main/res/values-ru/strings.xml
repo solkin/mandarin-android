@@ -424,9 +424,9 @@
     <string name="ok">OK</string>
     <string name="foreground_title">Мандарин подключен</string>
     <string name="foreground_description">Нажмите для открытия</string>
-    <string name="icq_closing">ICQ закрывается</string>
-    <string name="icq_closing_june_26">ICQ закрывается 26 июня</string>
-    <string name="mandarin_stops_working_too">ВАЖНО! Мандарин работает на базе ICQ, поэтому также прекратит работу с 26 июня 2024.</string>
+    <string name="icq_closing">ICQ прекратил работу</string>
+    <string name="icq_closing_june_26">Сервис ICQ закрыт</string>
+    <string name="mandarin_stops_working_too">ВАЖНО! Мандарин работает на базе ICQ, поэтому также прекратил работу с 26 июня 2024.</string>
     <string name="our_plans">Но мы продолжим работу над Мандарином и в будущем планируем представить полностью независимый от третьих лиц мессенджер. Чтобы следить за ходом разработки и узнать когда Мандарин будет снова запущен, присоединяйтесь к нашей группе в Telegram.</string>
     <string name="join_group">Присоединиться к группе Mandarin</string>
 </resources>

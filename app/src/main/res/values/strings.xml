@@ -419,8 +419,8 @@
     <string name="foreground_title">Mandarin is connected</string>
     <string name="foreground_description">Click to open</string>
     <string name="icq_closing">ICQ is shutting down</string>
-    <string name="icq_closing_june_26">ICQ is shutting down on June 26</string>
-    <string name="mandarin_stops_working_too">IMPORTANT! Mandarin is based on ICQ, so it will also stop working on June 26, 2024.</string>
+    <string name="icq_closing_june_26">ICQ is closed</string>
+    <string name="mandarin_stops_working_too">IMPORTANT! Mandarin is based on ICQ, so it also stopped working on June 26, 2024.</string>
     <string name="our_plans">We plan to continue working on Mandarin in order to introduce a messenger completely independent of third parties in the future. To follow the development progress and communicate with other Mandarin users, join our Telegram group.</string>
     <string name="join_group">Join Mandarin Group</string>
 </resources>

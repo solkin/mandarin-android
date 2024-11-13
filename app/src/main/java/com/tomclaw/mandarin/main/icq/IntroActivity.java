@@ -3,9 +3,11 @@ package com.tomclaw.mandarin.main.icq;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.MenuItem;
 import android.view.View;
 
@@ -13,8 +15,6 @@ import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.PreferenceHelper;
 import com.tomclaw.mandarin.main.ChiefActivity;
 import com.tomclaw.mandarin.main.MainActivity;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -108,25 +108,19 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
     }
 
     private void showIcqClosingAlert() {
-        long timeShown = PreferenceHelper.getSharedPreferences(this).getLong(ICQ_ALERT_KEY, 0);
-        Date d1 = new Date(timeShown);
-        Date d2 = new Date();
-        boolean sameDay = d1.getYear() == d2.getYear() &&
-                d1.getMonth() == d2.getMonth() &&
-                d1.getDate() == d2.getDate();
-        if (!sameDay) {
-            new AlertDialog.Builder(this)
-                    .setView(R.layout.icq_closing_alert)
-                    .setPositiveButton(R.string.join_group, (dialog, which) -> {
-                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/mandarin_im"));
-                        startActivity(browserIntent);
-                    })
-                    .setNeutralButton(R.string.ok, (dialog, which) -> {
-                        PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
-                    })
-                    .show();
-        }
+        new AlertDialog.Builder(this)
+                .setView(R.layout.icq_closing_alert)
+                .setPositiveButton(R.string.join_group, (dialog, which) -> {
+                    PreferenceHelper.getSharedPreferences(this).edit().putLong(ICQ_ALERT_KEY, System.currentTimeMillis()).apply();
+                    finish();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/mandarin_im"));
+                    startActivity(browserIntent);
+                })
+                .setNeutralButton(R.string.ok, (dialog, which) -> {
+                    finish();
+                })
+                .setCancelable(false)
+                .show();
     }
 
     @Override

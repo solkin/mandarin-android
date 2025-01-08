@@ -6,13 +6,7 @@ import android.text.TextUtils;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
-import com.tomclaw.mandarin.core.QueryHelper;
-import com.tomclaw.mandarin.core.RequestHelper;
-import com.tomclaw.mandarin.core.exceptions.AccountNotFoundException;
-import com.tomclaw.mandarin.core.exceptions.BuddyNotFoundException;
 import com.tomclaw.mandarin.util.HttpParamsBuilder;
-import com.tomclaw.mandarin.util.HttpUtil;
-import com.tomclaw.mandarin.util.Logger;
 import com.tomclaw.mandarin.util.StringUtil;
 
 import org.json.JSONArray;
@@ -80,69 +74,47 @@ public class BuddyInfoRequest extends WimRequest {
         // Check for server reply.
         if (statusCode == WIM_OK) {
             JSONObject data = responseObject.getJSONObject("data");
-            JSONArray users = data.getJSONArray("users");
-            if (users.length() > 0) {
+            JSONArray infoArray = data.getJSONArray("infoArray");
+            if (infoArray.length() > 0) {
                 Context context = getAccountRoot().getContext();
                 // Only first profile we need.
-                JSONObject user = users.getJSONObject(0);
-                String buddyIcon = HttpUtil.getAvatarUrl(buddyId);
-                // Check avatar fields be able to modify.
-                if (!TextUtils.isEmpty(buddyIcon)) {
-                    String hash = HttpUtil.getUrlHash(buddyIcon);
-                    Logger.log("large buddy icon: " + buddyIcon);
-                    // Check for such avatar is already loaded.
-                    String avatarHash;
-                    try {
-                        avatarHash = QueryHelper.getBuddyOrAccountAvatarHash(getAccountRoot(), buddyId);
-                    } catch (AccountNotFoundException | BuddyNotFoundException ignored) {
-                        // No buddy - no avatar.
-                        avatarHash = null;
+                JSONObject firstProfile = infoArray.getJSONObject(0);
+                JSONObject profile = firstProfile.getJSONObject("profile");
+                // Obtain buddy info from profile.
+                putExtra(intent, R.id.friendly_name, R.string.friendly_name, profile.optString("friendlyName"));
+                putExtra(intent, R.id.first_name, R.string.first_name, profile.optString("firstName"));
+                putExtra(intent, R.id.last_name, R.string.last_name, profile.optString("lastName"));
+                String gender = profile.optString("gender");
+                if (!TextUtils.isEmpty(gender)) {
+                    String genderString = "";
+                    if (gender.equals("male")) {
+                        genderString = context.getString(R.string.male);
+                    } else if (gender.equals("female")) {
+                        genderString = context.getString(R.string.female);
                     }
-                    if (TextUtils.equals(avatarHash, hash)) {
-                        QueryHelper.updateBuddyOrAccountAvatar(getAccountRoot(), buddyId, hash);
-                        intent.putExtra(BUDDY_AVATAR_HASH, hash);
-                    } else {
-                        RequestHelper.requestLargeAvatar(
-                                context.getContentResolver(), getAccountRoot().getAccountDbId(),
-                                buddyId, CoreService.getAppSession(), buddyIcon);
-                    }
-                }
-                JSONObject profile = user.optJSONObject("profile");
-                // Sometimes profile may not present. Check it right now.
-                if (profile == null) {
-                    intent.putExtra(NO_INFO_CASE, true);
-                } else {
-                    // Obtain buddy info from profile.
-                    putExtra(intent, R.id.friendly_name, R.string.friendly_name, profile.optString("friendlyName"));
-                    putExtra(intent, R.id.first_name, R.string.first_name, profile.optString("firstName"));
-                    putExtra(intent, R.id.last_name, R.string.last_name, profile.optString("lastName"));
-                    String gender = profile.optString("gender");
-                    if (!TextUtils.isEmpty(gender) && !TextUtils.equals(gender, "unknown")) {
-                        String genderString = gender.equals("male") ?
-                                context.getString(R.string.male) : context.getString(R.string.female);
+                    if (!TextUtils.isEmpty(genderString)) {
                         putExtra(intent, R.id.gender, R.string.gender, genderString);
                     }
-                    JSONArray homeAddress = profile.optJSONArray("homeAddress");
-                    if (homeAddress != null) {
-                        String city = "";
-                        for (int c = 0; c < homeAddress.length(); c++) {
-                            if (c > 0) {
-                                city += ", ";
-                            }
-                            city += homeAddress.getJSONObject(c).optString("city");
-                        }
-                        if (!TextUtils.isEmpty(city)) {
-                            putExtra(intent, R.id.city, R.string.city, city);
-                        }
-                    }
-
-                    putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
-                    if (profile.has("birthDate")) {
-                        long birthDate = profile.optLong("birthDate") * 1000;
-                        putExtra(intent, R.id.birth_date, R.string.birth_date, DATE_FORMAT.format(birthDate));
-                    }
-                    putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));
                 }
+                JSONArray homeAddress = profile.optJSONArray("homeAddress");
+                if (homeAddress != null) {
+                    String city = "";
+                    for (int c = 0; c < homeAddress.length(); c++) {
+                        if (c > 0) {
+                            city += ", ";
+                        }
+                        city += homeAddress.getJSONObject(c).optString("city");
+                    }
+                    if (!TextUtils.isEmpty(city)) {
+                        putExtra(intent, R.id.city, R.string.city, city);
+                    }
+                }
+                putExtra(intent, R.id.website, R.string.website, profile.optString("website1"));
+                long birthDate = profile.optLong("birthDate") * 1000;
+                if (birthDate > 0) {
+                    putExtra(intent, R.id.birth_date, R.string.birth_date, DATE_FORMAT.format(birthDate));
+                }
+                putExtra(intent, R.id.about_me, R.string.about_me, profile.optString("aboutMe"));
             }
         } else {
             intent.putExtra(NO_INFO_CASE, true);
@@ -155,17 +127,16 @@ public class BuddyInfoRequest extends WimRequest {
 
     @Override
     protected String getUrl() {
-        return WEB_API_BASE.concat("presence/get");
+        return WEB_API_BASE
+                .concat("memberDir/get");
     }
 
-    @Override
     protected HttpParamsBuilder getParams() {
         return new HttpParamsBuilder()
                 .appendParam("aimsid", getAccountRoot().getAimSid())
                 .appendParam("f", WimConstants.FORMAT_JSON)
                 .appendParam("infoLevel", "mid")
-                .appendParam("t", buddyId)
-                .appendParam("mdir", "1");
+                .appendParam("t", buddyId);
     }
 
     private void putExtra(Intent intent, int key, int title, long value) {

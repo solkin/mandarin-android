@@ -101,7 +101,7 @@
                             <com.tomclaw.mandarin.main.views.TightTextView
                                 style="@style/UserInfoFieldTitle"
                                 android:text="@string/friendly_name"
-                                android:visibility="gone" />
+                                android:visibility="visible" />
 
                             <EditText
                                 android:id="@+id/friendly_name"
@@ -109,7 +109,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapWords|textPersonName|textNoSuggestions"
-                                android:visibility="gone" />
+                                android:visibility="visible" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -166,7 +166,7 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
                                 android:paddingTop="12dp"
-                                android:visibility="gone">
+                                android:visibility="visible">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -231,7 +231,7 @@
                                     android:orientation="vertical"
                                     android:paddingLeft="0dp"
                                     android:paddingRight="8dp"
-                                    android:visibility="gone">
+                                    android:visibility="visible">
 
                                     <com.tomclaw.mandarin.main.views.TightTextView
                                         style="@style/UserInfoFieldTitle"
@@ -253,7 +253,7 @@
                                     android:orientation="vertical"
                                     android:paddingLeft="8dp"
                                     android:paddingRight="0dp"
-                                    android:visibility="gone">
+                                    android:visibility="visible">
 
                                     <com.tomclaw.mandarin.main.views.TightTextView
                                         style="@style/UserInfoFieldTitle"

@@ -11,7 +11,8 @@
     <item
         android:icon="@drawable/ic_attach_file"
         app:showAsAction="ifRoom"
-        android:title="@string/send_file">
+        android:title="@string/send_file"
+        android:visible="false">
         <menu>
             <item
                 android:id="@+id/send_picture_menu"

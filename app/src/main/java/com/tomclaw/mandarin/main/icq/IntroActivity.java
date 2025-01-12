@@ -1,6 +1,7 @@
 package com.tomclaw.mandarin.main.icq;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -56,10 +57,10 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
             bar.show();
         }
 
-        findViewById(R.id.phone_login_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.register_uin_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPhoneLogin();
+                registerUin();
             }
         });
         findViewById(R.id.uin_login_button).setOnClickListener(new View.OnClickListener() {
@@ -86,8 +87,9 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
         return getIntent().getParcelableExtra(EXTRA_RELAY_INTENT);
     }
 
-    private void startPhoneLogin() {
-        startActivityForResult(new Intent(getBaseContext(), PhoneLoginActivity.class), RESULT_LOGIN_COMPLETED);
+    private void registerUin() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://account.nina.chat/register/"));
+        startActivity(browserIntent);
     }
 
     private void startPlainLogin() {
@@ -107,7 +109,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
                 startActivity(intent);
                 finish();
             } else if (resultCode == RESULT_REDIRECT_PHONE_LOGIN) {
-                startPhoneLogin();
+                registerUin();
             }
         }
     }

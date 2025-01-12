@@ -394,7 +394,7 @@
     <string name="use_phone_number">Войти по номеру телефона</string>
     <string name="use_login_and_password">У меня есть логин и пароль</string>
     <string name="register_using_phone">Ещё нет учётной записи?\n
-        <u>Зарегистрируйтесь, используя Ваш номер телефона!</u>
+        <u>Зарегистрируйте UIN на Nina.Chat!</u>
     </string>
     <string name="user_info_edit">Редактировать</string>
     <string name="edit_user_info_save">Сохранить</string>
@@ -424,4 +424,5 @@
     <string name="ok">OK</string>
     <string name="foreground_title">Мандарин подключен</string>
     <string name="foreground_description">Нажмите для открытия</string>
+    <string name="register_nina_chat">Зарегистрировать UIN на Nina.Chat</string>
 </resources>

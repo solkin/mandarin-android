@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.CoreService;
@@ -165,11 +166,7 @@ public abstract class ChiefActivity extends AppCompatActivity {
                     }
                 }
             };
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                registerReceiver(broadcastReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
-            } else {
-                registerReceiver(broadcastReceiver, intentFilter);
-            }
+            ContextCompat.registerReceiver(this, broadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
             // Creating connection to service
             serviceConnection = new ServiceConnection() {
 

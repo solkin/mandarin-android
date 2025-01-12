@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.main.MainActivity;
@@ -148,17 +149,9 @@ public class CoreService extends Service {
         accountsDispatcher.startObservation();
         // Register broadcast receivers.
         MusicStateReceiver musicStateReceiver = new MusicStateReceiver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter(), RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(musicStateReceiver, musicStateReceiver.getIntentFilter());
-        }
+        ContextCompat.registerReceiver(this, musicStateReceiver, musicStateReceiver.getIntentFilter(), ContextCompat.RECEIVER_EXPORTED);
         ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter(), RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(connectivityReceiver, connectivityReceiver.getIntentFilter());
-        }
+        ContextCompat.registerReceiver(this, connectivityReceiver, connectivityReceiver.getIntentFilter(), ContextCompat.RECEIVER_EXPORTED);
         // Service is now ready.
         updateState(STATE_UP);
         Logger.log("CoreService serviceInit completed");

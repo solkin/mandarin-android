@@ -88,7 +88,7 @@ public class IntroActivity extends ChiefActivity implements ChiefActivity.CoreSe
     }
 
     private void registerUin() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://account.nina.chat/register/"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://account.nina.chat/register/?offer=mandarin"));
         startActivity(browserIntent);
     }
 

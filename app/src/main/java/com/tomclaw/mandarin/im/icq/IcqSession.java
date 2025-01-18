@@ -135,7 +135,7 @@ public class IcqSession {
     static final String DEV_ID_VALUE = "ic12G5kB_856lXr1";
     private static final String EVENTS_VALUE = "myInfo,presence,buddylist,typing,imState,im,sentIM,offlineIM,userAddedToBuddyList,service,buddyRegistered";
     private static final String PRESENCE_FIELDS_VALUE = "userType,service,moodIcon,moodTitle,capabilities,aimId,displayId,friendly,state,buddyIcon,abPhones,smsNumber,statusMsg,seqNum,eventType,lastseen";
-    private static final String CLIENT_NAME_VALUE = "Mandarin%20Android";
+    private static final String CLIENT_NAME_VALUE = "Mandarin Android";
     private static final String CLIENT_VERSION_VALUE = BuildConfig.VERSION_NAME;
     private static final String BUILD_NUMBER_VALUE = String.valueOf(BuildConfig.VERSION_CODE);
     private static final String ASSERT_CAPS_VALUE = "4d616e646172696e20494d0003000000,094613544C7F11D18222444553540000";

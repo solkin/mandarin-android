@@ -52,7 +52,13 @@ public class IcqEditUserInfoActivity extends EditUserInfoActivity {
                         editText.setText(value);
                     } else if (keyInt == R.id.gender) {
                         Spinner spinner = findViewById(R.id.gender_selector);
-                        spinner.setSelection(Integer.parseInt(value));
+                        int spinnerIndex = 0;
+                        if (value.equals(getString(R.string.male))) {
+                            spinnerIndex = 1;
+                        } else if (value.equals(getString(R.string.female))) {
+                            spinnerIndex = 2;
+                        }
+                        spinner.setSelection(spinnerIndex);
                     } else if (keyInt == R.id.birth_date) {
                         DatePickerView birthDateView = findViewById(R.id.birth_date);
                         long birthDate = Long.parseLong(value);

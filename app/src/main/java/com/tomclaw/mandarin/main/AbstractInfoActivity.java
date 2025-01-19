@@ -53,6 +53,7 @@ public abstract class AbstractInfoActivity extends ChiefActivity
     private int buddyStatus;
     private String firstName;
     private String lastName;
+    private String gender;
     private String aboutMe;
     private String website;
 
@@ -319,6 +320,8 @@ public abstract class AbstractInfoActivity extends ChiefActivity
                                         setFirstName(value);
                                     } else if (keyInt == R.id.last_name) {
                                         setLastName(value);
+                                    } else if (keyInt == R.id.gender) {
+                                        setGender(value);
                                     } else if (keyInt == R.id.about_me) {
                                         setAboutMe(value);
                                     } else if (keyInt == R.id.website) {
@@ -414,6 +417,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
         return lastName;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
     public String getAboutMe() {
         return aboutMe;
     }
@@ -432,6 +439,10 @@ public abstract class AbstractInfoActivity extends ChiefActivity
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public void setAboutMe(String aboutMe) {

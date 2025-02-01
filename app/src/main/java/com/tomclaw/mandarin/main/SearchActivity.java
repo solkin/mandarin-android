@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.tomclaw.mandarin.R;
 import com.tomclaw.mandarin.core.GlobalProvider;
+import com.tomclaw.mandarin.im.Gender;
 import com.tomclaw.mandarin.im.icq.IcqSearchOptionsBuilder;
 import com.tomclaw.mandarin.main.views.AgePickerView;
 
@@ -116,7 +118,7 @@ public class SearchActivity extends ChiefActivity {
         String city = cityEdit.getText().toString();
         // Obtain search builder instance from account.
         builder.keyword(keyword);
-        /*if (!TextUtils.isEmpty(city)) {
+        if (!TextUtils.isEmpty(city)) {
             builder.city(city);
         }
         builder.online(onlineBox.isChecked());
@@ -128,7 +130,7 @@ public class SearchActivity extends ChiefActivity {
             builder.gender(Gender.Female);
         } else if (TextUtils.equals(selectedGender, getString(R.string.gender_male))) {
             builder.gender(Gender.Male);
-        }*/
+        }
 
         Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
         intent.putExtra(SearchResultActivity.SEARCH_OPTIONS, builder);

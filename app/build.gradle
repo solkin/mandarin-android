@@ -15,7 +15,7 @@ android {
         applicationId "com.tomclaw.mandarin"
         minSdkVersion 15
         targetSdkVersion 34
-        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 322
+        versionCode project.hasProperty("versionCode") ? Integer.parseInt(project.versionCode) : 323
         versionName "1.4b"
         resourceConfigurations += ['ru', 'en', 'be', 'uk', 'kk']
         multiDexEnabled true

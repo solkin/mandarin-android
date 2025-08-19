@@ -7,9 +7,9 @@
     </string-array>
 
     <string-array name="gender_search_spinner_strings">
+        <item>@string/gender_any</item>
         <item>@string/gender_female</item>
         <item>@string/gender_male</item>
-        <item>@string/gender_any</item>
     </string-array>
 
     <string-array name="gender_edit_spinner_strings">

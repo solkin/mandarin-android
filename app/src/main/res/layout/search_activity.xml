@@ -67,8 +67,8 @@
                     android:textSize="16sp"
                     mandarin:ageMax="99"
                     mandarin:ageMin="16"
-                    mandarin:valueMax="26"
-                    mandarin:valueMin="19" />
+                    mandarin:valueMax="99"
+                    mandarin:valueMin="16" />
 
                 <Spinner
                     android:id="@+id/gender_selector"

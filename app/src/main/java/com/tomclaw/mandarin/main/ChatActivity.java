@@ -1758,7 +1758,7 @@ public class ChatActivity extends ChiefActivity {
             final String avatarHash = buddyCursor.getBuddyAvatarHash();
             final String subtitle;
             long lastSeen = buddyCursor.getBuddyLastSeen();
-            final boolean isOnline = lastSeen <= 0;
+            final boolean isOnline = lastSeen <= 0 && buddyCursor.getBuddyStatus() != StatusUtil.STATUS_OFFLINE;
 
             long lastTyping = buddyCursor.getBuddyLastTyping();
             // Checking for typing no more than 5 minutes.
